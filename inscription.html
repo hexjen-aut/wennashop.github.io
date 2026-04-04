@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html class="light" lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WennaShop - Inscription</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "surface-container": "#eaf0e5","on-secondary-fixed-variant": "#004786","tertiary-fixed": "#ffe08b","on-primary-fixed-variant": "#00531f","inverse-primary": "#73dc84","on-tertiary-fixed-variant": "#584400","tertiary-fixed-dim": "#f0c110","surface": "#f5fbf1","secondary": "#1a5fa8","on-tertiary-fixed": "#241a00","inverse-surface": "#2c322b","on-secondary-fixed": "#001c3a","surface-dim": "#d6dcd2","on-primary-container": "#f7fff2","primary-fixed": "#8ff99d","secondary-container": "#78b0fe","surface-container-lowest": "#ffffff","secondary-fixed-dim": "#a6c8ff","on-tertiary": "#ffffff","inverse-on-surface": "#edf3e8","error-container": "#ffdad6","background": "#f5fbf1","surface-container-low": "#eff5eb","on-background": "#171d17","surface-bright": "#f5fbf1","surface-container-high": "#e4eae0","on-secondary-container": "#00427d","surface-tint": "#006e2b","on-secondary": "#ffffff","secondary-fixed": "#d4e3ff","on-primary": "#ffffff","error": "#ba1a1a","tertiary-container": "#d0a600","outline-variant": "#becaba","on-primary-fixed": "#002108","on-surface-variant": "#3f4a3e","surface-variant": "#dee4da","outline": "#6f7a6d","primary-container": "#0f8739","primary": "#006b2a","surface-container-highest": "#dee4da","tertiary": "#745b00","on-error": "#ffffff","on-tertiary-container": "#4f3d00","on-error-container": "#93000a","on-surface": "#171d17","primary-fixed-dim": "#73dc84"
+        },
+        "borderRadius": { "DEFAULT": "1rem","lg": "2rem","xl": "3rem","full": "9999px" },
+        "fontFamily": { "headline": ["Noto Serif"],"body": ["Inter"],"label": ["Inter"] }
+      },
+    },
+  }
+</script>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+    font-size: 20px;
+  }
+  .editorial-gradient { background: linear-gradient(135deg, #006b2a 0%, #0f8739 100%); }
+  body { font-family: 'Inter', sans-serif; background-color: #f5fbf1; min-height: max(884px, 100dvh); }
+</style>
+</head>
+<body class="min-h-screen flex flex-col md:flex-row overflow-x-hidden">
+
+<!-- Visuel gauche (même que index.html) -->
+<div class="relative w-full md:w-5/12 lg:w-1/2 h-[280px] md:h-screen overflow-hidden">
+  <img alt="Visual Brand Story" class="absolute inset-0 w-full h-full object-cover"
+    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgIEV3Z8FI_kBplU-v8C_dfV7ZQborpWKonq8b78QFDgCEEDdNkmkoUnWUZbOvbxvJav0X2KMGROBJaResC9473f0yhK2IQGYxdRcHFeWQEffTn6fDFmzIrA7zqYs7Ox4b8hiEKGz3jySZJzOUWo8xvohFBDjUF0D6GRHMU_jYuvWG1BQL9U6oJ9HSusYn5P1GlcuEuyAE1bR79MROVzY9PgjYY2ng7t3QaM8Oy-WMz-xWag9CXLI-7Fevxfr6h56lhb3xcbhdM_c"/>
+  <div class="absolute inset-0" style="background:linear-gradient(135deg,#006b2a,#0f8739);opacity:0.2;"></div>
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-8 text-center bg-black/10 backdrop-blur-sm md:backdrop-blur-none md:bg-transparent">
+    <h1 class="font-headline font-black italic text-5xl md:text-7xl text-on-primary-container tracking-tighter mb-4 drop-shadow-lg">WennaShop</h1>
+    <p class="font-label text-on-primary-container text-xs tracking-[0.2em] uppercase font-semibold">Bridging Gabon &amp; Morocco</p>
+  </div>
+</div>
+
+<!-- Formulaire inscription -->
+<main class="flex-1 flex flex-col justify-center items-center px-6 py-10 md:px-16 lg:px-24 bg-surface relative overflow-y-auto">
+  <div class="w-full max-w-md space-y-8">
+
+    <!-- Tabs -->
+    <div class="flex justify-center p-1 bg-surface-container-high rounded-full w-fit mx-auto">
+      <a href="index.html" class="px-8 py-2.5 rounded-full text-sm font-label font-medium transition-all duration-200 text-on-surface-variant hover:text-on-surface">Connexion</a>
+      <span class="px-8 py-2.5 rounded-full text-sm font-label font-bold transition-all duration-200 bg-secondary text-on-secondary shadow-sm">Inscription</span>
+    </div>
+
+    <!-- Titre -->
+    <div class="text-center space-y-2">
+      <h2 class="font-headline text-3xl font-bold text-on-surface">Créer un compte</h2>
+      <p class="font-body text-on-surface-variant text-sm tracking-tight">Rejoignez la communauté WennaShop dès aujourd'hui.</p>
+    </div>
+
+    <!-- Formulaire -->
+    <form class="space-y-5" onsubmit="handleInscription(event)">
+
+      <!-- Prénom & Nom -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="space-y-1">
+          <label class="font-label text-[10px] uppercase tracking-widest font-bold text-primary ml-2">Prénom</label>
+          <div class="relative">
+            <input class="w-full pl-4 pr-4 py-4 bg-surface-container-high border-b-2 border-outline-variant focus:border-primary focus:ring-0 transition-all font-body text-on-surface rounded-t-lg outline-none" placeholder="Amira" type="text" required/>
+          </div>
+        </div>
+        <div class="space-y-1">
+          <label class="font-label text-[10px] uppercase tracking-widest font-bold text-primary ml-2">Nom</label>
+          <div class="relative">
+            <input class="w-full pl-4 pr-4 py-4 bg-surface-container-high border-b-2 border-outline-variant focus:border-primary focus:ring-0 transition-all font-body text-on-surface rounded-t-lg outline-none" placeholder="Bensalem" type="text" required/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="space-y-1">
+        <label class="font-label text-[10px] uppercase tracking-widest font-bold text-primary ml-2">Adresse Email</label>
+        <div class="relative group">
+          <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">mail</span>
+          <input class="w-full pl-12 pr-4 py-4 bg-surface-container-high border-b-2 border-outline-variant focus:border-primary focus:ring-0 transition-all font-body text-on-surface rounded-t-lg outline-none" placeholder="amira@exemple.com" type="email" required/>
+        </div>
+      </div>
+
+      <!-- Mot de passe -->
+      <div class="space-y-1">
+        <label class="font-label text-[10px] uppercase tracking-widest font-bold text-primary ml-2">Mot de passe</label>
+        <div class="relative group">
+          <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">lock</span>
+          <input id="password" class="w-full pl-12 pr-12 py-4 bg-surface-container-high border-b-2 border-outline-variant focus:border-primary focus:ring-0 transition-all font-body text-on-surface rounded-t-lg outline-none" placeholder="••••••••" type="password" required/>
+          <button type="button" onclick="togglePwd('password', 'eye1')" class="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface">
+            <span id="eye1" class="material-symbols-outlined">visibility</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Confirmer mot de passe -->
+      <div class="space-y-1">
+        <label class="font-label text-[10px] uppercase tracking-widest font-bold text-primary ml-2">Confirmer le mot de passe</label>
+        <div class="relative group">
+          <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">lock</span>
+          <input id="password2" class="w-full pl-12 pr-12 py-4 bg-surface-container-high border-b-2 border-outline-variant focus:border-primary focus:ring-0 transition-all font-body text-on-surface rounded-t-lg outline-none" placeholder="••••••••" type="password" required/>
+          <button type="button" onclick="togglePwd('password2', 'eye2')" class="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface">
+            <span id="eye2" class="material-symbols-outlined">visibility</span>
+          </button>
+        </div>
+        <p id="pwd-error" class="text-error text-[11px] ml-2 hidden">Les mots de passe ne correspondent pas.</p>
+      </div>
+
+      <!-- Origine / Pays -->
+      <div class="space-y-2">
+        <label class="font-label text-[10px] uppercase tracking-widest font-bold text-primary ml-2">Pays d'origine</label>
+        <div class="grid grid-cols-2 gap-4">
+          <button type="button" id="btn-gabon" onclick="selectPays('gabon')"
+            class="flex items-center justify-center gap-2 py-3 bg-surface-container-low border border-outline-variant/30 rounded-xl font-label text-sm text-on-surface-variant transition-all">
+            🇬🇦 Gabon
+          </button>
+          <button type="button" id="btn-maroc" onclick="selectPays('maroc')"
+            class="flex items-center justify-center gap-2 py-3 bg-surface-container-low border border-outline-variant/30 rounded-xl font-label text-sm text-on-surface-variant transition-all">
+            🇲🇦 Maroc
+          </button>
+        </div>
+      </div>
+
+      <!-- CGU -->
+      <div class="flex items-start gap-3 pt-1">
+        <input id="cgu" type="checkbox" required class="mt-1 rounded border-outline-variant text-primary focus:ring-primary"/>
+        <label for="cgu" class="font-body text-xs text-on-surface-variant leading-relaxed">
+          J'accepte les <a href="#" class="text-secondary font-semibold hover:underline">Conditions d'utilisation</a> et la <a href="#" class="text-secondary font-semibold hover:underline">Politique de confidentialité</a> de WennaShop.
+        </label>
+      </div>
+
+      <!-- Bouton soumettre -->
+      <button type="submit" class="w-full editorial-gradient py-5 rounded-xl text-on-primary font-label font-bold tracking-widest uppercase text-sm shadow-xl hover:shadow-2xl transition-all active:scale-95 duration-200">
+        Créer mon compte
+      </button>
+    </form>
+
+    <!-- Divider -->
+    <div class="relative flex items-center py-2">
+      <div class="flex-grow border-t border-outline-variant/20"></div>
+      <span class="flex-shrink mx-4 font-label text-[10px] uppercase tracking-[0.2em] text-outline">ou continuer avec</span>
+      <div class="flex-grow border-t border-outline-variant/20"></div>
+    </div>
+
+    <!-- Google -->
+    <div class="grid grid-cols-1 gap-4">
+      <button onclick="window.location.href='hero.html'" class="flex items-center justify-center gap-3 w-full py-4 bg-surface-container-lowest border border-outline-variant/30 rounded-xl font-body font-medium text-on-surface hover:bg-surface-container-low transition-colors active:scale-97">
+        <img alt="Google" class="w-5 h-5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhFzAlcF8y2F9YWFWDaC5gHc9aKLfuZ-3cpoLBU1UpBmjW0khWMFwowGqCKb2Jc5TSN2bD4KupxtHkEDNzHou_9F8AkIPhUewaL63wqy-0twzfKrfqOfvlHXiZ-MCS81XHFFnVPzaL-rspOx6U9_gBkSCjkyqIMvySrt4VeNujqWEMUAIW8EQ-acfjfMtjATh3Mu-ytkPkOeQ-pdNX0J028d4KhxudfMDyNSZ42U5usiFgO9MwOd8z4jjUIFWmYMOIQDgLenr_Ap4"/>
+        <span>S'inscrire avec Google</span>
+      </button>
+    </div>
+
+    <!-- Déjà un compte -->
+    <div class="text-center pb-4">
+      <p class="font-body text-xs text-on-surface-variant">
+        Déjà un compte ? <a href="index.html" class="text-secondary font-semibold hover:underline">Se connecter</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Accent décoratif -->
+  <div class="hidden lg:block absolute bottom-12 right-12 opacity-5 pointer-events-none">
+    <span class="font-headline text-9xl italic font-black text-primary select-none">W</span>
+  </div>
+</main>
+
+<script>
+  let selectedPays = null;
+
+  function selectPays(pays) {
+    selectedPays = pays;
+    const btnGabon = document.getElementById('btn-gabon');
+    const btnMaroc = document.getElementById('btn-maroc');
+    if (pays === 'gabon') {
+      btnGabon.className = btnGabon.className.replace('bg-surface-container-low border-outline-variant/30 text-on-surface-variant', 'bg-primary/10 border-primary text-primary font-bold');
+      btnMaroc.className = btnMaroc.className.replace('bg-primary/10 border-primary text-primary font-bold', 'bg-surface-container-low border-outline-variant/30 text-on-surface-variant');
+    } else {
+      btnMaroc.className = btnMaroc.className.replace('bg-surface-container-low border-outline-variant/30 text-on-surface-variant', 'bg-primary/10 border-primary text-primary font-bold');
+      btnGabon.className = btnGabon.className.replace('bg-primary/10 border-primary text-primary font-bold', 'bg-surface-container-low border-outline-variant/30 text-on-surface-variant');
+    }
+  }
+
+  function togglePwd(inputId, iconId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.textContent = 'visibility_off';
+    } else {
+      input.type = 'password';
+      icon.textContent = 'visibility';
+    }
+  }
+
+  function handleInscription(e) {
+    e.preventDefault();
+    const pwd = document.getElementById('password').value;
+    const pwd2 = document.getElementById('password2').value;
+    const errEl = document.getElementById('pwd-error');
+    if (pwd !== pwd2) {
+      errEl.classList.remove('hidden');
+      return;
+    }
+    errEl.classList.add('hidden');
+    window.location.href = 'hero.html';
+  }
+</script>
+</body>
+</html> 

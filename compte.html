@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html class="light" lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WennaShop – Mon Compte</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode:"class",
+  theme:{
+    extend:{
+      colors:{
+        "on-surface":"#171d17","on-secondary-fixed":"#001c3a","inverse-surface":"#2c322b","on-tertiary":"#ffffff","error":"#ba1a1a","tertiary-fixed-dim":"#f0c110","secondary-fixed-dim":"#a6c8ff","primary-fixed-dim":"#73dc84","on-tertiary-fixed":"#241a00","surface-container-low":"#eff5eb","tertiary-container":"#d0a600","on-primary-fixed-variant":"#00531f","on-secondary":"#ffffff","on-background":"#171d17","primary-container":"#0f8739","surface-dim":"#d6dcd2","tertiary":"#745b00","surface-tint":"#006e2b","error-container":"#ffdad6","on-primary-container":"#f7fff2","background":"#f5fbf1","surface-container-lowest":"#ffffff","outline-variant":"#becaba","primary":"#006b2a","surface-container":"#eaf0e5","secondary-container":"#78b0fe","surface-bright":"#f5fbf1","secondary-fixed":"#d4e3ff","on-error":"#ffffff","on-tertiary-container":"#4f3d00","on-secondary-container":"#00427d","surface-container-highest":"#dee4da","tertiary-fixed":"#ffe08b","surface-variant":"#dee4da","surface-container-high":"#e4eae0","on-primary":"#ffffff","on-error-container":"#93000a","inverse-on-surface":"#edf3e8","on-surface-variant":"#3f4a3e","on-secondary-fixed-variant":"#004786","surface":"#f5fbf1","on-primary-fixed":"#002108","outline":"#6f7a6d","on-tertiary-fixed-variant":"#584400","primary-fixed":"#8ff99d","secondary":"#1a5fa8","inverse-primary":"#73dc84"
+      },
+      borderRadius:{"DEFAULT":"1rem","lg":"2rem","xl":"3rem","full":"9999px"},
+      fontFamily:{"headline":["Noto Serif"],"body":["Inter"],"label":["Inter"]}
+    }
+  }
+}
+</script>
+<style>
+  .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24; vertical-align:middle; }
+  body { font-family:'Inter',sans-serif; min-height:max(884px,100dvh); }
+  h1,h2,h3 { font-family:'Noto Serif',serif; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
+  @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+  @keyframes scaleIn { from{opacity:0;transform:scale(0.96);} to{opacity:1;transform:scale(1);} }
+
+  .anim-up { animation:fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) forwards; opacity:0; }
+  .anim-in { animation:scaleIn 0.4s cubic-bezier(0.22,1,0.36,1) forwards; opacity:0; }
+  .d-50{animation-delay:.05s;} .d-100{animation-delay:.1s;} .d-150{animation-delay:.15s;}
+  .d-200{animation-delay:.2s;} .d-250{animation-delay:.25s;} .d-300{animation-delay:.3s;}
+  .d-350{animation-delay:.35s;} .d-400{animation-delay:.4s;} .d-500{animation-delay:.5s;}
+
+  .tab-panel { display:none; }
+  .tab-panel.active { display:block; animation:fadeIn 0.3s ease; }
+
+  .mode-panel { display:none; }
+  .mode-panel.active { display:block; }
+
+  .section-card { background:#fff; border-radius:1.25rem; padding:1.5rem; box-shadow:0 2px 16px rgba(0,107,42,0.06); }
+
+  .stat-card { background:linear-gradient(135deg,#eff5eb 0%,#e4eae0 100%); border-radius:1.25rem; padding:1.25rem; }
+
+  .order-row { transition:all 0.2s; border-radius:1rem; }
+  .order-row:hover { background:#eff5eb; }
+
+  .listing-row { transition:all 0.2s; border-radius:1rem; }
+  .listing-row:hover { background:#eff5eb; }
+
+  .btn-primary { background:linear-gradient(135deg,#006b2a 0%,#0f8739 100%); transition:all 0.2s; }
+  .btn-primary:hover { opacity:0.9; transform:scale(0.99); }
+  .btn-primary:active { transform:scale(0.97); }
+
+  .avatar-ring { box-shadow:0 0 0 3px #fff, 0 0 0 5px #006b2a; }
+
+  .chip { display:inline-flex; align-items:center; padding:0.2rem 0.75rem; border-radius:999px; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; }
+  .chip-green { background:#dcfce7; color:#166534; }
+  .chip-amber { background:#fef9c3; color:#854d0e; }
+  .chip-blue { background:#dbeafe; color:#1e40af; }
+  .chip-red { background:#fee2e2; color:#991b1b; }
+  .chip-gray { background:#f1f5f9; color:#475569; }
+
+  .progress-ring { transition:stroke-dashoffset 0.8s cubic-bezier(0.22,1,0.36,1); }
+
+  .mode-toggle-btn { transition:all 0.25s; border-radius:999px; padding:0.5rem 1.5rem; font-size:0.75rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; }
+  .mode-toggle-btn.active { background:linear-gradient(135deg,#006b2a,#0f8739); color:#fff; box-shadow:0 4px 14px rgba(0,107,42,0.25); }
+  .mode-toggle-btn:not(.active) { color:#3f4a3e; background:transparent; }
+  .mode-toggle-btn:not(.active):hover { background:#e4eae0; }
+
+  .nav-tab { transition:all 0.2s; border-bottom:2px solid transparent; padding-bottom:0.5rem; font-size:0.7rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#6f7a6d; }
+  .nav-tab.active { color:#006b2a; border-color:#006b2a; }
+  .nav-tab:not(.active):hover { color:#171d17; }
+
+  .edit-field { background:#eff5eb; border:none; border-bottom:2px solid #becaba; border-radius:0.5rem 0.5rem 0 0; padding:0.75rem 1rem; width:100%; font-family:'Inter',sans-serif; font-size:0.875rem; outline:none; transition:border-color 0.2s; }
+  .edit-field:focus { border-color:#006b2a; }
+
+  .product-thumb { width:56px; height:56px; border-radius:0.75rem; object-fit:cover; background:#eaf0e5; flex-shrink:0; }
+
+  /* Toggle switch */
+  .toggle-track { width:44px; height:24px; border-radius:999px; background:#becaba; transition:background 0.2s; cursor:pointer; position:relative; }
+  .toggle-track.on { background:#006b2a; }
+  .toggle-thumb { width:18px; height:18px; background:#fff; border-radius:50%; position:absolute; top:3px; left:3px; transition:left 0.2s; box-shadow:0 1px 4px rgba(0,0,0,0.2); }
+  .toggle-track.on .toggle-thumb { left:23px; }
+
+  .notification-dot { width:8px; height:8px; background:#ba1a1a; border-radius:50%; position:absolute; top:2px; right:2px; border:1.5px solid #fff; }
+</style>
+</head>
+<body class="bg-background text-on-surface min-h-screen pb-32">
+
+<!-- Header -->
+<header class="bg-surface/80 backdrop-blur-xl fixed top-0 w-full z-50 border-b border-outline-variant/10">
+  <div class="flex justify-between items-center px-6 py-4 max-w-4xl mx-auto">
+    <div class="flex items-center gap-3">
+      <a href="hero.html" class="text-on-surface hover:opacity-70 transition-opacity">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </a>
+      <span class="font-serif italic text-xl tracking-tighter text-primary">WennaShop</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <button class="relative text-on-surface hover:opacity-70 transition-opacity">
+        <span class="material-symbols-outlined">notifications</span>
+        <span class="notification-dot"></span>
+      </button>
+      <a href="panier.html" class="relative text-on-surface hover:opacity-70 transition-opacity">
+        <span class="material-symbols-outlined">shopping_bag</span>
+        <span class="absolute -top-1 -right-1 bg-primary text-on-primary text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">2</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main class="pt-20 px-4 max-w-4xl mx-auto">
+
+  <!-- ══════════════════════════════════
+       PROFIL HERO
+  ══════════════════════════════════ -->
+  <section class="anim-up d-50 mb-8">
+    <div class="relative rounded-lg overflow-hidden" style="background:linear-gradient(135deg,#006b2a 0%,#0f8739 60%,#745b00 100%);">
+      <!-- Decorative bg W -->
+      <div class="absolute right-4 top-1/2 -translate-y-1/2 opacity-10 pointer-events-none select-none">
+        <span class="font-serif italic font-black text-white" style="font-size:120px;">W</span>
+      </div>
+      <div class="relative z-10 p-6 flex items-center gap-5">
+        <!-- Avatar -->
+        <div class="relative flex-shrink-0">
+          <div class="w-20 h-20 rounded-full overflow-hidden avatar-ring bg-surface-container">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7vofdDbzB1kHQpCcZGnjQmpCiN7rfxNYAEY_mK8wz0Lj0vftDkhWnlRUagW1kzeqDVjj4jy6LCgLeV2flgyhiBRD2ENZDQv0TZKMLq1ItjAMV5wqL3hVWPmgRptKpsS2e8RWMi5jK27FNQCgY7sN1BmBurhsVFSqmsiXffdckUxMCmLk4vtIB47ihaBL5kFUwT_4oB0hkAnCv9fbHF6SqqLQsGPb3hhdha2bFzoceValEi57vxyN4ygT66hFGMkcFpxt4BeE2S9g" alt="Avatar" class="w-full h-full object-cover"/>
+          </div>
+          <button class="absolute bottom-0 right-0 w-7 h-7 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-surface-container-low transition-colors">
+            <span class="material-symbols-outlined text-primary" style="font-size:14px;">photo_camera</span>
+          </button>
+        </div>
+        <!-- Infos -->
+        <div class="flex-1 text-white">
+          <p class="text-white/60 text-[10px] uppercase tracking-widest font-bold mb-0.5">🇲🇦 Maroc · Casablanca</p>
+          <h1 class="font-serif italic text-2xl font-bold mb-1">Amira Bensalem</h1>
+          <p class="text-white/70 text-xs">amira.bensalem@email.com</p>
+          <div class="flex items-center gap-2 mt-2">
+            <span class="chip" style="background:rgba(255,255,255,0.2);color:#fff;">Membre depuis 2024</span>
+            <span class="chip" style="background:rgba(255,224,139,0.3);color:#ffe08b;" id="badge-role">Client & Vendeur</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════
+       MODE SWITCHER : CLIENT / VENDEUR
+  ══════════════════════════════════ -->
+  <section class="anim-up d-100 mb-6">
+    <div class="flex justify-center p-1.5 bg-surface-container-high rounded-full w-fit mx-auto gap-1">
+      <button id="btn-client" onclick="switchMode('client')" class="mode-toggle-btn active">
+        Espace Client
+      </button>
+      <button id="btn-vendeur" onclick="switchMode('vendeur')" class="mode-toggle-btn">
+        Espace Vendeur
+      </button>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════
+       MODE CLIENT
+  ══════════════════════════════════ -->
+  <div id="mode-client" class="mode-panel active">
+
+    <!-- Stats client -->
+    <div class="grid grid-cols-3 gap-3 mb-6 anim-up d-150">
+      <div class="stat-card text-center">
+        <p class="text-2xl font-bold text-primary font-serif">12</p>
+        <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Commandes</p>
+      </div>
+      <div class="stat-card text-center">
+        <p class="text-2xl font-bold text-secondary font-serif">5</p>
+        <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Favoris</p>
+      </div>
+      <div class="stat-card text-center">
+        <p class="text-2xl font-bold text-tertiary font-serif">4.8</p>
+        <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Avis donnés</p>
+      </div>
+    </div>
+
+    <!-- Tabs navigation client -->
+    <div class="flex gap-6 border-b border-outline-variant/20 mb-6 anim-up d-200 overflow-x-auto">
+      <button class="nav-tab active" onclick="switchClientTab('commandes', this)">Commandes</button>
+      <button class="nav-tab" onclick="switchClientTab('favoris', this)">Favoris</button>
+      <button class="nav-tab" onclick="switchClientTab('adresses', this)">Adresses</button>
+      <button class="nav-tab" onclick="switchClientTab('parametres', this)">Paramètres</button>
+    </div>
+
+    <!-- TAB: Commandes -->
+    <div id="client-commandes" class="tab-panel active anim-up d-250">
+      <div class="section-card">
+        <h2 class="font-serif italic text-xl mb-5">Mes Commandes</h2>
+        <div class="space-y-1">
+
+          <!-- Commande 1 -->
+          <div class="order-row p-4 flex items-center gap-4 cursor-pointer">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD51WG_5KeX3JXOK79MSMMhafRoayFdQ51VvIvry1jYU0ZXFzh9HKfYDR7mvNPQ68vSPRMoa8ostkDMBniqzSxwwZZUnsLa1NSA6aHGZ7fc96IS6ZoMAzpBzDX-DysodkTPVyxh6y2gR_EztbBvIf0hQsoN0W30b_1mSdtECMJ4gmu1AZdh84OEhj8-EAJzp8Sr4aGwZ8VxHM8wBAZ0AMHSoLH5zEFuFzz8yXCJ5yJbcJt7km_CqoU9ALEIHUZ6u1ozRvZxea5_Rqo" alt="produit" class="product-thumb"/>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <p class="font-bold text-sm">M'Passa Clay Vessel</p>
+                <span class="chip chip-green">Livré</span>
+              </div>
+              <p class="text-[11px] text-on-surface-variant">Commande #WS-2847 · 18 mars 2025</p>
+              <p class="text-xs font-bold text-primary mt-1">$145.00</p>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+          </div>
+
+          <!-- Commande 2 -->
+          <div class="order-row p-4 flex items-center gap-4 cursor-pointer">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwfpdzbPpmhCtXE3n9TYWsQYce2MbtwBz6EcFnmA0flP3ux4uDPh0rKC9X1hxwx_A358oogQdD60TgtPck5S-6x4JrZ7ojRz-t_YHaA4tYdEI168KSJx58vUpoGsoUa5kUDRJVOx7yCO71R56l_s_cKle_xH1CTfYiMtf-oV3At2DWrlb7KpcUfntvYoO3HOXLVwIP5KEqdmRHddv0VhwwhZzgpttnb_IbHYWVoeJOMgTDFOcPpLCmpqvZEiWhqXERhkHwdJdh1yY" alt="produit" class="product-thumb"/>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <p class="font-bold text-sm">Chefchaouen Silk Wrap</p>
+                <span class="chip chip-blue">En transit</span>
+              </div>
+              <p class="text-[11px] text-on-surface-variant">Commande #WS-3012 · 28 mars 2025</p>
+              <p class="text-xs font-bold text-primary mt-1">$89.00</p>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+          </div>
+
+          <!-- Commande 3 -->
+          <div class="order-row p-4 flex items-center gap-4 cursor-pointer">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBp3QDsr3M_y-DJ1AHG1hyhJSriLSPMz6pcPIC4cFSN6EbzW3iyE4JifvP3SQDmVFdmN_fpZwdRekEmfZ7Pa2UqfzMyGOEIkQ0oD7tVjfjQxbA3to5t2rnmGZVZmhG9OWtNz4r8KRXzT2WH6x0ztASUvJu7_QK44MaoafeGg71Mi5BRmKjonmQaqTzoSLfe9mrUPX-Jh0etc7C5YljuealaPqkIeNeNUeYbuXwvCePWEeZ7vTLxg2ZGytzSKLNXWEU3kqXcnu1pttY" alt="produit" class="product-thumb"/>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <p class="font-bold text-sm">Huile d'Argan Pure</p>
+                <span class="chip chip-amber">En préparation</span>
+              </div>
+              <p class="text-[11px] text-on-surface-variant">Commande #WS-3156 · 2 avril 2025</p>
+              <p class="text-xs font-bold text-primary mt-1">$48.00</p>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+          </div>
+
+          <!-- Commande 4 -->
+          <div class="order-row p-4 flex items-center gap-4 cursor-pointer">
+            <div class="product-thumb bg-surface-container-low flex items-center justify-center">
+              <span class="material-symbols-outlined text-on-surface-variant">inventory_2</span>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <p class="font-bold text-sm">Savon Noir Beldi</p>
+                <span class="chip chip-gray">Annulée</span>
+              </div>
+              <p class="text-[11px] text-on-surface-variant">Commande #WS-2701 · 5 mars 2025</p>
+              <p class="text-xs font-bold text-on-surface-variant mt-1">$18.00</p>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+          </div>
+        </div>
+        <button class="w-full mt-4 py-3 rounded-xl border border-outline-variant/30 text-sm font-bold text-on-surface-variant hover:bg-surface-container-low transition-colors">
+          Voir toutes les commandes
+        </button>
+      </div>
+    </div>
+
+    <!-- TAB: Favoris -->
+    <div id="client-favoris" class="tab-panel anim-up d-200">
+      <div class="section-card">
+        <h2 class="font-serif italic text-xl mb-5">Mes Favoris</h2>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="group cursor-pointer">
+            <div class="aspect-[4/5] rounded-lg overflow-hidden mb-3 relative bg-surface-container-low">
+              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBp3QDsr3M_y-DJ1AHG1hyhJSriLSPMz6pcPIC4cFSN6EbzW3iyE4JifvP3SQDmVFdmN_fpZwdRekEmfZ7Pa2UqfzMyGOEIkQ0oD7tVjfjQxbA3to5t2rnmGZVZmhG9OWtNz4r8KRXzT2WH6x0ztASUvJu7_QK44MaoafeGg71Mi5BRmKjonmQaqTzoSLfe9mrUPX-Jh0etc7C5YljuealaPqkIeNeNUeYbuXwvCePWEeZ7vTLxg2ZGytzSKLNXWEU3kqXcnu1pttY" alt="Argan" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+              <button class="absolute top-2 right-2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center">
+                <span class="material-symbols-outlined text-error" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;font-size:16px;">favorite</span>
+              </button>
+            </div>
+            <p class="text-[10px] uppercase tracking-widest text-tertiary font-bold">Maroc</p>
+            <p class="font-serif font-bold text-sm">Huile d'Argan Pure</p>
+            <p class="text-xs text-on-surface-variant font-medium">€48.00</p>
+          </div>
+          <div class="group cursor-pointer">
+            <div class="aspect-[4/5] rounded-lg overflow-hidden mb-3 relative bg-surface-container-low">
+              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCslf4y0AqCbRQU1kqVR7bB5LfAvXyESwNFFLrSmjYEKGj2xlyNbBWTivy6Qp0QK8mZmrtDjP7k-FeO1S0ShiUv19qgNDBzv6H5Pm9jzXk8c8D_CIyc8ryw5Y6Eu7xrh2a__yJe1iTcwQYrLpmUESasz-1Kkd1yGGFvn980RfQI3Lmixx99g1T5chaIqqj1A4nZO0j9I5xXXp5RVmjM_1g-oh3g1pf_CufrOyWWKTGDQ8g3q1FS4OvMlO5HeCcUA0XxRBTbbJq2tIQ" alt="Karité" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+              <button class="absolute top-2 right-2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center">
+                <span class="material-symbols-outlined text-error" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;font-size:16px;">favorite</span>
+              </button>
+            </div>
+            <p class="text-[10px] uppercase tracking-widest text-tertiary font-bold">Gabon</p>
+            <p class="font-serif font-bold text-sm">Beurre de Karité</p>
+            <p class="text-xs text-on-surface-variant font-medium">€32.00</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Adresses -->
+    <div id="client-adresses" class="tab-panel">
+      <div class="section-card">
+        <h2 class="font-serif italic text-xl mb-5">Mes Adresses</h2>
+        <div class="space-y-4">
+          <!-- Adresse 1 -->
+          <div class="p-4 border border-primary/30 rounded-xl bg-primary/5 relative">
+            <span class="chip chip-green absolute top-4 right-4">Par défaut</span>
+            <div class="flex items-start gap-3">
+              <span class="material-symbols-outlined text-primary mt-0.5">home</span>
+              <div>
+                <p class="font-bold text-sm mb-1">Amira Bensalem</p>
+                <p class="text-xs text-on-surface-variant leading-relaxed">47 Rue des Orangers, Résidence Al Firdaous<br/>Casablanca 20250, Maroc</p>
+                <p class="text-xs text-on-surface-variant mt-1">+212 6 12 34 56 78</p>
+              </div>
+            </div>
+            <div class="flex gap-3 mt-4">
+              <button class="text-xs font-bold text-secondary hover:underline">Modifier</button>
+              <button class="text-xs font-bold text-error hover:underline">Supprimer</button>
+            </div>
+          </div>
+          <!-- Adresse 2 -->
+          <div class="p-4 border border-outline-variant/30 rounded-xl">
+            <div class="flex items-start gap-3">
+              <span class="material-symbols-outlined text-on-surface-variant mt-0.5">work</span>
+              <div>
+                <p class="font-bold text-sm mb-1">Bureau – Libreville</p>
+                <p class="text-xs text-on-surface-variant leading-relaxed">12 Avenue du Bord de Mer<br/>Libreville, Gabon</p>
+                <p class="text-xs text-on-surface-variant mt-1">+241 07 65 43 21</p>
+              </div>
+            </div>
+            <div class="flex gap-3 mt-4">
+              <button class="text-xs font-bold text-secondary hover:underline">Modifier</button>
+              <button class="text-xs font-bold text-on-surface-variant hover:text-primary hover:underline">Définir par défaut</button>
+              <button class="text-xs font-bold text-error hover:underline">Supprimer</button>
+            </div>
+          </div>
+          <!-- Ajouter -->
+          <button class="w-full py-4 border-2 border-dashed border-outline-variant/40 rounded-xl flex items-center justify-center gap-2 text-sm font-bold text-on-surface-variant hover:border-primary hover:text-primary transition-colors">
+            <span class="material-symbols-outlined" style="font-size:18px;">add</span>
+            Ajouter une adresse
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Paramètres client -->
+    <div id="client-parametres" class="tab-panel">
+      <div class="section-card">
+        <h2 class="font-serif italic text-xl mb-5">Paramètres du compte</h2>
+
+        <!-- Infos personnelles -->
+        <div class="mb-8">
+          <p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Informations personnelles</p>
+          <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Prénom</label>
+                <input class="edit-field" value="Amira"/>
+              </div>
+              <div>
+                <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Nom</label>
+                <input class="edit-field" value="Bensalem"/>
+              </div>
+            </div>
+            <div>
+              <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Email</label>
+              <input class="edit-field" value="amira.bensalem@email.com" type="email"/>
+            </div>
+            <div>
+              <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Téléphone</label>
+              <input class="edit-field" value="+212 6 12 34 56 78" type="tel"/>
+            </div>
+            <button class="btn-primary text-on-primary px-8 py-3 rounded-xl text-sm font-bold tracking-wide">
+              Sauvegarder les modifications
+            </button>
+          </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="mb-8">
+          <p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Notifications</p>
+          <div class="space-y-4">
+            <div class="flex items-center justify-between py-2">
+              <div>
+                <p class="text-sm font-bold">Suivi de commande</p>
+                <p class="text-xs text-on-surface-variant">Mises à jour de livraison en temps réel</p>
+              </div>
+              <div class="toggle-track on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div>
+            </div>
+            <div class="flex items-center justify-between py-2 border-t border-outline-variant/10">
+              <div>
+                <p class="text-sm font-bold">Nouvelles collections</p>
+                <p class="text-xs text-on-surface-variant">Alertes drops & exclusivités</p>
+              </div>
+              <div class="toggle-track on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div>
+            </div>
+            <div class="flex items-center justify-between py-2 border-t border-outline-variant/10">
+              <div>
+                <p class="text-sm font-bold">Offres promotionnelles</p>
+                <p class="text-xs text-on-surface-variant">Codes promo et réductions exclusives</p>
+              </div>
+              <div class="toggle-track" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sécurité -->
+        <div>
+          <p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Sécurité</p>
+          <div class="space-y-3">
+            <button class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-surface-container-low transition-colors">
+              <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-on-surface-variant">lock</span>
+                <span class="text-sm font-bold">Changer le mot de passe</span>
+              </div>
+              <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+            </button>
+            <button class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-surface-container-low transition-colors">
+              <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-on-surface-variant">security</span>
+                <span class="text-sm font-bold">Authentification à deux facteurs</span>
+              </div>
+              <span class="chip chip-amber">Inactif</span>
+            </button>
+            <button class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-error/5 transition-colors text-error">
+              <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined">logout</span>
+                <span class="text-sm font-bold">Se déconnecter</span>
+              </div>
+              <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end mode-client -->
+
+
+  <!-- ══════════════════════════════════
+       MODE VENDEUR
+  ══════════════════════════════════ -->
+  <div id="mode-vendeur" class="mode-panel">
+
+    <!-- Stats vendeur -->
+    <div class="grid grid-cols-2 gap-3 mb-4 anim-up d-150">
+      <div class="section-card flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-primary">payments</span>
+        </div>
+        <div>
+          <p class="text-xl font-bold text-primary font-serif">€1 248</p>
+          <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Revenus ce mois</p>
+        </div>
+      </div>
+      <div class="section-card flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-secondary">shopping_cart</span>
+        </div>
+        <div>
+          <p class="text-xl font-bold text-secondary font-serif">34</p>
+          <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Ventes totales</p>
+        </div>
+      </div>
+    </div>
+    <div class="grid grid-cols-3 gap-3 mb-6">
+      <div class="stat-card text-center">
+        <p class="text-xl font-bold text-on-surface font-serif">8</p>
+        <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Annonces</p>
+      </div>
+      <div class="stat-card text-center">
+        <p class="text-xl font-bold text-on-surface font-serif">4.9</p>
+        <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Note moy.</p>
+      </div>
+      <div class="stat-card text-center">
+        <p class="text-xl font-bold text-on-surface font-serif">142</p>
+        <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Vues / mois</p>
+      </div>
+    </div>
+
+    <!-- Tabs navigation vendeur -->
+    <div class="flex gap-6 border-b border-outline-variant/20 mb-6 overflow-x-auto">
+      <button class="nav-tab active" onclick="switchVendeurTab('annonces', this)">Mes Annonces</button>
+      <button class="nav-tab" onclick="switchVendeurTab('ventes', this)">Ventes</button>
+      <button class="nav-tab" onclick="switchVendeurTab('paiements', this)">Paiements</button>
+      <button class="nav-tab" onclick="switchVendeurTab('boutique', this)">Ma Boutique</button>
+    </div>
+
+    <!-- TAB: Annonces -->
+    <div id="vendeur-annonces" class="tab-panel active">
+      <div class="section-card">
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="font-serif italic text-xl">Mes Annonces</h2>
+          <a href="sell.html" class="btn-primary text-on-primary px-4 py-2.5 rounded-xl text-xs font-bold tracking-wide flex items-center gap-1">
+            <span class="material-symbols-outlined" style="font-size:16px;">add</span>
+            Nouvelle
+          </a>
+        </div>
+        <div class="space-y-1">
+
+          <!-- Annonce 1 -->
+          <div class="listing-row p-4 flex items-center gap-4 cursor-pointer">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBp3QDsr3M_y-DJ1AHG1hyhJSriLSPMz6pcPIC4cFSN6EbzW3iyE4JifvP3SQDmVFdmN_fpZwdRekEmfZ7Pa2UqfzMyGOEIkQ0oD7tVjfjQxbA3to5t2rnmGZVZmhG9OWtNz4r8KRXzT2WH6x0ztASUvJu7_QK44MaoafeGg71Mi5BRmKjonmQaqTzoSLfe9mrUPX-Jh0etc7C5YljuealaPqkIeNeNUeYbuXwvCePWEeZ7vTLxg2ZGytzSKLNXWEU3kqXcnu1pttY" alt="Argan" class="product-thumb"/>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <p class="font-bold text-sm">Huile d'Argan Pure</p>
+                <span class="chip chip-green">En ligne</span>
+              </div>
+              <p class="text-[11px] text-on-surface-variant">Beauté · Essaouira</p>
+              <div class="flex items-center gap-4 mt-1">
+                <p class="text-xs font-bold text-primary">€48.00</p>
+                <p class="text-[11px] text-on-surface-variant">18 ventes · 4.9 ★</p>
+              </div>
+            </div>
+            <button class="text-on-surface-variant hover:text-primary transition-colors p-2">
+              <span class="material-symbols-outlined" style="font-size:18px;">edit</span>
+            </button>
+          </div>
+
+          <!-- Annonce 2 -->
+          <div class="listing-row p-4 flex items-center gap-4 cursor-pointer">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCslf4y0AqCbRQU1kqVR7bB5LfAvXyESwNFFLrSmjYEKGj2xlyNbBWTivy6Qp0QK8mZmrtDjP7k-FeO1S0ShiUv19qgNDBzv6H5Pm9jzXk8c8D_CIyc8ryw5Y6Eu7xrh2a__yJe1iTcwQYrLpmUESasz-1Kkd1yGGFvn980RfQI3Lmixx99g1T5chaIqqj1A4nZO0j9I5xXXp5RVmjM_1g-oh3g1pf_CufrOyWWKTGDQ8g3q1FS4OvMlO5HeCcUA0XxRBTbbJq2tIQ" alt="Karité" class="product-thumb"/>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <p class="font-bold text-sm">Beurre de Karité</p>
+                <span class="chip chip-green">En ligne</span>
+              </div>
+              <p class="text-[11px] text-on-surface-variant">Beauté · Gabon</p>
+              <div class="flex items-center gap-4 mt-1">
+                <p class="text-xs font-bold text-primary">€32.00</p>
+                <p class="text-[11px] text-on-surface-variant">9 ventes · 4.8 ★</p>
+              </div>
+            </div>
+            <button class="text-on-surface-variant hover:text-primary transition-colors p-2">
+              <span class="material-symbols-outlined" style="font-size:18px;">edit</span>
+            </button>
+          </div>
+
+          <!-- Annonce 3 -->
+          <div class="listing-row p-4 flex items-center gap-4 cursor-pointer">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUS6S2emNW7bCNA5Bkf9VyzCWGTpyYrETlk82BJmKf7UYd8r0J-SidM_QhLCD9Sn0L2HhNE_VcLdCx0rUEqEBTG7Zy4XaNDe8c69tj7j0ubTAE92uMLxel6tnMxzwJVJ_o61MERPi02m1a9pXxK_bQnc8vu0Zl-fiUiM5wTsf7gDT5Aok7dlBwT-NhXfQPFi-PJuuBYS4T1kPZsw9zzSoG_5GFLVM_UckrJq2gtlD26D_8AdZr7PrvfOdcWZ1ulXcezYdwggPPi3Po" alt="Savon" class="product-thumb"/>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <p class="font-bold text-sm">Savon Noir Beldi</p>
+                <span class="chip chip-amber">En révision</span>
+              </div>
+              <p class="text-[11px] text-on-surface-variant">Beauté · Maroc</p>
+              <div class="flex items-center gap-4 mt-1">
+                <p class="text-xs font-bold text-primary">€18.00</p>
+                <p class="text-[11px] text-on-surface-variant">En attente de validation</p>
+              </div>
+            </div>
+            <button class="text-on-surface-variant hover:text-primary transition-colors p-2">
+              <span class="material-symbols-outlined" style="font-size:18px;">edit</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Ventes -->
+    <div id="vendeur-ventes" class="tab-panel">
+      <div class="section-card">
+        <h2 class="font-serif italic text-xl mb-5">Historique des ventes</h2>
+        <div class="space-y-1">
+          <div class="order-row p-4 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-primary" style="font-size:18px;">arrow_downward</span>
+            </div>
+            <div class="flex-1">
+              <p class="font-bold text-sm">Huile d'Argan × 2</p>
+              <p class="text-[11px] text-on-surface-variant">Acheteur : K. Moussaoui · 2 avril 2025</p>
+            </div>
+            <div class="text-right">
+              <p class="font-bold text-primary text-sm">+€96.00</p>
+              <span class="chip chip-green">Payé</span>
+            </div>
+          </div>
+          <div class="order-row p-4 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-primary" style="font-size:18px;">arrow_downward</span>
+            </div>
+            <div class="flex-1">
+              <p class="font-bold text-sm">Beurre de Karité × 1</p>
+              <p class="text-[11px] text-on-surface-variant">Acheteur : S. Ondo · 30 mars 2025</p>
+            </div>
+            <div class="text-right">
+              <p class="font-bold text-primary text-sm">+€32.00</p>
+              <span class="chip chip-green">Payé</span>
+            </div>
+          </div>
+          <div class="order-row p-4 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-secondary" style="font-size:18px;">schedule</span>
+            </div>
+            <div class="flex-1">
+              <p class="font-bold text-sm">Huile d'Argan × 1</p>
+              <p class="text-[11px] text-on-surface-variant">Acheteur : M. Idrissi · 28 mars 2025</p>
+            </div>
+            <div class="text-right">
+              <p class="font-bold text-secondary text-sm">+€48.00</p>
+              <span class="chip chip-blue">En cours</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Paiements -->
+    <div id="vendeur-paiements" class="tab-panel">
+      <div class="space-y-4">
+        <!-- Solde disponible -->
+        <div class="section-card" style="background:linear-gradient(135deg,#006b2a,#0f8739);color:#fff;">
+          <p class="text-white/70 text-[10px] uppercase tracking-widest font-bold mb-1">Solde disponible</p>
+          <p class="text-4xl font-bold font-serif mb-4">€842.50</p>
+          <div class="flex gap-4">
+            <button class="flex-1 py-3 bg-white/20 hover:bg-white/30 transition-colors rounded-xl text-sm font-bold backdrop-blur">
+              Retirer les fonds
+            </button>
+            <button class="flex-1 py-3 bg-white/20 hover:bg-white/30 transition-colors rounded-xl text-sm font-bold backdrop-blur">
+              Voir le détail
+            </button>
+          </div>
+        </div>
+        <!-- RIB / Mode de paiement -->
+        <div class="section-card">
+          <h3 class="font-serif italic text-lg mb-4">Mode de versement</h3>
+          <div class="p-4 border border-outline-variant/30 rounded-xl flex items-center gap-4">
+            <span class="material-symbols-outlined text-secondary">account_balance</span>
+            <div class="flex-1">
+              <p class="font-bold text-sm">CIH Bank – Casablanca</p>
+              <p class="text-xs text-on-surface-variant">IBAN : MA ●●●● ●●●● ●●●● 4821</p>
+            </div>
+            <button class="text-xs font-bold text-secondary hover:underline">Modifier</button>
+          </div>
+          <button class="w-full mt-3 py-3 border-2 border-dashed border-outline-variant/40 rounded-xl text-sm font-bold text-on-surface-variant hover:border-primary hover:text-primary transition-colors flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined" style="font-size:16px;">add</span>
+            Ajouter un compte bancaire
+          </button>
+        </div>
+        <!-- Historique virements -->
+        <div class="section-card">
+          <h3 class="font-serif italic text-lg mb-4">Virements récents</h3>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center py-3 border-b border-outline-variant/10">
+              <div>
+                <p class="text-sm font-bold">Virement du 1 avril</p>
+                <p class="text-[11px] text-on-surface-variant">CIH Bank ●●4821</p>
+              </div>
+              <div class="text-right">
+                <p class="font-bold text-primary">€350.00</p>
+                <span class="chip chip-green">Effectué</span>
+              </div>
+            </div>
+            <div class="flex justify-between items-center py-3">
+              <div>
+                <p class="text-sm font-bold">Virement du 1 mars</p>
+                <p class="text-[11px] text-on-surface-variant">CIH Bank ●●4821</p>
+              </div>
+              <div class="text-right">
+                <p class="font-bold text-primary">€280.00</p>
+                <span class="chip chip-green">Effectué</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Ma Boutique -->
+    <div id="vendeur-boutique" class="tab-panel">
+      <div class="section-card">
+        <h2 class="font-serif italic text-xl mb-5">Ma Boutique</h2>
+        <div class="space-y-5">
+          <!-- Bannière boutique -->
+          <div>
+            <label class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant block mb-2">Photo de bannière</label>
+            <div class="w-full h-28 rounded-xl overflow-hidden bg-surface-container-low relative group cursor-pointer">
+              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBp3QDsr3M_y-DJ1AHG1hyhJSriLSPMz6pcPIC4cFSN6EbzW3iyE4JifvP3SQDmVFdmN_fpZwdRekEmfZ7Pa2UqfzMyGOEIkQ0oD7tVjfjQxbA3to5t2rnmGZVZmhG9OWtNz4r8KRXzT2WH6x0ztASUvJu7_QK44MaoafeGg71Mi5BRmKjonmQaqTzoSLfe9mrUPX-Jh0etc7C5YljuealaPqkIeNeNUeYbuXwvCePWEeZ7vTLxg2ZGytzSKLNXWEU3kqXcnu1pttY" alt="bannière" class="w-full h-full object-cover"/>
+              <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <span class="text-white text-xs font-bold">Changer la bannière</span>
+              </div>
+            </div>
+          </div>
+          <!-- Nom boutique -->
+          <div>
+            <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Nom de la boutique</label>
+            <input class="edit-field" value="Amira's Heritage Oils"/>
+          </div>
+          <!-- Description boutique -->
+          <div>
+            <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Description</label>
+            <textarea class="edit-field" rows="3" style="height:auto;">Huiles et cosmétiques naturels issus du patrimoine marocain. Travail artisanal, commerce équitable, sourcing direct auprès des coopératives d'Essaouira.</textarea>
+          </div>
+          <!-- Pays -->
+          <div>
+            <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Pays d'origine</label>
+            <select class="edit-field">
+              <option selected>🇲🇦 Maroc</option>
+              <option>🇬🇦 Gabon</option>
+            </select>
+          </div>
+          <!-- Politique retours -->
+          <div>
+            <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Politique de retour</label>
+            <textarea class="edit-field" rows="2" style="height:auto;">Retours acceptés sous 14 jours, frais à la charge de l'acheteur.</textarea>
+          </div>
+          <button class="btn-primary text-on-primary px-8 py-3.5 rounded-xl text-sm font-bold tracking-wide w-full">
+            Mettre à jour la boutique
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end mode-vendeur -->
+
+</main>
+
+<!-- Bottom nav -->
+<nav class="bg-surface/80 backdrop-blur-xl fixed bottom-0 w-full z-50 rounded-t-[2rem] shadow-[0_-8px_40px_rgba(0,0,0,0.06)] md:hidden border-t border-outline-variant/10">
+  <div class="flex justify-around items-center w-full px-4 pb-6 pt-3">
+    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="hero.html">
+      <span class="material-symbols-outlined">home</span>
+      <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Home</span>
+    </a>
+    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="shop.html">
+      <span class="material-symbols-outlined">storefront</span>
+      <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Shop</span>
+    </a>
+    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="sell.html">
+      <span class="material-symbols-outlined">add_circle</span>
+      <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Sell</span>
+    </a>
+    <a class="flex flex-col items-center justify-center text-primary" href="#">
+      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">person</span>
+      <span class="text-[10px] font-bold uppercase tracking-widest mt-0.5">Profil</span>
+    </a>
+  </div>
+</nav>
+
+<script>
+  let currentMode = 'client';
+
+  function switchMode(mode) {
+    currentMode = mode;
+    document.querySelectorAll('.mode-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('mode-' + mode).classList.add('active');
+    document.getElementById('btn-client').classList.toggle('active', mode === 'client');
+    document.getElementById('btn-vendeur').classList.toggle('active', mode === 'vendeur');
+    // Reset tabs
+    if (mode === 'client') switchClientTab('commandes', document.querySelector('#mode-client .nav-tab'));
+    else switchVendeurTab('annonces', document.querySelector('#mode-vendeur .nav-tab'));
+  }
+
+  function switchClientTab(tab, btn) {
+    document.querySelectorAll('#mode-client .tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('#mode-client .nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('client-' + tab).classList.add('active');
+    if (btn) btn.classList.add('active');
+  }
+
+  function switchVendeurTab(tab, btn) {
+    document.querySelectorAll('#mode-vendeur .tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('#mode-vendeur .nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('vendeur-' + tab).classList.add('active');
+    if (btn) btn.classList.add('active');
+  }
+
+  // Intersection observer for staggered entrance
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.style.animationPlayState = 'running';
+    });
+  }, { threshold: 0.05 });
+  document.querySelectorAll('.anim-up, .anim-in').forEach(el => {
+    el.style.animationPlayState = 'paused';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>

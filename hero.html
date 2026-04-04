@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html class="light" lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WennaShop – Gabon × Maroc</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "on-surface": "#171d17","on-secondary-fixed": "#001c3a","inverse-surface": "#2c322b","on-tertiary": "#ffffff","error": "#ba1a1a","tertiary-fixed-dim": "#f0c110","secondary-fixed-dim": "#a6c8ff","primary-fixed-dim": "#73dc84","on-tertiary-fixed": "#241a00","surface-container-low": "#eff5eb","tertiary-container": "#d0a600","on-primary-fixed-variant": "#00531f","on-secondary": "#ffffff","on-background": "#171d17","primary-container": "#0f8739","surface-dim": "#d6dcd2","tertiary": "#745b00","surface-tint": "#006e2b","error-container": "#ffdad6","on-primary-container": "#f7fff2","background": "#f5fbf1","surface-container-lowest": "#ffffff","outline-variant": "#becaba","primary": "#006b2a","surface-container": "#eaf0e5","secondary-container": "#78b0fe","surface-bright": "#f5fbf1","secondary-fixed": "#d4e3ff","on-error": "#ffffff","on-tertiary-container": "#4f3d00","on-secondary-container": "#00427d","surface-container-highest": "#dee4da","tertiary-fixed": "#ffe08b","surface-variant": "#dee4da","surface-container-high": "#e4eae0","on-primary": "#ffffff","on-error-container": "#93000a","inverse-on-surface": "#edf3e8","on-surface-variant": "#3f4a3e","on-secondary-fixed-variant": "#004786","surface": "#f5fbf1","on-primary-fixed": "#002108","outline": "#6f7a6d","on-tertiary-fixed-variant": "#584400","primary-fixed": "#8ff99d","secondary": "#1a5fa8","inverse-primary": "#73dc84"
+      },
+      borderRadius: { "DEFAULT": "1rem","lg": "2rem","xl": "3rem","full": "9999px" },
+      fontFamily: { "headline": ["Noto Serif"],"body": ["Inter"],"label": ["Inter"] }
+    }
+  }
+}
+</script>
+<style>
+  .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24; font-size:24px; }
+  body { font-family:'Inter',sans-serif; }
+  .font-serif { font-family:'Noto Serif',serif; }
+  .no-scrollbar::-webkit-scrollbar { display:none; }
+  body { min-height:max(884px,100dvh); }
+
+  /* Animations */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(32px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  @keyframes slideRight { from { opacity:0; transform:translateX(-24px); } to { opacity:1; transform:translateX(0); } }
+  @keyframes ticker { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+  @keyframes float { 0%,100% { transform:translateY(0px); } 50% { transform:translateY(-10px); } }
+  @keyframes pulse-dot { 0%,100% { transform:scale(1); opacity:1; } 50% { transform:scale(1.4); opacity:0.7; } }
+  @keyframes shimmer { 0% { background-position:-200% 0; } 100% { background-position:200% 0; } }
+  @keyframes countUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes borderGlow { 0%,100% { box-shadow:0 0 0 0 rgba(0,107,42,0); } 50% { box-shadow:0 0 0 6px rgba(0,107,42,0.12); } }
+
+  .anim-fade-up { animation:fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) forwards; opacity:0; }
+  .anim-fade-in { animation:fadeIn 0.8s ease forwards; opacity:0; }
+  .anim-slide-right { animation:slideRight 0.6s cubic-bezier(0.22,1,0.36,1) forwards; opacity:0; }
+  .d-100 { animation-delay:0.1s; }
+  .d-200 { animation-delay:0.2s; }
+  .d-300 { animation-delay:0.3s; }
+  .d-400 { animation-delay:0.4s; }
+  .d-500 { animation-delay:0.5s; }
+  .d-600 { animation-delay:0.6s; }
+  .d-700 { animation-delay:0.7s; }
+  .d-900 { animation-delay:0.9s; }
+
+  .ticker-track { display:flex; width:max-content; animation:ticker 28s linear infinite; }
+  .ticker-track:hover { animation-play-state:paused; }
+
+  .hero-img { transition:transform 8s ease; }
+  .hero-img:hover { transform:scale(1.04); }
+
+  .card-hover { transition:transform 0.35s cubic-bezier(0.22,1,0.36,1), box-shadow 0.35s ease; }
+  .card-hover:hover { transform:translateY(-6px); box-shadow:0 20px 60px rgba(0,107,42,0.12); }
+
+  .btn-primary { background:linear-gradient(135deg,#006b2a 0%,#0f8739 100%); transition:all 0.2s; }
+  .btn-primary:hover { opacity:0.9; transform:scale(0.98); }
+  .btn-primary:active { transform:scale(0.96); }
+
+  .floating-badge { animation:float 4s ease-in-out infinite; }
+  .live-dot { animation:pulse-dot 1.5s ease-in-out infinite; }
+
+  .shimmer-card { background:linear-gradient(90deg, #eff5eb 25%, #e2ede0 50%, #eff5eb 75%); background-size:200% 100%; animation:shimmer 1.8s infinite; }
+
+  .count-anim { animation:countUp 0.6s ease forwards; opacity:0; }
+
+  .category-chip { transition:all 0.2s ease; }
+  .category-chip:hover { background:#006b2a; color:#fff; transform:translateY(-2px); }
+  .category-chip.active { background:#006b2a; color:#fff; }
+
+  .trust-item { transition:transform 0.3s ease; }
+  .trust-item:hover { transform:translateY(-4px); }
+
+  .section-enter { opacity:0; transform:translateY(40px); transition:all 0.7s cubic-bezier(0.22,1,0.36,1); }
+  .section-enter.visible { opacity:1; transform:translateY(0); }
+
+  /* Hero parallax overlay */
+  .hero-overlay { background:linear-gradient(160deg,rgba(0,107,42,0.55) 0%,rgba(0,107,42,0.2) 40%,rgba(0,0,0,0.5) 100%); }
+
+  /* Glassmorphism card */
+  .glass { background:rgba(245,251,241,0.75); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid rgba(190,202,186,0.3); }
+
+  /* Progress bar */
+  .progress-bar { height:2px; background:linear-gradient(90deg,#006b2a,#0f8739); width:0; transition:width 0.3s ease; }
+
+  /* Star fill */
+  .star-fill { font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24; }
+</style>
+</head>
+<body class="bg-background text-on-surface min-h-screen overflow-x-hidden">
+
+<!-- TopAppBar -->
+<header class="bg-surface/80 backdrop-blur-xl fixed top-0 w-full z-50 border-b border-outline-variant/10">
+  <div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto w-full">
+    <div class="flex items-center gap-4">
+      <button class="text-on-surface hover:opacity-70 transition-opacity anim-fade-in">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+      <h1 class="font-serif italic text-2xl tracking-tighter text-primary anim-fade-in d-100">WennaShop</h1>
+    </div>
+    <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-on-surface-variant">
+      <a href="shop.html" class="hover:text-primary transition-colors">Shop</a>
+      <a href="artisans.html" class="hover:text-primary transition-colors">Artisans</a>
+      <a href="collections.html" class="hover:text-primary transition-colors">Collections</a>
+    </nav>
+    <div class="flex items-center gap-4 anim-fade-in d-200">
+      <button class="text-on-surface hover:opacity-70 transition-opacity">
+        <span class="material-symbols-outlined">search</span>
+      </button>
+      <button class="text-on-surface hover:opacity-70 transition-opacity relative" href="panier.html">
+        <span class="material-symbols-outlined">shopping_bag</span>
+        <span class="absolute -top-1 -right-1 bg-primary text-on-primary text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">3</span>
+      </button>
+      <button class="text-on-surface hover:opacity-70 transition-opacity hidden md:block" href="compte.html">
+        <span class="material-symbols-outlined">person</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Announcement Ticker -->
+<div class="fixed top-[68px] w-full z-40 bg-primary text-on-primary text-[10px] font-bold uppercase tracking-[0.2em] overflow-hidden py-1.5">
+  <div class="ticker-track gap-16 flex">
+    <span class="whitespace-nowrap px-8">✦ Livraison express Casablanca → Libreville</span>
+    <span class="whitespace-nowrap px-8">✦ Nouveaux artisans rejoignent la communauté</span>
+    <span class="whitespace-nowrap px-8">✦ -15% sur votre première commande avec WENNA15</span>
+    <span class="whitespace-nowrap px-8">✦ Paiements sécurisés · Retours gratuits 30 jours</span>
+    <span class="whitespace-nowrap px-8">✦ Livraison express Casablanca → Libreville</span>
+    <span class="whitespace-nowrap px-8">✦ Nouveaux artisans rejoignent la communauté</span>
+    <span class="whitespace-nowrap px-8">✦ -15% sur votre première commande avec WENNA15</span>
+    <span class="whitespace-nowrap px-8">✦ Paiements sécurisés · Retours gratuits 30 jours</span>
+  </div>
+</div>
+
+<main class="pt-24 pb-32">
+
+  <!-- ═══════════════════════════════════════════
+       HERO CINEMATIC
+  ═══════════════════════════════════════════ -->
+  <section class="px-4 pt-6 pb-4">
+    <div class="relative overflow-hidden rounded-lg min-h-[520px] md:min-h-[600px] flex items-end p-8 group">
+      <div class="absolute inset-0 z-0">
+        <img
+          class="w-full h-full object-cover hero-img"
+          src="https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1400&q=85&fit=crop"
+          alt="Paysage africain luxuriant"
+          onerror="this.src='https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1400&q=80'"
+        />
+      </div>
+      <div class="absolute inset-0 hero-overlay z-10"></div>
+
+      <!-- Floating stat badge -->
+      <div class="absolute top-8 right-8 z-20 floating-badge">
+        <div class="glass rounded-lg px-5 py-4 text-center">
+          <p class="text-2xl font-serif font-bold text-primary">4.9★</p>
+          <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mt-1">1 200+ avis</p>
+        </div>
+      </div>
+
+      <!-- Live indicator -->
+      <div class="absolute top-8 left-8 z-20 flex items-center gap-2 glass rounded-full px-4 py-2">
+        <span class="w-2 h-2 rounded-full bg-red-500 live-dot"></span>
+        <span class="text-[10px] font-bold uppercase tracking-widest text-on-surface">12 acheteurs actifs</span>
+      </div>
+
+      <div class="relative z-20 max-w-2xl">
+        <span class="inline-block px-4 py-1.5 rounded-full bg-tertiary text-on-tertiary text-[10px] font-bold uppercase tracking-widest mb-5 anim-fade-in">
+          L'Union Culturelle ✦ Nouveau
+        </span>
+        <h2 class="text-5xl md:text-7xl font-serif italic text-white leading-[1.05] mb-6 anim-fade-up d-200">
+          Du cœur de<br/>
+          <span class="text-primary-fixed-dim">Casablanca</span><br/>
+          à l'âme de<br/>
+          <span class="text-secondary-fixed-dim">Libreville.</span>
+        </h2>
+        <p class="text-white/75 text-base mb-8 max-w-md anim-fade-up d-400 leading-relaxed">
+          Artisanat authentique. Produits sourcés à la source. Une passerelle entre deux cultures vibrantes.
+        </p>
+        <div class="flex flex-wrap gap-4 anim-fade-up d-500">
+          <button class="btn-primary text-on-primary px-8 py-4 rounded-xl font-bold text-sm tracking-widest uppercase flex items-center gap-3 shadow-2xl">
+            Explorer la Collection
+            <span class="material-symbols-outlined text-lg">arrow_forward</span>
+          </button>
+          <button class="glass text-white px-8 py-4 rounded-xl font-bold text-sm tracking-widest uppercase">
+            Nos Artisans
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       CATÉGORIES HORIZONTALES
+  ═══════════════════════════════════════════ -->
+  <section class="px-4 py-8 section-enter">
+    <div class="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+      <button class="category-chip active flex-shrink-0 px-5 py-2.5 rounded-full bg-primary text-on-primary text-xs font-bold uppercase tracking-widest border border-outline-variant/20">
+        Tout
+      </button>
+      <button class="category-chip flex-shrink-0 px-5 py-2.5 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-bold uppercase tracking-widest border border-outline-variant/20">
+        Beauté
+      </button>
+      <button class="category-chip flex-shrink-0 px-5 py-2.5 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-bold uppercase tracking-widest border border-outline-variant/20">
+        Artisanat
+      </button>
+      <button class="category-chip flex-shrink-0 px-5 py-2.5 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-bold uppercase tracking-widest border border-outline-variant/20">
+        Épicerie
+      </button>
+      <button class="category-chip flex-shrink-0 px-5 py-2.5 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-bold uppercase tracking-widest border border-outline-variant/20">
+        Mode
+      </button>
+      <button class="category-chip flex-shrink-0 px-5 py-2.5 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-bold uppercase tracking-widest border border-outline-variant/20">
+        Maison
+      </button>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       BRIDGE SECTION – 2 pays
+  ═══════════════════════════════════════════ -->
+  <section class="px-4 py-4 section-enter">
+    <div class="grid grid-cols-2 gap-4">
+      <!-- Gabon Card -->
+      <div class="relative rounded-lg overflow-hidden min-h-[220px] group card-hover cursor-pointer">
+        <img
+          class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          src="https://images.unsplash.com/photo-1523805009345-7448845a9e53?w=600&q=80&fit=crop"
+          alt="Gabon forêt équatoriale"
+          onerror="this.src='https://images.unsplash.com/photo-1534531173927-aeb928d54385?w=600&q=80'"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/20 to-transparent"></div>
+        <div class="absolute bottom-5 left-5 right-5 z-10">
+          <span class="text-[9px] font-bold uppercase tracking-[0.25em] text-primary-fixed-dim block mb-1">Afrique Centrale</span>
+          <h3 class="font-serif italic text-white text-xl font-bold leading-tight">Gabon</h3>
+          <p class="text-white/70 text-xs mt-1">Forêt · Cacao · Artisanat Punu</p>
+        </div>
+        <div class="absolute top-4 right-4 z-10 bg-primary/80 backdrop-blur px-2 py-1 rounded-full">
+          <span class="text-[9px] font-bold text-on-primary uppercase tracking-wider">128 produits</span>
+        </div>
+      </div>
+      <!-- Maroc Card -->
+      <div class="relative rounded-lg overflow-hidden min-h-[220px] group card-hover cursor-pointer">
+        <img
+          class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          src="https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=600&q=80&fit=crop"
+          alt="Maroc médina"
+          onerror="this.src='https://images.unsplash.com/photo-1503917988258-f87a78e3c995?w=600&q=80'"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/20 to-transparent"></div>
+        <div class="absolute bottom-5 left-5 right-5 z-10">
+          <span class="text-[9px] font-bold uppercase tracking-[0.25em] text-secondary-fixed-dim block mb-1">Afrique du Nord</span>
+          <h3 class="font-serif italic text-white text-xl font-bold leading-tight">Maroc</h3>
+          <p class="text-white/70 text-xs mt-1">Argan · Zellige · Soie de Fès</p>
+        </div>
+        <div class="absolute top-4 right-4 z-10 bg-secondary/80 backdrop-blur px-2 py-1 rounded-full">
+          <span class="text-[9px] font-bold text-on-secondary uppercase tracking-wider">246 produits</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       STATS DYNAMIQUES
+  ═══════════════════════════════════════════ -->
+  <section class="px-4 py-10 section-enter">
+    <div class="bg-surface-container-lowest rounded-lg p-8">
+      <div class="grid grid-cols-3 gap-6 text-center">
+        <div class="trust-item">
+          <p class="text-4xl font-serif font-bold text-primary mb-1" data-count="374">374</p>
+          <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Artisans actifs</p>
+        </div>
+        <div class="trust-item border-x border-outline-variant/20">
+          <p class="text-4xl font-serif font-bold text-secondary mb-1" data-count="12400">12K+</p>
+          <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Commandes livrées</p>
+        </div>
+        <div class="trust-item">
+          <p class="text-4xl font-serif font-bold text-tertiary mb-1" data-count="96">96%</p>
+          <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Satisfaction</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       FEATURED PRODUCTS – "À la Une"
+  ═══════════════════════════════════════════ -->
+  <section class="px-4 py-6 section-enter">
+    <div class="flex justify-between items-end mb-6">
+      <div>
+        <p class="text-[10px] uppercase tracking-[0.2em] text-tertiary font-bold mb-1">Sélection du moment</p>
+        <h2 class="font-serif italic text-3xl font-bold">À la Une</h2>
+      </div>
+      <a href="shop.html" class="text-xs font-bold uppercase tracking-widest text-primary border-b border-primary/20 pb-1 hover:border-primary transition-colors">
+        Tout voir
+      </a>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <!-- Card 1 -->
+      <div class="bg-surface-container-lowest rounded-lg p-3 card-hover group cursor-pointer">
+        <div class="relative rounded-md overflow-hidden aspect-square mb-4">
+          <img
+            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            src="https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=400&q=80&fit=crop"
+            alt="Huile d'Argan"
+            onerror="this.src='https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=400&q=80'"
+          />
+          <div class="absolute top-3 left-3">
+            <span class="bg-secondary text-on-secondary text-[9px] font-bold px-2 py-0.5 rounded-full">MA</span>
+          </div>
+          <button class="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center text-primary opacity-0 group-hover:opacity-100 transition-all shadow-lg hover:bg-primary hover:text-white">
+            <span class="material-symbols-outlined text-base">add</span>
+          </button>
+        </div>
+        <p class="text-[9px] uppercase tracking-widest text-outline mb-1">Beauté · Essaouira</p>
+        <h5 class="font-serif text-sm leading-tight font-bold">Huile d'Argan Pure</h5>
+        <div class="flex justify-between items-center mt-2">
+          <p class="font-bold text-primary text-sm">24,99 €</p>
+          <div class="flex items-center gap-1">
+            <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:12px;">star</span>
+            <span class="text-[10px] text-on-surface-variant">4.9</span>
+          </div>
+        </div>
+      </div>
+      <!-- Card 2 -->
+      <div class="bg-surface-container-lowest rounded-lg p-3 card-hover group cursor-pointer">
+        <div class="relative rounded-md overflow-hidden aspect-square mb-4">
+          <img
+            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            src="https://images.unsplash.com/photo-1606914501449-5a96b6ce24ca?w=400&q=80&fit=crop"
+            alt="Cacao Gabon"
+            onerror="this.src='https://images.unsplash.com/photo-1481391243133-f96216dcb5d2?w=400&q=80'"
+          />
+          <div class="absolute top-3 left-3">
+            <span class="bg-primary text-on-primary text-[9px] font-bold px-2 py-0.5 rounded-full">GA</span>
+          </div>
+          <div class="absolute top-3 right-3">
+            <span class="bg-tertiary text-on-tertiary text-[9px] font-bold px-2 py-0.5 rounded-full">New</span>
+          </div>
+          <button class="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center text-primary opacity-0 group-hover:opacity-100 transition-all shadow-lg hover:bg-primary hover:text-white">
+            <span class="material-symbols-outlined text-base">add</span>
+          </button>
+        </div>
+        <p class="text-[9px] uppercase tracking-widest text-outline mb-1">Épicerie · Libreville</p>
+        <h5 class="font-serif text-sm leading-tight font-bold">Cacao Ngounié 85%</h5>
+        <div class="flex justify-between items-center mt-2">
+          <p class="font-bold text-primary text-sm">8,50 €</p>
+          <div class="flex items-center gap-1">
+            <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:12px;">star</span>
+            <span class="text-[10px] text-on-surface-variant">5.0</span>
+          </div>
+        </div>
+      </div>
+      <!-- Card 3 -->
+      <div class="bg-surface-container-lowest rounded-lg p-3 card-hover group cursor-pointer">
+        <div class="relative rounded-md overflow-hidden aspect-square mb-4">
+          <img
+            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&q=80&fit=crop"
+            alt="Panier artisanal"
+            onerror="this.src='https://images.unsplash.com/photo-1563204574-b8a3a0c5a509?w=400&q=80'"
+          />
+          <div class="absolute top-3 left-3">
+            <span class="bg-secondary text-on-secondary text-[9px] font-bold px-2 py-0.5 rounded-full">MA</span>
+          </div>
+          <button class="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center text-primary opacity-0 group-hover:opacity-100 transition-all shadow-lg hover:bg-primary hover:text-white">
+            <span class="material-symbols-outlined text-base">add</span>
+          </button>
+        </div>
+        <p class="text-[9px] uppercase tracking-widest text-outline mb-1">Artisanat · Marrakech</p>
+        <h5 class="font-serif text-sm leading-tight font-bold">Panier Artisanal 'Riff'</h5>
+        <div class="flex justify-between items-center mt-2">
+          <p class="font-bold text-primary text-sm">55,00 €</p>
+          <div class="flex items-center gap-1">
+            <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:12px;">star</span>
+            <span class="text-[10px] text-on-surface-variant">4.8</span>
+          </div>
+        </div>
+      </div>
+      <!-- Card 4 – Last items -->
+      <div class="bg-surface-container-lowest rounded-lg p-3 card-hover group cursor-pointer">
+        <div class="relative rounded-md overflow-hidden aspect-square mb-4">
+          <img
+            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            src="https://images.unsplash.com/photo-1611269154421-4e27233ac5c7?w=400&q=80&fit=crop"
+            alt="Masque Punu"
+            onerror="this.src='https://images.unsplash.com/photo-1578926375605-eaf7559b1458?w=400&q=80'"
+          />
+          <div class="absolute top-3 left-3">
+            <span class="bg-primary text-on-primary text-[9px] font-bold px-2 py-0.5 rounded-full">GA</span>
+          </div>
+          <div class="absolute top-3 right-3">
+            <span class="bg-error text-white text-[9px] font-bold px-2 py-0.5 rounded-full">Rare</span>
+          </div>
+          <button class="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center text-primary opacity-0 group-hover:opacity-100 transition-all shadow-lg hover:bg-primary hover:text-white">
+            <span class="material-symbols-outlined text-base">add</span>
+          </button>
+        </div>
+        <p class="text-[9px] uppercase tracking-widest text-outline mb-1">Art · Libreville</p>
+        <h5 class="font-serif text-sm leading-tight font-bold">Masque Punu Authentique</h5>
+        <div class="flex justify-between items-center mt-2">
+          <p class="font-bold text-primary text-sm">120,00 €</p>
+          <span class="text-[9px] font-bold text-error uppercase">3 restants</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SECTION ÉDITORIALE – Histoire d'un artisan
+  ═══════════════════════════════════════════ -->
+  <section class="px-4 py-8 section-enter">
+    <div class="relative rounded-lg overflow-hidden min-h-[300px] md:min-h-[360px]">
+      <img
+        class="absolute inset-0 w-full h-full object-cover"
+        src="https://images.unsplash.com/photo-1534361960057-19f4434a0b78?w=1200&q=80&fit=crop"
+        alt="Artisan au travail"
+        onerror="this.src='https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?w=1200&q=80'"
+      />
+      <div class="absolute inset-0 bg-gradient-to-r from-inverse-surface/90 via-inverse-surface/60 to-transparent"></div>
+      <div class="relative z-10 p-8 md:p-12 max-w-lg">
+        <span class="text-[10px] uppercase tracking-[0.25em] text-primary-fixed-dim font-bold block mb-4">Portrait d'Artisan</span>
+        <h3 class="font-serif italic text-3xl md:text-4xl text-white font-bold leading-tight mb-4">
+          « Chaque pièce porte<br/>l'âme de son auteur. »
+        </h3>
+        <p class="text-white/70 text-sm leading-relaxed mb-6">
+          Fatima Benali, coopérative d'Essaouira depuis 1987. Elle presse l'argan à la main, comme sa mère l'a fait avant elle.
+        </p>
+        <button class="bg-white text-primary px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-primary hover:text-white transition-all">
+          Lire son histoire
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       NOUVELLES COLLECTIONS SAISONNIÈRES
+  ═══════════════════════════════════════════ -->
+  <section class="px-4 py-8 section-enter">
+    <div class="flex justify-between items-end mb-6">
+      <div>
+        <p class="text-[10px] uppercase tracking-[0.2em] text-secondary font-bold mb-1">Été 2025</p>
+        <h2 class="font-serif italic text-3xl font-bold">Collection Saison</h2>
+      </div>
+      <a href="shop.html" class="text-xs font-bold uppercase tracking-widest text-primary border-b border-primary/20 pb-1">Voir tout</a>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- Wide card -->
+      <div class="md:col-span-2 relative rounded-lg overflow-hidden min-h-[240px] group card-hover cursor-pointer">
+        <img
+          class="w-full h-full object-cover absolute inset-0 transition-transform duration-700 group-hover:scale-105"
+          src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&q=80&fit=crop"
+          alt="Mode africaine"
+          onerror="this.src='https://images.unsplash.com/photo-1617922001439-4a2e6562f328?w=800&q=80'"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+        <div class="absolute bottom-6 left-6">
+          <span class="text-[9px] font-bold uppercase tracking-widest text-white/60 block mb-1">Mode · Textile</span>
+          <h4 class="font-serif italic text-white text-2xl font-bold">Wax & Soie</h4>
+          <p class="text-white/70 text-xs mt-1">Fusion Gabon × Maroc · 32 pièces</p>
+        </div>
+      </div>
+      <!-- Tall card -->
+      <div class="relative rounded-lg overflow-hidden min-h-[240px] group card-hover cursor-pointer">
+        <img
+          class="w-full h-full object-cover absolute inset-0 transition-transform duration-700 group-hover:scale-105"
+          src="https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&q=80&fit=crop"
+          alt="Épices du Maroc"
+          onerror="this.src='https://images.unsplash.com/photo-1532336414038-cf19250c5757?w=400&q=80'"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+        <div class="absolute bottom-6 left-6">
+          <span class="text-[9px] font-bold uppercase tracking-widest text-white/60 block mb-1">Épicerie fine</span>
+          <h4 class="font-serif italic text-white text-2xl font-bold">Épices de Souks</h4>
+          <p class="text-white/70 text-xs mt-1">Ras el Hanout · Curcuma · Safran</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       TRUST BADGES
+  ═══════════════════════════════════════════ -->
+  <section class="px-4 py-8 section-enter">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="trust-item bg-surface-container-lowest rounded-lg p-5 text-center">
+        <span class="material-symbols-outlined text-primary mb-3 block" style="font-size:28px;">verified_user</span>
+        <p class="text-xs font-bold uppercase tracking-wider text-on-surface mb-1">Paiement sécurisé</p>
+        <p class="text-[10px] text-on-surface-variant">SSL · 3D Secure · Crypté</p>
+      </div>
+      <div class="trust-item bg-surface-container-lowest rounded-lg p-5 text-center">
+        <span class="material-symbols-outlined text-secondary mb-3 block" style="font-size:28px;">local_shipping</span>
+        <p class="text-xs font-bold uppercase tracking-wider text-on-surface mb-1">Livraison Express</p>
+        <p class="text-[10px] text-on-surface-variant">4–7 jours ouvrés</p>
+      </div>
+      <div class="trust-item bg-surface-container-lowest rounded-lg p-5 text-center">
+        <span class="material-symbols-outlined text-tertiary mb-3 block" style="font-size:28px;">eco</span>
+        <p class="text-xs font-bold uppercase tracking-wider text-on-surface mb-1">100% Authentique</p>
+        <p class="text-[10px] text-on-surface-variant">Sourcé & vérifié</p>
+      </div>
+      <div class="trust-item bg-surface-container-lowest rounded-lg p-5 text-center">
+        <span class="material-symbols-outlined text-primary mb-3 block" style="font-size:28px;">autorenew</span>
+        <p class="text-xs font-bold uppercase tracking-wider text-on-surface mb-1">Retours Gratuits</p>
+        <p class="text-[10px] text-on-surface-variant">30 jours sans conditions</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       AVIS CLIENTS
+  ═══════════════════════════════════════════ -->
+  <section class="px-4 py-8 bg-surface-container-low mx-4 rounded-lg section-enter">
+    <div class="flex justify-between items-end mb-6">
+      <div>
+        <p class="text-[10px] uppercase tracking-[0.2em] text-tertiary font-bold mb-1">Communauté</p>
+        <h2 class="font-serif italic text-3xl font-bold">Ce qu'ils disent</h2>
+      </div>
+      <div class="flex items-center gap-1">
+        <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:16px;">star</span>
+        <span class="font-bold text-sm">4.9</span>
+        <span class="text-xs text-on-surface-variant">/ 5 (1 247)</span>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="bg-surface-container-lowest rounded-lg p-6">
+        <div class="flex gap-0.5 mb-3">
+          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;">star</span>
+          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;">star</span>
+          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;">star</span>
+          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;">star</span>
+          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;">star</span>
+        </div>
+        <p class="text-sm text-on-surface-variant leading-relaxed mb-4 font-serif italic">"L'huile d'argan est incroyable, exactement comme promise. Livraison rapide depuis le Maroc!"</p>
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">A</div>
+          <div>
+            <p class="text-xs font-bold">Amina B.</p>
+            <p class="text-[10px] text-on-surface-variant">Libreville · Client vérifié</p>
+          </div>
+        </div>
+      </div>
+      <div class="bg-surface-container-lowest rounded-lg p-6">
+        <div class="flex gap-0.5 mb-3">
+          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;">star</span>
+          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;">star</span>
+          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;">star</span>
+          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;">star</span>
+          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;">star</span>
+        </div>
+        <p class="text-sm text-on-surface-variant leading-relaxed mb-4 font-serif italic">"Le masque Punu est une pièce d'art. Merci WennaShop pour cette passerelle culturelle unique."</p>
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center text-secondary font-bold text-sm">K</div>
+          <div>
+            <p class="text-xs font-bold">Kofi M.</p>
+            <p class="text-[10px] text-on-surface-variant">Casablanca · Client vérifié</p>
+          </div>
+        </div>
+      </div>
+      <div class="bg-surface-container-lowest rounded-lg p-6">
+        <div class="flex gap-0.5 mb-3">
+          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;">star</span>
+          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;">star</span>
+          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;">star</span>
+          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;">star</span>
+          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;">star</span>
+        </div>
+        <p class="text-sm text-on-surface-variant leading-relaxed mb-4 font-serif italic">"Un service client exceptionnel. Le savon beldi est de qualité supérieure, je recommande vivement!"</p>
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-tertiary/10 flex items-center justify-center text-tertiary font-bold text-sm">S</div>
+          <div>
+            <p class="text-xs font-bold">Sara El H.</p>
+            <p class="text-[10px] text-on-surface-variant">Rabat · Client vérifié</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       NEWSLETTER / WENNA CIRCLE
+  ═══════════════════════════════════════════ -->
+  <section class="px-4 py-12 section-enter">
+    <div class="relative rounded-lg overflow-hidden bg-gradient-to-br from-primary to-primary-container p-10 md:p-16 text-center">
+      <!-- Decorative bg text -->
+      <div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none overflow-hidden">
+        <span class="font-serif text-[200px] font-black italic text-white select-none">W</span>
+      </div>
+      <div class="relative z-10">
+        <span class="inline-block px-4 py-1.5 rounded-full bg-white/20 text-white text-[10px] font-bold uppercase tracking-widest mb-6">
+          Rejoignez le cercle
+        </span>
+        <h3 class="font-serif italic text-4xl md:text-5xl text-white font-bold mb-4">
+          Le Wenna Circle
+        </h3>
+        <p class="text-white/75 mb-8 max-w-lg mx-auto leading-relaxed">
+          Histoires d'artisans, accès anticipé aux drops saisonniers, offres exclusives.
+          Rejoignez 8 400 curateurs passionnés.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 items-center justify-center max-w-md mx-auto">
+          <input
+            class="w-full sm:flex-1 bg-white/20 border border-white/30 text-white placeholder:text-white/50 px-6 py-4 rounded-xl focus:ring-0 focus:border-white outline-none backdrop-blur"
+            placeholder="votre@email.com"
+            type="email"
+          />
+          <button class="w-full sm:w-auto bg-white text-primary px-8 py-4 rounded-xl font-bold text-sm uppercase tracking-widest hover:bg-surface-container-lowest transition-all whitespace-nowrap shadow-xl">
+            S'abonner
+          </button>
+        </div>
+        <p class="text-white/40 text-[10px] mt-4 uppercase tracking-widest">Aucun spam · Désinscription à tout moment</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- BottomNavBar -->
+<nav class="bg-surface/80 backdrop-blur-xl fixed bottom-0 w-full z-50 rounded-t-[2rem] shadow-[0_-8px_40px_rgba(0,0,0,0.06)] md:hidden border-t border-outline-variant/10">
+  <div class="flex justify-around items-center w-full px-4 pb-6 pt-3">
+    <a class="flex flex-col items-center justify-center text-primary" href="#">
+      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">home</span>
+      <span class="text-[10px] font-bold uppercase tracking-widest mt-0.5">Home</span>
+    </a>
+    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="shop.html">
+      <span class="material-symbols-outlined">storefront</span>
+      <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Shop</span>
+    </a>
+    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="sell.html">
+      <span class="material-symbols-outlined">add_circle</span>
+      <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Sell</span>
+    </a>
+    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="compte.html">
+      <span class="material-symbols-outlined">person</span>
+      <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Profile</span>
+    </a>
+  </div>
+</nav>
+
+<script>
+// Intersection Observer for scroll animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.section-enter').forEach(el => observer.observe(el));
+
+// Category chips toggle
+document.querySelectorAll('.category-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+  });
+});
+
+// Cart add animation
+document.querySelectorAll('.card-hover button').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    btn.innerHTML = '<span class="material-symbols-outlined text-base" style="font-variation-settings:\'FILL\' 1;">check</span>';
+    btn.classList.add('bg-primary','text-white');
+    setTimeout(() => {
+      btn.innerHTML = '<span class="material-symbols-outlined text-base">add</span>';
+      btn.classList.remove('bg-primary','text-white');
+    }, 1500);
+    // Update badge
+    const badge = document.querySelector('header .bg-primary.rounded-full');
+    if (badge) {
+      const count = parseInt(badge.textContent) + 1;
+      badge.textContent = count;
+      badge.classList.add('scale-125');
+      setTimeout(() => badge.classList.remove('scale-125'), 300);
+    }
+  });
+});
+</script>
+</body>
+</html>

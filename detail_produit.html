@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface": "#171d17",
+                    "on-secondary-fixed": "#001c3a",
+                    "inverse-surface": "#2c322b",
+                    "on-tertiary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "tertiary-fixed-dim": "#f0c110",
+                    "secondary-fixed-dim": "#a6c8ff",
+                    "primary-fixed-dim": "#73dc84",
+                    "on-tertiary-fixed": "#241a00",
+                    "surface-container-low": "#eff5eb",
+                    "tertiary-container": "#d0a600",
+                    "on-primary-fixed-variant": "#00531f",
+                    "on-secondary": "#ffffff",
+                    "on-background": "#171d17",
+                    "primary-container": "#0f8739",
+                    "surface-dim": "#d6dcd2",
+                    "tertiary": "#745b00",
+                    "surface-tint": "#006e2b",
+                    "error-container": "#ffdad6",
+                    "on-primary-container": "#f7fff2",
+                    "background": "#f5fbf1",
+                    "surface-container-lowest": "#ffffff",
+                    "outline-variant": "#becaba",
+                    "primary": "#006b2a",
+                    "surface-container": "#eaf0e5",
+                    "secondary-container": "#78b0fe",
+                    "surface-bright": "#f5fbf1",
+                    "secondary-fixed": "#d4e3ff",
+                    "on-error": "#ffffff",
+                    "on-tertiary-container": "#4f3d00",
+                    "on-secondary-container": "#00427d",
+                    "surface-container-highest": "#dee4da",
+                    "tertiary-fixed": "#ffe08b",
+                    "surface-variant": "#dee4da",
+                    "surface-container-high": "#e4eae0",
+                    "on-primary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "inverse-on-surface": "#edf3e8",
+                    "on-surface-variant": "#3f4a3e",
+                    "on-secondary-fixed-variant": "#004786",
+                    "surface": "#f5fbf1",
+                    "on-primary-fixed": "#002108",
+                    "outline": "#6f7a6d",
+                    "on-tertiary-fixed-variant": "#584400",
+                    "primary-fixed": "#8ff99d",
+                    "secondary": "#1a5fa8",
+                    "inverse-primary": "#73dc84"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Noto Serif"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Noto Serif', serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface min-h-screen pb-32">
+<!-- Top Navigation -->
+<nav class="bg-emerald-50/80 dark:bg-emerald-950/80 backdrop-blur-xl text-emerald-800 dark:text-emerald-100 fixed top-0 w-full z-50 shadow-sm dark:shadow-none">
+<div class="flex justify-between items-center px-6 py-4 w-full">
+<button class="hover:opacity-80 transition-opacity scale-95 active:duration-150">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<span class="font-serif italic text-2xl tracking-tighter text-emerald-900 dark:text-emerald-50">WennaShop</span>
+<button class="hover:opacity-80 transition-opacity scale-95 active:duration-150" href="panier.html">
+<span class="material-symbols-outlined">shopping_bag</span>
+</button>
+</div>
+</nav>
+<main class="pt-16">
+<!-- Immersive Image Gallery -->
+<section class="relative px-4 pt-4">
+<div class="grid grid-cols-12 gap-4 h-[530px]">
+<div class="col-span-8 rounded-lg overflow-hidden relative group">
+<img alt="Pure Argan Oil bottle" class="w-full h-full object-cover" data-alt="Close-up of a luxurious amber glass bottle containing liquid gold argan oil, set against a backdrop of sun-drenched Moroccan sandstone." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBp3QDsr3M_y-DJ1AHG1hyhJSriLSPMz6pcPIC4cFSN6EbzW3iyE4JifvP3SQDmVFdmN_fpZwdRekEmfZ7Pa2UqfzMyGOEIkQ0oD7tVjfjQxbA3to5t2rnmGZVZmhG9OWtNz4r8KRXzT2WH6x0ztASUvJu7_QK44MaoafeGg71Mi5BRmKjonmQaqTzoSLfe9mrUPX-Jh0etc7C5YljuealaPqkIeNeNUeYbuXwvCePWEeZ7vTLxg2ZGytzSKLNXWEU3kqXcnu1pttY"/>
+<div class="absolute bottom-4 left-4 bg-surface-container-lowest/90 backdrop-blur px-3 py-1 rounded-full">
+<span class="text-[10px] font-bold tracking-[0.2em] text-secondary uppercase">Product of Morocco</span>
+</div>
+</div>
+<div class="col-span-4 flex flex-col gap-4">
+<div class="flex-1 rounded-lg overflow-hidden">
+<img alt="Argan kernels detail" class="w-full h-full object-cover" data-alt="Macro detail of dried argan kernels on a hand-woven Berber textile with intricate geometric patterns in blue and cream." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWolx1lXRLLjRjocNHkoO0ZsfENeSt-YB2wXjZZRLRSK5Dx_v-R3WZjsdZGSKXgRSnibHNGQRezHyY4k2bBgCkFvP5Z_28J2oepmJ2VpJDFlXjE9YMnLedxzC3brCQO8TYAbCeN144GeBr5mTjVLiPOWHX9u7qY2KXgcYHnZR7d4ebT88_ZXyN0FjT8KdOCuIFWT-J0Qxnd2dOHMwWAWmDE5gyGNTbr5oTWEMwvGYOudQLaLUnwu8cjn_q0y4flZMz_iSpyV5FWXU"/>
+</div>
+<div class="flex-1 rounded-lg overflow-hidden relative">
+<img alt="Traditional press" class="w-full h-full object-cover" data-alt="Soft-focus shot of traditional stone cold-press tools used for extracting argan oil, glowing in warm afternoon sunlight." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC92DhOEvQElwREk3qqN-iRao6Vvaq6dOwmgtjiVmRjenrUfBYibMowX7sy55XXAZkj9aAKcYcjYG913KsyOqEjK1cbKpz6DEnv864q_sh8X13-01hJeI9tghezwxp4mxm6FikmkmoUPOU9WTleNvHEkhV0JPfPnZE4IYfUhlFv6507f6sb-rRQblg6FqCVOEzBp3Paileb1F6Kg4xu2UZmaFEQN0CMWtNE4IO2MqpRaoujhXE-IrTcdEzPNdbG5OZzI8TU73JKX4w"/>
+<div class="absolute inset-0 bg-on-surface/20 flex items-center justify-center">
+<span class="text-white text-xs font-medium">+3 Photos</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Product Details -->
+<section class="px-6 mt-8">
+<div class="flex justify-between items-start">
+<div>
+<span class="label-sm text-[11px] font-medium uppercase tracking-[0.15em] text-tertiary mb-2 block">Heritage Collection</span>
+<h1 class="text-4xl md:text-5xl font-bold leading-tight mb-4">Huile d'Argan</h1>
+</div>
+<div class="text-right">
+<span class="text-2xl font-bold text-primary">€48.00</span>
+<div class="flex items-center gap-1 justify-end mt-1">
+<span class="material-symbols-outlined text-sm text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-xs font-medium">4.9</span>
+</div>
+</div>
+</div>
+<!-- Origin & Specs Chips -->
+<div class="flex gap-2 mt-6 overflow-x-auto pb-2 no-scrollbar">
+<div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full border border-outline-variant/15 whitespace-nowrap">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span class="text-xs font-medium">Sourced from Essaouira</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full border border-outline-variant/15 whitespace-nowrap">
+<span class="material-symbols-outlined text-[18px]">eco</span>
+<span class="text-xs font-medium">100% Organic Cold-Pressed</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full border border-outline-variant/15 whitespace-nowrap">
+<span class="material-symbols-outlined text-[18px]">filter_vintage</span>
+<span class="text-xs font-medium">Fair Trade Certified</span>
+</div>
+</div>
+<!-- Description -->
+<div class="mt-10 max-w-2xl">
+<h3 class="text-lg font-bold mb-4">The Story</h3>
+<p class="text-on-surface-variant leading-relaxed mb-6 font-body">
+                    Extracted from the kernels of the argan tree (Argania spinosa), endemic to the semi-desert Souss valley of Morocco. This "liquid gold" is hand-pressed by local cooperatives using techniques passed down through generations. Rich in vitamin E and fatty acids, it serves as an exceptional ritual for skin rejuvenation and hair vitality.
+                </p>
+<p class="text-on-surface-variant leading-relaxed font-body">
+                    Our current batch is curated specifically for WennaShop, ensuring a higher concentration of antioxidants through sustainable, small-batch harvesting during the peak summer season.
+                </p>
+</div>
+<!-- Seller Card -->
+<div class="mt-12 p-6 bg-surface-container-low rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-full overflow-hidden border-2 border-primary/20">
+<img alt="Seller Profile" class="w-full h-full object-cover" data-alt="Portrait of a smiling Moroccan artisan woman in a vibrant indigo headscarf, soft natural light reflecting her warmth and expertise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7vofdDbzB1kHQpCcZGnjQmpCiN7rfxNYAEY_mK8wz0Lj0vftDkhWnlRUagW1kzeqDVjj4jy6LCgLeV2flgyhiBRD2ENZDQv0TZKMLq1ItjAMV5wqL3hVWPmgRptKpsS2e8RWMi5jK27FNQCgY7sN1BmBurhsVFSqmsiXffdckUxMCmLk4vtIB47ihaBL5kFUwT_4oB0hkAnCv9fbHF6SqqLQsGPb3hhdha2bFzoceValEi57vxyN4ygT66hFGMkcFpxt4BeE2S9g"/>
+</div>
+<div>
+<h4 class="font-bold text-sm">Amira's Heritage Oils</h4>
+<p class="text-[11px] text-on-surface-variant uppercase tracking-wider">Top Rated Seller • Morocco</p>
+</div>
+</div>
+<button class="px-5 py-2 rounded-full border border-outline-variant text-xs font-bold hover:bg-surface-container-high transition-colors">
+                    Visit Boutique
+                </button>
+</div>
+<!-- Related Products -->
+<div class="mt-16">
+<div class="flex justify-between items-end mb-8">
+<h2 class="text-2xl font-bold">You may also like</h2>
+<a class="text-xs font-bold uppercase tracking-widest text-primary border-b border-primary/20 pb-1" href="#">View Collection</a>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<!-- Related 1 -->
+<div class="group">
+<div class="aspect-[4/5] bg-surface-container-low rounded-lg overflow-hidden mb-4">
+<img alt="Related product" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Glass jar of premium African Shea Butter on a raw wooden surface with dried hibiscus flowers scattered around." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCslf4y0AqCbRQU1kqVR7bB5LfAvXyESwNFFLrSmjYEKGj2xlyNbBWTivy6Qp0QK8mZmrtDjP7k-FeO1S0ShiUv19qgNDBzv6H5Pm9jzXk8c8D_CIyc8ryw5Y6Eu7xrh2a__yJe1iTcwQYrLpmUESasz-1Kkd1yGGFvn980RfQI3Lmixx99g1T5chaIqqj1A4nZO0j9I5xXXp5RVmjM_1g-oh3g1pf_CufrOyWWKTGDQ8g3q1FS4OvMlO5HeCcUA0XxRBTbbJq2tIQ"/>
+</div>
+<span class="text-[10px] font-bold tracking-widest uppercase text-tertiary">Gabon</span>
+<h4 class="font-headline font-bold text-base mt-1">Beurre de Karité</h4>
+<p class="text-sm font-medium text-on-surface-variant">€32.00</p>
+</div>
+<!-- Related 2 -->
+<div class="group">
+<div class="aspect-[4/5] bg-surface-container-low rounded-lg overflow-hidden mb-4">
+<img alt="Related product" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Handcrafted ceramic dish holding black African soap, atmospheric lighting highlighting the organic texture and dark tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUS6S2emNW7bCNA5Bkf9VyzCWGTpyYrETlk82BJmKf7UYd8r0J-SidM_QhLCD9Sn0L2HhNE_VcLdCx0rUEqEBTG7Zy4XaNDe8c69tj7j0ubTAE92uMLxel6tnMxzwJVJ_o61MERPi02m1a9pXxK_bQnc8vu0Zl-fiUiM5wTsf7gDT5Aok7dlBwT-NhXfQPFi-PJuuBYS4T1kPZsw9zzSoG_5GFLVM_UckrJq2gtlD26D_8AdZr7PrvfDcWZ1ulXcezYdwggPPi3Po"/>
+</div>
+<span class="text-[10px] font-bold tracking-widest uppercase text-tertiary">Morocco</span>
+<h4 class="font-headline font-bold text-base mt-1">Savon Noir Beldi</h4>
+<p class="text-sm font-medium text-on-surface-variant">€18.00</p>
+</div>
+</div>
+</div>
+</section></main>
+<!-- Bottom Action Bar -->
+<div class="fixed bottom-0 left-0 w-full bg-surface/80 backdrop-blur-xl px-6 py-6 z-50">
+<div class="max-w-screen-xl mx-auto flex items-center gap-4">
+<button class="w-14 h-14 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface-container-low transition-colors active:scale-95">
+<span class="material-symbols-outlined text-on-surface-variant">favorite</span>
+</button>
+<button class="flex-1 h-14 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-xl font-bold text-sm tracking-widest uppercase shadow-lg shadow-primary/20 active:scale-[0.98] transition-all">
+                Add to cart
+            </button>
+</div>
+</div>
+<!-- Bottom Navigation Shell (Mobile Only) -->
+<nav class="fixed bottom-0 w-full z-40 rounded-t-[2rem] bg-emerald-50/80 dark:bg-emerald-950/80 backdrop-blur-xl shadow-[0_-8px_40px_rgba(0,0,0,0.06)] md:hidden pointer-events-none opacity-0">
+<!-- Hidden as this is a sub-page Detail screen per instructions (Supress navigation shell if task-focused/back action) -->
+<div class="flex justify-around items-center w-full px-4 pb-6 pt-3">
+<div class="flex flex-col items-center justify-center text-emerald-900/40 dark:text-emerald-100/40">
+<span class="material-symbols-outlined" href="hero.html">home</span>
+<span class="text-[11px] font-medium uppercase tracking-widest Inter">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-emerald-800 dark:text-emerald-100 bg-emerald-100/50 dark:bg-emerald-800/50 rounded-full px-4 py-1" href="shop.html">
+<span class="material-symbols-outlined" >storefront</span>
+<span class="text-[11px] font-medium uppercase tracking-widest Inter">Shop</span>
+</div>
+<div class="flex flex-col items-center justify-center text-emerald-900/40 dark:text-emerald-100/40" href="sell.html">
+<span class="material-symbols-outlined" >add_circle</span>
+<span class="text-[11px] font-medium uppercase tracking-widest Inter">Sell</span>
+</div>
+<div class="flex flex-col items-center justify-center text-emerald-900/40 dark:text-emerald-100/40" href="compte.html">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[11px] font-medium uppercase tracking-widest Inter">Profile</span>
+</div>
+</div>
+</nav>
+</body></html>

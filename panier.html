@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WennaShop - Shopping Bag</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#171d17",
+                        "on-secondary-fixed": "#001c3a",
+                        "inverse-surface": "#2c322b",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed-dim": "#f0c110",
+                        "secondary-fixed-dim": "#a6c8ff",
+                        "primary-fixed-dim": "#73dc84",
+                        "on-tertiary-fixed": "#241a00",
+                        "surface-container-low": "#eff5eb",
+                        "tertiary-container": "#d0a600",
+                        "on-primary-fixed-variant": "#00531f",
+                        "on-secondary": "#ffffff",
+                        "on-background": "#171d17",
+                        "primary-container": "#0f8739",
+                        "surface-dim": "#d6dcd2",
+                        "tertiary": "#745b00",
+                        "surface-tint": "#006e2b",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#f7fff2",
+                        "background": "#f5fbf1",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#becaba",
+                        "primary": "#006b2a",
+                        "surface-container": "#eaf0e5",
+                        "secondary-container": "#78b0fe",
+                        "surface-bright": "#f5fbf1",
+                        "secondary-fixed": "#d4e3ff",
+                        "on-error": "#ffffff",
+                        "on-tertiary-container": "#4f3d00",
+                        "on-secondary-container": "#00427d",
+                        "surface-container-highest": "#dee4da",
+                        "tertiary-fixed": "#ffe08b",
+                        "surface-variant": "#dee4da",
+                        "surface-container-high": "#e4eae0",
+                        "on-primary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#edf3e8",
+                        "on-surface-variant": "#3f4a3e",
+                        "on-secondary-fixed-variant": "#004786",
+                        "surface": "#f5fbf1",
+                        "on-primary-fixed": "#002108",
+                        "outline": "#6f7a6d",
+                        "on-tertiary-fixed-variant": "#584400",
+                        "primary-fixed": "#8ff99d",
+                        "secondary": "#1a5fa8",
+                        "inverse-primary": "#73dc84"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Noto Serif"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Noto Serif', serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="bg-emerald-50/80 dark:bg-emerald-950/80 backdrop-blur-xl fixed top-0 w-full z-50 shadow-sm dark:shadow-none">
+<div class="flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-4">
+<button class="text-emerald-800 dark:text-emerald-100 hover:opacity-80 transition-opacity scale-95 active:duration-150">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<span class="font-serif italic text-2xl tracking-tighter text-emerald-900 dark:text-emerald-50">WennaShop</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-emerald-800 dark:text-emerald-100 hover:opacity-80 transition-opacity scale-95 active:duration-150 relative">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+<span class="absolute -top-1 -right-1 bg-primary text-on-primary text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">2</span>
+</button>
+</div>
+</div>
+</header>
+<main class="pt-24 px-6 max-w-5xl mx-auto">
+<div class="flex flex-col md:flex-row gap-12">
+<!-- Left Column: Bag Content -->
+<div class="flex-1">
+<h1 class="text-4xl italic font-serif mb-8 tracking-tight">Your Bag</h1>
+<div class="space-y-8">
+<!-- Cart Item 1 -->
+<div class="flex gap-6 items-start pb-8 border-b border-outline-variant/15">
+<div class="w-32 h-40 bg-surface-container rounded-lg overflow-hidden flex-shrink-0">
+<img alt="Ceramic Vase" class="w-full h-full object-cover" data-alt="handcrafted ceramic vase with organic textures and earthy terracotta tones against a soft studio background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD51WG_5KeX3JXOK79MSMMhafRoayFdQ51VvIvry1jYU0ZXFzh9HKfYDR7mvNPQ68vSPRMoa8ostkDMBniqzSxwwZZUnsLa1NSA6aHGZ7fc96IS6ZoMAzpBzDX-DysodkTPVyxh6y2gR_EztbBvIf0hQsoN0W30b_1mSdtECMJ4gmu1AZdh84OEhj8-EAJzp8Sr4aGwZ8VxHM8wBAZ0AMHSoLH5zEFuFzz8yXCJ5yJbcJt7km_CqoU9ALEIHUZ6u1ozRvZxea5_Rqo"/>
+</div>
+<div class="flex-1 flex flex-col justify-between h-40">
+<div>
+<div class="flex justify-between items-start">
+<h3 class="text-xl font-medium tracking-tight">M'Passa Clay Vessel</h3>
+<span class="text-lg font-medium">$145.00</span>
+</div>
+<p class="text-sm text-on-surface-variant font-label mt-1 uppercase tracking-widest">Sourced from Libreville</p>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex items-center bg-surface-container-high rounded-full px-3 py-1 gap-4">
+<button class="hover:text-primary transition-colors flex items-center">
+<span class="material-symbols-outlined text-lg" data-icon="remove">remove</span>
+</button>
+<span class="font-medium text-sm w-4 text-center">1</span>
+<button class="hover:text-primary transition-colors flex items-center">
+<span class="material-symbols-outlined text-lg" data-icon="add">add</span>
+</button>
+</div>
+<button class="text-on-surface-variant hover:text-error transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-lg" data-icon="delete">delete</span>
+<span class="text-xs uppercase tracking-tighter">Remove</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Cart Item 2 -->
+<div class="flex gap-6 items-start pb-8 border-b border-outline-variant/15">
+<div class="w-32 h-40 bg-surface-container rounded-lg overflow-hidden flex-shrink-0">
+<img alt="Indigo Textile" class="w-full h-full object-cover" data-alt="luxurious deep indigo blue hand-woven textile with traditional Moroccan patterns and delicate gold threads" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwfpdzbPpmhCtXE3n9TYWsQYce2MbtwBz6EcFnmA0flP3ux4uDPh0rKC9X1hxwx_A358oogQdD60TgtPck5S-6x4JrZ7ojRz-t_YHaA4tYdEI168KSJx58vUpoGsoUa5kUDRJVOx7yCO71R56l_s_cKle_xH1CTfYiMtf-oV3At2DWrlb7KpcUfntvYoO3HOXLVwIP5KEqdmRHddv0VhwwhZzgpttnb_IbHYWVoeJOMgTDFOcPpLCmpqvZEiWhqXERhkHwdJdh1yY"/>
+</div>
+<div class="flex-1 flex flex-col justify-between h-40">
+<div>
+<div class="flex justify-between items-start">
+<h3 class="text-xl font-medium tracking-tight">Chefchaouen Silk Wrap</h3>
+<span class="text-lg font-medium">$89.00</span>
+</div>
+<p class="text-sm text-on-surface-variant font-label mt-1 uppercase tracking-widest">Handcrafted in Morocco</p>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex items-center bg-surface-container-high rounded-full px-3 py-1 gap-4">
+<button class="hover:text-primary transition-colors flex items-center">
+<span class="material-symbols-outlined text-lg" data-icon="remove">remove</span>
+</button>
+<span class="font-medium text-sm w-4 text-center">1</span>
+<button class="hover:text-primary transition-colors flex items-center">
+<span class="material-symbols-outlined text-lg" data-icon="add">add</span>
+</button>
+</div>
+<button class="text-on-surface-variant hover:text-error transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-lg" data-icon="delete">delete</span>
+<span class="text-xs uppercase tracking-tighter">Remove</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Trust Badges -->
+<div class="mt-12 grid grid-cols-2 gap-4">
+<div class="flex items-center gap-3 p-4 bg-surface-container-low rounded-xl">
+<span class="material-symbols-outlined text-primary" data-icon="verified_user">verified_user</span>
+<div>
+<p class="text-xs font-bold uppercase tracking-wider text-on-surface">Secure Payment</p>
+<p class="text-[10px] text-on-surface-variant">Encrypted transactions</p>
+</div>
+</div>
+<div class="flex items-center gap-3 p-4 bg-surface-container-low rounded-xl">
+<span class="material-symbols-outlined text-secondary" data-icon="local_shipping">local_shipping</span>
+<div>
+<p class="text-xs font-bold uppercase tracking-wider text-on-surface">Global Express</p>
+<p class="text-[10px] text-on-surface-variant">4-7 business days</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Summary -->
+<div class="w-full md:w-80 lg:w-96">
+<div class="bg-surface-container-lowest p-8 rounded-lg shadow-sm sticky top-32">
+<h2 class="text-2xl italic font-serif mb-6 tracking-tight">Order Summary</h2>
+<div class="space-y-4 mb-8">
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant font-label uppercase tracking-widest">Subtotal</span>
+<span class="font-medium">$234.00</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant font-label uppercase tracking-widest">Shipping</span>
+<span class="font-medium text-primary">Calculated at next step</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant font-label uppercase tracking-widest">Taxes</span>
+<span class="font-medium">$18.72</span>
+</div>
+<div class="pt-4 border-t border-outline-variant/15 flex justify-between items-end">
+<span class="text-lg font-serif italic">Total</span>
+<span class="text-2xl font-bold text-primary">$252.72</span>
+</div>
+</div>
+<button class="w-full py-5 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-full font-bold uppercase tracking-[0.2em] text-sm shadow-xl hover:opacity-90 transition-all active:scale-95 mb-6">
+                        Checkout
+                    </button>
+<div class="text-center">
+<p class="text-[10px] text-on-surface-variant font-label uppercase tracking-[0.15em] mb-4">We Accept</p>
+<div class="flex justify-center gap-3 opacity-50 grayscale hover:grayscale-0 transition-all">
+<span class="material-symbols-outlined" data-icon="credit_card">credit_card</span>
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-[2rem] bg-emerald-50/80 dark:bg-emerald-950/80 backdrop-blur-xl shadow-[0_-8px_40px_rgba(0,0,0,0.06)] md:hidden">
+<div class="flex justify-around items-center w-full px-4 pb-6 pt-3">
+<a class="flex flex-col items-center justify-center text-emerald-900/40 dark:text-emerald-100/40 hover:text-emerald-700 transition-all" href="hero.html">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="text-[11px] font-medium uppercase tracking-widest Inter mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-emerald-800 dark:text-emerald-100 bg-emerald-100/50 dark:bg-emerald-800/50 rounded-full px-4 py-1" href="shop.html">
+<span class="material-symbols-outlined" data-icon="storefront">storefront</span>
+<span class="text-[11px] font-medium uppercase tracking-widest Inter mt-1">Shop</span>
+</a>
+<a class="flex flex-col items-center justify-center text-emerald-900/40 dark:text-emerald-100/40 hover:text-emerald-700 transition-all" href="sell.html">
+<span class="material-symbols-outlined" data-icon="add_circle" >add_circle</span>
+<span class="text-[11px] font-medium uppercase tracking-widest Inter mt-1">Sell</span>
+</a>
+<a class="flex flex-col items-center justify-center text-emerald-900/40 dark:text-emerald-100/40 hover:text-emerald-700 transition-all" href="compte.html">
+<span class="material-symbols-outlined" data-icon="person" >person</span>
+<span class="text-[11px] font-medium uppercase tracking-widest Inter mt-1">Profile</span>
+</a>
+</div>
+</nav>
+</body></html>

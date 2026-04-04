@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface": "#171d17",
+                    "on-secondary-fixed": "#001c3a",
+                    "inverse-surface": "#2c322b",
+                    "on-tertiary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "tertiary-fixed-dim": "#f0c110",
+                    "secondary-fixed-dim": "#a6c8ff",
+                    "primary-fixed-dim": "#73dc84",
+                    "on-tertiary-fixed": "#241a00",
+                    "surface-container-low": "#eff5eb",
+                    "tertiary-container": "#d0a600",
+                    "on-primary-fixed-variant": "#00531f",
+                    "on-secondary": "#ffffff",
+                    "on-background": "#171d17",
+                    "primary-container": "#0f8739",
+                    "surface-dim": "#d6dcd2",
+                    "tertiary": "#745b00",
+                    "surface-tint": "#006e2b",
+                    "error-container": "#ffdad6",
+                    "on-primary-container": "#f7fff2",
+                    "background": "#f5fbf1",
+                    "surface-container-lowest": "#ffffff",
+                    "outline-variant": "#becaba",
+                    "primary": "#006b2a",
+                    "surface-container": "#eaf0e5",
+                    "secondary-container": "#78b0fe",
+                    "surface-bright": "#f5fbf1",
+                    "secondary-fixed": "#d4e3ff",
+                    "on-error": "#ffffff",
+                    "on-tertiary-container": "#4f3d00",
+                    "on-secondary-container": "#00427d",
+                    "surface-container-highest": "#dee4da",
+                    "tertiary-fixed": "#ffe08b",
+                    "surface-variant": "#dee4da",
+                    "surface-container-high": "#e4eae0",
+                    "on-primary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "inverse-on-surface": "#edf3e8",
+                    "on-surface-variant": "#3f4a3e",
+                    "on-secondary-fixed-variant": "#004786",
+                    "surface": "#f5fbf1",
+                    "on-primary-fixed": "#002108",
+                    "outline": "#6f7a6d",
+                    "on-tertiary-fixed-variant": "#584400",
+                    "primary-fixed": "#8ff99d",
+                    "secondary": "#1a5fa8",
+                    "inverse-primary": "#73dc84"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Noto Serif"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .editorial-shadow {
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-emerald-50/80 dark:bg-emerald-950/80 backdrop-blur-xl shadow-sm dark:shadow-none">
+<div class="flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-4">
+<button class="text-emerald-800 dark:text-emerald-100 hover:opacity-80 transition-opacity scale-95 active:duration-150">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</div>
+<h1 class="font-serif italic text-2xl tracking-tighter text-emerald-900 dark:text-emerald-50">WennaShop</h1>
+<div class="flex items-center gap-4">
+<button class="text-emerald-800 dark:text-emerald-100 hover:opacity-80 transition-opacity scale-95 active:duration-150" href="panier.html">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+</button>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-32 px-6 max-w-7xl mx-auto">
+<!-- Search & Editorial Header -->
+<section class="mb-12">
+<div class="flex flex-col gap-6">
+<h2 class="font-headline text-4xl md:text-5xl text-on-surface leading-tight">
+                    Curated <span class="italic text-primary">Heritage</span>
+</h2>
+<!-- Modern Search Bar -->
+<div class="relative group">
+<div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-xl">search</span>
+</div>
+<input class="w-full h-14 pl-12 pr-6 bg-surface-container-high border-none border-b-2 border-outline-variant/15 rounded-t-lg focus:ring-0 focus:border-primary transition-all font-body text-on-surface" placeholder="Search traditional treasures..." type="text"/>
+</div>
+<!-- Minimalist Filter Chips -->
+<div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+<button class="flex-none px-6 py-2 rounded-full bg-secondary text-on-secondary text-sm font-medium transition-all active:scale-95">All Collections</button>
+<button class="flex-none px-6 py-2 rounded-full bg-surface-container-highest text-on-surface-variant text-sm font-medium hover:opacity-80 transition-all active:scale-95">Gabon</button>
+<button class="flex-none px-6 py-2 rounded-full bg-surface-container-highest text-on-surface-variant text-sm font-medium hover:opacity-80 transition-all active:scale-95">Morocco</button>
+<button class="flex-none px-6 py-2 rounded-full bg-surface-container-highest text-on-surface-variant text-sm font-medium hover:opacity-80 transition-all active:scale-95">Textiles</button>
+<button class="flex-none px-6 py-2 rounded-full bg-surface-container-highest text-on-surface-variant text-sm font-medium hover:opacity-80 transition-all active:scale-95">Ceramics</button>
+</div>
+</div>
+</section>
+<!-- Product Grid (2-Column Mobile, 3-4 Column Desktop) -->
+<section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-10 md:gap-x-8 md:gap-y-16">
+<!-- Product Card 1 -->
+<article class="group">
+<div class="relative aspect-[3/4] bg-surface-container-low rounded-lg overflow-hidden mb-6 editorial-shadow">
+<img alt="Handcrafted Moroccan Vase" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Close-up of a handcrafted blue and white Moroccan ceramic vase with intricate geometric patterns against a soft neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5HA6WiMlo_wSFVJ5szKc2etP4s2DWOat2RiLaZVSJFeQ4yIS2qx7WboZJj4w2lAMlQ2oPXHhWoB1B_mZB6Ove2fpSCh_H1tF0ET-1A2nXcI7Ci1-5_6T8gplZln3QS3PrA2loEBda_vJHgPnz8MGoK4teiyVKjD8iJX0c3PHtbBBOemjCXsXFzTOvIzGmi2jNKdIKh8FTeoMmYnq83alOcMv8nt0XaMv8SYMkKk-QoMw9WoWXXImJS8olhXZ3XequWES-wJXjS1A"/>
+<div class="absolute top-4 right-4">
+<button class="w-10 h-10 rounded-full bg-surface-container-lowest/80 backdrop-blur-md flex items-center justify-center text-primary transition-all active:scale-90">
+<span class="material-symbols-outlined text-xl">favorite</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label text-[10px] uppercase tracking-[0.15em] text-outline">Sourced from Fez</span>
+<h3 class="font-headline text-lg text-on-surface leading-tight">Royal Cobalt Amphora</h3>
+<div class="flex justify-between items-end mt-2">
+<p class="font-body font-semibold text-primary">$185.00</p>
+<button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-xl text-xs font-medium scale-95 active:duration-150 active:scale-90 transition-all">
+<span class="material-symbols-outlined text-sm">add</span>
+                            Add
+                        </button>
+</div>
+</div>
+</article>
+<!-- Product Card 2 -->
+<article class="group">
+<div class="relative aspect-[3/4] bg-surface-container-low rounded-lg overflow-hidden mb-6 editorial-shadow">
+<img alt="Gabonese M'passa Textile" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Detailed texture of hand-woven Gabonese raffia cloth with bold black and ochre geometric tribal patterns, soft side lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7LldQKRAlHrR4WCIJ53kHCxb6hIU3JVQcdYys8xi_rZtOTfM6uABBjEMIXAC5goNK2heCuv5sBZzXtuZoKr8Y6P74aWg1X-XbNXflrmuWI5aD3Y7f3nPW5GDReFWQRc8GZibnMVCCprP7sAX-dycbhPuTRbYj9a82iu1Wdp2Uz07uvcrLUBo7CB2ywueMQel_cHXK8xdTUtEzwVxwOacib7glFkIuCHreITV-w1V8DMk95pEzsG4mQaObYh68sMmlNBMR6QbmE7g"/>
+<div class="absolute top-4 right-4">
+<button class="w-10 h-10 rounded-full bg-surface-container-lowest/80 backdrop-blur-md flex items-center justify-center text-primary transition-all active:scale-90">
+<span class="material-symbols-outlined text-xl">favorite</span>
+</button>
+</div>
+<span class="absolute bottom-4 left-4 px-3 py-1 bg-tertiary text-on-tertiary rounded-full text-[10px] font-bold uppercase tracking-widest">Limited</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label text-[10px] uppercase tracking-[0.15em] text-outline">Libreville Artisans</span>
+<h3 class="font-headline text-lg text-on-surface leading-tight">Heritage M'passa Weave</h3>
+<div class="flex justify-between items-end mt-2">
+<p class="font-body font-semibold text-primary">$240.00</p>
+<button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-xl text-xs font-medium scale-95 active:duration-150 active:scale-90 transition-all">
+<span class="material-symbols-outlined text-sm">add</span>
+                            Add
+                        </button>
+</div>
+</div>
+</article>
+<!-- Product Card 3 (Asymmetric offset for editorial feel) -->
+<article class="group md:mt-8">
+<div class="relative aspect-[3/4] bg-surface-container-low rounded-lg overflow-hidden mb-6 editorial-shadow">
+<img alt="Moroccan Brass Lantern" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="An ornate Moroccan brass lantern with intricate cut-outs casting beautiful shadows against a warm terracotta wall" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6WTe_2dDnja4K-0Tkrm-XMEMwUg0pmgWtV3Om1lcjkmRtw44zN0RQhZLVW2AS1CMw9jToTKFvhXHuP4KvQHrOHDwx66zAPIxVgzJnLteY_SJO8wwQ1JgGCwZz75X0BdB4ng_ip5p8PZQ9K_Qzva_dvKXoMsPiEAX34UJYqeQf-uOILLG976q-z4jDvER0_zDJ6pP0hTTPDq4vjZn_YHIBPkoo69XXUTcCI2_vTD4XxGx8KiKMR2FYdIPsbHFhSJBEFIW8MiycISI"/>
+<div class="absolute top-4 right-4">
+<button class="w-10 h-10 rounded-full bg-surface-container-lowest/80 backdrop-blur-md flex items-center justify-center text-primary transition-all active:scale-90">
+<span class="material-symbols-outlined text-xl">favorite</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label text-[10px] uppercase tracking-[0.15em] text-outline">Marrakech Souk</span>
+<h3 class="font-headline text-lg text-on-surface leading-tight">Starry Night Lantern</h3>
+<div class="flex justify-between items-end mt-2">
+<p class="font-body font-semibold text-primary">$125.00</p>
+<button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-xl text-xs font-medium scale-95 active:duration-150 active:scale-90 transition-all">
+<span class="material-symbols-outlined text-sm">add</span>
+                            Add
+                        </button>
+</div>
+</div>
+</article>
+<!-- Product Card 4 -->
+<article class="group md:mt-8">
+<div class="relative aspect-[3/4] bg-surface-container-low rounded-lg overflow-hidden mb-6 editorial-shadow">
+<img alt="Gabonese Ceremonial Mask" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Traditional Gabonese Punu mask carved from light wood with kaolin white finish and serene facial expression, studio lighting on dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEGHv_wtcw6cqbD0E-2nIOGFzSufQUz_oennL6gua9Q33kXZowFk4FHn_2Ab5SuxFKl4kAP7P1Ma8OGqmkcH8lCsxVEeDF5Kpw9CECWnh5BpAjMNe1CA687iaVpA1Vj3S20TT19kAdvpodQiyPkVGHP6TxZOwFjp9KIuNBCnYPHex2I6BDYY2ycXPYU5glT0JCW3tn1XlgvYijsphUkmwHyIYIuMM-GtHJw5_iLogB3zjfByfA65AhyI-Cclkmea--vowZX0A_VQY"/>
+<div class="absolute top-4 right-4">
+<button class="w-10 h-10 rounded-full bg-surface-container-lowest/80 backdrop-blur-md flex items-center justify-center text-primary transition-all active:scale-90">
+<span class="material-symbols-outlined text-xl">favorite</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label text-[10px] uppercase tracking-[0.15em] text-outline">Ogooué Valley</span>
+<h3 class="font-headline text-lg text-on-surface leading-tight">Ancestral Punu Mask</h3>
+<div class="flex justify-between items-end mt-2">
+<p class="font-body font-semibold text-primary">$510.00</p>
+<button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-xl text-xs font-medium scale-95 active:duration-150 active:scale-90 transition-all">
+<span class="material-symbols-outlined text-sm">add</span>
+                            Add
+                        </button>
+</div>
+</div>
+</article>
+</section>
+<!-- Newsletter / Editorial Promo -->
+<section class="mt-24 mb-12 p-8 md:p-16 rounded-lg bg-emerald-100/50 dark:bg-emerald-900/20 relative overflow-hidden">
+<div class="relative z-10 max-w-lg">
+<span class="font-label text-[11px] uppercase tracking-[0.2em] text-primary font-bold mb-4 block">The Curator's Letter</span>
+<h2 class="font-headline text-3xl md:text-4xl text-on-surface leading-tight mb-6">Receive the stories behind the artifacts.</h2>
+<div class="flex flex-col md:flex-row gap-4">
+<input class="flex-grow h-14 px-6 bg-surface-container-lowest border-none rounded-xl focus:ring-2 focus:ring-primary/20" placeholder="Your email address" type="email"/>
+<button class="h-14 px-8 bg-on-surface text-surface rounded-xl font-medium hover:opacity-90 transition-opacity">Subscribe</button>
+</div>
+</div>
+<div class="absolute top-0 right-0 w-1/3 h-full hidden md:block opacity-20">
+<div class="w-full h-full bg-gradient-to-l from-primary to-transparent"></div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 bg-emerald-50/80 dark:bg-emerald-950/80 backdrop-blur-xl rounded-t-[2rem] shadow-[0_-8px_40px_rgba(0,0,0,0.06)]">
+<div class="flex justify-around items-center w-full px-4 pb-6 pt-3">
+<a class="flex flex-col items-center justify-center text-emerald-900/40 dark:text-emerald-100/40 hover:text-emerald-700 dark:hover:text-emerald-300 transition-opacity scale-95 active:duration-200" href="hero.html">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="text-[11px] font-medium uppercase tracking-widest Inter mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-emerald-800 dark:text-emerald-100 bg-emerald-100/50 dark:bg-emerald-800/50 rounded-full px-4 py-1 scale-95 active:duration-200" href="shop.html">
+<span class="material-symbols-outlined" data-icon="storefront">storefront</span>
+<span class="text-[11px] font-medium uppercase tracking-widest Inter mt-1">Shop</span>
+</a>
+<a class="flex flex-col items-center justify-center text-emerald-900/40 dark:text-emerald-100/40 hover:text-emerald-700 dark:hover:text-emerald-300 transition-opacity scale-95 active:duration-200" href="sell.html">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="text-[11px] font-medium uppercase tracking-widest Inter mt-1" >Sell</span>
+</a>
+<a class="flex flex-col items-center justify-center text-emerald-900/40 dark:text-emerald-100/40 hover:text-emerald-700 dark:hover:text-emerald-300 transition-opacity scale-95 active:duration-200" href="compte.html">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-[11px] font-medium uppercase tracking-widest Inter mt-1">Profile</span>
+</a>
+</div>
+</nav>
+</body></html>

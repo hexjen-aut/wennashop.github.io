@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WennaShop | Explore Treasures</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container": "#eaf0e5",
+                    "on-secondary-fixed-variant": "#004786",
+                    "tertiary-fixed": "#ffe08b",
+                    "on-primary-fixed-variant": "#00531f",
+                    "inverse-primary": "#73dc84",
+                    "on-tertiary-fixed-variant": "#584400",
+                    "tertiary-fixed-dim": "#f0c110",
+                    "surface": "#f5fbf1",
+                    "secondary": "#1a5fa8",
+                    "on-tertiary-fixed": "#241a00",
+                    "inverse-surface": "#2c322b",
+                    "on-secondary-fixed": "#001c3a",
+                    "surface-dim": "#d6dcd2",
+                    "on-primary-container": "#f7fff2",
+                    "primary-fixed": "#8ff99d",
+                    "secondary-container": "#78b0fe",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed-dim": "#a6c8ff",
+                    "on-tertiary": "#ffffff",
+                    "inverse-on-surface": "#edf3e8",
+                    "error-container": "#ffdad6",
+                    "background": "#f5fbf1",
+                    "surface-container-low": "#eff5eb",
+                    "on-background": "#171d17",
+                    "surface-bright": "#f5fbf1",
+                    "surface-container-high": "#e4eae0",
+                    "on-secondary-container": "#00427d",
+                    "surface-tint": "#006e2b",
+                    "on-secondary": "#ffffff",
+                    "secondary-fixed": "#d4e3ff",
+                    "on-primary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "tertiary-container": "#d0a600",
+                    "outline-variant": "#becaba",
+                    "on-primary-fixed": "#002108",
+                    "on-surface-variant": "#3f4a3e",
+                    "surface-variant": "#dee4da",
+                    "outline": "#6f7a6d",
+                    "primary-container": "#0f8739",
+                    "primary": "#006b2a",
+                    "surface-container-highest": "#dee4da",
+                    "tertiary": "#745b00",
+                    "on-error": "#ffffff",
+                    "on-tertiary-container": "#4f3d00",
+                    "on-error-container": "#93000a",
+                    "on-surface": "#171d17",
+                    "primary-fixed-dim": "#73dc84"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Noto Serif"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body text-on-surface antialiased">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#f5fbf1]/80 dark:bg-slate-900/80 backdrop-blur-xl flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-4">
+<button class="text-[#171d17] dark:text-slate-400 scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-['Noto_Serif'] font-black italic text-[#006b2a] dark:text-[#0f8739] text-2xl tracking-tight">WennaShop</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-[#171d17] dark:text-slate-400 scale-95 active:scale-90 transition-transform" href="panier.html">
+<span class="material-symbols-outlined">shopping_bag</span>
+</button>
+</div>
+</header>
+<main class="pt-24 pb-32 px-6 max-w-7xl mx-auto">
+<!-- Editorial Header -->
+<section class="mb-12">
+<h2 class="font-headline text-5xl md:text-6xl font-bold text-primary mb-2 tracking-tight">Explore</h2>
+<p class="font-label text-sm uppercase tracking-[0.1em] text-on-surface-variant opacity-70">Curating the Heritage of Gabon &amp; Morocco</p>
+</section>
+<!-- Search & Advanced Filter Section -->
+<section class="mb-12 space-y-8">
+<!-- Search Bar -->
+<div class="relative flex items-center group">
+<span class="material-symbols-outlined absolute left-4 text-outline group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full pl-12 pr-4 py-5 bg-surface-container-high border-b border-outline-variant/15 focus:border-primary focus:ring-0 rounded-t-lg font-body text-lg transition-all outline-none" placeholder="Rechercher des trésors..." type="text"/>
+</div>
+<!-- Categories Horizontal Scroll -->
+<div class="flex flex-col gap-4">
+<span class="font-label text-xs font-bold uppercase tracking-widest text-on-surface-variant">Catégories</span>
+<div class="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
+<button class="flex-shrink-0 px-8 py-3 bg-secondary text-on-secondary rounded-full font-label text-sm font-medium transition-all hover:opacity-90">All</button>
+<button class="flex-shrink-0 px-8 py-3 bg-surface-container-highest text-on-surface-variant rounded-full font-label text-sm font-medium hover:bg-secondary-container hover:text-on-secondary-container transition-all">Beauté</button>
+<button class="flex-shrink-0 px-8 py-3 bg-surface-container-highest text-on-surface-variant rounded-full font-label text-sm font-medium hover:bg-secondary-container hover:text-on-secondary-container transition-all">Mode</button>
+<button class="flex-shrink-0 px-8 py-3 bg-surface-container-highest text-on-surface-variant rounded-full font-label text-sm font-medium hover:bg-secondary-container hover:text-on-secondary-container transition-all">Épicerie</button>
+<button class="flex-shrink-0 px-8 py-3 bg-surface-container-highest text-on-surface-variant rounded-full font-label text-sm font-medium hover:bg-secondary-container hover:text-on-secondary-container transition-all">Artisanat</button>
+</div>
+</div>
+<!-- Contextual Filter Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+<!-- Origin Toggle -->
+<div class="bg-surface-container-low p-8 rounded-lg space-y-4">
+<h3 class="font-headline text-xl font-bold">Origine</h3>
+<div class="flex gap-4">
+<label class="flex-1 cursor-pointer group">
+<input class="hidden peer" type="checkbox"/>
+<div class="p-4 rounded-lg bg-surface-container-lowest text-center border-2 border-transparent peer-checked:border-primary peer-checked:bg-primary-fixed-dim/20 transition-all">
+<span class="block font-headline text-lg mb-1">Gabon</span>
+<span class="block font-label text-[10px] uppercase tracking-tighter opacity-60">Afrique Centrale</span>
+</div>
+</label>
+<label class="flex-1 cursor-pointer group">
+<input class="hidden peer" type="checkbox"/>
+<div class="p-4 rounded-lg bg-surface-container-lowest text-center border-2 border-transparent peer-checked:border-secondary peer-checked:bg-secondary-container/20 transition-all">
+<span class="block font-headline text-lg mb-1">Maroc</span>
+<span class="block font-label text-[10px] uppercase tracking-tighter opacity-60">Afrique du Nord</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Price Filter -->
+<div class="bg-surface-container-low p-8 rounded-lg space-y-6">
+<div class="flex justify-between items-center">
+<h3 class="font-headline text-xl font-bold">Prix</h3>
+<span class="font-label text-sm font-semibold text-tertiary">0€ - 500€+</span>
+</div>
+<div class="relative h-2 bg-outline-variant/30 rounded-full">
+<div class="absolute h-full w-2/3 bg-primary rounded-full"></div>
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-6 h-6 bg-surface-container-lowest shadow-md rounded-full border-2 border-primary"></div>
+<div class="absolute left-2/3 top-1/2 -translate-y-1/2 w-6 h-6 bg-surface-container-lowest shadow-md rounded-full border-2 border-primary"></div>
+</div>
+<div class="flex justify-between font-label text-[11px] uppercase tracking-widest text-on-surface-variant/60">
+<span>Min</span>
+<span>Max</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Results Grid -->
+<section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
+<!-- Product Card 1 -->
+<article class="group">
+<div class="relative aspect-[3/4] overflow-hidden rounded-lg bg-surface-container-lowest mb-6">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Close-up of intricate hand-carved Gabonese ebony mask with deep textures and soft studio lighting highlighting traditional craftsmanship" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJFS-cKfRYxjgfwstv7ajblKoifuTngwvKWx6Rc8dTAADY3oOdF_2TGuW2LuIHjhQm8GFnzUFs8sQEMCKl4a9eTSKc6XQ8MatuNxlTAXbTgkKsEvDVCmVPbeXL6h5ulgjYscE0iRb7yA1RJxk3WRZXpVVsUWC_UBoQU93BE2dR-K_osCRnQMh-XFK9nUq9itV4x79gg9RW7qFBOPaggFrvGCG4LH-BCrm4_TvvOH5-EsOUduqYfbs7SVIr24OTQPtAvApZhJHbh_4"/>
+<div class="absolute top-4 left-4">
+<span class="px-3 py-1 bg-primary text-on-primary text-[10px] font-bold uppercase tracking-widest rounded-full">Gabon</span>
+</div>
+</div>
+<div class="space-y-1 px-1">
+<span class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">Artisanat</span>
+<h3 class="font-headline text-lg font-bold leading-tight group-hover:text-primary transition-colors">Masque Punu Ancestral</h3>
+<p class="font-body text-sm font-medium text-primary">185,00 €</p>
+</div>
+</article>
+<!-- Product Card 2 -->
+<article class="group">
+<div class="relative aspect-[3/4] overflow-hidden rounded-lg bg-surface-container-lowest mb-6">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Premium organic Argan oil bottle sitting on a textured sandstone surface with Moroccan sunlight and long artistic shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlPbndrtUXpVQrBG62ysgdhldAtqjvU8ZGGhP04_9u0mazkB4nP1WnMUx1grP9CG5ubuH28QVfw5eCANiDcw6gfyDOn7Jhj7GVswCerSWkwqBm26NbFVR_wtzkcLS5-fzm-Z_hOoGUyMQs3EDK1Aof7Ik_qMEjaLdXR9FGBhiAeyOUmpdFWu-bPPdTLhOOkn9GbaA31H5mgNBmPnmS6OdQiz3rBlpLrzjOMXk_VGzFYV-pBz9rx2O0CDilJ9dAP4qBEs4cbVhwFe4"/>
+<div class="absolute top-4 left-4">
+<span class="px-3 py-1 bg-secondary text-on-secondary text-[10px] font-bold uppercase tracking-widest rounded-full">Maroc</span>
+</div>
+<div class="absolute top-4 right-4">
+<span class="px-3 py-1 bg-tertiary text-on-tertiary text-[10px] font-bold uppercase tracking-widest rounded-full">Nouveauté</span>
+</div>
+</div>
+<div class="space-y-1 px-1">
+<span class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">Beauté</span>
+<h3 class="font-headline text-lg font-bold leading-tight group-hover:text-primary transition-colors">Huile d'Argan Pure d'Essaouira</h3>
+<p class="font-body text-sm font-medium text-primary">42,00 €</p>
+</div>
+</article>
+<!-- Product Card 3 -->
+<article class="group md:mt-8">
+<div class="relative aspect-[3/4] overflow-hidden rounded-lg bg-surface-container-lowest mb-6">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Traditional Moroccan hand-woven rug with vibrant geometric patterns in royal blue and earth tones on a rustic floor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBjb0e-Ai9DlqOOcBD6vHBvTvvRa0ONdT0NHOC1T5t851TauCWVr9k61TPf2oLhfyAkJf9YIECaaSz9Xz2lrcGxnQdTLjb2l8pKsqP6j47c8RKpF3ZQcIJTY6ljrQP7FCXLSO8orr0kisHeFWVRAFil-yAGYYBudWKqzmb-CGXjDcXW0aqVnvcxeIOwVwVZ3GIju5KEiwgqOJLo9GCNiZdgdHY2SGYr_uYbga3ejKUShcpZ9H7TyyQu7Hf9xyAieey2y1sqwDm4Ec"/>
+<div class="absolute top-4 left-4">
+<span class="px-3 py-1 bg-secondary text-on-secondary text-[10px] font-bold uppercase tracking-widest rounded-full">Maroc</span>
+</div>
+</div>
+<div class="space-y-1 px-1">
+<span class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">Maison</span>
+<h3 class="font-headline text-lg font-bold leading-tight group-hover:text-primary transition-colors">Tapis Beni Ourain</h3>
+<p class="font-body text-sm font-medium text-primary">310,00 €</p>
+</div>
+</article>
+<!-- Product Card 4 -->
+<article class="group md:mt-8">
+<div class="relative aspect-[3/4] overflow-hidden rounded-lg bg-surface-container-lowest mb-6">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Artisanal basketry from Gabon made of natural plant fibers with intricate weaving patterns in a warm neutral palette" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHhtx_U-LZJJJOYO3oiVSUKdaTqJr5zxjDrsaXJYc1H_PSCOTguZ8Pgm_Q0J9XdU0PtQRxRwKZ3Z5J9Fn1VLzvwUNP2jDuCSNIVl0GDybKxoj0_YLXJ3m8n3Zi3HXSTXI45uVfARqkcDjjuMRDBPqhOSGV2KC2ffBzQMaC5_xpxwXHbTX170shtUGX0h8HMDOeqtTvv6Hn-gldQwFRrzb0riDgyRXxR9z90EwM5BBhtdVR_brMDsPXRcLN8lvxlPfuKrUUCfL-Vw0"/>
+<div class="absolute top-4 left-4">
+<span class="px-3 py-1 bg-primary text-on-primary text-[10px] font-bold uppercase tracking-widest rounded-full">Gabon</span>
+</div>
+</div>
+<div class="space-y-1 px-1">
+<span class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">Artisanat</span>
+<h3 class="font-headline text-lg font-bold leading-tight group-hover:text-primary transition-colors">Panier de Récolte Ogooué</h3>
+<p class="font-body text-sm font-medium text-primary">55,00 €</p>
+</div>
+</article>
+<!-- Product Card 5 (Bento Style Spacing) -->
+<article class="group">
+<div class="relative aspect-[3/4] overflow-hidden rounded-lg bg-surface-container-lowest mb-6">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Luxury organic shea butter in a glass jar with raw shea nuts and a wooden spoon on a minimalist surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_ROd5-FH7T1S1pJdaBxyTrxcArJi3LbfYR_RV6lXr-5XBj0OFiL1pFiZtt_ev8v3s3jOOizMjGp6g_kprn_IJdGQQcRckPWeagJjRJFEDffNj8xxmuEIZWwNX-QWKQI1JMQk1lJfygwcnLq8IUe3AMPI3aNaOmostOEvZ3BkTcS1Z_uqYQQBeYc0u7r1ROGi1cqgKaqSsD-qn50HORO5i5b69qscejYopNqzWMCKIEIMOfmrCI-iKOZKsEhwNuvpJmrh1EApayMI"/>
+<div class="absolute top-4 left-4">
+<span class="px-3 py-1 bg-primary text-on-primary text-[10px] font-bold uppercase tracking-widest rounded-full">Gabon</span>
+</div>
+</div>
+<div class="space-y-1 px-1">
+<span class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">Beauté</span>
+<h3 class="font-headline text-lg font-bold leading-tight group-hover:text-primary transition-colors">Beurre de Karité Bio</h3>
+<p class="font-body text-sm font-medium text-primary">28,00 €</p>
+</div>
+</article>
+<!-- Product Card 6 -->
+<article class="group">
+<div class="relative aspect-[3/4] overflow-hidden rounded-lg bg-surface-container-lowest mb-6">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Traditional Moroccan clay tagine pot with glazed decorative lid reflecting warm kitchen light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIEND2VI4Vg5CQKkxwA1HrjXG1rkVwQ0QiIWSn7LwF2tbRqLZsGgbzbtkge0AbzSWzlyihnCD7xP-iDKn6hGSAvA3evvYNlpyfDkuMkEmsZ8P8o7LYE02clWkLR85gJHjv9dqafUsYR3CChI0w6LDiE9xQ-_j9L-cX53sfNWND4lg4j9t83A3I3AU1I9oBTJf7n5qNerXGn8ZABrN08Qah3WxOGf21fQXhR3uK04LMtAmadl4hwJ7feTLZiNE6H-PeZ2uLQgNMkZc"/>
+<div class="absolute top-4 left-4">
+<span class="px-3 py-1 bg-secondary text-on-secondary text-[10px] font-bold uppercase tracking-widest rounded-full">Maroc</span>
+</div>
+</div>
+<div class="space-y-1 px-1">
+<span class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">Épicerie</span>
+<h3 class="font-headline text-lg font-bold leading-tight group-hover:text-primary transition-colors">Tajine en Terre Cuite d'Amesmiz</h3>
+<p class="font-body text-sm font-medium text-primary">65,00 €</p>
+</div>
+</article>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-[#f5fbf1]/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-t-[2rem] z-50 shadow-[0_-8px_40px_rgba(23,29,23,0.06)]">
+<button class="flex flex-col items-center justify-center text-[#171d17]/60 dark:text-slate-400 scale-100 active:scale-97 transition-all duration-200">
+<span class="material-symbols-outlined" href="hero.html">home</span>
+<span class="font-['Inter'] font-medium text-[11px] tracking-[0.05em] uppercase mt-1">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-[#006b2a] dark:text-[#0f8739] font-bold scale-100 active:scale-97 transition-all duration-200" href="shop.html">
+<span class="material-symbols-outlined">storefront</span>
+<span class="font-['Inter'] font-medium text-[11px] tracking-[0.05em] uppercase mt-1">Shop</span>
+</button>
+<button class="flex flex-col items-center justify-center text-[#171d17]/60 dark:text-slate-400 scale-100 active:scale-97 transition-all duration-200" href="sell.html">
+<span class="material-symbols-outlined" href="sell.html">add_circle</span>
+<span class="font-['Inter'] font-medium text-[11px] tracking-[0.05em] uppercase mt-1">Sell</span>
+</button>
+<button class="flex flex-col items-center justify-center text-[#171d17]/60 dark:text-slate-400 scale-100 active:scale-97 transition-all duration-200" href="compte.html">
+<span class="material-symbols-outlined" href="compte.html">person</span>
+<span class="font-['Inter'] font-medium text-[11px] tracking-[0.05em] uppercase mt-1">Profile</span>
+</button>
+</nav>
+</body></html>
