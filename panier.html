@@ -252,4 +252,18 @@
 </a>
 </div>
 </nav>
+<script>
+    function saveOrder(orderData) {
+let orders = JSON.parse(
+localStorage.getItem('wenna_orders') || '[]'
+);
+orders.push(orderData);
+localStorage.setItem('wenna_orders', JSON.stringify(orders));
+}
+
+// Dans admin.html — lire les commandes
+const orders = JSON.parse(
+localStorage.getItem('wenna_orders') || '[]'
+);
+</script>
 </body></html>
