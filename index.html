@@ -38,27 +38,20 @@ tailwind.config = {
 
   .brand-gradient { background: linear-gradient(135deg, #006b2a 0%, #0f8739 100%); }
 
-  /* ─── CLEF DU FIX : les panels ne sont PAS position:absolute
-     Ils sont dans un wrapper qui affiche l'un OU l'autre via display ─── */
   #panel-connexion,
   #panel-inscription {
     display: block;
     width: 100%;
-    /* Animation douce au changement */
     animation: fadeSlideIn .35s cubic-bezier(.4,0,.2,1) both;
   }
-
   #panel-connexion.hidden-panel,
-  #panel-inscription.hidden-panel {
-    display: none;
-  }
+  #panel-inscription.hidden-panel { display: none; }
 
   @keyframes fadeSlideIn {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* ─── Input style système ─── */
   .w-input {
     width:100%; padding:.9rem 1rem .9rem 2.8rem;
     background:#e4eae0; border:none; border-bottom:2px solid #becaba;
@@ -73,7 +66,6 @@ tailwind.config = {
     transform:translateY(-50%); color:#6f7a6d; pointer-events:none;
   }
 
-  /* ─── Country / Role buttons ─── */
   .choice-btn {
     flex:1; display:flex; align-items:center; justify-content:center; gap:.4rem;
     padding:.75rem; border-radius:.75rem;
@@ -98,7 +90,6 @@ tailwind.config = {
   }
   .role-btn .material-symbols-outlined { font-size:22px; }
 
-  /* ─── Tab pill ─── */
   .tab-pill {
     padding:.6rem 1.5rem; border-radius:9999px;
     font-size:.82rem; font-weight:500; cursor:pointer;
@@ -110,7 +101,6 @@ tailwind.config = {
     box-shadow:0 2px 8px rgba(26,95,168,.3);
   }
 
-  /* ─── Submit button ─── */
   .btn-submit {
     width:100%; padding:1rem; border-radius:.875rem; border:none;
     cursor:pointer; background:linear-gradient(135deg,#006b2a,#0f8739);
@@ -123,7 +113,6 @@ tailwind.config = {
   .btn-submit:active { transform:scale(.97); }
   .btn-submit:disabled { opacity:.5; cursor:not-allowed; }
 
-  /* ─── Spinner ─── */
   .spinner {
     display:none; width:18px; height:18px; flex-shrink:0;
     border:2px solid rgba(255,255,255,.4); border-top-color:#fff;
@@ -133,7 +122,6 @@ tailwind.config = {
   .is-loading .spinner   { display:block; }
   .is-loading .btn-label { display:none; }
 
-  /* ─── Google button ─── */
   .btn-google {
     width:100%; padding:.9rem; border-radius:.875rem;
     border:1.5px solid rgba(190,202,186,.5);
@@ -143,7 +131,6 @@ tailwind.config = {
   }
   .btn-google:hover { background:#eff5eb; }
 
-  /* ─── Toast ─── */
   #toast {
     position:fixed; bottom:1.5rem; left:50%;
     transform:translateX(-50%) translateY(60px);
@@ -157,7 +144,14 @@ tailwind.config = {
   #toast.ok   { background:#006b2a; }
   #toast.ko   { background:#ba1a1a; }
 
-  /* ─── Password strength ─── */
+  /* Bannière erreur config Supabase */
+  #supabase-warning {
+    display:none;
+    background:#fff3cd; border:1px solid #ffc107; border-radius:.75rem;
+    padding:.75rem 1rem; margin-bottom:1rem;
+    font-size:.8rem; color:#856404; font-family:'Inter',sans-serif;
+  }
+
   #pwd-bar { height:3px; border-radius:99px; transition:width .3s, background .3s; width:0; }
 </style>
 </head>
@@ -182,6 +176,11 @@ tailwind.config = {
   <!-- ══ Formulaire Auth ══ -->
   <main class="flex-1 flex items-start md:items-center justify-center bg-surface px-4 py-8 relative overflow-y-auto">
     <div class="w-full max-w-md py-4">
+
+      <!-- Avertissement config (affiché si Supabase non configuré) -->
+      <div id="supabase-warning">
+        ⚠️ Supabase non configuré — remplacez la clé anon dans le JS pour activer l'authentification réelle.
+      </div>
 
       <!-- Tabs -->
       <div class="flex justify-center mb-6">
@@ -295,8 +294,8 @@ tailwind.config = {
         <div class="mb-4">
           <label class="block text-[10px] uppercase tracking-widest font-bold text-primary mb-2 ml-1">Pays d'origine</label>
           <div class="flex gap-3">
-            <button type="button" class="choice-btn" data-country="gabon" onclick="selectCountry('gabon',this)">🇬🇦 Gabon</button>
-            <button type="button" class="choice-btn" data-country="maroc" onclick="selectCountry('maroc',this)">🇲🇦 Maroc</button>
+            <button type="button" class="choice-btn" data-country="gabon" onclick="selectCountry('gabon')">🇬🇦 Gabon</button>
+            <button type="button" class="choice-btn" data-country="maroc" onclick="selectCountry('maroc')">🇲🇦 Maroc</button>
           </div>
         </div>
 
@@ -304,11 +303,11 @@ tailwind.config = {
         <div class="mb-5">
           <label class="block text-[10px] uppercase tracking-widest font-bold text-primary mb-2 ml-1">Vous êtes</label>
           <div class="flex gap-3">
-            <button type="button" class="role-btn" data-role="buyer" onclick="selectRole('buyer',this)">
+            <button type="button" class="role-btn" data-role="buyer" onclick="selectRole('buyer')">
               <span class="material-symbols-outlined">shopping_bag</span>
               Acheteur
             </button>
-            <button type="button" class="role-btn" data-role="artisan" onclick="selectRole('artisan',this)">
+            <button type="button" class="role-btn" data-role="artisan" onclick="selectRole('artisan')">
               <span class="material-symbols-outlined">storefront</span>
               Artisan / Vendeur
             </button>
@@ -365,19 +364,34 @@ tailwind.config = {
 <script>
 // ══════════════════════════════════════════════
 // SUPABASE — Configuration WennaShop Production
+// ✅ FIX : clé anon JWT correcte (sans suffixe sb_publishable_...)
+// Récupérer depuis : Supabase Dashboard → Settings → API → anon public
 // ══════════════════════════════════════════════
 const SUPABASE_URL  = 'https://vkevqwfpzywrtvodoqli.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrZXZxd2ZwenV3cnR2b2RvcWxpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM5NTI5NDcsImV4cCI6MjA1OTUyODk0N30.sb_publishable_6ebPy4FcTquBE_cHpQaORw_Sra52_RZ';
-// ⚠️ Remplacez SUPABASE_ANON par votre vraie clé anon depuis:
-// Supabase Dashboard → Settings → API → anon public
+const SUPABASE_ANON = 'VOTRE_CLÉ_ANON_JWT_ICI';
+// ↑ Coller ici la vraie clé anon (commence par eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...)
+// NE PAS ajouter sb_publishable_... à la fin — ce sont deux choses différentes
 
 let db = null;
-try {
-  const { createClient } = window.supabase;
-  db = createClient(SUPABASE_URL, SUPABASE_ANON);
-} catch(e) {
-  console.warn('Supabase non disponible:', e.message);
+
+function initSupabase() {
+  // Vérification que la clé est bien un JWT valide (commence par eyJ)
+  if (!SUPABASE_ANON || !SUPABASE_ANON.startsWith('eyJ')) {
+    console.warn('Supabase: clé anon manquante ou invalide. Mode démo actif.');
+    document.getElementById('supabase-warning').style.display = 'block';
+    return;
+  }
+  try {
+    const { createClient } = window.supabase;
+    db = createClient(SUPABASE_URL, SUPABASE_ANON);
+    console.log('Supabase initialisé ✓');
+  } catch(e) {
+    console.error('Supabase init error:', e.message);
+    document.getElementById('supabase-warning').style.display = 'block';
+  }
 }
+
+initSupabase();
 
 // ─── Redirect si déjà connecté ────────────────
 (async () => {
@@ -385,7 +399,9 @@ try {
   try {
     const { data: { session } } = await db.auth.getSession();
     if (session) window.location.href = 'hero.html';
-  } catch(e) {}
+  } catch(e) {
+    console.warn('getSession error:', e.message);
+  }
 })();
 
 // ── État local ────────────────────────────────
@@ -394,36 +410,29 @@ let selectedCountry = null;
 let selectedRole    = null;
 
 // ══════════════════════════════════════════════
-// SWITCH PANEL — le vrai fix de la superposition
+// SWITCH PANEL
 // ══════════════════════════════════════════════
 function switchMode(mode) {
   currentMode = mode;
-
   const panelCnx = document.getElementById('panel-connexion');
   const panelIns = document.getElementById('panel-inscription');
   const tabCnx   = document.getElementById('tab-cnx');
   const tabIns   = document.getElementById('tab-ins');
 
   if (mode === 'connexion') {
-    // Montrer connexion, cacher inscription
     panelCnx.classList.remove('hidden-panel');
     panelIns.classList.add('hidden-panel');
-    // Re-déclencher l'animation
     panelCnx.style.animation = 'none';
-    panelCnx.offsetHeight; // reflow
+    panelCnx.offsetHeight;
     panelCnx.style.animation = '';
-
     tabCnx.classList.add('active');
     tabIns.classList.remove('active');
   } else {
-    // Montrer inscription, cacher connexion
     panelIns.classList.remove('hidden-panel');
     panelCnx.classList.add('hidden-panel');
-    // Re-déclencher l'animation
     panelIns.style.animation = 'none';
-    panelIns.offsetHeight; // reflow
+    panelIns.offsetHeight;
     panelIns.style.animation = '';
-
     tabIns.classList.add('active');
     tabCnx.classList.remove('active');
   }
@@ -457,10 +466,10 @@ function evalStrength(pwd) {
   const hint = document.getElementById('pwd-hint');
   if (!bar) return;
   let score = 0;
-  if (pwd.length >= 8)         score++;
-  if (/[A-Z]/.test(pwd))       score++;
-  if (/[0-9]/.test(pwd))       score++;
-  if (/[^A-Za-z0-9]/.test(pwd)) score++;
+  if (pwd.length >= 8)           score++;
+  if (/[A-Z]/.test(pwd))         score++;
+  if (/[0-9]/.test(pwd))         score++;
+  if (/[^A-Za-z0-9]/.test(pwd))  score++;
   const levels = [
     { w:'0%',   bg:'transparent', msg:'' },
     { w:'25%',  bg:'#ba1a1a',     msg:'Faible' },
@@ -505,10 +514,9 @@ async function handleConnexion() {
   const pwd   = need('cnx-pwd',   'Mot de passe');
   if (!email || !pwd) return;
 
+  // ✅ FIX : plus de mode démo silencieux — on informe clairement
   if (!db) {
-    // Mode démo — accès direct sans Supabase
-    toast('Connexion démo…');
-    setTimeout(() => window.location.href = 'hero.html', 900);
+    toast('Supabase non configuré — ajoutez votre clé anon', 'ko');
     return;
   }
 
@@ -517,11 +525,24 @@ async function handleConnexion() {
     const { data, error } = await db.auth.signInWithPassword({ email, password: pwd });
     if (error) throw error;
     toast('Connexion réussie ✓');
-    setTimeout(() => window.location.href = 'hero.html', 900);
+    setTimeout(() => {
+      // Redirection selon le rôle
+      const role = data.user?.user_metadata?.role;
+      if (role === 'artisan') {
+        window.location.href = 'dashboard-vendeur.html';
+      } else {
+        window.location.href = 'hero.html';
+      }
+    }, 900);
   } catch (err) {
-    const msg = err.message === 'Invalid login credentials'
-      ? 'Email ou mot de passe incorrect.'
-      : (err.message || 'Erreur de connexion.');
+    let msg = 'Erreur de connexion.';
+    if (err.message === 'Invalid login credentials') {
+      msg = 'Email ou mot de passe incorrect.';
+    } else if (err.message === 'Email not confirmed') {
+      msg = 'Vérifiez votre email avant de vous connecter.';
+    } else if (err.message) {
+      msg = err.message;
+    }
     toast(msg, 'ko');
   } finally {
     setLoading('btn-cnx', false);
@@ -538,16 +559,16 @@ async function handleInscription() {
   if (!prenom || !nom || !email) return;
 
   const pwd = document.getElementById('ins-pwd')?.value || '';
-  if (pwd.length < 8)      { toast('Mot de passe : 8 caractères minimum', 'ko'); return; }
-  if (!selectedCountry)    { toast("Sélectionnez votre pays d'origine", 'ko'); return; }
-  if (!selectedRole)       { toast('Sélectionnez votre rôle', 'ko'); return; }
+  if (pwd.length < 8)   { toast('Mot de passe : 8 caractères minimum', 'ko'); return; }
+  if (!selectedCountry) { toast("Sélectionnez votre pays d'origine", 'ko'); return; }
+  if (!selectedRole)    { toast('Sélectionnez votre rôle', 'ko'); return; }
   if (!document.getElementById('cgu')?.checked) {
     toast('Acceptez les CGU pour continuer', 'ko'); return;
   }
 
+  // ✅ FIX : plus de mode démo silencieux
   if (!db) {
-    toast('Compte créé (démo) ✓');
-    setTimeout(() => switchMode('connexion'), 1500);
+    toast('Supabase non configuré — ajoutez votre clé anon', 'ko');
     return;
   }
 
@@ -571,7 +592,7 @@ async function handleInscription() {
 
     // 2 — Profil dans la table publique `users`
     if (authData?.user) {
-      await db.from('users').upsert({
+      const { error: profileErr } = await db.from('users').upsert({
         id:         authData.user.id,
         email,
         first_name: prenom,
@@ -579,17 +600,31 @@ async function handleInscription() {
         full_name:  `${prenom} ${nom}`,
         country:    selectedCountry,
         role:       selectedRole,
-        status:     'active',
+        status:     selectedRole === 'artisan' ? 'pending' : 'active',
+        created_at: new Date().toISOString(),
       }, { onConflict: 'id' });
+
+      // Log l'erreur profil mais ne bloque pas — l'auth est créée
+      if (profileErr) console.warn('Profile insert warning:', profileErr.message);
     }
 
-    toast('Compte créé ! Vérifiez votre email ✓');
-    setTimeout(() => switchMode('connexion'), 2000);
+    // Message différent selon rôle
+    if (selectedRole === 'artisan') {
+      toast('Compte créé ! Vérifiez votre email, puis attendez validation. ✓');
+    } else {
+      toast('Compte créé ! Vérifiez votre email ✓');
+    }
+    setTimeout(() => switchMode('connexion'), 2500);
 
   } catch (err) {
-    const msg = err.message?.includes('already registered')
-      ? 'Cet email est déjà utilisé.'
-      : (err.message || "Erreur lors de l'inscription.");
+    let msg = "Erreur lors de l'inscription.";
+    if (err.message?.includes('already registered') || err.message?.includes('already exists')) {
+      msg = 'Cet email est déjà utilisé.';
+    } else if (err.message?.includes('Password should be')) {
+      msg = 'Mot de passe trop faible — utilisez min. 8 caractères.';
+    } else if (err.message) {
+      msg = err.message;
+    }
     toast(msg, 'ko');
   } finally {
     setLoading('btn-ins', false);
