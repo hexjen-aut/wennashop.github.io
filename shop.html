@@ -1,262 +1,499 @@
 <!DOCTYPE html>
-
-<html lang="en"><head>
+<html lang="fr">
+<head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<title>WennaShop — Boutique</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            "colors": {
-                    "on-surface": "#171d17",
-                    "on-secondary-fixed": "#001c3a",
-                    "inverse-surface": "#2c322b",
-                    "on-tertiary": "#ffffff",
-                    "error": "#ba1a1a",
-                    "tertiary-fixed-dim": "#f0c110",
-                    "secondary-fixed-dim": "#a6c8ff",
-                    "primary-fixed-dim": "#73dc84",
-                    "on-tertiary-fixed": "#241a00",
-                    "surface-container-low": "#eff5eb",
-                    "tertiary-container": "#d0a600",
-                    "on-primary-fixed-variant": "#00531f",
-                    "on-secondary": "#ffffff",
-                    "on-background": "#171d17",
-                    "primary-container": "#0f8739",
-                    "surface-dim": "#d6dcd2",
-                    "tertiary": "#745b00",
-                    "surface-tint": "#006e2b",
-                    "error-container": "#ffdad6",
-                    "on-primary-container": "#f7fff2",
-                    "background": "#f5fbf1",
-                    "surface-container-lowest": "#ffffff",
-                    "outline-variant": "#becaba",
-                    "primary": "#006b2a",
-                    "surface-container": "#eaf0e5",
-                    "secondary-container": "#78b0fe",
-                    "surface-bright": "#f5fbf1",
-                    "secondary-fixed": "#d4e3ff",
-                    "on-error": "#ffffff",
-                    "on-tertiary-container": "#4f3d00",
-                    "on-secondary-container": "#00427d",
-                    "surface-container-highest": "#dee4da",
-                    "tertiary-fixed": "#ffe08b",
-                    "surface-variant": "#dee4da",
-                    "surface-container-high": "#e4eae0",
-                    "on-primary": "#ffffff",
-                    "on-error-container": "#93000a",
-                    "inverse-on-surface": "#edf3e8",
-                    "on-surface-variant": "#3f4a3e",
-                    "on-secondary-fixed-variant": "#004786",
-                    "surface": "#f5fbf1",
-                    "on-primary-fixed": "#002108",
-                    "outline": "#6f7a6d",
-                    "on-tertiary-fixed-variant": "#584400",
-                    "primary-fixed": "#8ff99d",
-                    "secondary": "#1a5fa8",
-                    "inverse-primary": "#73dc84"
-            },
-            "borderRadius": {
-                    "DEFAULT": "1rem",
-                    "lg": "2rem",
-                    "xl": "3rem",
-                    "full": "9999px"
-            },
-            "fontFamily": {
-                    "headline": ["Noto Serif"],
-                    "body": ["Inter"],
-                    "label": ["Inter"]
-            }
-          },
-        },
-      }
-    </script>
-<style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
-        }
-        .editorial-shadow {
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.06);
-        }
-    </style>
-<style>
-    body {
-      min-height: max(884px, 100dvh);
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "on-surface":"#171d17","surface-container-low":"#eff5eb","surface-container":"#eaf0e5",
+        "surface-container-high":"#e4eae0","surface-container-highest":"#dee4da",
+        "surface-container-lowest":"#ffffff","on-surface-variant":"#3f4a3e",
+        "outline":"#6f7a6d","outline-variant":"#becaba","primary":"#006b2a",
+        "primary-container":"#0f8739","on-primary":"#ffffff","on-primary-container":"#f7fff2",
+        "secondary":"#1a5fa8","on-secondary":"#ffffff","tertiary":"#745b00",
+        "on-tertiary":"#ffffff","background":"#f5fbf1","surface":"#f5fbf1",
+      },
+      borderRadius:{"DEFAULT":"1rem","lg":"2rem","xl":"3rem","full":"9999px"},
+      fontFamily:{"headline":["Noto Serif"],"body":["Inter"],"label":["Inter"]}
     }
-  </style>
-  </head>
-<body class="bg-background text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container">
-<!-- TopAppBar -->
-<header class="fixed top-0 w-full z-50 bg-emerald-50/80 dark:bg-emerald-950/80 backdrop-blur-xl shadow-sm dark:shadow-none">
-<div class="flex justify-between items-center px-6 py-4 w-full">
-<div class="flex items-center gap-4">
-<button class="text-emerald-800 dark:text-emerald-100 hover:opacity-80 transition-opacity scale-95 active:duration-150">
-<span class="material-symbols-outlined" data-icon="menu">menu</span>
-</button>
-</div>
-<h1 class="font-serif italic text-2xl tracking-tighter text-emerald-900 dark:text-emerald-50">WennaShop</h1>
-<div class="flex items-center gap-4">
-<button class="text-emerald-800 dark:text-emerald-100 hover:opacity-80 transition-opacity scale-95 active:duration-150" href="panier.html">
-<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
-</button>
-</div>
-</div>
+  }
+}
+</script>
+
+<style>
+  .material-symbols-outlined {
+    font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24;
+  }
+  .editorial-shadow { box-shadow: 0 8px 40px rgba(0,0,0,0.06); }
+  body { min-height: 100dvh; }
+
+  /* Skeleton loader */
+  .skeleton {
+    background: linear-gradient(90deg, #e4eae0 25%, #eff5eb 50%, #e4eae0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 0.75rem;
+  }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+  /* Filter chip active */
+  .chip { transition: all .2s; cursor: pointer; }
+  .chip.active {
+    background: #006b2a !important;
+    color: #fff !important;
+  }
+
+  /* Card hover */
+  .prod-card { transition: transform .2s; cursor: pointer; }
+  .prod-card:hover { transform: translateY(-2px); }
+
+  /* Scrollbar hide */
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+</head>
+
+<body class="bg-background text-on-surface font-body">
+
+<!-- Header -->
+<header class="fixed top-0 w-full z-50 bg-emerald-50/80 backdrop-blur-xl shadow-sm">
+  <div class="flex justify-between items-center px-6 py-4 w-full">
+    <div class="flex items-center gap-4">
+      <a href="hero.html" class="text-emerald-800 hover:opacity-80 transition-opacity">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </a>
+    </div>
+    <h1 class="font-headline italic text-2xl tracking-tighter text-emerald-900">WennaShop</h1>
+    <div class="flex items-center gap-4">
+      <a href="panier.html" class="text-emerald-800 hover:opacity-80 transition-opacity">
+        <span class="material-symbols-outlined">shopping_bag</span>
+      </a>
+    </div>
+  </div>
 </header>
+
 <main class="pt-24 pb-32 px-6 max-w-7xl mx-auto">
-<!-- Search & Editorial Header -->
-<section class="mb-12">
-<div class="flex flex-col gap-6">
-<h2 class="font-headline text-4xl md:text-5xl text-on-surface leading-tight">
-                    Curated <span class="italic text-primary">Heritage</span>
-</h2>
-<!-- Modern Search Bar -->
-<div class="relative group">
-<div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-outline">
-<span class="material-symbols-outlined text-xl">search</span>
-</div>
-<input class="w-full h-14 pl-12 pr-6 bg-surface-container-high border-none border-b-2 border-outline-variant/15 rounded-t-lg focus:ring-0 focus:border-primary transition-all font-body text-on-surface" placeholder="Search traditional treasures..." type="text"/>
-</div>
-<!-- Minimalist Filter Chips -->
-<div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-<button class="flex-none px-6 py-2 rounded-full bg-secondary text-on-secondary text-sm font-medium transition-all active:scale-95">All Collections</button>
-<button class="flex-none px-6 py-2 rounded-full bg-surface-container-highest text-on-surface-variant text-sm font-medium hover:opacity-80 transition-all active:scale-95">Gabon</button>
-<button class="flex-none px-6 py-2 rounded-full bg-surface-container-highest text-on-surface-variant text-sm font-medium hover:opacity-80 transition-all active:scale-95">Morocco</button>
-<button class="flex-none px-6 py-2 rounded-full bg-surface-container-highest text-on-surface-variant text-sm font-medium hover:opacity-80 transition-all active:scale-95">Textiles</button>
-<button class="flex-none px-6 py-2 rounded-full bg-surface-container-highest text-on-surface-variant text-sm font-medium hover:opacity-80 transition-all active:scale-95">Ceramics</button>
-</div>
-</div>
-</section>
-<!-- Product Grid (2-Column Mobile, 3-4 Column Desktop) -->
-<section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-10 md:gap-x-8 md:gap-y-16">
-<!-- Product Card 1 -->
-<article class="group">
-<div class="relative aspect-[3/4] bg-surface-container-low rounded-lg overflow-hidden mb-6 editorial-shadow">
-<img alt="Handcrafted Moroccan Vase" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Close-up of a handcrafted blue and white Moroccan ceramic vase with intricate geometric patterns against a soft neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5HA6WiMlo_wSFVJ5szKc2etP4s2DWOat2RiLaZVSJFeQ4yIS2qx7WboZJj4w2lAMlQ2oPXHhWoB1B_mZB6Ove2fpSCh_H1tF0ET-1A2nXcI7Ci1-5_6T8gplZln3QS3PrA2loEBda_vJHgPnz8MGoK4teiyVKjD8iJX0c3PHtbBBOemjCXsXFzTOvIzGmi2jNKdIKh8FTeoMmYnq83alOcMv8nt0XaMv8SYMkKk-QoMw9WoWXXImJS8olhXZ3XequWES-wJXjS1A"/>
-<div class="absolute top-4 right-4">
-<button class="w-10 h-10 rounded-full bg-surface-container-lowest/80 backdrop-blur-md flex items-center justify-center text-primary transition-all active:scale-90">
-<span class="material-symbols-outlined text-xl">favorite</span>
-</button>
-</div>
-</div>
-<div class="flex flex-col gap-1">
-<span class="font-label text-[10px] uppercase tracking-[0.15em] text-outline">Sourced from Fez</span>
-<h3 class="font-headline text-lg text-on-surface leading-tight">Royal Cobalt Amphora</h3>
-<div class="flex justify-between items-end mt-2">
-<p class="font-body font-semibold text-primary">$185.00</p>
-<button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-xl text-xs font-medium scale-95 active:duration-150 active:scale-90 transition-all">
-<span class="material-symbols-outlined text-sm">add</span>
-                            Add
-                        </button>
-</div>
-</div>
-</article>
-<!-- Product Card 2 -->
-<article class="group">
-<div class="relative aspect-[3/4] bg-surface-container-low rounded-lg overflow-hidden mb-6 editorial-shadow">
-<img alt="Gabonese M'passa Textile" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Detailed texture of hand-woven Gabonese raffia cloth with bold black and ochre geometric tribal patterns, soft side lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7LldQKRAlHrR4WCIJ53kHCxb6hIU3JVQcdYys8xi_rZtOTfM6uABBjEMIXAC5goNK2heCuv5sBZzXtuZoKr8Y6P74aWg1X-XbNXflrmuWI5aD3Y7f3nPW5GDReFWQRc8GZibnMVCCprP7sAX-dycbhPuTRbYj9a82iu1Wdp2Uz07uvcrLUBo7CB2ywueMQel_cHXK8xdTUtEzwVxwOacib7glFkIuCHreITV-w1V8DMk95pEzsG4mQaObYh68sMmlNBMR6QbmE7g"/>
-<div class="absolute top-4 right-4">
-<button class="w-10 h-10 rounded-full bg-surface-container-lowest/80 backdrop-blur-md flex items-center justify-center text-primary transition-all active:scale-90">
-<span class="material-symbols-outlined text-xl">favorite</span>
-</button>
-</div>
-<span class="absolute bottom-4 left-4 px-3 py-1 bg-tertiary text-on-tertiary rounded-full text-[10px] font-bold uppercase tracking-widest">Limited</span>
-</div>
-<div class="flex flex-col gap-1">
-<span class="font-label text-[10px] uppercase tracking-[0.15em] text-outline">Libreville Artisans</span>
-<h3 class="font-headline text-lg text-on-surface leading-tight">Heritage M'passa Weave</h3>
-<div class="flex justify-between items-end mt-2">
-<p class="font-body font-semibold text-primary">$240.00</p>
-<button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-xl text-xs font-medium scale-95 active:duration-150 active:scale-90 transition-all">
-<span class="material-symbols-outlined text-sm">add</span>
-                            Add
-                        </button>
-</div>
-</div>
-</article>
-<!-- Product Card 3 (Asymmetric offset for editorial feel) -->
-<article class="group md:mt-8">
-<div class="relative aspect-[3/4] bg-surface-container-low rounded-lg overflow-hidden mb-6 editorial-shadow">
-<img alt="Moroccan Brass Lantern" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="An ornate Moroccan brass lantern with intricate cut-outs casting beautiful shadows against a warm terracotta wall" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6WTe_2dDnja4K-0Tkrm-XMEMwUg0pmgWtV3Om1lcjkmRtw44zN0RQhZLVW2AS1CMw9jToTKFvhXHuP4KvQHrOHDwx66zAPIxVgzJnLteY_SJO8wwQ1JgGCwZz75X0BdB4ng_ip5p8PZQ9K_Qzva_dvKXoMsPiEAX34UJYqeQf-uOILLG976q-z4jDvER0_zDJ6pP0hTTPDq4vjZn_YHIBPkoo69XXUTcCI2_vTD4XxGx8KiKMR2FYdIPsbHFhSJBEFIW8MiycISI"/>
-<div class="absolute top-4 right-4">
-<button class="w-10 h-10 rounded-full bg-surface-container-lowest/80 backdrop-blur-md flex items-center justify-center text-primary transition-all active:scale-90">
-<span class="material-symbols-outlined text-xl">favorite</span>
-</button>
-</div>
-</div>
-<div class="flex flex-col gap-1">
-<span class="font-label text-[10px] uppercase tracking-[0.15em] text-outline">Marrakech Souk</span>
-<h3 class="font-headline text-lg text-on-surface leading-tight">Starry Night Lantern</h3>
-<div class="flex justify-between items-end mt-2">
-<p class="font-body font-semibold text-primary">$125.00</p>
-<button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-xl text-xs font-medium scale-95 active:duration-150 active:scale-90 transition-all">
-<span class="material-symbols-outlined text-sm">add</span>
-                            Add
-                        </button>
-</div>
-</div>
-</article>
-<!-- Product Card 4 -->
-<article class="group md:mt-8">
-<div class="relative aspect-[3/4] bg-surface-container-low rounded-lg overflow-hidden mb-6 editorial-shadow">
-<img alt="Gabonese Ceremonial Mask" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Traditional Gabonese Punu mask carved from light wood with kaolin white finish and serene facial expression, studio lighting on dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEGHv_wtcw6cqbD0E-2nIOGFzSufQUz_oennL6gua9Q33kXZowFk4FHn_2Ab5SuxFKl4kAP7P1Ma8OGqmkcH8lCsxVEeDF5Kpw9CECWnh5BpAjMNe1CA687iaVpA1Vj3S20TT19kAdvpodQiyPkVGHP6TxZOwFjp9KIuNBCnYPHex2I6BDYY2ycXPYU5glT0JCW3tn1XlgvYijsphUkmwHyIYIuMM-GtHJw5_iLogB3zjfByfA65AhyI-Cclkmea--vowZX0A_VQY"/>
-<div class="absolute top-4 right-4">
-<button class="w-10 h-10 rounded-full bg-surface-container-lowest/80 backdrop-blur-md flex items-center justify-center text-primary transition-all active:scale-90">
-<span class="material-symbols-outlined text-xl">favorite</span>
-</button>
-</div>
-</div>
-<div class="flex flex-col gap-1">
-<span class="font-label text-[10px] uppercase tracking-[0.15em] text-outline">Ogooué Valley</span>
-<h3 class="font-headline text-lg text-on-surface leading-tight">Ancestral Punu Mask</h3>
-<div class="flex justify-between items-end mt-2">
-<p class="font-body font-semibold text-primary">$510.00</p>
-<button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-xl text-xs font-medium scale-95 active:duration-150 active:scale-90 transition-all">
-<span class="material-symbols-outlined text-sm">add</span>
-                            Add
-                        </button>
-</div>
-</div>
-</article>
-</section>
-<!-- Newsletter / Editorial Promo -->
-<section class="mt-24 mb-12 p-8 md:p-16 rounded-lg bg-emerald-100/50 dark:bg-emerald-900/20 relative overflow-hidden">
-<div class="relative z-10 max-w-lg">
-<span class="font-label text-[11px] uppercase tracking-[0.2em] text-primary font-bold mb-4 block">The Curator's Letter</span>
-<h2 class="font-headline text-3xl md:text-4xl text-on-surface leading-tight mb-6">Receive the stories behind the artifacts.</h2>
-<div class="flex flex-col md:flex-row gap-4">
-<input class="flex-grow h-14 px-6 bg-surface-container-lowest border-none rounded-xl focus:ring-2 focus:ring-primary/20" placeholder="Your email address" type="email"/>
-<button class="h-14 px-8 bg-on-surface text-surface rounded-xl font-medium hover:opacity-90 transition-opacity">Subscribe</button>
-</div>
-</div>
-<div class="absolute top-0 right-0 w-1/3 h-full hidden md:block opacity-20">
-<div class="w-full h-full bg-gradient-to-l from-primary to-transparent"></div>
-</div>
-</section>
+
+  <!-- Header éditorial -->
+  <section class="mb-10">
+    <div class="flex flex-col gap-5">
+      <h2 class="font-headline text-4xl md:text-5xl text-on-surface leading-tight">
+        Curated <span class="italic text-primary">Heritage</span>
+      </h2>
+
+      <!-- Barre de recherche -->
+      <div class="relative group">
+        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-outline">
+          <span class="material-symbols-outlined text-xl">search</span>
+        </div>
+        <input
+          id="search-input"
+          class="w-full h-14 pl-12 pr-6 bg-surface-container-high border-none border-b-2 border-outline-variant/15 rounded-t-lg focus:ring-0 focus:border-primary transition-all font-body text-on-surface"
+          placeholder="Rechercher des trésors..."
+          type="text"
+          oninput="handleSearch(this.value)"
+        />
+      </div>
+
+      <!-- Chips pays -->
+      <div class="flex gap-3 overflow-x-auto pb-1 scrollbar-hide">
+        <button class="chip flex-none px-6 py-2 rounded-full bg-secondary text-on-secondary text-sm font-medium active"
+          data-country="" onclick="filterCountry('', this)">Tout</button>
+        <button class="chip flex-none px-6 py-2 rounded-full bg-surface-container-highest text-on-surface-variant text-sm font-medium"
+          data-country="Gabon" onclick="filterCountry('Gabon', this)">🇬🇦 Gabon</button>
+        <button class="chip flex-none px-6 py-2 rounded-full bg-surface-container-highest text-on-surface-variant text-sm font-medium"
+          data-country="Maroc" onclick="filterCountry('Maroc', this)">🇲🇦 Maroc</button>
+        <!-- Chips catégories dynamiques -->
+        <div id="category-chips" class="flex gap-3"></div>
+      </div>
+
+      <!-- Compteur résultats -->
+      <p id="results-count" class="text-sm text-outline"></p>
+    </div>
+  </section>
+
+  <!-- Grille produits -->
+  <section id="products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-10 md:gap-x-8 md:gap-y-16">
+    <!-- Skeletons de chargement -->
+    <div class="skeleton aspect-[3/4]"></div>
+    <div class="skeleton aspect-[3/4]"></div>
+    <div class="skeleton aspect-[3/4] hidden md:block"></div>
+    <div class="skeleton aspect-[3/4] hidden lg:block"></div>
+  </section>
+
+  <!-- État vide -->
+  <div id="empty-state" class="hidden text-center py-24">
+    <span class="material-symbols-outlined text-5xl text-outline/40 block mb-4">inventory_2</span>
+    <p class="font-headline text-xl text-on-surface-variant">Aucun produit trouvé</p>
+    <p class="text-sm text-outline mt-2">Essayez d'autres filtres ou revenez bientôt.</p>
+    <button onclick="resetFilters()" class="mt-6 px-6 py-3 bg-primary text-on-primary rounded-xl text-sm font-medium">
+      Voir tous les produits
+    </button>
+  </div>
+
+  <!-- Newsletter -->
+  <section class="mt-24 mb-12 p-8 md:p-16 rounded-lg bg-emerald-100/50 relative overflow-hidden">
+    <div class="relative z-10 max-w-lg">
+      <span class="font-label text-[11px] uppercase tracking-[0.2em] text-primary font-bold mb-4 block">The Curator's Letter</span>
+      <h2 class="font-headline text-3xl md:text-4xl text-on-surface leading-tight mb-6">
+        Recevez les histoires derrière les artefacts.
+      </h2>
+      <div class="flex flex-col md:flex-row gap-4">
+        <input id="nl-email" class="flex-grow h-14 px-6 bg-surface-container-lowest border-none rounded-xl focus:ring-2 focus:ring-primary/20" placeholder="Votre adresse email" type="email"/>
+        <button onclick="subscribeNewsletter()" class="h-14 px-8 bg-on-surface text-surface rounded-xl font-medium hover:opacity-90 transition-opacity">
+          S'abonner
+        </button>
+      </div>
+      <p id="nl-msg" class="text-sm mt-3 hidden"></p>
+    </div>
+    <div class="absolute top-0 right-0 w-1/3 h-full hidden md:block opacity-20">
+      <div class="w-full h-full bg-gradient-to-l from-primary to-transparent"></div>
+    </div>
+  </section>
 </main>
-<!-- BottomNavBar -->
-<nav class="fixed bottom-0 w-full z-50 bg-emerald-50/80 dark:bg-emerald-950/80 backdrop-blur-xl rounded-t-[2rem] shadow-[0_-8px_40px_rgba(0,0,0,0.06)]">
-<div class="flex justify-around items-center w-full px-4 pb-6 pt-3">
-<a class="flex flex-col items-center justify-center text-emerald-900/40 dark:text-emerald-100/40 hover:text-emerald-700 dark:hover:text-emerald-300 transition-opacity scale-95 active:duration-200" href="hero.html">
-<span class="material-symbols-outlined" data-icon="home">home</span>
-<span class="text-[11px] font-medium uppercase tracking-widest Inter mt-1">Home</span>
-</a>
-<a class="flex flex-col items-center justify-center text-emerald-800 dark:text-emerald-100 bg-emerald-100/50 dark:bg-emerald-800/50 rounded-full px-4 py-1 scale-95 active:duration-200" href="shop.html">
-<span class="material-symbols-outlined" data-icon="storefront">storefront</span>
-<span class="text-[11px] font-medium uppercase tracking-widest Inter mt-1">Shop</span>
-</a>
-<a class="flex flex-col items-center justify-center text-emerald-900/40 dark:text-emerald-100/40 hover:text-emerald-700 dark:hover:text-emerald-300 transition-opacity scale-95 active:duration-200" href="sell.html">
-<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
-<span class="text-[11px] font-medium uppercase tracking-widest Inter mt-1" >Sell</span>
-</a>
-<a class="flex flex-col items-center justify-center text-emerald-900/40 dark:text-emerald-100/40 hover:text-emerald-700 dark:hover:text-emerald-300 transition-opacity scale-95 active:duration-200" href="compte.html">
-<span class="material-symbols-outlined" data-icon="person">person</span>
-<span class="text-[11px] font-medium uppercase tracking-widest Inter mt-1">Profile</span>
-</a>
-</div>
+
+<!-- Bottom Nav -->
+<nav class="fixed bottom-0 w-full z-50 bg-emerald-50/80 backdrop-blur-xl rounded-t-[2rem] shadow-[0_-8px_40px_rgba(0,0,0,0.06)]">
+  <div class="flex justify-around items-center w-full px-4 pb-6 pt-3">
+    <a class="flex flex-col items-center justify-center text-emerald-900/40 hover:text-emerald-700 transition-opacity scale-95" href="hero.html">
+      <span class="material-symbols-outlined">home</span>
+      <span class="text-[11px] font-medium uppercase tracking-widest mt-1">Home</span>
+    </a>
+    <a class="flex flex-col items-center justify-center text-emerald-800 bg-emerald-100/50 rounded-full px-4 py-1 scale-95" href="shop.html">
+      <span class="material-symbols-outlined">storefront</span>
+      <span class="text-[11px] font-medium uppercase tracking-widest mt-1">Shop</span>
+    </a>
+    <a class="flex flex-col items-center justify-center text-emerald-900/40 hover:text-emerald-700 transition-opacity scale-95" href="sell.html">
+      <span class="material-symbols-outlined">add_circle</span>
+      <span class="text-[11px] font-medium uppercase tracking-widest mt-1">Sell</span>
+    </a>
+    <a class="flex flex-col items-center justify-center text-emerald-900/40 hover:text-emerald-700 transition-opacity scale-95" href="compte.html">
+      <span class="material-symbols-outlined">person</span>
+      <span class="text-[11px] font-medium uppercase tracking-widest mt-1">Profile</span>
+    </a>
+  </div>
 </nav>
-</body></html>
+
+<!-- Toast -->
+<div id="toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 px-5 py-3 rounded-full text-sm font-semibold text-white z-50 transition-all duration-300 opacity-0 pointer-events-none whitespace-nowrap"></div>
+
+<script>
+// ══════════════════════════════════════
+// SUPABASE
+// ══════════════════════════════════════
+const SUPABASE_URL  = 'https://aakxoydznmybstfozjte.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0';
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+// ── État des filtres ──────────────────
+let allProducts   = [];
+let activeCountry = '';
+let activeCategory= '';
+let searchQuery   = '';
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+window.addEventListener('DOMContentLoaded', async () => {
+  await Promise.all([loadCategories(), loadProducts()]);
+});
+
+// ══════════════════════════════════════
+// CHARGEMENT CATÉGORIES (chips dynamiques)
+// ══════════════════════════════════════
+async function loadCategories() {
+  try {
+    const { data, error } = await db.from('categories').select('id, name').order('name');
+    if (error || !data?.length) return;
+
+    const container = document.getElementById('category-chips');
+    container.innerHTML = data.map(c => `
+      <button
+        class="chip flex-none px-6 py-2 rounded-full bg-surface-container-highest text-on-surface-variant text-sm font-medium"
+        data-category="${c.id}"
+        onclick="filterCategory('${c.id}', this)">
+        ${c.name}
+      </button>
+    `).join('');
+  } catch(e) {
+    console.warn('Catégories:', e.message);
+  }
+}
+
+// ══════════════════════════════════════
+// CHARGEMENT PRODUITS
+// ══════════════════════════════════════
+async function loadProducts() {
+  showSkeletons();
+
+  try {
+    let query = db
+      .from('products')
+      .select('id, name, price, country, origin_city, image_url, stock, status, category_id, categories(name)')
+      .eq('status', 'active')
+      .order('created_at', { ascending: false });
+
+    if (activeCountry)  query = query.eq('country', activeCountry);
+    if (activeCategory) query = query.eq('category_id', activeCategory);
+
+    const { data, error } = await query;
+
+    if (error) {
+      // Table inexistante → afficher produits de démo
+      if (error.code === '42P01') {
+        renderDemoProducts();
+        return;
+      }
+      throw error;
+    }
+
+    allProducts = data || [];
+    renderProducts(filterBySearch(allProducts));
+
+  } catch(e) {
+    console.error('Produits:', e.message);
+    renderDemoProducts();
+  }
+}
+
+// ══════════════════════════════════════
+// FILTRES
+// ══════════════════════════════════════
+function filterCountry(val, btn) {
+  activeCountry = val;
+  // Reset chip catégorie
+  activeCategory = '';
+  document.querySelectorAll('[data-category]').forEach(b => b.classList.remove('active'));
+  // Activer chip pays
+  document.querySelectorAll('[data-country]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  loadProducts();
+}
+
+function filterCategory(val, btn) {
+  activeCategory = (activeCategory === val) ? '' : val; // toggle
+  document.querySelectorAll('[data-category]').forEach(b => b.classList.remove('active'));
+  if (activeCategory) btn.classList.add('active');
+  loadProducts();
+}
+
+function handleSearch(val) {
+  searchQuery = val.toLowerCase().trim();
+  renderProducts(filterBySearch(allProducts));
+}
+
+function filterBySearch(products) {
+  if (!searchQuery) return products;
+  return products.filter(p =>
+    (p.name || '').toLowerCase().includes(searchQuery) ||
+    (p.origin_city || '').toLowerCase().includes(searchQuery) ||
+    (p.country || '').toLowerCase().includes(searchQuery)
+  );
+}
+
+function resetFilters() {
+  activeCountry = '';
+  activeCategory = '';
+  searchQuery = '';
+  document.getElementById('search-input').value = '';
+  document.querySelectorAll('[data-country]').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('[data-category]').forEach(b => b.classList.remove('active'));
+  document.querySelector('[data-country=""]')?.classList.add('active');
+  loadProducts();
+}
+
+// ══════════════════════════════════════
+// RENDU PRODUITS
+// ══════════════════════════════════════
+function renderProducts(products) {
+  const grid  = document.getElementById('products-grid');
+  const empty = document.getElementById('empty-state');
+  const count = document.getElementById('results-count');
+
+  if (!products || products.length === 0) {
+    grid.innerHTML  = '';
+    empty.classList.remove('hidden');
+    count.textContent = '';
+    return;
+  }
+
+  empty.classList.add('hidden');
+  count.textContent = `${products.length} produit${products.length > 1 ? 's' : ''}`;
+
+  grid.innerHTML = products.map((p, i) => {
+    const isNew     = isRecentProduct(p);
+    const isLimited = p.stock !== null && p.stock <= 3 && p.stock > 0;
+    const flag      = p.country === 'Gabon' ? '🇬🇦' : p.country === 'Maroc' ? '🇲🇦' : '';
+    const offset    = (i === 2 || i === 3) ? 'md:mt-8' : '';
+
+    return `
+      <article class="prod-card group ${offset}" onclick="goToProduct('${p.id}')">
+        <div class="relative aspect-[3/4] bg-surface-container-low rounded-lg overflow-hidden mb-4 editorial-shadow">
+
+          ${p.image_url
+            ? `<img
+                src="${p.image_url}"
+                alt="${escHtml(p.name)}"
+                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                onerror="this.parentElement.classList.add('no-img');this.remove()"
+              />`
+            : `<div class="w-full h-full flex items-center justify-center text-outline/30">
+                <span class="material-symbols-outlined text-5xl">image_not_supported</span>
+               </div>`
+          }
+
+          ${isNew    ? `<span class="absolute top-4 left-4 px-3 py-1 bg-secondary text-on-secondary rounded-full text-[10px] font-bold uppercase tracking-widest">New</span>` : ''}
+          ${isLimited? `<span class="absolute bottom-4 left-4 px-3 py-1 bg-tertiary text-on-tertiary rounded-full text-[10px] font-bold uppercase tracking-widest">Limited</span>` : ''}
+
+          <button
+            class="absolute top-4 right-4 w-10 h-10 rounded-full bg-surface-container-lowest/80 backdrop-blur-md flex items-center justify-center text-primary transition-all active:scale-90"
+            onclick="event.stopPropagation(); toggleWish('${p.id}', this)"
+            title="Favoris">
+            <span class="material-symbols-outlined text-xl">favorite</span>
+          </button>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <span class="font-label text-[10px] uppercase tracking-[0.15em] text-outline">
+            ${flag} ${escHtml(p.origin_city || p.country || '—')}
+          </span>
+          <h3 class="font-headline text-lg text-on-surface leading-tight">${escHtml(p.name)}</h3>
+          ${p.categories?.name ? `<span class="text-[11px] text-outline-variant">${escHtml(p.categories.name)}</span>` : ''}
+          <div class="flex justify-between items-end mt-2">
+            <p class="font-body font-semibold text-primary">€${Number(p.price).toFixed(2)}</p>
+            <button
+              class="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-xl text-xs font-medium active:scale-90 transition-all"
+              onclick="event.stopPropagation(); addToCart('${p.id}', '${escHtml(p.name)}')">
+              <span class="material-symbols-outlined text-sm">add</span>
+              Ajouter
+            </button>
+          </div>
+        </div>
+      </article>
+    `;
+  }).join('');
+}
+
+// ══════════════════════════════════════
+// PRODUITS DÉMO (tables absentes)
+// ══════════════════════════════════════
+function renderDemoProducts() {
+  const demos = [
+    { id:'demo-1', name:'Royal Cobalt Amphora',    price:185, country:'Maroc', origin_city:'Fez',        image_url:'https://lh3.googleusercontent.com/aida-public/AB6AXuD5HA6WiMlo_wSFVJ5szKc2etP4s2DWOat2RiLaZVSJFeQ4yIS2qx7WboZJj4w2lAMlQ2oPXHhWoB1B_mZB6Ove2fpSCh_H1tF0ET-1A2nXcI7Ci1-5_6T8gplZln3QS3PrA2loEBda_vJHgPnz8MGoK4teiyVKjD8iJX0c3PHtbBBOemjCXsXFzTOvIzGmi2jNKdIKh8FTeoMmYnq83alOcMv8nt0XaMv8SYMkKk-QoMw9WoWXXImJS8olhXZ3XequWES-wJXjS1A', stock:10 },
+    { id:'demo-2', name:"Heritage M'passa Weave",  price:240, country:'Gabon', origin_city:'Libreville', image_url:'https://lh3.googleusercontent.com/aida-public/AB6AXuB7LldQKRAlHrR4WCIJ53kHCxb6hIU3JVQcdYys8xi_rZtOTfM6uABBjEMIXAC5goNK2heCuv5sBZzXtuZoKr8Y6P74aWg1X-XbNXflrmuWI5aD3Y7f3nPW5GDReFWQRc8GZibnMVCCprP7sAX-dycbhPuTRbYj9a82iu1Wdp2Uz07uvcrLUBo7CB2ywueMQel_cHXK8xdTUtEzwVxwOacib7glFkIuCHreITV-w1V8DMk95pEzsG4mQaObYh68sMmlNBMR6QbmE7g', stock:2  },
+    { id:'demo-3', name:'Starry Night Lantern',    price:125, country:'Maroc', origin_city:'Marrakech',  image_url:'https://lh3.googleusercontent.com/aida-public/AB6AXuC6WTe_2dDnja4K-0Tkrm-XMEMwUg0pmgWtV3Om1lcjkmRtw44zN0RQhZLVW2AS1CMw9jToTKFvhXHuP4KvQHrOHDwx66zAPIxVgzJnLteY_SJO8wwQ1JgGCwZz75X0BdB4ng_ip5p8PZQ9K_Qzva_dvKXoMsPiEAX34UJYqeQf-uOILLG976q-z4jDvER0_zDJ6pP0hTTPDq4vjZn_YHIBPkoo69XXUTcCI2_vTD4XxGx8KiKMR2FYdIPsbHFhSJBEFIW8MiycISI', stock:7  },
+    { id:'demo-4', name:'Ancestral Punu Mask',     price:510, country:'Gabon', origin_city:'Ogooué',     image_url:'https://lh3.googleusercontent.com/aida-public/AB6AXuBEGHv_wtcw6cqbD0E-2nIOGFzSufQUz_oennL6gua9Q33kXZowFk4FHn_2Ab5SuxFKl4kAP7P1Ma8OGqmkcH8lCsxVEeDF5Kpw9CECWnh5BpAjMNe1CA687iaVpA1Vj3S20TT19kAdvpodQiyPkVGHP6TxZOwFjp9KIuNBCnYPHex2I6BDYY2ycXPYU5glT0JCW3tn1XlgvYijsphUkmwHyIYIuMM-GtHJw5_iLogB3zjfByfA65AhyI-Cclkmea--vowZX0A_VQY', stock:1  },
+  ];
+  allProducts = demos;
+  renderProducts(demos);
+  document.getElementById('results-count').textContent = 'Aperçu — connectez Supabase pour les vrais produits';
+}
+
+// ══════════════════════════════════════
+// NAVIGATION VERS DÉTAIL
+// ══════════════════════════════════════
+function goToProduct(id) {
+  if (id.startsWith('demo-')) {
+    showToast('Créez la table products dans Supabase pour accéder aux détails', 'info');
+    return;
+  }
+  window.location.href = `detail_produit.html?id=${id}`;
+}
+
+// ══════════════════════════════════════
+// PANIER (localStorage)
+// ══════════════════════════════════════
+function addToCart(id, name) {
+  const cart = JSON.parse(localStorage.getItem('wenna_cart') || '[]');
+  const idx  = cart.findIndex(i => i.id === id);
+  if (idx >= 0) { cart[idx].qty += 1; }
+  else           { cart.push({ id, name, qty: 1 }); }
+  localStorage.setItem('wenna_cart', JSON.stringify(cart));
+  showToast(`${name} ajouté au panier ✓`, 'ok');
+}
+
+// ══════════════════════════════════════
+// FAVORIS (localStorage)
+// ══════════════════════════════════════
+function toggleWish(id, btn) {
+  const wishes = JSON.parse(localStorage.getItem('wenna_wishlist') || '[]');
+  const icon   = btn.querySelector('.material-symbols-outlined');
+  const idx    = wishes.indexOf(id);
+  if (idx >= 0) {
+    wishes.splice(idx, 1);
+    icon.style.fontVariationSettings = "'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24";
+  } else {
+    wishes.push(id);
+    icon.style.fontVariationSettings = "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24";
+    showToast('Ajouté aux favoris ♥', 'ok');
+  }
+  localStorage.setItem('wenna_wishlist', JSON.stringify(wishes));
+}
+
+// ══════════════════════════════════════
+// NEWSLETTER
+// ══════════════════════════════════════
+async function subscribeNewsletter() {
+  const email = document.getElementById('nl-email')?.value?.trim();
+  const msg   = document.getElementById('nl-msg');
+  if (!email) { showToast('Entrez votre email', 'ko'); return; }
+
+  try {
+    const { error } = await db.from('newsletter').insert([{ email, source: 'shop' }]);
+    if (error) {
+      if (error.code === '23505') { showToast('Email déjà inscrit ✓', 'ok'); return; }
+      if (error.code === '42P01') { showToast('Newsletter bientôt disponible', 'ok'); return; }
+      throw error;
+    }
+    showToast('Inscription confirmée ✓', 'ok');
+    document.getElementById('nl-email').value = '';
+  } catch(e) {
+    showToast('Erreur : ' + e.message, 'ko');
+  }
+}
+
+// ══════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════
+function showSkeletons() {
+  document.getElementById('products-grid').innerHTML = `
+    <div class="skeleton aspect-[3/4]"></div>
+    <div class="skeleton aspect-[3/4]"></div>
+    <div class="skeleton aspect-[3/4] hidden md:block"></div>
+    <div class="skeleton aspect-[3/4] hidden lg:block"></div>
+  `;
+  document.getElementById('empty-state').classList.add('hidden');
+}
+
+function isRecentProduct(p) {
+  if (!p.created_at) return false;
+  return (Date.now() - new Date(p.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000;
+}
+
+function escHtml(str) {
+  return String(str || '').replace(/[&<>"']/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])
+  );
+}
+
+function showToast(msg, type = 'ok') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.background = type === 'ok' ? '#006b2a' : type === 'info' ? '#1a5fa8' : '#ba1a1a';
+  el.style.opacity = '1';
+  el.style.pointerEvents = 'auto';
+  setTimeout(() => { el.style.opacity = '0'; el.style.pointerEvents = 'none'; }, 3000);
+}
+</script>
+</body>
+</html>
