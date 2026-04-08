@@ -1,244 +1,409 @@
 <!DOCTYPE html>
-
-<html class="light" lang="en"><head>
+<html class="light" lang="fr">
+<head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<title>Détail Produit — WennaShop</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            "colors": {
-                    "on-surface": "#171d17",
-                    "on-secondary-fixed": "#001c3a",
-                    "inverse-surface": "#2c322b",
-                    "on-tertiary": "#ffffff",
-                    "error": "#ba1a1a",
-                    "tertiary-fixed-dim": "#f0c110",
-                    "secondary-fixed-dim": "#a6c8ff",
-                    "primary-fixed-dim": "#73dc84",
-                    "on-tertiary-fixed": "#241a00",
-                    "surface-container-low": "#eff5eb",
-                    "tertiary-container": "#d0a600",
-                    "on-primary-fixed-variant": "#00531f",
-                    "on-secondary": "#ffffff",
-                    "on-background": "#171d17",
-                    "primary-container": "#0f8739",
-                    "surface-dim": "#d6dcd2",
-                    "tertiary": "#745b00",
-                    "surface-tint": "#006e2b",
-                    "error-container": "#ffdad6",
-                    "on-primary-container": "#f7fff2",
-                    "background": "#f5fbf1",
-                    "surface-container-lowest": "#ffffff",
-                    "outline-variant": "#becaba",
-                    "primary": "#006b2a",
-                    "surface-container": "#eaf0e5",
-                    "secondary-container": "#78b0fe",
-                    "surface-bright": "#f5fbf1",
-                    "secondary-fixed": "#d4e3ff",
-                    "on-error": "#ffffff",
-                    "on-tertiary-container": "#4f3d00",
-                    "on-secondary-container": "#00427d",
-                    "surface-container-highest": "#dee4da",
-                    "tertiary-fixed": "#ffe08b",
-                    "surface-variant": "#dee4da",
-                    "surface-container-high": "#e4eae0",
-                    "on-primary": "#ffffff",
-                    "on-error-container": "#93000a",
-                    "inverse-on-surface": "#edf3e8",
-                    "on-surface-variant": "#3f4a3e",
-                    "on-secondary-fixed-variant": "#004786",
-                    "surface": "#f5fbf1",
-                    "on-primary-fixed": "#002108",
-                    "outline": "#6f7a6d",
-                    "on-tertiary-fixed-variant": "#584400",
-                    "primary-fixed": "#8ff99d",
-                    "secondary": "#1a5fa8",
-                    "inverse-primary": "#73dc84"
-            },
-            "borderRadius": {
-                    "DEFAULT": "1rem",
-                    "lg": "2rem",
-                    "xl": "3rem",
-                    "full": "9999px"
-            },
-            "fontFamily": {
-                    "headline": ["Noto Serif"],
-                    "body": ["Inter"],
-                    "label": ["Inter"]
-            }
-          },
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "on-surface": "#171d17","on-secondary-fixed": "#001c3a","inverse-surface": "#2c322b","on-tertiary": "#ffffff","error": "#ba1a1a","tertiary-fixed-dim": "#f0c110","secondary-fixed-dim": "#a6c8ff","primary-fixed-dim": "#73dc84","on-tertiary-fixed": "#241a00","surface-container-low": "#eff5eb","tertiary-container": "#d0a600","on-primary-fixed-variant": "#00531f","on-secondary": "#ffffff","on-background": "#171d17","primary-container": "#0f8739","surface-dim": "#d6dcd2","tertiary": "#745b00","surface-tint": "#006e2b","error-container": "#ffdad6","on-primary-container": "#f7fff2","background": "#f5fbf1","surface-container-lowest": "#ffffff","outline-variant": "#becaba","primary": "#006b2a","surface-container": "#eaf0e5","secondary-container": "#78b0fe","surface-bright": "#f5fbf1","secondary-fixed": "#d4e3ff","on-error": "#ffffff","on-tertiary-container": "#4f3d00","on-secondary-container": "#00427d","surface-container-highest": "#dee4da","tertiary-fixed": "#ffe08b","surface-variant": "#dee4da","surface-container-high": "#e4eae0","on-primary": "#ffffff","on-error-container": "#93000a","inverse-on-surface": "#edf3e8","on-surface-variant": "#3f4a3e","on-secondary-fixed-variant": "#004786","surface": "#f5fbf1","on-primary-fixed": "#002108","outline": "#6f7a6d","on-tertiary-fixed-variant": "#584400","primary-fixed": "#8ff99d","secondary": "#1a5fa8","inverse-primary": "#73dc84"
         },
-      }
-    </script>
+        "borderRadius": { "DEFAULT": "1rem","lg": "2rem","xl": "3rem","full": "9999px" },
+        "fontFamily": { "headline": ["Noto Serif"],"body": ["Inter"],"label": ["Inter"] }
+      },
+    },
+  }
+</script>
 <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
-        }
-        body { font-family: 'Inter', sans-serif; }
-        h1, h2, h3 { font-family: 'Noto Serif', serif; }
-    </style>
-<style>
-    body {
-      min-height: max(884px, 100dvh);
-    }
-  </style>
-  </head>
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24; }
+  body { font-family: 'Inter', sans-serif; min-height: max(884px, 100dvh); }
+  h1, h2, h3 { font-family: 'Noto Serif', serif; }
+
+  @keyframes shimmer {
+    0%   { background-position: -600px 0; }
+    100% { background-position: 600px 0; }
+  }
+  .skeleton {
+    background: linear-gradient(90deg, #dde8d8 25%, #cdd8c8 50%, #dde8d8 75%);
+    background-size: 600px 100%;
+    animation: shimmer 1.4s infinite linear;
+    border-radius: 0.5rem;
+  }
+
+  #toast {
+    position: fixed;
+    bottom: 110px;
+    left: 50%;
+    transform: translateX(-50%) translateY(16px);
+    opacity: 0;
+    background: #006b2a;
+    color: white;
+    padding: 10px 22px;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    z-index: 999;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
 <body class="bg-background text-on-surface min-h-screen pb-32">
+
+<div id="toast">Ajouté au panier</div>
+
 <!-- Top Navigation -->
 <nav class="bg-emerald-50/80 dark:bg-emerald-950/80 backdrop-blur-xl text-emerald-800 dark:text-emerald-100 fixed top-0 w-full z-50 shadow-sm dark:shadow-none">
-<div class="flex justify-between items-center px-6 py-4 w-full">
-<button class="hover:opacity-80 transition-opacity scale-95 active:duration-150">
-<span class="material-symbols-outlined">arrow_back</span>
-</button>
-<span class="font-serif italic text-2xl tracking-tighter text-emerald-900 dark:text-emerald-50">WennaShop</span>
-<button class="hover:opacity-80 transition-opacity scale-95 active:duration-150" href="panier.html">
-<span class="material-symbols-outlined">shopping_bag</span>
-</button>
-</div>
+  <div class="flex justify-between items-center px-6 py-4 w-full">
+    <button onclick="history.back()" class="hover:opacity-80 transition-opacity scale-95 active:duration-150">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+    <span class="font-serif italic text-2xl tracking-tighter text-emerald-900 dark:text-emerald-50">WennaShop</span>
+    <a href="panier.html" class="hover:opacity-80 transition-opacity scale-95 active:duration-150 relative">
+      <span class="material-symbols-outlined">shopping_bag</span>
+      <span id="cart-badge" class="absolute -top-1 -right-1 bg-primary text-white text-[9px] font-bold w-4 h-4 rounded-full items-center justify-center hidden flex">0</span>
+    </a>
+  </div>
 </nav>
+
 <main class="pt-16">
-<!-- Immersive Image Gallery -->
-<section class="relative px-4 pt-4">
-<div class="grid grid-cols-12 gap-4 h-[530px]">
-<div class="col-span-8 rounded-lg overflow-hidden relative group">
-<img alt="Pure Argan Oil bottle" class="w-full h-full object-cover" data-alt="Close-up of a luxurious amber glass bottle containing liquid gold argan oil, set against a backdrop of sun-drenched Moroccan sandstone." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBp3QDsr3M_y-DJ1AHG1hyhJSriLSPMz6pcPIC4cFSN6EbzW3iyE4JifvP3SQDmVFdmN_fpZwdRekEmfZ7Pa2UqfzMyGOEIkQ0oD7tVjfjQxbA3to5t2rnmGZVZmhG9OWtNz4r8KRXzT2WH6x0ztASUvJu7_QK44MaoafeGg71Mi5BRmKjonmQaqTzoSLfe9mrUPX-Jh0etc7C5YljuealaPqkIeNeNUeYbuXwvCePWEeZ7vTLxg2ZGytzSKLNXWEU3kqXcnu1pttY"/>
-<div class="absolute bottom-4 left-4 bg-surface-container-lowest/90 backdrop-blur px-3 py-1 rounded-full">
-<span class="text-[10px] font-bold tracking-[0.2em] text-secondary uppercase">Product of Morocco</span>
-</div>
-</div>
-<div class="col-span-4 flex flex-col gap-4">
-<div class="flex-1 rounded-lg overflow-hidden">
-<img alt="Argan kernels detail" class="w-full h-full object-cover" data-alt="Macro detail of dried argan kernels on a hand-woven Berber textile with intricate geometric patterns in blue and cream." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWolx1lXRLLjRjocNHkoO0ZsfENeSt-YB2wXjZZRLRSK5Dx_v-R3WZjsdZGSKXgRSnibHNGQRezHyY4k2bBgCkFvP5Z_28J2oepmJ2VpJDFlXjE9YMnLedxzC3brCQO8TYAbCeN144GeBr5mTjVLiPOWHX9u7qY2KXgcYHnZR7d4ebT88_ZXyN0FjT8KdOCuIFWT-J0Qxnd2dOHMwWAWmDE5gyGNTbr5oTWEMwvGYOudQLaLUnwu8cjn_q0y4flZMz_iSpyV5FWXU"/>
-</div>
-<div class="flex-1 rounded-lg overflow-hidden relative">
-<img alt="Traditional press" class="w-full h-full object-cover" data-alt="Soft-focus shot of traditional stone cold-press tools used for extracting argan oil, glowing in warm afternoon sunlight." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC92DhOEvQElwREk3qqN-iRao6Vvaq6dOwmgtjiVmRjenrUfBYibMowX7sy55XXAZkj9aAKcYcjYG913KsyOqEjK1cbKpz6DEnv864q_sh8X13-01hJeI9tghezwxp4mxm6FikmkmoUPOU9WTleNvHEkhV0JPfPnZE4IYfUhlFv6507f6sb-rRQblg6FqCVOEzBp3Paileb1F6Kg4xu2UZmaFEQN0CMWtNE4IO2MqpRaoujhXE-IrTcdEzPNdbG5OZzI8TU73JKX4w"/>
-<div class="absolute inset-0 bg-on-surface/20 flex items-center justify-center">
-<span class="text-white text-xs font-medium">+3 Photos</span>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- Product Details -->
-<section class="px-6 mt-8">
-<div class="flex justify-between items-start">
-<div>
-<span class="label-sm text-[11px] font-medium uppercase tracking-[0.15em] text-tertiary mb-2 block">Heritage Collection</span>
-<h1 class="text-4xl md:text-5xl font-bold leading-tight mb-4">Huile d'Argan</h1>
-</div>
-<div class="text-right">
-<span class="text-2xl font-bold text-primary">€48.00</span>
-<div class="flex items-center gap-1 justify-end mt-1">
-<span class="material-symbols-outlined text-sm text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="text-xs font-medium">4.9</span>
-</div>
-</div>
-</div>
-<!-- Origin & Specs Chips -->
-<div class="flex gap-2 mt-6 overflow-x-auto pb-2 no-scrollbar">
-<div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full border border-outline-variant/15 whitespace-nowrap">
-<span class="material-symbols-outlined text-[18px]">location_on</span>
-<span class="text-xs font-medium">Sourced from Essaouira</span>
-</div>
-<div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full border border-outline-variant/15 whitespace-nowrap">
-<span class="material-symbols-outlined text-[18px]">eco</span>
-<span class="text-xs font-medium">100% Organic Cold-Pressed</span>
-</div>
-<div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full border border-outline-variant/15 whitespace-nowrap">
-<span class="material-symbols-outlined text-[18px]">filter_vintage</span>
-<span class="text-xs font-medium">Fair Trade Certified</span>
-</div>
-</div>
-<!-- Description -->
-<div class="mt-10 max-w-2xl">
-<h3 class="text-lg font-bold mb-4">The Story</h3>
-<p class="text-on-surface-variant leading-relaxed mb-6 font-body">
-                    Extracted from the kernels of the argan tree (Argania spinosa), endemic to the semi-desert Souss valley of Morocco. This "liquid gold" is hand-pressed by local cooperatives using techniques passed down through generations. Rich in vitamin E and fatty acids, it serves as an exceptional ritual for skin rejuvenation and hair vitality.
-                </p>
-<p class="text-on-surface-variant leading-relaxed font-body">
-                    Our current batch is curated specifically for WennaShop, ensuring a higher concentration of antioxidants through sustainable, small-batch harvesting during the peak summer season.
-                </p>
-</div>
-<!-- Seller Card -->
-<div class="mt-12 p-6 bg-surface-container-low rounded-lg flex items-center justify-between">
-<div class="flex items-center gap-4">
-<div class="w-14 h-14 rounded-full overflow-hidden border-2 border-primary/20">
-<img alt="Seller Profile" class="w-full h-full object-cover" data-alt="Portrait of a smiling Moroccan artisan woman in a vibrant indigo headscarf, soft natural light reflecting her warmth and expertise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7vofdDbzB1kHQpCcZGnjQmpCiN7rfxNYAEY_mK8wz0Lj0vftDkhWnlRUagW1kzeqDVjj4jy6LCgLeV2flgyhiBRD2ENZDQv0TZKMLq1ItjAMV5wqL3hVWPmgRptKpsS2e8RWMi5jK27FNQCgY7sN1BmBurhsVFSqmsiXffdckUxMCmLk4vtIB47ihaBL5kFUwT_4oB0hkAnCv9fbHF6SqqLQsGPb3hhdha2bFzoceValEi57vxyN4ygT66hFGMkcFpxt4BeE2S9g"/>
-</div>
-<div>
-<h4 class="font-bold text-sm">Amira's Heritage Oils</h4>
-<p class="text-[11px] text-on-surface-variant uppercase tracking-wider">Top Rated Seller • Morocco</p>
-</div>
-</div>
-<button class="px-5 py-2 rounded-full border border-outline-variant text-xs font-bold hover:bg-surface-container-high transition-colors">
-                    Visit Boutique
-                </button>
-</div>
-<!-- Related Products -->
-<div class="mt-16">
-<div class="flex justify-between items-end mb-8">
-<h2 class="text-2xl font-bold">You may also like</h2>
-<a class="text-xs font-bold uppercase tracking-widest text-primary border-b border-primary/20 pb-1" href="#">View Collection</a>
-</div>
-<div class="grid grid-cols-2 gap-6">
-<!-- Related 1 -->
-<div class="group">
-<div class="aspect-[4/5] bg-surface-container-low rounded-lg overflow-hidden mb-4">
-<img alt="Related product" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Glass jar of premium African Shea Butter on a raw wooden surface with dried hibiscus flowers scattered around." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCslf4y0AqCbRQU1kqVR7bB5LfAvXyESwNFFLrSmjYEKGj2xlyNbBWTivy6Qp0QK8mZmrtDjP7k-FeO1S0ShiUv19qgNDBzv6H5Pm9jzXk8c8D_CIyc8ryw5Y6Eu7xrh2a__yJe1iTcwQYrLpmUESasz-1Kkd1yGGFvn980RfQI3Lmixx99g1T5chaIqqj1A4nZO0j9I5xXXp5RVmjM_1g-oh3g1pf_CufrOyWWKTGDQ8g3q1FS4OvMlO5HeCcUA0XxRBTbbJq2tIQ"/>
-</div>
-<span class="text-[10px] font-bold tracking-widest uppercase text-tertiary">Gabon</span>
-<h4 class="font-headline font-bold text-base mt-1">Beurre de Karité</h4>
-<p class="text-sm font-medium text-on-surface-variant">€32.00</p>
-</div>
-<!-- Related 2 -->
-<div class="group">
-<div class="aspect-[4/5] bg-surface-container-low rounded-lg overflow-hidden mb-4">
-<img alt="Related product" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Handcrafted ceramic dish holding black African soap, atmospheric lighting highlighting the organic texture and dark tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUS6S2emNW7bCNA5Bkf9VyzCWGTpyYrETlk82BJmKf7UYd8r0J-SidM_QhLCD9Sn0L2HhNE_VcLdCx0rUEqEBTG7Zy4XaNDe8c69tj7j0ubTAE92uMLxel6tnMxzwJVJ_o61MERPi02m1a9pXxK_bQnc8vu0Zl-fiUiM5wTsf7gDT5Aok7dlBwT-NhXfQPFi-PJuuBYS4T1kPZsw9zzSoG_5GFLVM_UckrJq2gtlD26D_8AdZr7PrvfDcWZ1ulXcezYdwggPPi3Po"/>
-</div>
-<span class="text-[10px] font-bold tracking-widest uppercase text-tertiary">Morocco</span>
-<h4 class="font-headline font-bold text-base mt-1">Savon Noir Beldi</h4>
-<p class="text-sm font-medium text-on-surface-variant">€18.00</p>
-</div>
-</div>
-</div>
-</section></main>
-<!-- Bottom Action Bar -->
+
+  <!-- SKELETON -->
+  <div id="skeleton-section">
+    <section class="relative px-4 pt-4">
+      <div class="grid grid-cols-12 gap-4 h-[530px]">
+        <div class="col-span-8 skeleton rounded-lg"></div>
+        <div class="col-span-4 flex flex-col gap-4">
+          <div class="flex-1 skeleton rounded-lg"></div>
+          <div class="flex-1 skeleton rounded-lg"></div>
+        </div>
+      </div>
+    </section>
+    <section class="px-6 mt-8 flex flex-col gap-4">
+      <div class="skeleton h-3 w-32"></div>
+      <div class="skeleton h-10 w-3/4"></div>
+      <div class="skeleton h-6 w-24"></div>
+      <div class="skeleton h-20 w-full mt-2"></div>
+    </section>
+  </div>
+
+  <!-- PRODUIT -->
+  <div id="product-section" style="display:none;">
+
+    <!-- Galerie immersive -->
+    <section class="relative px-4 pt-4">
+      <div class="grid grid-cols-12 gap-4 h-[530px]">
+        <div class="col-span-8 rounded-lg overflow-hidden relative group">
+          <img id="main-img" alt="" class="w-full h-full object-cover" src="" />
+          <div class="absolute bottom-4 left-4 bg-surface-container-lowest/90 backdrop-blur px-3 py-1 rounded-full">
+            <span id="origin-badge" class="text-[10px] font-bold tracking-[0.2em] text-secondary uppercase"></span>
+          </div>
+        </div>
+        <div id="thumbs-col" class="col-span-4 flex flex-col gap-4"></div>
+      </div>
+    </section>
+
+    <!-- Infos produit -->
+    <section class="px-6 mt-8">
+      <div class="flex justify-between items-start">
+        <div>
+          <span id="product-category" class="label-sm text-[11px] font-medium uppercase tracking-[0.15em] text-tertiary mb-2 block"></span>
+          <h1 id="product-title" class="text-4xl md:text-5xl font-bold leading-tight mb-4"></h1>
+        </div>
+        <div class="text-right">
+          <span id="product-price" class="text-2xl font-bold text-primary"></span>
+          <div id="rating-row" class="flex items-center gap-1 justify-end mt-1" style="display:none !important;">
+            <span class="material-symbols-outlined text-sm text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span>
+            <span id="avg-rating" class="text-xs font-medium"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chips origine / tags -->
+      <div id="chips-container" class="flex gap-2 mt-6 overflow-x-auto pb-2"></div>
+
+      <!-- Description -->
+      <div class="mt-10 max-w-2xl">
+        <h3 class="text-lg font-bold mb-4">L'histoire</h3>
+        <p id="product-description" class="text-on-surface-variant leading-relaxed mb-6 font-body"></p>
+      </div>
+
+      <!-- Vendeur -->
+      <div id="seller-card" class="mt-12 p-6 bg-surface-container-low rounded-lg flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <div class="skeleton w-14 h-14 rounded-full flex-shrink-0"></div>
+          <div class="flex flex-col gap-2">
+            <div class="skeleton h-4 w-32"></div>
+            <div class="skeleton h-3 w-24"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Avis -->
+      <div id="reviews-section" class="mt-16" style="display:none;">
+        <h2 class="text-2xl font-bold mb-6">Avis clients <span id="reviews-count" class="text-base font-normal text-on-surface-variant"></span></h2>
+        <div id="reviews-list" class="flex flex-col gap-4"></div>
+      </div>
+
+      <!-- Produits liés -->
+      <div class="mt-16">
+        <div class="flex justify-between items-end mb-8">
+          <h2 class="text-2xl font-bold">Vous aimerez aussi</h2>
+          <a class="text-xs font-bold uppercase tracking-widest text-primary border-b border-primary/20 pb-1" href="boutique.html">Voir la collection</a>
+        </div>
+        <div id="related-products" class="grid grid-cols-2 gap-6"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Erreur -->
+  <div id="error-state" style="display:none;" class="flex flex-col items-center justify-center py-24 px-6 text-center">
+    <span class="material-symbols-outlined text-5xl text-outline mb-4">search_off</span>
+    <h2 class="text-xl font-bold mb-2">Produit introuvable</h2>
+    <p class="text-on-surface-variant text-sm">Ce produit n'existe pas ou a été retiré.</p>
+    <a href="boutique.html" class="mt-6 px-6 py-2 rounded-full border border-outline-variant text-sm font-bold hover:bg-surface-container-high transition-colors">Retour à la boutique</a>
+  </div>
+
+</main>
+
+<!-- Barre action fixe -->
 <div class="fixed bottom-0 left-0 w-full bg-surface/80 backdrop-blur-xl px-6 py-6 z-50">
-<div class="max-w-screen-xl mx-auto flex items-center gap-4">
-<button class="w-14 h-14 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface-container-low transition-colors active:scale-95">
-<span class="material-symbols-outlined text-on-surface-variant">favorite</span>
-</button>
-<button class="flex-1 h-14 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-xl font-bold text-sm tracking-widest uppercase shadow-lg shadow-primary/20 active:scale-[0.98] transition-all">
-                Add to cart
-            </button>
+  <div class="max-w-screen-xl mx-auto flex items-center gap-4">
+    <button class="w-14 h-14 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface-container-low transition-colors active:scale-95">
+      <span class="material-symbols-outlined text-on-surface-variant">favorite</span>
+    </button>
+    <button onclick="addToCart()" class="flex-1 h-14 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-xl font-bold text-sm tracking-widest uppercase shadow-lg shadow-primary/20 active:scale-[0.98] transition-all">
+      Add to cart
+    </button>
+  </div>
 </div>
-</div>
-<!-- Bottom Navigation Shell (Mobile Only) -->
-<nav class="fixed bottom-0 w-full z-40 rounded-t-[2rem] bg-emerald-50/80 dark:bg-emerald-950/80 backdrop-blur-xl shadow-[0_-8px_40px_rgba(0,0,0,0.06)] md:hidden pointer-events-none opacity-0">
-<!-- Hidden as this is a sub-page Detail screen per instructions (Supress navigation shell if task-focused/back action) -->
-<div class="flex justify-around items-center w-full px-4 pb-6 pt-3">
-<div class="flex flex-col items-center justify-center text-emerald-900/40 dark:text-emerald-100/40">
-<span class="material-symbols-outlined" href="hero.html">home</span>
-<span class="text-[11px] font-medium uppercase tracking-widest Inter">Home</span>
-</div>
-<div class="flex flex-col items-center justify-center text-emerald-800 dark:text-emerald-100 bg-emerald-100/50 dark:bg-emerald-800/50 rounded-full px-4 py-1" href="shop.html">
-<span class="material-symbols-outlined" >storefront</span>
-<span class="text-[11px] font-medium uppercase tracking-widest Inter">Shop</span>
-</div>
-<div class="flex flex-col items-center justify-center text-emerald-900/40 dark:text-emerald-100/40" href="sell.html">
-<span class="material-symbols-outlined" >add_circle</span>
-<span class="text-[11px] font-medium uppercase tracking-widest Inter">Sell</span>
-</div>
-<div class="flex flex-col items-center justify-center text-emerald-900/40 dark:text-emerald-100/40" href="compte.html">
-<span class="material-symbols-outlined">person</span>
-<span class="text-[11px] font-medium uppercase tracking-widest Inter">Profile</span>
-</div>
-</div>
-</nav>
-</body></html>
+
+<!-- ═══════════════════════
+     SCRIPT SUPABASE
+════════════════════════ -->
+<script>
+  // ─── CONFIG ─────────────────────────────────
+  // Remplace par tes vraies clés (ou utilise ton js/config.js)
+  const SUPABASE_URL  = 'https://VOTRE_URL.supabase.co'
+  const SUPABASE_ANON = 'VOTRE_ANON_KEY'
+  // ─────────────────────────────────────────────
+
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON)
+  let currentProduct = null
+
+  const $ = id => document.getElementById(id)
+
+  function getProductId() {
+    return new URLSearchParams(window.location.search).get('id')
+  }
+
+  function formatPrice(amount, currency = 'MAD') {
+    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency }).format(amount)
+  }
+
+  function showToast(msg) {
+    const t = $('toast')
+    t.textContent = msg
+    t.classList.add('show')
+    setTimeout(() => t.classList.remove('show'), 3000)
+  }
+
+  // ── Panier ──────────────────────────────────
+  function getCart() { return JSON.parse(localStorage.getItem('wenna_cart') || '[]') }
+  function saveCart(c) { localStorage.setItem('wenna_cart', JSON.stringify(c)); updateBadge() }
+  function updateBadge() {
+    const n = getCart().reduce((s, i) => s + i.qty, 0)
+    const b = $('cart-badge')
+    b.textContent = n
+    n > 0 ? b.classList.remove('hidden') : b.classList.add('hidden')
+  }
+
+  function addToCart() {
+    if (!currentProduct) return
+    const cart = getCart()
+    const idx  = cart.findIndex(i => i.id === currentProduct.id)
+    const imgs = Array.isArray(currentProduct.images) && currentProduct.images.length
+      ? currentProduct.images : [currentProduct.image_url || '']
+    if (idx >= 0) cart[idx].qty++
+    else cart.push({ id: currentProduct.id, name: currentProduct.name, price: currentProduct.price, image: imgs[0], qty: 1 })
+    saveCart(cart)
+    showToast(`« ${currentProduct.name} » ajouté au panier`)
+  }
+
+  // ── Supabase fetch ───────────────────────────
+  async function loadProduct(id) {
+    const { data } = await sb.from('products').select('*').eq('id', id).single()
+    return data
+  }
+
+  async function loadSeller(sellerId) {
+    const { data } = await sb.from('users').select('id, full_name, avatar_url, created_at, country').eq('id', sellerId).single()
+    return data
+  }
+
+  async function loadReviews(productId) {
+    const { data } = await sb.from('reviews').select('*').eq('product_id', productId).eq('status', 'approved').order('created_at', { ascending: false })
+    return data || []
+  }
+
+  async function loadRelated(category, excludeId) {
+    const { data } = await sb.from('products').select('id, name, price, images, image_url, category, country, currency').eq('category', category).neq('id', excludeId).limit(4)
+    return data || []
+  }
+
+  // ── Rendus ───────────────────────────────────
+  function getImages(product) {
+    if (Array.isArray(product.images) && product.images.length) return product.images
+    if (product.image_url) return [product.image_url]
+    return []
+  }
+
+  function renderGallery(product) {
+    const imgs = getImages(product)
+    if (!imgs.length) return
+    $('main-img').src = imgs[0]
+    $('main-img').alt = product.name
+
+    const col = $('thumbs-col')
+    col.innerHTML = ''
+    for (let i = 1; i < Math.min(imgs.length, 3); i++) {
+      const isLast = i === 2 && imgs.length > 3
+      const div = document.createElement('div')
+      div.className = 'flex-1 rounded-lg overflow-hidden relative cursor-pointer'
+      div.innerHTML = `<img src="${imgs[i]}" alt="Photo ${i+1}" class="w-full h-full object-cover" />${isLast ? `<div class="absolute inset-0 bg-on-surface/20 flex items-center justify-center"><span class="text-white text-xs font-medium">+${imgs.length - 3} Photos</span></div>` : ''}`
+      div.addEventListener('click', () => $('main-img').src = imgs[i])
+      col.appendChild(div)
+    }
+    // Si une seule miniature on duplique l'affichage avec une teinte
+    if (imgs.length === 1) {
+      const div = document.createElement('div')
+      div.className = 'flex-1 rounded-lg overflow-hidden'
+      div.innerHTML = `<img src="${imgs[0]}" alt="${product.name}" class="w-full h-full object-cover opacity-60" />`
+      col.appendChild(div)
+    }
+  }
+
+  function renderProduct(product) {
+    currentProduct = product
+    renderGallery(product)
+
+    $('origin-badge').textContent     = product.country ? `Product of ${product.country}` : ''
+    $('product-category').textContent = product.category || 'Collection'
+    $('product-title').textContent    = product.name
+    $('product-price').textContent    = formatPrice(product.price, product.currency || 'MAD')
+    $('product-description').textContent = product.description || ''
+
+    // Chips
+    const chips = []
+    if (product.origin || product.country) chips.push({ icon: 'location_on', label: `Origine : ${product.origin || product.country}` })
+    if (product.tag1)  chips.push({ icon: 'eco',            label: product.tag1 })
+    if (product.tag2)  chips.push({ icon: 'filter_vintage', label: product.tag2 })
+    if (!chips.length) chips.push({ icon: 'eco', label: '100% Naturel' }, { icon: 'verified', label: 'Artisanat authentique' })
+
+    $('chips-container').innerHTML = chips.map(c => `
+      <div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full border border-outline-variant/15 whitespace-nowrap">
+        <span class="material-symbols-outlined text-[18px]">${c.icon}</span>
+        <span class="text-xs font-medium">${c.label}</span>
+      </div>`).join('')
+
+    $('skeleton-section').style.display = 'none'
+    $('product-section').style.display  = 'block'
+  }
+
+  function renderSeller(seller) {
+    if (!seller) { $('seller-card').innerHTML = '<p class="text-sm text-on-surface-variant">Vendeur non disponible</p>'; return }
+    const initial = (seller.full_name || 'V').charAt(0).toUpperCase()
+    const avatar  = seller.avatar_url
+      ? `<img src="${seller.avatar_url}" alt="${seller.full_name}" class="w-full h-full object-cover" />`
+      : `<div class="w-full h-full flex items-center justify-center bg-primary-fixed text-primary font-bold text-xl">${initial}</div>`
+    const since   = seller.created_at ? new Date(seller.created_at).getFullYear() : null
+    $('seller-card').innerHTML = `
+      <div class="flex items-center gap-4">
+        <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-primary/20">${avatar}</div>
+        <div>
+          <h4 class="font-bold text-sm">${seller.full_name || 'Vendeur'}</h4>
+          <p class="text-[11px] text-on-surface-variant uppercase tracking-wider">Top Rated Seller${seller.country ? ' · ' + seller.country : ''}${since ? ' · Depuis ' + since : ''}</p>
+        </div>
+      </div>
+      <button class="px-5 py-2 rounded-full border border-outline-variant text-xs font-bold hover:bg-surface-container-high transition-colors">Voir la boutique</button>`
+  }
+
+  function renderReviews(reviews) {
+    if (!reviews.length) return
+    const avg = reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviews.length
+    $('rating-row').style.display  = 'flex'
+    $('avg-rating').textContent    = avg.toFixed(1)
+    $('reviews-count').textContent = `(${reviews.length} avis)`
+    $('reviews-section').style.display = 'block'
+    $('reviews-list').innerHTML = reviews.map(r => {
+      const date  = r.created_at ? new Date(r.created_at).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long' }) : ''
+      const stars = '★'.repeat(Math.round(r.rating || 0)) + '☆'.repeat(5 - Math.round(r.rating || 0))
+      return `
+        <div class="p-5 bg-surface-container-low rounded-lg border border-outline-variant/20">
+          <div class="flex justify-between items-start mb-2">
+            <div>
+              <span class="font-semibold text-sm">${r.reviewer_name || 'Acheteur anonyme'}</span>
+              <div class="text-tertiary text-xs mt-0.5">${stars}</div>
+            </div>
+            <span class="text-[11px] text-on-surface-variant">${date}</span>
+          </div>
+          <p class="text-sm text-on-surface-variant leading-relaxed">${r.comment || ''}</p>
+        </div>`
+    }).join('')
+  }
+
+  function renderRelated(products) {
+    if (!products.length) return
+    $('related-products').innerHTML = products.slice(0, 4).map(p => {
+      const imgs = getImages(p)
+      return `
+        <a href="detail_produit.html?id=${p.id}" class="group">
+          <div class="aspect-[4/5] bg-surface-container-low rounded-lg overflow-hidden mb-4">
+            ${imgs[0] ? `<img src="${imgs[0]}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />` : '<div class="w-full h-full bg-surface-container-high"></div>'}
+          </div>
+          <span class="text-[10px] font-bold tracking-widest uppercase text-tertiary">${p.country || ''}</span>
+          <h4 class="font-headline font-bold text-base mt-1">${p.name}</h4>
+          <p class="text-sm font-medium text-on-surface-variant">${formatPrice(p.price, p.currency || 'MAD')}</p>
+        </a>`
+    }).join('')
+  }
+
+  // ── Init ─────────────────────────────────────
+  async function init() {
+    updateBadge()
+    const id = getProductId()
+    if (!id) {
+      $('skeleton-section').style.display = 'none'
+      $('error-state').style.display = 'block'
+      return
+    }
+
+    const [product, reviews] = await Promise.all([loadProduct(id), loadReviews(id)])
+
+    if (!product) {
+      $('skeleton-section').style.display = 'none'
+      $('error-state').style.display = 'block'
+      return
+    }
+
+    renderProduct(product)
+    renderReviews(reviews)
+    if (product.seller_id) loadSeller(product.seller_id).then(renderSeller)
+    if (product.category)  loadRelated(product.category, id).then(renderRelated)
+  }
+
+  document.addEventListener('DOMContentLoaded', init)
+</script>
+
+</body>
+</html>
