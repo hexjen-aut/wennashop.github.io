@@ -7,136 +7,58 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script id="tailwind-config">
 tailwind.config = {
   darkMode:"class",
-  theme: {
-    extend: {
-      colors: {
-        "on-surface":"#171d17","on-secondary-fixed":"#001c3a","inverse-surface":"#2c322b","on-tertiary":"#ffffff","error":"#ba1a1a","tertiary-fixed-dim":"#f0c110","secondary-fixed-dim":"#a6c8ff","primary-fixed-dim":"#73dc84","on-tertiary-fixed":"#241a00","surface-container-low":"#eff5eb","tertiary-container":"#d0a600","on-primary-fixed-variant":"#00531f","on-secondary":"#ffffff","on-background":"#171d17","primary-container":"#0f8739","surface-dim":"#d6dcd2","tertiary":"#745b00","surface-tint":"#006e2b","error-container":"#ffdad6","on-primary-container":"#f7fff2","background":"#f5fbf1","surface-container-lowest":"#ffffff","outline-variant":"#becaba","primary":"#006b2a","surface-container":"#eaf0e5","secondary-container":"#78b0fe","surface-bright":"#f5fbf1","secondary-fixed":"#d4e3ff","on-error":"#ffffff","on-tertiary-container":"#4f3d00","on-secondary-container":"#00427d","surface-container-highest":"#dee4da","tertiary-fixed":"#ffe08b","surface-variant":"#dee4da","surface-container-high":"#e4eae0","on-primary":"#ffffff","on-error-container":"#93000a","inverse-on-surface":"#edf3e8","on-surface-variant":"#3f4a3e","on-secondary-fixed-variant":"#004786","surface":"#f5fbf1","on-primary-fixed":"#002108","outline":"#6f7a6d","on-tertiary-fixed-variant":"#584400","primary-fixed":"#8ff99d","secondary":"#1a5fa8","inverse-primary":"#73dc84"
-      },
-      borderRadius:{"DEFAULT":"1rem","lg":"2rem","xl":"3rem","full":"9999px"},
-      fontFamily:{"headline":["Noto Serif"],"body":["Inter"],"label":["Inter"]}
-    }
-  }
+  theme:{extend:{colors:{"on-surface":"#171d17","on-secondary-fixed":"#001c3a","inverse-surface":"#2c322b","on-tertiary":"#ffffff","error":"#ba1a1a","tertiary-fixed-dim":"#f0c110","secondary-fixed-dim":"#a6c8ff","primary-fixed-dim":"#73dc84","on-tertiary-fixed":"#241a00","surface-container-low":"#eff5eb","tertiary-container":"#d0a600","on-primary-fixed-variant":"#00531f","on-secondary":"#ffffff","on-background":"#171d17","primary-container":"#0f8739","surface-dim":"#d6dcd2","tertiary":"#745b00","surface-tint":"#006e2b","error-container":"#ffdad6","on-primary-container":"#f7fff2","background":"#f5fbf1","surface-container-lowest":"#ffffff","outline-variant":"#becaba","primary":"#006b2a","surface-container":"#eaf0e5","secondary-container":"#78b0fe","surface-bright":"#f5fbf1","secondary-fixed":"#d4e3ff","on-error":"#ffffff","on-tertiary-container":"#4f3d00","on-secondary-container":"#00427d","surface-container-highest":"#dee4da","tertiary-fixed":"#ffe08b","surface-variant":"#dee4da","surface-container-high":"#e4eae0","on-primary":"#ffffff","on-error-container":"#93000a","inverse-on-surface":"#edf3e8","on-surface-variant":"#3f4a3e","on-secondary-fixed-variant":"#004786","surface":"#f5fbf1","on-primary-fixed":"#002108","outline":"#6f7a6d","on-tertiary-fixed-variant":"#584400","primary-fixed":"#8ff99d","secondary":"#1a5fa8","inverse-primary":"#73dc84"},borderRadius:{"DEFAULT":"1rem","lg":"2rem","xl":"3rem","full":"9999px"},fontFamily:{"headline":["Noto Serif"],"body":["Inter"],"label":["Inter"]}}}
 }
 </script>
 <style>
-  .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24; font-size:20px; }
-  body { font-family:'Inter',sans-serif; min-height:max(884px,100dvh); }
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24;font-size:20px;}
+  body{font-family:'Inter',sans-serif;min-height:max(884px,100dvh);}
 
-  @keyframes fadeUp { from{opacity:0;transform:translateY(24px);} to{opacity:1;transform:translateY(0);} }
-  @keyframes checkBounce { 0%{transform:scale(0);} 50%{transform:scale(1.3);} 100%{transform:scale(1);} }
-  @keyframes ripple { 0%{transform:scale(0);opacity:0.4;} 100%{transform:scale(4);opacity:0;} }
-  @keyframes slideUp { from{opacity:0;transform:translateY(100%);} to{opacity:1;transform:translateY(0);} }
-  @keyframes shimmer { 0%{background-position:-200% 0;} 100%{background-position:200% 0;} }
+  @keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes checkBounce{0%{transform:scale(0);}50%{transform:scale(1.3);}100%{transform:scale(1);}}
+  @keyframes ripple{0%{transform:scale(0);opacity:0.4;}100%{transform:scale(4);opacity:0;}}
+  @keyframes slideUp{from{opacity:0;transform:translateY(100%);}to{opacity:1;transform:translateY(0);}}
 
-  .anim-up { animation:fadeUp 0.6s cubic-bezier(0.22,1,0.36,1) forwards; opacity:0; }
-  .d-100{animation-delay:.1s;} .d-200{animation-delay:.2s;} .d-300{animation-delay:.3s;}
-  .d-400{animation-delay:.4s;} .d-500{animation-delay:.5s;}
+  .anim-up{animation:fadeUp 0.6s cubic-bezier(0.22,1,0.36,1) forwards;opacity:0;}
+  .d-100{animation-delay:.1s;}.d-200{animation-delay:.2s;}.d-300{animation-delay:.3s;}.d-400{animation-delay:.4s;}
 
-  /* Steps */
-  .step-active { color:#006b2a; }
-  .step-done { color:#006b2a; }
-  .step-inactive { color:#becaba; }
-  .step-line { height:2px; flex:1; background:#becaba; transition:background 0.4s; }
-  .step-line.done { background:#006b2a; }
+  .step-line{height:2px;flex:1;background:#becaba;transition:background 0.4s;}
+  .step-line.done{background:#006b2a;}
 
-  /* Input field style (bottom border only) */
-  .field-input {
-    width:100%;
-    background:#e4eae0;
-    border:none;
-    border-bottom:2px solid #becaba;
-    border-radius:1rem 1rem 0 0;
-    padding:1rem 1rem;
-    font-family:'Inter',sans-serif;
-    font-size:0.875rem;
-    color:#171d17;
-    outline:none;
-    transition:border-color 0.2s;
-  }
-  .field-input:focus { border-bottom-color:#006b2a; }
-  .field-input::placeholder { color:#9caa9a; }
+  .field-input{width:100%;background:#e4eae0;border:none;border-bottom:2px solid #becaba;border-radius:1rem 1rem 0 0;padding:1rem;font-family:'Inter',sans-serif;font-size:.875rem;color:#171d17;outline:none;transition:border-color 0.2s;}
+  .field-input:focus{border-bottom-color:#006b2a;}
+  .field-input::placeholder{color:#9caa9a;}
 
-  /* Card brand tabs */
-  .card-tab { transition:all 0.2s; border:2px solid transparent; cursor:pointer; }
-  .card-tab:hover { border-color:#becaba; transform:translateY(-2px); }
-  .card-tab.selected { border-color:#006b2a; background:#eff5eb; }
+  .card-tab{transition:all 0.2s;border:2px solid transparent;cursor:pointer;}
+  .card-tab:hover{border-color:#becaba;transform:translateY(-2px);}
+  .card-tab.selected{border-color:#006b2a;background:#eff5eb;}
 
-  /* Fake card preview */
-  .card-preview {
-    background:linear-gradient(135deg,#006b2a 0%,#1a5fa8 100%);
-    border-radius:1.25rem;
-    padding:1.5rem;
-    color:white;
-    position:relative;
-    overflow:hidden;
-  }
-  .card-preview::before {
-    content:'';
-    position:absolute;
-    top:-40px; right:-40px;
-    width:200px; height:200px;
-    border-radius:50%;
-    background:rgba(255,255,255,0.08);
-  }
-  .card-preview::after {
-    content:'';
-    position:absolute;
-    bottom:-60px; left:-30px;
-    width:220px; height:220px;
-    border-radius:50%;
-    background:rgba(255,255,255,0.05);
-  }
+  .card-preview{background:linear-gradient(135deg,#006b2a 0%,#1a5fa8 100%);border-radius:1.25rem;padding:1.5rem;color:white;position:relative;overflow:hidden;}
+  .card-preview::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.08);}
+  .card-preview::after{content:'';position:absolute;bottom:-60px;left:-30px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,0.05);}
 
-  /* Btn */
-  .btn-pay {
-    background:linear-gradient(135deg,#006b2a 0%,#0f8739 100%);
-    transition:all 0.2s;
-    position:relative;
-    overflow:hidden;
-  }
-  .btn-pay:hover { opacity:0.92; transform:scale(0.99); }
-  .btn-pay:active { transform:scale(0.97); }
-  .btn-pay .ripple-el {
-    position:absolute;
-    border-radius:50%;
-    background:rgba(255,255,255,0.3);
-    width:100px; height:100px;
-    margin-top:-50px; margin-left:-50px;
-    animation:ripple 0.6s linear;
-    pointer-events:none;
-  }
+  .btn-pay{background:linear-gradient(135deg,#006b2a 0%,#0f8739 100%);transition:all 0.2s;position:relative;overflow:hidden;}
+  .btn-pay:hover{opacity:0.92;transform:scale(0.99);}
+  .btn-pay:active{transform:scale(0.97);}
+  .btn-pay .ripple-el{position:absolute;border-radius:50%;background:rgba(255,255,255,0.3);width:100px;height:100px;margin-top:-50px;margin-left:-50px;animation:ripple 0.6s linear;pointer-events:none;}
+  .btn-pay:disabled{opacity:0.6;pointer-events:none;}
 
-  /* Success overlay */
-  .success-overlay {
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(245,251,241,0.97);
-    z-index:100;
-    align-items:center;
-    justify-content:center;
-    flex-direction:column;
-    animation:slideUp 0.5s ease forwards;
-  }
-  .success-overlay.show { display:flex; }
-  .check-icon { animation:checkBounce 0.6s cubic-bezier(0.22,1,0.36,1) 0.2s both; }
+  .success-overlay{display:none;position:fixed;inset:0;background:rgba(245,251,241,0.97);z-index:100;align-items:center;justify-content:center;flex-direction:column;animation:slideUp 0.5s ease forwards;}
+  .success-overlay.show{display:flex;}
+  .check-icon{animation:checkBounce 0.6s cubic-bezier(0.22,1,0.36,1) 0.2s both;}
 
-  /* Method pill */
-  .method-pill { cursor:pointer; transition:all 0.2s; border:2px solid transparent; }
-  .method-pill:hover { border-color:#becaba; }
-  .method-pill.active { border-color:#006b2a; background:#eff5eb; }
+  .method-pill{cursor:pointer;transition:all 0.2s;border:2px solid transparent;}
+  .method-pill:hover{border-color:#becaba;}
+  .method-pill.active{border-color:#006b2a;background:#eff5eb;}
 
-  /* Accordion */
-  .acc-body { max-height:0; overflow:hidden; transition:max-height 0.4s ease; }
-  .acc-body.open { max-height:600px; }
-  .acc-arrow { transition:transform 0.3s; }
-  .acc-arrow.open { transform:rotate(180deg); }
-
-  /* Trust pill */
-  .trust-row { display:flex; gap:1rem; align-items:center; }
+  .acc-body{max-height:0;overflow:hidden;transition:max-height 0.4s ease;}
+  .acc-body.open{max-height:600px;}
+  .acc-arrow{transition:transform 0.3s;}
+  .acc-arrow.open{transform:rotate(180deg);}
 </style>
 </head>
 <body class="bg-background text-on-surface pb-32">
@@ -145,21 +67,18 @@ tailwind.config = {
 <header class="bg-surface/90 backdrop-blur-xl fixed top-0 w-full z-50 border-b border-outline-variant/10">
   <div class="flex justify-between items-center px-6 py-4 max-w-6xl mx-auto">
     <button onclick="history.back()" class="text-on-surface hover:opacity-70 transition-opacity flex items-center gap-2 text-sm font-medium">
-      <span class="material-symbols-outlined">arrow_back</span>
-      Retour
+      <span class="material-symbols-outlined">arrow_back</span>Retour
     </button>
     <span class="font-serif italic text-xl tracking-tighter text-primary">WennaShop</span>
     <div class="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-bold text-primary">
-      <span class="material-symbols-outlined text-primary" style="font-size:16px;">lock</span>
-      Sécurisé
+      <span class="material-symbols-outlined text-primary" style="font-size:16px;">lock</span>Sécurisé
     </div>
   </div>
 </header>
 
-<!-- Progress Steps -->
+<!-- Steps -->
 <div class="pt-20 px-6 max-w-4xl mx-auto">
   <div class="flex items-center gap-0 py-6 anim-up">
-    <!-- Step 1: Panier -->
     <div class="flex flex-col items-center">
       <div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center text-xs font-bold">
         <span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">check</span>
@@ -167,7 +86,6 @@ tailwind.config = {
       <span class="text-[9px] font-bold uppercase tracking-wider text-primary mt-1.5">Panier</span>
     </div>
     <div class="step-line done"></div>
-    <!-- Step 2: Livraison -->
     <div class="flex flex-col items-center">
       <div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center text-xs font-bold">
         <span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">check</span>
@@ -175,13 +93,11 @@ tailwind.config = {
       <span class="text-[9px] font-bold uppercase tracking-wider text-primary mt-1.5">Livraison</span>
     </div>
     <div class="step-line done"></div>
-    <!-- Step 3: Paiement (actif) -->
     <div class="flex flex-col items-center">
       <div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center text-xs font-bold ring-4 ring-primary/20">3</div>
       <span class="text-[9px] font-bold uppercase tracking-wider text-primary mt-1.5">Paiement</span>
     </div>
     <div class="step-line"></div>
-    <!-- Step 4: Confirmation -->
     <div class="flex flex-col items-center">
       <div class="w-8 h-8 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center text-xs font-bold">4</div>
       <span class="text-[9px] font-bold uppercase tracking-wider text-on-surface-variant mt-1.5">Confirmation</span>
@@ -189,34 +105,28 @@ tailwind.config = {
   </div>
 </div>
 
-<!-- Main Content -->
 <main class="px-4 max-w-6xl mx-auto">
   <div class="flex flex-col lg:flex-row gap-8">
 
-    <!-- ──────────────────────────────────
-         LEFT: Payment Form
-    ────────────────────────────────── -->
+    <!-- LEFT: Formulaire -->
     <div class="flex-1 space-y-6">
 
-      <!-- Section: Adresse de livraison (récap) -->
-      <div class="bg-surface-container-lowest rounded-lg p-6 anim-up d-100">
+      <!-- Adresse récap -->
+      <div class="bg-surface-container-lowest rounded-lg p-6 anim-up d-100" id="shipping-recap">
         <div class="flex justify-between items-center">
           <div>
             <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mb-1">Livraison à</p>
-            <p class="font-bold text-sm">Amina Bongo · Libreville, Gabon</p>
-            <p class="text-xs text-on-surface-variant mt-0.5">Boulevard de l'Indépendance, Apt 4B · BP 2048</p>
+            <p class="font-bold text-sm" id="shipping-name">—</p>
+            <p class="text-xs text-on-surface-variant mt-0.5" id="shipping-address">—</p>
           </div>
-          <button class="text-xs font-bold text-secondary border-b border-secondary/20 pb-0.5 hover:border-secondary transition-colors">
-            Modifier
-          </button>
+          <button onclick="history.back()" class="text-xs font-bold text-secondary border-b border-secondary/20 pb-0.5 hover:border-secondary transition-colors">Modifier</button>
         </div>
       </div>
 
-      <!-- Section: Méthode de paiement -->
+      <!-- Méthode paiement -->
       <div class="bg-surface-container-lowest rounded-lg p-6 anim-up d-200">
         <h2 class="font-serif italic text-2xl font-bold mb-6">Méthode de Paiement</h2>
 
-        <!-- Method selector -->
         <div class="grid grid-cols-3 gap-3 mb-6">
           <button class="method-pill active rounded-lg p-4 flex flex-col items-center gap-2 bg-surface-container-low" onclick="selectMethod(this,'card')">
             <span class="material-symbols-outlined text-primary">credit_card</span>
@@ -232,7 +142,7 @@ tailwind.config = {
           </button>
         </div>
 
-        <!-- Card Preview -->
+        <!-- Card preview -->
         <div class="card-preview mb-6" id="cardPreview">
           <div class="flex justify-between items-start mb-8">
             <div>
@@ -257,222 +167,127 @@ tailwind.config = {
           </div>
         </div>
 
-        <!-- Card form: network selector -->
+        <!-- Réseau -->
         <div class="flex gap-3 mb-5">
           <button class="card-tab selected flex-1 rounded-lg p-3 flex items-center justify-center gap-2 bg-surface-container-low" onclick="selectCard(this)">
-            <div class="flex -space-x-1">
-              <div class="w-6 h-4 rounded bg-yellow-400"></div>
-              <div class="w-6 h-4 rounded bg-red-500 opacity-80"></div>
-            </div>
+            <div class="flex -space-x-1"><div class="w-6 h-4 rounded bg-yellow-400"></div><div class="w-6 h-4 rounded bg-red-500 opacity-80"></div></div>
             <span class="text-[10px] font-bold">Mastercard</span>
           </button>
           <button class="card-tab flex-1 rounded-lg p-3 flex items-center justify-center gap-2 bg-surface-container-low" onclick="selectCard(this)">
-            <div class="w-8 h-4 rounded bg-blue-600 flex items-center justify-center">
-              <div class="w-2 h-2 border border-white/60 transform skew-x-3 rounded-sm"></div>
-            </div>
+            <div class="w-8 h-4 rounded bg-blue-600 flex items-center justify-center"><span class="text-white text-[7px] font-black">VISA</span></div>
             <span class="text-[10px] font-bold">Visa</span>
           </button>
           <button class="card-tab flex-1 rounded-lg p-3 flex items-center justify-center gap-2 bg-surface-container-low" onclick="selectCard(this)">
-            <div class="w-8 h-4 bg-gradient-to-r from-blue-400 to-green-500 rounded"></div>
+            <div class="w-8 h-4 bg-gradient-to-r from-blue-400 to-green-500 rounded flex items-center justify-center"><span class="text-white text-[7px] font-bold">CMI</span></div>
             <span class="text-[10px] font-bold">CMI</span>
           </button>
         </div>
 
-        <!-- Card number -->
+        <!-- Champs carte -->
         <div class="space-y-5">
           <div>
             <label class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/70 block mb-2 px-1">Numéro de carte</label>
-            <input
-              class="field-input"
-              type="text"
-              placeholder="1234 5678 9012 3456"
-              maxlength="19"
-              id="cardNum"
-              oninput="formatCard(this)"
-            />
+            <input class="field-input" type="text" placeholder="1234 5678 9012 3456" maxlength="19" id="cardNum" oninput="formatCard(this)" />
           </div>
           <div>
             <label class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/70 block mb-2 px-1">Titulaire de la carte</label>
-            <input
-              class="field-input"
-              type="text"
-              placeholder="AMINA BONGO"
-              id="cardName"
-              oninput="updateCardName(this)"
-              style="text-transform:uppercase;"
-            />
+            <input class="field-input" type="text" placeholder="NOM PRÉNOM" id="cardName" oninput="updateCardName(this)" style="text-transform:uppercase;" />
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/70 block mb-2 px-1">Date d'expiration</label>
-              <input
-                class="field-input"
-                type="text"
-                placeholder="MM / AA"
-                maxlength="5"
-                id="cardExp"
-                oninput="formatExp(this)"
-              />
+              <label class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/70 block mb-2 px-1">Expiration</label>
+              <input class="field-input" type="text" placeholder="MM / AA" maxlength="5" id="cardExp" oninput="formatExp(this)" />
             </div>
             <div>
               <label class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/70 block mb-2 px-1">CVV / CVC</label>
-              <div class="relative">
-                <input
-                  class="field-input"
-                  type="password"
-                  placeholder="•••"
-                  maxlength="4"
-                  id="cardCvv"
-                />
-              </div>
+              <input class="field-input" type="password" placeholder="•••" maxlength="4" id="cardCvv" />
             </div>
           </div>
         </div>
 
-        <!-- Save card checkbox -->
         <div class="flex items-center gap-3 mt-5 p-4 bg-surface-container-low rounded-lg">
           <input type="checkbox" id="saveCard" class="w-4 h-4 accent-primary cursor-pointer"/>
-          <label for="saveCard" class="text-sm text-on-surface cursor-pointer">
-            Sauvegarder cette carte pour mes prochains achats
-          </label>
+          <label for="saveCard" class="text-sm text-on-surface cursor-pointer">Sauvegarder cette carte pour mes prochains achats</label>
         </div>
       </div>
 
-      <!-- Section: Code promo -->
+      <!-- Code promo -->
       <div class="bg-surface-container-lowest rounded-lg p-6 anim-up d-300">
         <button class="w-full flex justify-between items-center" onclick="toggleAcc('promoAcc','promoArrow')">
           <div class="flex items-center gap-3">
             <span class="material-symbols-outlined text-tertiary">sell</span>
-            <span class="font-bold text-sm">Code promotionnel ou carte cadeau</span>
+            <span class="font-bold text-sm">Code promotionnel</span>
           </div>
           <span class="material-symbols-outlined acc-arrow text-on-surface-variant" id="promoArrow">expand_more</span>
         </button>
         <div class="acc-body" id="promoAcc">
           <div class="pt-5 flex gap-3">
-            <input
-              class="field-input flex-1"
-              type="text"
-              placeholder="Ex: WENNA15"
-              id="promoInput"
-              style="flex:1;"
-            />
-            <button
-              onclick="applyPromo()"
-              class="px-6 py-3 bg-primary text-on-primary rounded-xl font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-all flex-shrink-0"
-            >
-              Appliquer
-            </button>
+            <input class="field-input flex-1" type="text" placeholder="Ex: WENNA15" id="promoInput" style="flex:1;" />
+            <button onclick="applyPromo()" class="px-6 py-3 bg-primary text-on-primary rounded-xl font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-all flex-shrink-0">Appliquer</button>
           </div>
           <div id="promoFeedback" class="mt-2 hidden"></div>
         </div>
       </div>
 
-      <!-- Section: Notes commande -->
+      <!-- Note commande -->
       <div class="bg-surface-container-lowest rounded-lg p-6 anim-up d-400">
         <button class="w-full flex justify-between items-center" onclick="toggleAcc('noteAcc','noteArrow')">
           <div class="flex items-center gap-3">
             <span class="material-symbols-outlined text-secondary">edit_note</span>
-            <span class="font-bold text-sm">Ajouter une note à ma commande</span>
+            <span class="font-bold text-sm">Ajouter une note</span>
           </div>
           <span class="material-symbols-outlined acc-arrow text-on-surface-variant" id="noteArrow">expand_more</span>
         </button>
         <div class="acc-body" id="noteAcc">
           <div class="pt-5">
-            <textarea
-              class="field-input resize-none"
-              rows="3"
-              placeholder="Instructions spéciales, message cadeau, etc."
-              style="border-radius:1rem 1rem 0 0;"
-            ></textarea>
+            <textarea class="field-input resize-none" rows="3" id="orderNote" placeholder="Instructions spéciales, message cadeau..."></textarea>
           </div>
         </div>
       </div>
 
     </div>
 
-    <!-- ──────────────────────────────────
-         RIGHT: Order Summary (sticky)
-    ────────────────────────────────── -->
+    <!-- RIGHT: Récapitulatif sticky -->
     <div class="w-full lg:w-80 xl:w-96">
       <div class="bg-surface-container-lowest rounded-lg p-7 sticky top-28 anim-up d-200">
         <h2 class="font-serif italic text-2xl font-bold mb-6">Récapitulatif</h2>
 
-        <!-- Items -->
-        <div class="space-y-4 mb-6">
-          <!-- Item 1 -->
-          <div class="flex gap-3 items-center">
-            <div class="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container-low relative">
-              <img
-                class="w-full h-full object-cover"
-                src="https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=200&q=80&fit=crop"
-                alt="Produit"
-                onerror="this.src='https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=200&q=80'"
-              />
-              <span class="absolute -top-1.5 -right-1.5 bg-primary text-on-primary text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">1</span>
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-xs font-bold truncate">M'Passa Clay Vessel</p>
-              <p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Libreville · Artisanat</p>
-            </div>
-            <p class="font-bold text-sm flex-shrink-0">$145.00</p>
-          </div>
-          <!-- Item 2 -->
-          <div class="flex gap-3 items-center">
-            <div class="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container-low relative">
-              <img
-                class="w-full h-full object-cover"
-                src="https://images.unsplash.com/photo-1501592268528-d4c5d37ee06e?w=200&q=80&fit=crop"
-                alt="Produit"
-                onerror="this.src='https://images.unsplash.com/photo-1516762689617-e1cffcef479d?w=200&q=80'"
-              />
-              <span class="absolute -top-1.5 -right-1.5 bg-primary text-on-primary text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">1</span>
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-xs font-bold truncate">Chefchaouen Silk Wrap</p>
-              <p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Maroc · Mode</p>
-            </div>
-            <p class="font-bold text-sm flex-shrink-0">$89.00</p>
-          </div>
+        <!-- Items du panier -->
+        <div id="order-items" class="space-y-4 mb-6">
+          <!-- Injecté dynamiquement -->
         </div>
 
         <div class="border-t border-outline-variant/15 pt-4 space-y-3 mb-6">
           <div class="flex justify-between text-sm">
             <span class="text-on-surface-variant">Sous-total</span>
-            <span class="font-medium">$234.00</span>
+            <span class="font-medium" id="recap-subtotal">—</span>
           </div>
           <div class="flex justify-between text-sm">
             <span class="text-on-surface-variant">Livraison</span>
-            <span class="font-medium text-primary">$12.00</span>
-          </div>
-          <div class="flex justify-between text-sm">
-            <span class="text-on-surface-variant">Taxes (8%)</span>
-            <span class="font-medium">$18.72</span>
+            <span class="font-medium text-primary">Incluse</span>
           </div>
           <div id="discountRow" class="flex justify-between text-sm hidden">
-            <span class="text-primary font-bold">Réduction WENNA15</span>
-            <span class="font-bold text-primary" id="discountAmt">-$35.10</span>
+            <span class="text-primary font-bold">Remise promo</span>
+            <span class="font-bold text-primary" id="discountAmt">—</span>
           </div>
           <div class="flex justify-between items-end pt-2 border-t border-outline-variant/15">
             <span class="font-serif italic text-lg">Total</span>
-            <span class="text-2xl font-bold text-primary" id="totalDisplay">$264.72</span>
+            <span class="text-2xl font-bold text-primary" id="totalDisplay">—</span>
           </div>
         </div>
 
-        <!-- Pay button -->
-        <button
-          class="btn-pay w-full py-5 rounded-xl text-on-primary font-bold text-sm tracking-[0.15em] uppercase shadow-xl mb-4 flex items-center justify-center gap-3"
-          onclick="handlePay(this)"
-          id="payBtn"
-        >
+        <!-- Bouton Payer -->
+        <button class="btn-pay w-full py-5 rounded-xl text-on-primary font-bold text-sm tracking-[0.15em] uppercase shadow-xl mb-4 flex items-center justify-center gap-3"
+          onclick="handlePay(this)" id="payBtn">
           <span class="material-symbols-outlined" style="font-size:18px;">lock</span>
-          Payer $264.72
+          Payer <span id="btn-total">—</span>
         </button>
 
-        <!-- Trust badges under button -->
+        <!-- Trust -->
         <div class="space-y-2">
           <div class="flex items-center gap-2">
             <span class="material-symbols-outlined text-primary" style="font-size:14px;">verified_user</span>
-            <span class="text-[10px] text-on-surface-variant">Paiement SSL 256-bit · 3D Secure activé</span>
+            <span class="text-[10px] text-on-surface-variant">Paiement SSL 256-bit · 3D Secure</span>
           </div>
           <div class="flex items-center gap-2">
             <span class="material-symbols-outlined text-secondary" style="font-size:14px;">autorenew</span>
@@ -480,11 +295,11 @@ tailwind.config = {
           </div>
           <div class="flex items-center gap-2">
             <span class="material-symbols-outlined text-tertiary" style="font-size:14px;">support_agent</span>
-            <span class="text-[10px] text-on-surface-variant">Support disponible 7j/7 · 24h/24</span>
+            <span class="text-[10px] text-on-surface-variant">Support 7j/7 · 24h/24</span>
           </div>
         </div>
 
-        <!-- Payment logos -->
+        <!-- Logos -->
         <div class="mt-5 pt-4 border-t border-outline-variant/15">
           <p class="text-[9px] uppercase tracking-[0.2em] text-on-surface-variant font-bold mb-3 text-center">Nous acceptons</p>
           <div class="flex justify-center gap-3 items-center">
@@ -498,19 +313,15 @@ tailwind.config = {
             <div class="w-10 h-5 bg-gradient-to-r from-blue-400 to-green-500 rounded flex items-center justify-center">
               <span class="text-white text-[7px] font-bold">CMI</span>
             </div>
-            <div class="w-10 h-5 bg-orange-500 rounded flex items-center justify-center">
-              <span class="text-white text-[7px] font-bold">PP</span>
-            </div>
           </div>
         </div>
       </div>
     </div>
+
   </div>
 </main>
 
-<!-- ═══════════════════════════════════════
-     SUCCESS OVERLAY
-═══════════════════════════════════════ -->
+<!-- SUCCESS OVERLAY -->
 <div class="success-overlay" id="successOverlay">
   <div class="text-center px-8 max-w-sm">
     <div class="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 check-icon">
@@ -518,13 +329,10 @@ tailwind.config = {
     </div>
     <h2 class="font-serif italic text-4xl font-bold text-primary mb-3">Merci !</h2>
     <p class="text-on-surface-variant text-sm leading-relaxed mb-2">
-      Votre commande <strong class="text-on-surface">#WN-9142</strong> est confirmée.
+      Votre commande <strong class="text-on-surface" id="order-ref">—</strong> est confirmée.
     </p>
-    <p class="text-on-surface-variant text-xs mb-8">
-      Un email de confirmation a été envoyé à <strong>amina.bongo@email.com</strong>
-    </p>
+    <p class="text-on-surface-variant text-xs mb-8" id="confirm-email">Un email de confirmation vous sera envoyé.</p>
 
-    <!-- Order timeline -->
     <div class="bg-surface-container-low rounded-lg p-5 text-left mb-8">
       <p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Suivi estimé</p>
       <div class="space-y-3">
@@ -532,45 +340,30 @@ tailwind.config = {
           <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
             <span class="material-symbols-outlined text-on-primary" style="font-size:12px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">check</span>
           </div>
-          <div>
-            <p class="text-xs font-bold">Commande confirmée</p>
-            <p class="text-[10px] text-on-surface-variant">Aujourd'hui, maintenant</p>
-          </div>
+          <div><p class="text-xs font-bold">Commande confirmée</p><p class="text-[10px] text-on-surface-variant">Maintenant</p></div>
         </div>
         <div class="w-px h-4 bg-outline-variant/30 ml-3"></div>
         <div class="flex items-center gap-3">
           <div class="w-6 h-6 rounded-full bg-secondary/20 flex items-center justify-center flex-shrink-0">
             <span class="material-symbols-outlined text-secondary" style="font-size:12px;">inventory_2</span>
           </div>
-          <div>
-            <p class="text-xs font-bold text-on-surface-variant">En préparation</p>
-            <p class="text-[10px] text-on-surface-variant">Dans 1–2 jours</p>
-          </div>
+          <div><p class="text-xs font-bold text-on-surface-variant">En préparation</p><p class="text-[10px] text-on-surface-variant">1–2 jours</p></div>
         </div>
         <div class="w-px h-4 bg-outline-variant/30 ml-3"></div>
         <div class="flex items-center gap-3">
           <div class="w-6 h-6 rounded-full bg-tertiary/20 flex items-center justify-center flex-shrink-0">
             <span class="material-symbols-outlined text-tertiary" style="font-size:12px;">local_shipping</span>
           </div>
-          <div>
-            <p class="text-xs font-bold text-on-surface-variant">En route · Libreville</p>
-            <p class="text-[10px] text-on-surface-variant">Estimé Mercredi 9 Avril</p>
-          </div>
+          <div><p class="text-xs font-bold text-on-surface-variant">Livraison en route</p><p class="text-[10px] text-on-surface-variant">5–12 jours ouvrés</p></div>
         </div>
       </div>
     </div>
 
     <div class="flex flex-col gap-3">
-      <button
-        onclick="document.getElementById('successOverlay').classList.remove('show'); window.location.href='hero.html';"
-        class="w-full py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-xl font-bold text-sm uppercase tracking-widest"
-      >
+      <button onclick="window.location.href='index.html'" class="w-full py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-xl font-bold text-sm uppercase tracking-widest">
         Continuer mes achats
       </button>
-      <button
-        onclick="window.location.href='profil.html'"
-        class="w-full py-4 border border-outline-variant/30 text-on-surface rounded-xl font-bold text-sm uppercase tracking-widest hover:bg-surface-container-low transition-colors"
-      >
+      <button onclick="window.location.href='compte.html'" class="w-full py-4 border border-outline-variant/30 text-on-surface rounded-xl font-bold text-sm uppercase tracking-widest hover:bg-surface-container-low transition-colors">
         Voir mes commandes
       </button>
     </div>
@@ -580,126 +373,252 @@ tailwind.config = {
 <!-- Bottom nav mobile -->
 <nav class="bg-surface/80 backdrop-blur-xl fixed bottom-0 w-full z-40 rounded-t-[2rem] shadow-[0_-8px_40px_rgba(0,0,0,0.06)] md:hidden border-t border-outline-variant/10">
   <div class="flex justify-around items-center w-full px-4 pb-6 pt-3">
-    <a class="flex flex-col items-center justify-center text-on-surface-variant" href="hero.html">
-      <span class="material-symbols-outlined" >home</span>
-      <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Home</span>
+    <a class="flex flex-col items-center justify-center text-on-surface-variant" href="index.html">
+      <span class="material-symbols-outlined">home</span>
+      <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Accueil</span>
     </a>
-    <a class="flex flex-col items-center justify-center text-on-surface-variant" href="shop.html">
-      <span class="material-symbols-outlined" >storefront</span>
-      <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Shop</span>
+    <a class="flex flex-col items-center justify-center text-on-surface-variant" href="boutique.html">
+      <span class="material-symbols-outlined">storefront</span>
+      <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Boutique</span>
     </a>
     <a class="flex flex-col items-center justify-center text-on-surface-variant" href="sell.html">
       <span class="material-symbols-outlined">add_circle</span>
-      <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Sell</span>
+      <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Vendre</span>
     </a>
     <a class="flex flex-col items-center justify-center text-on-surface-variant" href="compte.html">
       <span class="material-symbols-outlined">person</span>
-      <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Profile</span>
+      <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Profil</span>
     </a>
   </div>
 </nav>
 
+<!-- ══════════════════════════
+     SCRIPT
+══════════════════════════ -->
 <script>
-// ── Card number formatting ──────────────────
-function formatCard(el) {
-  let v = el.value.replace(/\D/g,'').slice(0,16);
-  el.value = v.match(/.{1,4}/g)?.join(' ') || v;
-  const disp = v.padEnd(16,'•');
-  document.getElementById('cardNumDisplay').textContent =
-    disp.match(/.{1,4}/g)?.join(' ') || '•••• •••• •••• ••••';
-}
+  // ─── CONFIG ─────────────────────────────────────────────
+  const SUPABASE_URL   = 'https://aakxoydznmybstfozjte.supabase.co'
+  const SUPABASE_ANON  = 'VOTRE_ANON_KEY'  // ← remplacer
+  const EDGE_FN_URL    = `${SUPABASE_URL}/functions/v1/process-payment`
+  const PROMO_CODES    = { 'WENNA15': 0.15 }
+  const CURRENCY       = 'MAD'
+  // ─────────────────────────────────────────────────────────
 
-function formatExp(el) {
-  let v = el.value.replace(/\D/g,'').slice(0,4);
-  if (v.length >= 2) v = v.slice(0,2)+'/'+v.slice(2);
-  el.value = v;
-  document.getElementById('cardExpDisplay').textContent = el.value || 'MM/AA';
-}
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON)
 
-function updateCardName(el) {
-  const n = el.value.toUpperCase() || 'VOTRE NOM';
-  document.getElementById('cardNameDisplay').textContent = n;
-}
+  let cart         = []
+  let orderId      = null
+  let orderTotal   = 0
+  let promoDisc    = 0
+  let selectedMethod = 'card'
 
-// ── Method selection ────────────────────────
-function selectMethod(btn, type) {
-  document.querySelectorAll('.method-pill').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const cardSection = document.getElementById('cardPreview');
-  cardSection.style.display = type === 'card' ? 'block' : 'none';
-}
+  const $ = id => document.getElementById(id)
+  const fmt = n => new Intl.NumberFormat('fr-FR',{style:'currency',currency:CURRENCY}).format(n)
 
-// ── Card brand selection ────────────────────
-function selectCard(btn) {
-  document.querySelectorAll('.card-tab').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-}
+  // ── Init ────────────────────────────────────────────────
+  async function init() {
+    cart    = JSON.parse(localStorage.getItem('wenna_cart') || '[]')
+    orderId = new URLSearchParams(location.search).get('order_id')
+              || localStorage.getItem('wenna_current_order_id')
 
-// ── Accordion toggle ────────────────────────
-function toggleAcc(id, arrowId) {
-  const body = document.getElementById(id);
-  const arrow = document.getElementById(arrowId);
-  body.classList.toggle('open');
-  arrow.classList.toggle('open');
-}
-
-// ── Promo code ──────────────────────────────
-function applyPromo() {
-  const code = document.getElementById('promoInput').value.trim().toUpperCase();
-  const feedback = document.getElementById('promoFeedback');
-  if (code === 'WENNA15') {
-    feedback.className = 'mt-2 p-3 bg-primary/10 text-primary rounded-lg text-xs font-bold';
-    feedback.textContent = '✓ Code appliqué — 15% de réduction';
-    feedback.classList.remove('hidden');
-    document.getElementById('discountRow').classList.remove('hidden');
-    document.getElementById('totalDisplay').textContent = '$224.80';
-    document.getElementById('payBtn').textContent = '';
-    document.getElementById('payBtn').innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">lock</span> Payer $224.80';
-  } else {
-    feedback.className = 'mt-2 p-3 bg-error/10 text-error rounded-lg text-xs font-bold';
-    feedback.textContent = '✗ Code invalide ou expiré';
-    feedback.classList.remove('hidden');
-  }
-}
-
-// ── Pay handler ─────────────────────────────
-function handlePay(btn) {
-  const num = document.getElementById('cardNum').value.replace(/\s/g,'');
-  const name = document.getElementById('cardName').value.trim();
-  const exp = document.getElementById('cardExp').value;
-  const cvv = document.getElementById('cardCvv').value;
-
-  if (num.length < 16 || !name || exp.length < 5 || cvv.length < 3) {
-    btn.classList.add('ring-2','ring-error/40');
-    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">error_outline</span> Vérifiez vos informations';
-    btn.style.background = '#ba1a1a';
-    setTimeout(() => {
-      btn.classList.remove('ring-2','ring-error/40');
-      btn.style.background = '';
-      btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">lock</span> Payer $264.72';
-    }, 2000);
-    return;
+    renderItems()
+    renderRecap()
+    loadShippingRecap()
   }
 
-  // Loading state
-  btn.innerHTML = '<svg class="animate-spin w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Traitement en cours...';
-  btn.disabled = true;
+  // ── Rendu articles ──────────────────────────────────────
+  function renderItems() {
+    const container = $('order-items')
+    if (!cart.length) { container.innerHTML = '<p class="text-sm text-on-surface-variant">Aucun article</p>'; return }
+    container.innerHTML = cart.map(item => `
+      <div class="flex gap-3 items-center">
+        <div class="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container-low relative">
+          ${item.image
+            ? `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" />`
+            : `<div class="w-full h-full bg-surface-container-high"></div>`}
+          <span class="absolute -top-1.5 -right-1.5 bg-primary text-on-primary text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">${item.qty}</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-bold truncate">${item.name}</p>
+          <p class="text-[10px] text-on-surface-variant">${fmt(item.price)} / unité</p>
+        </div>
+        <p class="font-bold text-sm flex-shrink-0">${fmt(item.price * item.qty)}</p>
+      </div>`).join('')
+  }
 
-  setTimeout(() => {
-    document.getElementById('successOverlay').classList.add('show');
-  }, 2200);
-}
+  function calcTotals() {
+    const sub  = cart.reduce((s,i) => s + i.price * i.qty, 0)
+    const disc = sub * promoDisc
+    return { sub, disc, total: sub - disc }
+  }
 
-// ── Ripple effect on pay button ──────────────
-document.getElementById('payBtn').addEventListener('click', function(e) {
-  const el = document.createElement('span');
-  el.className = 'ripple-el';
-  const rect = this.getBoundingClientRect();
-  el.style.top = (e.clientY - rect.top) + 'px';
-  el.style.left = (e.clientX - rect.left) + 'px';
-  this.appendChild(el);
-  setTimeout(() => el.remove(), 700);
-});
+  function renderRecap() {
+    const { sub, disc, total } = calcTotals()
+    orderTotal = total
+    $('recap-subtotal').textContent = fmt(sub)
+    $('totalDisplay').textContent   = fmt(total)
+    $('btn-total').textContent      = fmt(total)
+    if (disc > 0) {
+      $('discountRow').classList.remove('hidden')
+      $('discountAmt').textContent = `-${fmt(disc)}`
+    }
+  }
+
+  function loadShippingRecap() {
+    // Lire depuis localStorage si disponible (renseigné à l'étape livraison)
+    const info = JSON.parse(localStorage.getItem('wenna_shipping') || 'null')
+    if (info) {
+      $('shipping-name').textContent    = `${info.name} · ${info.city}, ${info.country}`
+      $('shipping-address').textContent = info.address || ''
+    } else {
+      $('shipping-name').textContent    = 'Non renseignée'
+      $('shipping-address').textContent = ''
+    }
+  }
+
+  // ── UI helpers ─────────────────────────────────────────
+  function formatCard(el) {
+    let v = el.value.replace(/\D/g,'').slice(0,16)
+    el.value = v.match(/.{1,4}/g)?.join(' ') || v
+    const d = v.padEnd(16,'•')
+    $('cardNumDisplay').textContent = d.match(/.{1,4}/g)?.join(' ') || '•••• •••• •••• ••••'
+  }
+  function formatExp(el) {
+    let v = el.value.replace(/\D/g,'').slice(0,4)
+    if (v.length >= 2) v = v.slice(0,2)+'/'+v.slice(2)
+    el.value = v
+    $('cardExpDisplay').textContent = el.value || 'MM/AA'
+  }
+  function updateCardName(el) {
+    $('cardNameDisplay').textContent = el.value.toUpperCase() || 'VOTRE NOM'
+  }
+  function selectMethod(btn, type) {
+    selectedMethod = type
+    document.querySelectorAll('.method-pill').forEach(b => b.classList.remove('active'))
+    btn.classList.add('active')
+    $('cardPreview').style.display = type === 'card' ? 'block' : 'none'
+  }
+  function selectCard(btn) {
+    document.querySelectorAll('.card-tab').forEach(b => b.classList.remove('selected'))
+    btn.classList.add('selected')
+  }
+  function toggleAcc(id, arrowId) {
+    $( id ).classList.toggle('open')
+    $(arrowId).classList.toggle('open')
+  }
+
+  // ── Code promo ─────────────────────────────────────────
+  function applyPromo() {
+    const code     = ($('promoInput').value || '').trim().toUpperCase()
+    const feedback = $('promoFeedback')
+    feedback.classList.remove('hidden')
+    if (PROMO_CODES[code] !== undefined) {
+      promoDisc = PROMO_CODES[code]
+      feedback.className = 'mt-2 p-3 bg-primary/10 text-primary rounded-lg text-xs font-bold'
+      feedback.textContent = `✓ Code appliqué — ${promoDisc*100}% de remise`
+      renderRecap()
+    } else {
+      promoDisc = 0
+      feedback.className = 'mt-2 p-3 bg-error/10 text-error rounded-lg text-xs font-bold'
+      feedback.textContent = '✗ Code invalide ou expiré'
+      renderRecap()
+    }
+  }
+
+  // ── Paiement ────────────────────────────────────────────
+  async function handlePay(btn) {
+
+    // Validation formulaire carte
+    if (selectedMethod === 'card') {
+      const num  = $('cardNum').value.replace(/\s/g,'')
+      const name = $('cardName').value.trim()
+      const exp  = $('cardExp').value
+      const cvv  = $('cardCvv').value
+
+      if (num.length < 16 || !name || exp.length < 5 || cvv.length < 3) {
+        const orig = btn.innerHTML
+        btn.style.background = '#ba1a1a'
+        btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">error_outline</span> Vérifiez vos informations'
+        setTimeout(() => { btn.style.background = ''; btn.innerHTML = orig }, 2500)
+        return
+      }
+    }
+
+    // Vérifier session
+    const { data: { session } } = await sb.auth.getSession()
+    if (!session) {
+      alert('Veuillez vous connecter pour finaliser la commande.')
+      window.location.href = 'login.html?redirect=paiement.html'
+      return
+    }
+
+    // Loading
+    btn.disabled = true
+    btn.innerHTML = `<svg class="animate-spin w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+    </svg> Traitement en cours...`
+
+    try {
+      // NOTE : en production, card_token vient de Stripe.js (jamais le numéro brut)
+      // Ici on envoie un token simulé côté Edge Function
+      const body = {
+        order_id:       orderId,
+        payment_method: selectedMethod,
+        card_token:     null, // ← Stripe.js injectera le vrai token
+        amount:         orderTotal,
+        currency:       CURRENCY
+      }
+
+      const res = await fetch(EDGE_FN_URL, {
+        method:  'POST',
+        headers: {
+          'Content-Type':  'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify(body)
+      })
+
+      const result = await res.json()
+
+      if (!res.ok || !result.success) {
+        throw new Error(result.error || 'Paiement refusé')
+      }
+
+      // ── Succès ──────────────────────────────────────────
+      // Vider panier
+      localStorage.removeItem('wenna_cart')
+      localStorage.removeItem('wenna_current_order_id')
+
+      // Afficher overlay succès
+      const shortId = (result.transaction_id || '').slice(-8).toUpperCase()
+      $('order-ref').textContent    = `#WN-${shortId}`
+      $('confirm-email').textContent = `Transaction : ${result.transaction_id || '—'}`
+      $('successOverlay').classList.add('show')
+
+    } catch (err) {
+      btn.disabled = false
+      btn.innerHTML = `<span class="material-symbols-outlined" style="font-size:18px;">lock</span> Payer ${fmt(orderTotal)}`
+      btn.style.background = '#ba1a1a'
+      console.error('Payment error:', err)
+      setTimeout(() => { btn.style.background = '' }, 3000)
+      alert(`Erreur : ${err.message}`)
+    }
+  }
+
+  // ── Ripple ──────────────────────────────────────────────
+  $('payBtn').addEventListener('click', function(e) {
+    const el = document.createElement('span')
+    el.className = 'ripple-el'
+    const r = this.getBoundingClientRect()
+    el.style.top  = (e.clientY - r.top)  + 'px'
+    el.style.left = (e.clientX - r.left) + 'px'
+    this.appendChild(el)
+    setTimeout(() => el.remove(), 700)
+  })
+
+  document.addEventListener('DOMContentLoaded', init)
 </script>
+
 </body>
 </html>
