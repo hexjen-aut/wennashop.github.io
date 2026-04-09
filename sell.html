@@ -1,201 +1,452 @@
 <!DOCTYPE html>
-
-<html class="light" lang="en"><head>
+<html class="light" lang="fr">
+<head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WennaShop | Vendre</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,900&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            "colors": {
-                    "surface-container": "#eaf0e5",
-                    "on-secondary-fixed-variant": "#004786",
-                    "tertiary-fixed": "#ffe08b",
-                    "on-primary-fixed-variant": "#00531f",
-                    "inverse-primary": "#73dc84",
-                    "on-tertiary-fixed-variant": "#584400",
-                    "tertiary-fixed-dim": "#f0c110",
-                    "surface": "#f5fbf1",
-                    "secondary": "#1a5fa8",
-                    "on-tertiary-fixed": "#241a00",
-                    "inverse-surface": "#2c322b",
-                    "on-secondary-fixed": "#001c3a",
-                    "surface-dim": "#d6dcd2",
-                    "on-primary-container": "#f7fff2",
-                    "primary-fixed": "#8ff99d",
-                    "secondary-container": "#78b0fe",
-                    "surface-container-lowest": "#ffffff",
-                    "secondary-fixed-dim": "#a6c8ff",
-                    "on-tertiary": "#ffffff",
-                    "inverse-on-surface": "#edf3e8",
-                    "error-container": "#ffdad6",
-                    "background": "#f5fbf1",
-                    "surface-container-low": "#eff5eb",
-                    "on-background": "#171d17",
-                    "surface-bright": "#f5fbf1",
-                    "surface-container-high": "#e4eae0",
-                    "on-secondary-container": "#00427d",
-                    "surface-tint": "#006e2b",
-                    "on-secondary": "#ffffff",
-                    "secondary-fixed": "#d4e3ff",
-                    "on-primary": "#ffffff",
-                    "error": "#ba1a1a",
-                    "tertiary-container": "#d0a600",
-                    "outline-variant": "#becaba",
-                    "on-primary-fixed": "#002108",
-                    "on-surface-variant": "#3f4a3e",
-                    "surface-variant": "#dee4da",
-                    "outline": "#6f7a6d",
-                    "primary-container": "#0f8739",
-                    "primary": "#006b2a",
-                    "surface-container-highest": "#dee4da",
-                    "tertiary": "#745b00",
-                    "on-error": "#ffffff",
-                    "on-tertiary-container": "#4f3d00",
-                    "on-error-container": "#93000a",
-                    "on-surface": "#171d17",
-                    "primary-fixed-dim": "#73dc84"
-            },
-            "borderRadius": {
-                    "DEFAULT": "1rem",
-                    "lg": "2rem",
-                    "xl": "3rem",
-                    "full": "9999px"
-            },
-            "fontFamily": {
-                    "headline": ["Noto Serif"],
-                    "body": ["Inter"],
-                    "label": ["Inter"]
-            }
-          },
-        }
-      }
-    </script>
+tailwind.config = {
+  darkMode:"class",
+  theme:{extend:{
+    "colors":{
+      "surface-container":"#eaf0e5","on-secondary-fixed-variant":"#004786","tertiary-fixed":"#ffe08b","on-primary-fixed-variant":"#00531f","inverse-primary":"#73dc84","on-tertiary-fixed-variant":"#584400","tertiary-fixed-dim":"#f0c110","surface":"#f5fbf1","secondary":"#1a5fa8","on-tertiary-fixed":"#241a00","inverse-surface":"#2c322b","on-secondary-fixed":"#001c3a","surface-dim":"#d6dcd2","on-primary-container":"#f7fff2","primary-fixed":"#8ff99d","secondary-container":"#78b0fe","surface-container-lowest":"#ffffff","secondary-fixed-dim":"#a6c8ff","on-tertiary":"#ffffff","inverse-on-surface":"#edf3e8","error-container":"#ffdad6","background":"#f5fbf1","surface-container-low":"#eff5eb","on-background":"#171d17","surface-bright":"#f5fbf1","surface-container-high":"#e4eae0","on-secondary-container":"#00427d","surface-tint":"#006e2b","on-secondary":"#ffffff","secondary-fixed":"#d4e3ff","on-primary":"#ffffff","error":"#ba1a1a","tertiary-container":"#d0a600","outline-variant":"#becaba","on-primary-fixed":"#002108","on-surface-variant":"#3f4a3e","surface-variant":"#dee4da","outline":"#6f7a6d","primary-container":"#0f8739","primary":"#006b2a","surface-container-highest":"#dee4da","tertiary":"#745b00","on-error":"#ffffff","on-tertiary-container":"#4f3d00","on-error-container":"#93000a","on-surface":"#171d17","primary-fixed-dim":"#73dc84"
+    },
+    "borderRadius":{"DEFAULT":"1rem","lg":"2rem","xl":"3rem","full":"9999px"},
+    "fontFamily":{"headline":["Noto Serif"],"body":["Inter"],"label":["Inter"]}
+  }}
+}
+</script>
 <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        .editorial-shadow {
-            box-shadow: 0 40px 80px -20px rgba(0, 107, 42, 0.08);
-        }
-    </style>
-<style>
-    body {
-      min-height: max(884px, 100dvh);
-    }
-  </style>
-  </head>
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
+  .editorial-shadow{box-shadow:0 40px 80px -20px rgba(0,107,42,0.08);}
+  body{min-height:max(884px,100dvh);}
+
+  /* Upload zone drag-over */
+  .upload-zone.drag-over{border-color:#006b2a;background:#eff5eb;}
+
+  /* Progress bar */
+  #upload-progress-bar{transition:width 0.3s ease;}
+
+  /* Toast */
+  #toast{
+    position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(10px);
+    opacity:0;background:#006b2a;color:white;
+    padding:10px 22px;border-radius:9999px;
+    font-size:.8rem;font-weight:600;
+    transition:all .3s ease;z-index:9999;white-space:nowrap;pointer-events:none;
+  }
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  #toast.error{background:#ba1a1a;}
+</style>
+</head>
 <body class="bg-surface font-body text-on-surface selection:bg-primary-container selection:text-on-primary-container">
-<header class="fixed top-0 w-full z-50 bg-[#f5fbf1]/80 dark:bg-slate-900/80 backdrop-blur-xl flex justify-between items-center px-6 py-4 w-full">
-<div class="flex items-center gap-4">
-<button class="text-[#006b2a] dark:text-[#0f8739] scale-95 active:scale-90 transition-transform">
-<span class="material-symbols-outlined" data-icon="menu">menu</span>
-</button>
-<span class="text-[#006b2a] dark:text-[#0f8739] font-['Noto_Serif'] font-black italic text-2xl tracking-tight">WennaShop</span>
-</div>
-<div class="flex items-center gap-4">
-<button class="text-[#006b2a] dark:text-[#0f8739] scale-95 active:scale-90 transition-transform" href="panier.html">
-<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
-</button>
-</div>
+
+<div id="toast"></div>
+
+<!-- Header — design original -->
+<header class="fixed top-0 w-full z-50 bg-[#f5fbf1]/80 dark:bg-slate-900/80 backdrop-blur-xl flex justify-between items-center px-6 py-4">
+  <div class="flex items-center gap-4">
+    <button class="text-[#006b2a] scale-95 active:scale-90 transition-transform">
+      <span class="material-symbols-outlined">menu</span>
+    </button>
+    <span class="text-[#006b2a] font-['Noto_Serif'] font-black italic text-2xl tracking-tight">WennaShop</span>
+  </div>
+  <a href="panier.html" class="text-[#006b2a] scale-95 active:scale-90 transition-transform">
+    <span class="material-symbols-outlined">shopping_bag</span>
+  </a>
 </header>
+
 <main class="pt-24 pb-32 px-6 max-w-4xl mx-auto">
-<section class="mb-12">
-<h1 class="font-headline font-bold text-4xl md:text-5xl text-on-surface mb-2 leading-tight">Curate Your Collection</h1>
-<p class="text-on-surface-variant font-body text-lg leading-relaxed max-w-xl">Share the soul of your craftsmanship with our global community. List your authentic Gabonese and Moroccan creations.</p>
-</section>
-<div class="space-y-12">
-<div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-<div class="md:col-span-5 relative group">
-<div class="aspect-[3/4] rounded-lg overflow-hidden bg-surface-container-low transition-all duration-500 hover:scale-[1.02] editorial-shadow">
-<div class="w-full h-full flex flex-col items-center justify-center border-2 border-dashed border-outline-variant/30 rounded-lg p-8 text-center bg-surface-container-lowest">
-<span class="material-symbols-outlined text-primary text-5xl mb-4" data-icon="add_a_photo">add_a_photo</span>
-<span class="font-headline text-lg font-bold text-on-surface mb-1">Upload Product Imagery</span>
-<span class="font-label text-xs tracking-widest uppercase text-on-surface-variant/60">High Resolution Editorial Style</span>
-</div>
-</div>
-<div class="absolute -bottom-4 -right-4 w-32 h-32 rounded-lg overflow-hidden border-4 border-surface shadow-xl hidden md:block">
-<img class="w-full h-full object-cover" data-alt="Close-up of intricate Moroccan ceramic tiles with vibrant blue and white geometric patterns in natural sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHDoafwBgeLnBH9fZSEqF-9xGSoLd74zTp7M9kS2GjLSmJrg8TePko4MnDi7I2w31zTf5SYp_Qdepd8KZQVmWuzj1t58MEFvTRd7sZE9EZou-5ByW2TsJHwqU59Hf_FQhM9Pk8-kh5Iwpo-kjPCzc2d3EC9qz5xwfZzjyM5bafwfa9wyodcuydDSKzpxN967pps6ubbJbvXlLTyHqfS6ls9nf95jRUQ-fB8egAzhsy0JTMqFhyAqD0-uN8-0ymLMlUEFto8s5qQ6o"/>
-</div>
-</div>
-<form class="md:col-span-7 space-y-8">
-<div class="space-y-2">
-<label class="font-label text-[11px] font-semibold tracking-[0.1em] uppercase text-on-surface-variant/70 px-1">Product Identity</label>
-<input class="w-full bg-surface-container-high border-0 border-b border-outline-variant/30 rounded-t-lg focus:ring-0 focus:border-primary transition-all py-4 px-4 text-lg font-headline placeholder:text-on-surface-variant/30" placeholder="e.g. Hand-Woven Raffia Vessel" type="text"/>
-</div>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-<div class="space-y-2">
-<label class="font-label text-[11px] font-semibold tracking-[0.1em] uppercase text-on-surface-variant/70 px-1">Heritage Origin</label>
-<div class="relative">
-<select class="w-full appearance-none bg-surface-container-high border-0 border-b border-outline-variant/30 rounded-t-lg focus:ring-0 focus:border-primary py-4 px-4 font-body">
-<option>Select Country</option>
-<option>Gabon</option>
-<option>Morocco</option>
-</select>
-<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant/50" data-icon="expand_more">expand_more</span>
-</div>
-</div>
-<div class="space-y-2">
-<label class="font-label text-[11px] font-semibold tracking-[0.1em] uppercase text-on-surface-variant/70 px-1">Product Category</label>
-<div class="relative">
-<select class="w-full appearance-none bg-surface-container-high border-0 border-b border-outline-variant/30 rounded-t-lg focus:ring-0 focus:border-primary py-4 px-4 font-body">
-<option>Beauty</option>
-<option>Fashion</option>
-<option>Grocery</option>
-<option selected="">Craft</option>
-</select>
-<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant/50" data-icon="expand_more">expand_more</span>
-</div>
-</div>
-</div>
-<div class="space-y-2">
-<label class="font-label text-[11px] font-semibold tracking-[0.1em] uppercase text-on-surface-variant/70 px-1">The Story (Description)</label>
-<textarea class="w-full bg-surface-container-high border-0 border-b border-outline-variant/30 rounded-t-lg focus:ring-0 focus:border-primary transition-all py-4 px-4 text-base font-body leading-relaxed placeholder:text-on-surface-variant/30" placeholder="Tell the story of the artisan, the materials, and the cultural significance..." rows="5"></textarea>
-</div>
-<div class="pt-4">
-<button class="w-full py-5 rounded-xl bg-gradient-to-br from-primary to-primary-container text-on-primary font-headline font-bold text-xl tracking-wide shadow-lg active:scale-95 transition-all flex items-center justify-center gap-3" type="submit">
-<span>Publish to Marketplace</span>
-<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
-</button>
-<p class="text-center mt-4 font-label text-[10px] text-on-surface-variant/50 uppercase tracking-widest">Your listing will be reviewed for authenticity</p>
-</div>
-</form>
-</div>
-</div>
-<section class="mt-20 pt-20 border-t border-outline-variant/10">
-<div class="flex flex-col md:flex-row justify-between items-end gap-8">
-<div class="max-w-md">
-<span class="text-tertiary font-bold font-label text-xs tracking-[0.2em] uppercase block mb-4">Curator's Tip</span>
-<h3 class="font-headline text-2xl font-bold mb-4">Editorial Excellence</h3>
-<p class="text-on-surface-variant">Products with lifestyle photography in natural light sell 4x faster. Focus on the textures of your craft.</p>
-</div>
-<div class="w-full md:w-64 h-40 rounded-lg overflow-hidden editorial-shadow transform md:rotate-2">
-<img class="w-full h-full object-cover" data-alt="Minimalist overhead shot of traditional Gabonese wooden masks with smooth carved textures on a neutral linen background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9mu1m5s1GRIFJEAD5guy85hJ54RTHXkfUd11AOJsM1slNlJzyHaGm9qo1aPZuCOjMBandhvt870zchMdobFFCYWqqPknw9zWIySKtRSeC92ROzEw3WRCvq0qYStx39mVuPgl08Yut0Q1UAN27xKIBC6FmQlrbhc3gBgY-iM06N2TU3Lp4wdudTaX6cU7fHOkW1GiEU0iSwKkheS9_JUu8Ry9R-Lhm9qOHk5LKN35c2IUICFgxZ8F0Am77C5G8COALgFCZ07PV4cc"/>
-</div>
-</div>
-</section>
+
+  <!-- Header éditorial — design original -->
+  <section class="mb-12">
+    <h1 class="font-headline font-bold text-4xl md:text-5xl text-on-surface mb-2 leading-tight">Curate Your Collection</h1>
+    <p class="text-on-surface-variant font-body text-lg leading-relaxed max-w-xl">Share the soul of your craftsmanship with our global community. List your authentic Gabonese and Moroccan creations.</p>
+  </section>
+
+  <div class="space-y-12">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+
+      <!-- Zone upload image — design original -->
+      <div class="md:col-span-5 relative group">
+        <div id="upload-zone"
+          class="upload-zone aspect-[3/4] rounded-lg overflow-hidden bg-surface-container-low transition-all duration-500 hover:scale-[1.02] editorial-shadow cursor-pointer"
+          onclick="document.getElementById('file-input').click()"
+          ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
+
+          <!-- Placeholder -->
+          <div id="upload-placeholder" class="w-full h-full flex flex-col items-center justify-center border-2 border-dashed border-outline-variant/30 rounded-lg p-8 text-center bg-surface-container-lowest">
+            <span class="material-symbols-outlined text-primary text-5xl mb-4">add_a_photo</span>
+            <span class="font-headline text-lg font-bold text-on-surface mb-1">Upload Product Imagery</span>
+            <span class="font-label text-xs tracking-widest uppercase text-on-surface-variant/60">High Resolution · JPG, PNG, WEBP · Max 5MB</span>
+          </div>
+
+          <!-- Preview image (cachée par défaut) -->
+          <img id="img-preview" class="hidden w-full h-full object-cover" alt="Preview" />
+
+          <!-- Barre de progression upload -->
+          <div id="upload-progress" class="hidden absolute bottom-0 left-0 right-0 bg-black/30 backdrop-blur-sm p-3">
+            <div class="h-1.5 bg-white/30 rounded-full overflow-hidden">
+              <div id="upload-progress-bar" class="h-full bg-white rounded-full" style="width:0%"></div>
+            </div>
+            <p class="text-white text-[10px] text-center mt-1 font-bold uppercase tracking-widest">Envoi en cours...</p>
+          </div>
+        </div>
+
+        <!-- Input file caché -->
+        <input type="file" id="file-input" accept="image/jpeg,image/jpg,image/png,image/webp" class="hidden" onchange="handleFileSelect(this)" />
+
+        <!-- Miniature déco design original -->
+        <div class="absolute -bottom-4 -right-4 w-32 h-32 rounded-lg overflow-hidden border-4 border-surface shadow-xl hidden md:block">
+          <img class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&q=80" alt="Déco" />
+        </div>
+      </div>
+
+      <!-- Formulaire — design original -->
+      <div class="md:col-span-7 space-y-8">
+
+        <!-- Nom produit -->
+        <div class="space-y-2">
+          <label class="font-label text-[11px] font-semibold tracking-[0.1em] uppercase text-on-surface-variant/70 px-1">Product Identity</label>
+          <input id="f-name"
+            class="w-full bg-surface-container-high border-0 border-b border-outline-variant/30 rounded-t-lg focus:ring-0 focus:border-primary transition-all py-4 px-4 text-lg font-headline placeholder:text-on-surface-variant/30"
+            placeholder="e.g. Hand-Woven Raffia Vessel" type="text" />
+        </div>
+
+        <!-- Origine + Catégorie -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="font-label text-[11px] font-semibold tracking-[0.1em] uppercase text-on-surface-variant/70 px-1">Heritage Origin</label>
+            <div class="relative">
+              <select id="f-country"
+                class="w-full appearance-none bg-surface-container-high border-0 border-b border-outline-variant/30 rounded-t-lg focus:ring-0 focus:border-primary py-4 px-4 font-body">
+                <option value="">Select Country</option>
+                <option value="Gabon">Gabon</option>
+                <option value="Maroc">Maroc</option>
+              </select>
+              <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant/50">expand_more</span>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <label class="font-label text-[11px] font-semibold tracking-[0.1em] uppercase text-on-surface-variant/70 px-1">Product Category</label>
+            <div class="relative">
+              <select id="f-category"
+                class="w-full appearance-none bg-surface-container-high border-0 border-b border-outline-variant/30 rounded-t-lg focus:ring-0 focus:border-primary py-4 px-4 font-body">
+                <option value="">Choisir...</option>
+                <!-- Chargé depuis Supabase -->
+              </select>
+              <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant/50">expand_more</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Prix + Stock -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="font-label text-[11px] font-semibold tracking-[0.1em] uppercase text-on-surface-variant/70 px-1">Prix (MAD)</label>
+            <input id="f-price" type="number" min="0" step="0.01"
+              class="w-full bg-surface-container-high border-0 border-b border-outline-variant/30 rounded-t-lg focus:ring-0 focus:border-primary py-4 px-4 font-body placeholder:text-on-surface-variant/30"
+              placeholder="0.00" />
+          </div>
+          <div class="space-y-2">
+            <label class="font-label text-[11px] font-semibold tracking-[0.1em] uppercase text-on-surface-variant/70 px-1">Stock</label>
+            <input id="f-stock" type="number" min="0" step="1"
+              class="w-full bg-surface-container-high border-0 border-b border-outline-variant/30 rounded-t-lg focus:ring-0 focus:border-primary py-4 px-4 font-body placeholder:text-on-surface-variant/30"
+              placeholder="1" />
+          </div>
+        </div>
+
+        <!-- Ville d'origine -->
+        <div class="space-y-2">
+          <label class="font-label text-[11px] font-semibold tracking-[0.1em] uppercase text-on-surface-variant/70 px-1">Ville d'origine</label>
+          <input id="f-city"
+            class="w-full bg-surface-container-high border-0 border-b border-outline-variant/30 rounded-t-lg focus:ring-0 focus:border-primary py-4 px-4 font-body placeholder:text-on-surface-variant/30"
+            placeholder="ex: Essaouira, Libreville..." type="text" />
+        </div>
+
+        <!-- Description — design original -->
+        <div class="space-y-2">
+          <label class="font-label text-[11px] font-semibold tracking-[0.1em] uppercase text-on-surface-variant/70 px-1">The Story (Description)</label>
+          <textarea id="f-desc"
+            class="w-full bg-surface-container-high border-0 border-b border-outline-variant/30 rounded-t-lg focus:ring-0 focus:border-primary transition-all py-4 px-4 text-base font-body leading-relaxed placeholder:text-on-surface-variant/30"
+            placeholder="Tell the story of the artisan, the materials, and the cultural significance..."
+            rows="5"></textarea>
+        </div>
+
+        <!-- Bouton submit — design original -->
+        <div class="pt-4">
+          <button id="btn-submit" onclick="submitProduct()"
+            class="w-full py-5 rounded-xl bg-gradient-to-br from-primary to-primary-container text-on-primary font-headline font-bold text-xl tracking-wide shadow-lg active:scale-95 transition-all flex items-center justify-center gap-3">
+            <span id="btn-text">Publish to Marketplace</span>
+            <span class="material-symbols-outlined">auto_awesome</span>
+          </button>
+          <p class="text-center mt-4 font-label text-[10px] text-on-surface-variant/50 uppercase tracking-widest">
+            Your listing will be reviewed for authenticity
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Section éditoriale bas — design original -->
+  <section class="mt-20 pt-20 border-t border-outline-variant/10">
+    <div class="flex flex-col md:flex-row justify-between items-end gap-8">
+      <div class="max-w-md">
+        <span class="text-tertiary font-bold font-label text-xs tracking-[0.2em] uppercase block mb-4">Curator's Tip</span>
+        <h3 class="font-headline text-2xl font-bold mb-4">Editorial Excellence</h3>
+        <p class="text-on-surface-variant">Products with lifestyle photography in natural light sell 4x faster. Focus on the textures of your craft.</p>
+      </div>
+      <div class="w-full md:w-64 h-40 rounded-lg overflow-hidden editorial-shadow transform md:rotate-2">
+        <img class="w-full h-full object-cover"
+          src="https://images.unsplash.com/photo-1590422749897-47036da0b0ff?w=600&q=80"
+          alt="Artisanat" />
+      </div>
+    </div>
+  </section>
+
 </main>
+
+<!-- BottomNavBar — design original -->
 <nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-[#f5fbf1]/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-t-[2rem] z-50 shadow-[0_-8px_40px_rgba(23,29,23,0.06)]">
-<a class="flex flex-col items-center justify-center text-[#171d17]/60 dark:text-slate-400 hover:text-[#1a5fa8] transition-colors scale-100 active:scale-97" href="hero.html">
-<span class="material-symbols-outlined" data-icon="home">home</span>
-<span class="font-['Inter'] font-medium text-[11px] tracking-[0.05em] uppercase mt-1">Home</span>
-</a>
-<a class="flex flex-col items-center justify-center text-[#171d17]/60 dark:text-slate-400 hover:text-[#1a5fa8] transition-colors scale-100 active:scale-97" href="shop.html">
-<span class="material-symbols-outlined" data-icon="storefront">storefront</span>
-<span class="font-['Inter'] font-medium text-[11px] tracking-[0.05em] uppercase mt-1">Shop</span>
-</a>
-<a class="flex flex-col items-center justify-center text-[#006b2a] dark:text-[#0f8739] font-bold scale-100 active:scale-97" href="sell.html">
-<span class="material-symbols-outlined" data-icon="add_circle" style="font-variation-settings: 'FILL' 1;">add_circle</span>
-<span class="font-['Inter'] font-medium text-[11px] tracking-[0.05em] uppercase mt-1">Sell</span>
-</a>
-<a class="flex flex-col items-center justify-center text-[#171d17]/60 dark:text-slate-400 hover:text-[#1a5fa8] transition-colors scale-100 active:scale-97" href="compte.html">
-<span class="material-symbols-outlined" data-icon="person">person</span>
-<span class="font-['Inter'] font-medium text-[11px] tracking-[0.05em] uppercase mt-1">Profile</span>
-</a>
+  <a href="index.html" class="flex flex-col items-center justify-center text-[#171d17]/60 hover:text-[#1a5fa8] transition-colors">
+    <span class="material-symbols-outlined">home</span>
+    <span class="font-['Inter'] font-medium text-[11px] tracking-[0.05em] uppercase mt-1">Home</span>
+  </a>
+  <a href="recherche.html" class="flex flex-col items-center justify-center text-[#171d17]/60 hover:text-[#1a5fa8] transition-colors">
+    <span class="material-symbols-outlined">storefront</span>
+    <span class="font-['Inter'] font-medium text-[11px] tracking-[0.05em] uppercase mt-1">Shop</span>
+  </a>
+  <a href="sell.html" class="flex flex-col items-center justify-center text-[#006b2a] font-bold">
+    <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">add_circle</span>
+    <span class="font-['Inter'] font-medium text-[11px] tracking-[0.05em] uppercase mt-1">Sell</span>
+  </a>
+  <a href="compte.html" class="flex flex-col items-center justify-center text-[#171d17]/60 hover:text-[#1a5fa8] transition-colors">
+    <span class="material-symbols-outlined">person</span>
+    <span class="font-['Inter'] font-medium text-[11px] tracking-[0.05em] uppercase mt-1">Profile</span>
+  </a>
 </nav>
-</body></html>
+
+<!-- ══════════════════════
+     SCRIPT SUPABASE
+══════════════════════ -->
+<script>
+  // ─── CONFIG ──────────────────────────────────────
+  const SUPABASE_URL  = 'https://aakxoydznmybstfozjte.supabase.co'
+  const SUPABASE_ANON = 'VOTRE_ANON_KEY'  // ← remplacer
+  // ─────────────────────────────────────────────────
+
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON)
+
+  let uploadedImageUrl = null   // URL publique après upload Storage
+  let selectedFile     = null
+
+  const $ = id => document.getElementById(id)
+
+  // ─── Toast ───────────────────────────────────────
+  function toast(msg, isError = false) {
+    const t = $('toast')
+    t.textContent = msg
+    t.className = 'show' + (isError ? ' error' : '')
+    setTimeout(() => t.className = '', 3500)
+  }
+
+  // ─── Catégories depuis Supabase ──────────────────
+  async function loadCategories() {
+    const { data } = await sb.from('categories').select('id, name').order('name')
+    if (!data) return
+    const sel = $('f-category')
+    data.forEach(c => {
+      const opt = document.createElement('option')
+      opt.value = c.id
+      opt.textContent = c.name
+      sel.appendChild(opt)
+    })
+  }
+
+  // ─── Upload image ────────────────────────────────
+  function handleFileSelect(input) {
+    const file = input.files[0]
+    if (!file) return
+    selectedFile = file
+    previewImage(file)
+  }
+
+  function dragOver(e) {
+    e.preventDefault()
+    $('upload-zone').classList.add('drag-over')
+  }
+  function dragLeave(e) {
+    $('upload-zone').classList.remove('drag-over')
+  }
+  function dropFile(e) {
+    e.preventDefault()
+    $('upload-zone').classList.remove('drag-over')
+    const file = e.dataTransfer.files[0]
+    if (!file) return
+    if (!['image/jpeg','image/jpg','image/png','image/webp'].includes(file.type)) {
+      toast('Format non supporté (JPG, PNG, WEBP uniquement)', true); return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast('Image trop lourde (max 5 MB)', true); return
+    }
+    selectedFile = file
+    previewImage(file)
+  }
+
+  function previewImage(file) {
+    const reader = new FileReader()
+    reader.onload = e => {
+      $('upload-placeholder').classList.add('hidden')
+      const img = $('img-preview')
+      img.src = e.target.result
+      img.classList.remove('hidden')
+    }
+    reader.readAsDataURL(file)
+  }
+
+  async function uploadImage(session) {
+    if (!selectedFile) return null
+
+    const ext      = selectedFile.name.split('.').pop()
+    const fileName = `${session.user.id}/${Date.now()}.${ext}`
+
+    // Afficher progress
+    $('upload-progress').classList.remove('hidden')
+    $('upload-progress-bar').style.width = '30%'
+
+    const { data, error } = await sb.storage
+      .from('products')
+      .upload(fileName, selectedFile, {
+        contentType: selectedFile.type,
+        upsert: false
+      })
+
+    $('upload-progress-bar').style.width = '100%'
+    setTimeout(() => $('upload-progress').classList.add('hidden'), 800)
+
+    if (error) {
+      console.error('Storage upload error:', error)
+      toast('Erreur upload image : ' + error.message, true)
+      return null
+    }
+
+    // URL publique
+    const { data: urlData } = sb.storage.from('products').getPublicUrl(data.path)
+    return urlData.publicUrl
+  }
+
+  // ─── Validation formulaire ───────────────────────
+  function validate() {
+    const name     = $('f-name').value.trim()
+    const country  = $('f-country').value
+    const category = $('f-category').value
+    const price    = parseFloat($('f-price').value)
+
+    if (!name)     { toast('Nom du produit requis', true);     return false }
+    if (!country)  { toast('Sélectionne un pays d\'origine', true); return false }
+    if (!category) { toast('Sélectionne une catégorie', true); return false }
+    if (!price || price <= 0) { toast('Prix invalide', true);  return false }
+    if (!selectedFile && !uploadedImageUrl) {
+      toast('Ajoute au moins une photo', true); return false
+    }
+    return true
+  }
+
+  // ─── Submit → Supabase ───────────────────────────
+  async function submitProduct() {
+    if (!validate()) return
+
+    // Vérifier session
+    const { data: { session } } = await sb.auth.getSession()
+    if (!session) {
+      toast('Connecte-toi pour publier un produit', true)
+      setTimeout(() => window.location.href = 'login.html?redirect=sell.html', 1800)
+      return
+    }
+
+    // Récupérer le user interne (public.users) via auth_id
+    const { data: userRow } = await sb
+      .from('users')
+      .select('id, role')
+      .eq('auth_id', session.user.id)
+      .single()
+
+    if (!userRow) {
+      toast('Profil vendeur introuvable', true); return
+    }
+    if (!['artisan','admin'].includes(userRow.role)) {
+      toast('Compte artisan requis pour vendre', true); return
+    }
+
+    // Désactiver bouton
+    const btn = $('btn-submit')
+    btn.disabled = true
+    $('btn-text').textContent = 'Publication...'
+
+    // 1. Upload image
+    const imageUrl = await uploadImage(session)
+
+    // 2. Insert produit
+    const { data: product, error } = await sb
+      .from('products')
+      .insert([{
+        seller_id:   userRow.id,
+        category_id: $('f-category').value || null,
+        name:        $('f-name').value.trim(),
+        description: $('f-desc').value.trim() || null,
+        price:       parseFloat($('f-price').value),
+        stock:       parseInt($('f-stock').value) || 1,
+        currency:    'MAD',
+        country:     $('f-country').value,
+        origin_city: $('f-city').value.trim() || null,
+        image_url:   imageUrl,
+        images:      imageUrl ? [imageUrl] : [],
+        status:      'pending'   // → admin doit valider
+      }])
+      .select('id')
+      .single()
+
+    btn.disabled = false
+    $('btn-text').textContent = 'Publish to Marketplace'
+
+    if (error) {
+      console.error('Insert product error:', error)
+      toast('Erreur : ' + error.message, true)
+      return
+    }
+
+    // ── Succès ─────────────────────────────────────
+    toast('Produit soumis ! En attente de validation.')
+
+    // Reset formulaire
+    setTimeout(() => {
+      $('f-name').value    = ''
+      $('f-desc').value    = ''
+      $('f-price').value   = ''
+      $('f-stock').value   = ''
+      $('f-city').value    = ''
+      $('f-country').value = ''
+      $('f-category').value = ''
+      $('img-preview').classList.add('hidden')
+      $('img-preview').src = ''
+      $('upload-placeholder').classList.remove('hidden')
+      selectedFile     = null
+      uploadedImageUrl = null
+      // Rediriger vers dashboard vendeur
+      window.location.href = 'compte.html?tab=products'
+    }, 2000)
+  }
+
+  // ─── Init ────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    loadCategories()
+  })
+</script>
+
+</body>
+</html>
