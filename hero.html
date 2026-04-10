@@ -92,6 +92,13 @@ tailwind.config = {
 
   /* Star fill */
   .star-fill { font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24; }
+
+  /* Search Overlay */
+  @keyframes overlayFadeIn { from { opacity:0; } to { opacity:1; } }
+  @keyframes overlaySlideDown { from { opacity:0; transform:translateY(-12px) scale(0.98); } to { opacity:1; transform:translateY(0) scale(1); } }
+  #search-overlay { animation:overlayFadeIn 0.2s ease forwards; }
+  #search-overlay .search-box { animation:overlaySlideDown 0.25s cubic-bezier(0.22,1,0.36,1) forwards; }
+  #search-overlay.hidden { display:none !important; }
 </style>
 </head>
 <body class="bg-background text-on-surface min-h-screen overflow-x-hidden">
@@ -111,16 +118,16 @@ tailwind.config = {
       <a href="collections.html" class="hover:text-primary transition-colors">Collections</a>
     </nav>
     <div class="flex items-center gap-4 anim-fade-in d-200">
-      <button class="text-on-surface hover:opacity-70 transition-opacity">
+      <button onclick="openSearch()" class="text-on-surface hover:opacity-70 transition-opacity">
         <span class="material-symbols-outlined">search</span>
       </button>
-      <button class="text-on-surface hover:opacity-70 transition-opacity relative" href="panier.html">
+      <a class="text-on-surface hover:opacity-70 transition-opacity relative" href="panier.html">
         <span class="material-symbols-outlined">shopping_bag</span>
         <span class="absolute -top-1 -right-1 bg-primary text-on-primary text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">3</span>
-      </button>
-      <button class="text-on-surface hover:opacity-70 transition-opacity hidden md:block" href="compte.html">
+      </a>
+      <a class="text-on-surface hover:opacity-70 transition-opacity hidden md:block" href="compte.html">
         <span class="material-symbols-outlined">person</span>
-      </button>
+      </a>
     </div>
   </div>
 </header>
@@ -619,6 +626,41 @@ tailwind.config = {
 
 </main>
 
+<!-- ══ SEARCH OVERLAY ══ -->
+<div id="search-overlay" class="hidden fixed inset-0 z-[200] flex items-start justify-center pt-28 px-4" style="background:rgba(23,29,23,0.45);backdrop-filter:blur(6px);">
+  <div class="search-box bg-surface-container-lowest rounded-lg w-full max-w-lg shadow-2xl overflow-hidden border border-outline-variant/20">
+    <div class="flex items-center gap-3 px-5 py-4 border-b border-outline-variant/15">
+      <span class="material-symbols-outlined text-outline flex-shrink-0" style="font-size:20px;">search</span>
+      <input
+        id="search-overlay-input"
+        type="text"
+        autocomplete="off"
+        placeholder="Rechercher des trésors..."
+        class="flex-1 bg-transparent outline-none text-base text-on-surface placeholder:text-outline"
+        onkeydown="handleSearchKey(event)"
+      />
+      <button onclick="closeSearch()" class="text-outline hover:text-on-surface transition-colors flex-shrink-0">
+        <span class="material-symbols-outlined" style="font-size:20px;">close</span>
+      </button>
+    </div>
+    <div class="p-4">
+      <p class="text-[10px] uppercase tracking-widest text-outline font-bold mb-3">Recherches populaires</p>
+      <div class="flex flex-wrap gap-2">
+        <button onclick="submitSearch('Huile d\'Argan')" class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-medium hover:bg-primary hover:text-on-primary transition-all border border-outline-variant/20">Huile d'Argan</button>
+        <button onclick="submitSearch('Masque Punu')" class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-medium hover:bg-primary hover:text-on-primary transition-all border border-outline-variant/20">Masque Punu</button>
+        <button onclick="submitSearch('Cacao Gabon')" class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-medium hover:bg-primary hover:text-on-primary transition-all border border-outline-variant/20">Cacao Gabon</button>
+        <button onclick="submitSearch('Zellige')" class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-medium hover:bg-primary hover:text-on-primary transition-all border border-outline-variant/20">Zellige</button>
+        <button onclick="submitSearch('Savon Beldi')" class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-medium hover:bg-primary hover:text-on-primary transition-all border border-outline-variant/20">Savon Beldi</button>
+        <button onclick="submitSearch('Épices')" class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-medium hover:bg-primary hover:text-on-primary transition-all border border-outline-variant/20">Épices</button>
+      </div>
+    </div>
+    <div class="px-5 pb-4 flex items-center gap-2">
+      <span class="material-symbols-outlined text-outline" style="font-size:14px;">keyboard_return</span>
+      <span class="text-[10px] text-outline">Appuyez sur Entrée pour lancer la recherche</span>
+    </div>
+  </div>
+</div>
+
 <!-- BottomNavBar -->
 <nav class="bg-surface/80 backdrop-blur-xl fixed bottom-0 w-full z-50 rounded-t-[2rem] shadow-[0_-8px_40px_rgba(0,0,0,0.06)] md:hidden border-t border-outline-variant/10">
   <div class="flex justify-around items-center w-full px-4 pb-6 pt-3">
@@ -642,6 +684,38 @@ tailwind.config = {
 </nav>
 
 <script>
+// ── Search Overlay ──────────────────────────────
+function openSearch() {
+  const overlay = document.getElementById('search-overlay');
+  overlay.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('search-overlay-input').focus(), 50);
+}
+function closeSearch() {
+  document.getElementById('search-overlay').classList.add('hidden');
+  document.body.style.overflow = '';
+  document.getElementById('search-overlay-input').value = '';
+}
+function submitSearch(term) {
+  const q = term || document.getElementById('search-overlay-input').value.trim();
+  if (q) window.location.href = 'recherche.html?q=' + encodeURIComponent(q);
+}
+function handleSearchKey(e) {
+  if (e.key === 'Enter') submitSearch();
+  if (e.key === 'Escape') closeSearch();
+}
+// Fermer en cliquant sur le fond
+document.getElementById('search-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeSearch();
+});
+// Raccourci clavier global : / ou Ctrl+K
+document.addEventListener('keydown', e => {
+  if ((e.key === '/' || (e.ctrlKey && e.key === 'k')) && document.activeElement.tagName !== 'INPUT') {
+    e.preventDefault();
+    openSearch();
+  }
+});
+
 // Intersection Observer for scroll animations
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(e => {
