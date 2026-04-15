@@ -29,30 +29,18 @@
     body{font-family:'Inter',sans-serif;background:#f5fbf1;min-height:100dvh}
     .font-serif{font-family:'Noto Serif',serif}
     .no-scrollbar::-webkit-scrollbar{display:none}
-
-    /* Sidebar */
     #sidebar{transition:transform .3s cubic-bezier(.22,1,.36,1)}
     #sidebar-overlay{transition:opacity .3s ease}
-
-    /* Nav item */
     .nav-item{transition:all .2s ease;position:relative}
     .nav-item.active{background:#006b2a;color:#fff}
     .nav-item.active .nav-icon{color:#fff}
     .nav-item:not(.active):hover{background:#eaf0e5;color:#171d17}
-
-    /* Cards */
     .stat-card{transition:transform .2s ease,box-shadow .2s ease}
     .stat-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,107,42,.1)}
-
-    /* Table */
     .table-row{transition:background .15s ease}
     .table-row:hover{background:#eff5eb}
-
-    /* Sections */
     .section{display:none}
     .section.active{display:block}
-
-    /* Status badges */
     .status-pending{background:#fff3cd;color:#856404}
     .status-active{background:#d1e7dd;color:#0a3622}
     .status-inactive{background:#f8d7da;color:#721c24}
@@ -62,26 +50,14 @@
     .status-cancelled{background:#f8d7da;color:#721c24}
     .status-paid{background:#d1e7dd;color:#0a3622}
     .status-failed{background:#f8d7da;color:#721c24}
-
-    /* Modal */
     #modal-overlay{transition:opacity .2s ease}
     #modal-box{transition:transform .25s cubic-bezier(.22,1,.36,1),opacity .25s ease}
-
-    /* Loader */
     @keyframes spin{to{transform:rotate(360deg)}}
     .loader{animation:spin .8s linear infinite}
-
-    /* Toast */
     #toast{transition:all .3s ease}
-
-    /* Chart bars */
     .bar-fill{transition:height .6s cubic-bezier(.22,1,.36,1)}
-
-    /* Image upload */
     .upload-zone{border:2px dashed #becaba;transition:border-color .2s,background .2s}
     .upload-zone:hover,.upload-zone.drag-over{border-color:#006b2a;background:#eff5eb}
-
-    /* Responsive sidebar */
     @media(max-width:1023px){
       #sidebar{position:fixed;top:0;left:0;z-index:100;transform:translateX(-100%);height:100%;box-shadow:4px 0 30px rgba(0,0,0,.12)}
       #sidebar.open{transform:translateX(0)}
@@ -91,15 +67,14 @@
 </head>
 <body class="bg-background text-on-surface overflow-x-hidden">
 
-<!-- ══ TOAST ══ -->
+<!-- TOAST -->
 <div id="toast" class="fixed top-6 right-6 z-[400] px-5 py-3 rounded-xl bg-inverse-surface text-inverse-on-surface text-sm font-medium shadow-2xl opacity-0 pointer-events-none max-w-xs" role="status" aria-live="polite"></div>
 
-<!-- ══ SIDEBAR OVERLAY (mobile) ══ -->
+<!-- SIDEBAR OVERLAY -->
 <div id="sidebar-overlay" class="hidden opacity-0 pointer-events-none" onclick="closeSidebar()"></div>
 
-<!-- ══ SIDEBAR ══ -->
+<!-- SIDEBAR -->
 <aside id="sidebar" class="w-64 bg-surface-container-lowest border-r border-outline-variant/20 h-screen flex flex-col fixed top-0 left-0 z-100 lg:z-auto lg:translate-x-0">
-  <!-- Logo -->
   <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/15">
     <a href="index.html" class="flex items-center gap-3">
       <span class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
@@ -115,7 +90,6 @@
     </button>
   </div>
 
-  <!-- Vendeur info -->
   <div id="seller-info" class="px-4 py-4 border-b border-outline-variant/15">
     <div class="flex items-center gap-3">
       <div id="seller-avatar" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-base flex-shrink-0">?</div>
@@ -129,7 +103,6 @@
     </div>
   </div>
 
-  <!-- Nav -->
   <nav class="flex-1 overflow-y-auto no-scrollbar px-3 py-4 space-y-1">
     <button onclick="showSection('overview')" data-nav="overview" class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-on-primary">
       <span class="nav-icon material-symbols-outlined" style="font-size:20px">dashboard</span>
@@ -158,7 +131,6 @@
     </button>
   </nav>
 
-  <!-- Footer sidebar -->
   <div class="px-3 py-4 border-t border-outline-variant/15 space-y-1">
     <a href="index.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-on-surface-variant">
       <span class="nav-icon material-symbols-outlined" style="font-size:20px">storefront</span>
@@ -171,10 +143,9 @@
   </div>
 </aside>
 
-<!-- ══ MAIN ══ -->
+<!-- MAIN -->
 <div class="lg:ml-64 min-h-screen flex flex-col">
 
-  <!-- Top bar -->
   <header class="bg-surface-container-lowest/80 backdrop-blur-xl sticky top-0 z-40 border-b border-outline-variant/10 px-6 py-4 flex items-center justify-between">
     <div class="flex items-center gap-4">
       <button class="lg:hidden text-on-surface" onclick="openSidebar()">
@@ -186,19 +157,17 @@
       </div>
     </div>
     <div class="flex items-center gap-3">
-      <button onclick="showSection('products'); openProductModal()" class="btn-primary hidden sm:flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all hover:opacity-90">
+      <button onclick="showSection('products'); setTimeout(openProductModal, 150)" class="btn-primary hidden sm:flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all hover:opacity-90">
         <span class="material-symbols-outlined" style="font-size:16px">add</span>
         Nouveau produit
       </button>
     </div>
   </header>
 
-  <!-- Content -->
   <main class="flex-1 p-6">
 
-    <!-- ══ OVERVIEW ══ -->
+    <!-- OVERVIEW -->
     <section id="section-overview" class="section active space-y-6">
-      <!-- Stats -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="stat-card bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10">
           <div class="flex items-start justify-between mb-3">
@@ -243,7 +212,6 @@
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <!-- Commandes récentes -->
         <div class="lg:col-span-2 bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
           <div class="flex items-center justify-between px-5 py-4 border-b border-outline-variant/10">
             <h3 class="font-serif italic text-lg font-bold">Commandes récentes</h3>
@@ -254,7 +222,6 @@
           </div>
         </div>
 
-        <!-- Produits à stock faible -->
         <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
           <div class="flex items-center justify-between px-5 py-4 border-b border-outline-variant/10">
             <h3 class="font-serif italic text-lg font-bold">Stock faible</h3>
@@ -267,7 +234,7 @@
       </div>
     </section>
 
-    <!-- ══ PRODUCTS ══ -->
+    <!-- PRODUCTS -->
     <section id="section-products" class="section space-y-5">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div class="flex items-center gap-3">
@@ -313,7 +280,7 @@
       </div>
     </section>
 
-    <!-- ══ ORDERS ══ -->
+    <!-- ORDERS -->
     <section id="section-orders" class="section space-y-5">
       <div class="flex flex-col sm:flex-row sm:items-center gap-4">
         <select id="order-filter" onchange="loadOrders()" class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary">
@@ -347,9 +314,8 @@
       </div>
     </section>
 
-    <!-- ══ REVENUE ══ -->
+    <!-- REVENUE -->
     <section id="section-revenue" class="section space-y-6">
-      <!-- KPIs revenus -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="stat-card bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10">
           <p class="text-[10px] uppercase tracking-widest text-outline mb-2 font-bold">Total encaissé</p>
@@ -369,7 +335,6 @@
         </div>
       </div>
 
-      <!-- Graphique barres simplifié -->
       <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 p-6">
         <h3 class="font-serif italic text-lg font-bold mb-6">Revenus sur 6 mois</h3>
         <div id="revenue-chart" class="flex items-end gap-3 h-40">
@@ -377,7 +342,6 @@
         </div>
       </div>
 
-      <!-- Tableau paiements -->
       <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
         <div class="px-5 py-4 border-b border-outline-variant/10">
           <h3 class="font-serif italic text-lg font-bold">Historique des paiements</h3>
@@ -401,7 +365,7 @@
       </div>
     </section>
 
-    <!-- ══ REVIEWS ══ -->
+    <!-- REVIEWS -->
     <section id="section-reviews" class="section space-y-5">
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div class="stat-card bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10 text-center">
@@ -434,7 +398,7 @@
       </div>
     </section>
 
-    <!-- ══ PROFILE ══ -->
+    <!-- PROFILE -->
     <section id="section-profile" class="section space-y-6 max-w-2xl">
       <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
         <div class="px-5 py-4 border-b border-outline-variant/10 flex items-center justify-between">
@@ -482,7 +446,6 @@
         </form>
       </div>
 
-      <!-- Changer mot de passe -->
       <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
         <div class="px-5 py-4 border-b border-outline-variant/10">
           <h3 class="font-serif italic text-lg font-bold">Sécurité</h3>
@@ -498,12 +461,12 @@
   </main>
 </div>
 
-<!-- ══ MODAL PRODUIT ══ -->
-<div id="modal-overlay" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4" style="background:rgba(23,29,23,.5);backdrop-filter:blur(6px)" onclick="closeModal(event)">
-  <div id="modal-box" class="bg-surface-container-lowest rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+<!-- MODAL PRODUIT -->
+<div id="modal-overlay" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4" style="background:rgba(23,29,23,.5);backdrop-filter:blur(6px)">
+  <div id="modal-box" class="bg-surface-container-lowest rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
     <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10 sticky top-0 bg-surface-container-lowest z-10">
       <h3 id="modal-title" class="font-serif italic text-xl font-bold">Nouveau produit</h3>
-      <button onclick="closeModal()" class="text-outline hover:text-on-surface transition-colors">
+      <button type="button" onclick="closeModal()" class="text-outline hover:text-on-surface transition-colors">
         <span class="material-symbols-outlined">close</span>
       </button>
     </div>
@@ -578,12 +541,14 @@
   </div>
 </div>
 
-<!-- ══ MODAL COMMANDE ══ -->
-<div id="order-modal-overlay" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4" style="background:rgba(23,29,23,.5);backdrop-filter:blur(6px)" onclick="closeOrderModal(event)">
-  <div class="bg-surface-container-lowest rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+<!-- MODAL COMMANDE -->
+<div id="order-modal-overlay" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4" style="background:rgba(23,29,23,.5);backdrop-filter:blur(6px)">
+  <div class="bg-surface-container-lowest rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
     <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10">
       <h3 class="font-serif italic text-xl font-bold">Détail commande</h3>
-      <button onclick="closeOrderModal()" class="text-outline hover:text-on-surface"><span class="material-symbols-outlined">close</span></button>
+      <button type="button" onclick="closeOrderModal()" class="text-outline hover:text-on-surface">
+        <span class="material-symbols-outlined">close</span>
+      </button>
     </div>
     <div id="order-detail-content" class="p-6 space-y-4">Chargement...</div>
     <div class="px-6 pb-6">
@@ -597,14 +562,14 @@
             <option value="delivered">Livrée</option>
             <option value="cancelled">Annulée</option>
           </select>
-          <button onclick="updateOrderStatus()" class="bg-primary text-on-primary px-5 py-2.5 rounded-xl text-sm font-bold hover:opacity-90 transition-all whitespace-nowrap">Mettre à jour</button>
+          <button type="button" onclick="updateOrderStatus()" class="bg-primary text-on-primary px-5 py-2.5 rounded-xl text-sm font-bold hover:opacity-90 transition-all whitespace-nowrap">Mettre à jour</button>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══ SUPABASE ══ -->
+<!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────────────
@@ -667,15 +632,23 @@ function stars(rating) {
 }
 
 // ── NAV ───────────────────────────────────────────────────────────────────────
-const pageTitles = { overview: 'Vue d'ensemble', products: 'Mes Produits', orders: 'Commandes', revenue: 'Revenus', reviews: 'Avis Clients', profile: 'Ma Boutique' }
+const pageTitles = {
+  overview: "Vue d'ensemble",
+  products: 'Mes Produits',
+  orders: 'Commandes',
+  revenue: 'Revenus',
+  reviews: 'Avis Clients',
+  profile: 'Ma Boutique'
+}
 
 function showSection(name) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'))
   document.getElementById('section-' + name)?.classList.add('active')
-  document.querySelectorAll('.nav-item').forEach(b => {
-    b.classList.toggle('active', b.dataset.nav === name)
-    b.classList.toggle('text-on-primary', b.dataset.nav === name)
-    b.classList.toggle('text-on-surface-variant', b.dataset.nav !== name)
+  document.querySelectorAll('.nav-item[data-nav]').forEach(b => {
+    const isActive = b.dataset.nav === name
+    b.classList.toggle('active', isActive)
+    b.classList.toggle('text-on-primary', isActive)
+    b.classList.toggle('text-on-surface-variant', !isActive)
   })
   document.getElementById('page-title').textContent = pageTitles[name] || ''
   closeSidebar()
@@ -707,10 +680,8 @@ function closeSidebar() {
 // ── AUTH ──────────────────────────────────────────────────────────────────────
 async function initAuth() {
   const { data: { session } } = await db.auth.getSession()
-  if (!session) {
-    window.location.href = 'login.html'
-    return
-  }
+  if (!session) { window.location.href = 'login.html'; return }
+
   const { data: user } = await db.from('users').select('*').eq('auth_id', session.user.id).single()
   if (!user || (user.role !== 'artisan' && user.role !== 'admin')) {
     showToast('Accès refusé. Compte vendeur requis.', 'bg-error text-on-error')
@@ -719,13 +690,10 @@ async function initAuth() {
   }
   currentSeller = user
 
-  // Update sidebar
   const initials = ((user.first_name?.[0] || '') + (user.last_name?.[0] || '')).toUpperCase() || user.email?.[0]?.toUpperCase() || '?'
   document.getElementById('seller-avatar').textContent = initials
   document.getElementById('seller-name').textContent = user.full_name || `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email
   document.getElementById('seller-country').textContent = user.country || '—'
-
-  // Date header
   document.getElementById('page-date').textContent = new Date().toLocaleDateString('fr-FR', { weekday:'long', year:'numeric', month:'long', day:'numeric' })
 
   loadCategories()
@@ -748,10 +716,8 @@ async function loadCategories() {
 // ── OVERVIEW ──────────────────────────────────────────────────────────────────
 async function loadOverview() {
   if (!currentSeller) return
-
   const sid = currentSeller.id
 
-  // Stats parallèles
   const [
     { count: totalProd },
     { count: activeProd },
@@ -781,7 +747,6 @@ async function loadOverview() {
   document.getElementById('ov-revenue-trend').textContent = 'MAD'
   document.getElementById('ov-rating').textContent = avgRating
 
-  // Badge commandes en attente
   if (pendingOrders > 0) {
     const badge = document.getElementById('badge-orders')
     badge.textContent = pendingOrders
@@ -796,13 +761,22 @@ async function loadRecentOrders() {
   const sid = currentSeller.id
   const { data: prodIds } = await db.from('products').select('id').eq('seller_id', sid)
   const ids = prodIds?.map(p => p.id) || []
-  if (!ids.length) { document.getElementById('recent-orders').innerHTML = '<div class="px-5 py-8 text-center text-outline text-sm">Aucune commande</div>'; return }
+  if (!ids.length) {
+    document.getElementById('recent-orders').innerHTML = '<div class="px-5 py-8 text-center text-outline text-sm">Aucune commande</div>'
+    return
+  }
 
-  const { data: items } = await db.from('order_items').select('order_id, quantity, unit_price, product_id').in('product_id', ids).limit(20)
-  if (!items?.length) { document.getElementById('recent-orders').innerHTML = '<div class="px-5 py-8 text-center text-outline text-sm">Aucune commande pour le moment</div>'; return }
+  const { data: items } = await db.from('order_items').select('order_id').in('product_id', ids).limit(20)
+  if (!items?.length) {
+    document.getElementById('recent-orders').innerHTML = '<div class="px-5 py-8 text-center text-outline text-sm">Aucune commande pour le moment</div>'
+    return
+  }
 
   const orderIds = [...new Set(items.map(i => i.order_id))]
-  const { data: orders } = await db.from('orders').select('id, status, total_amount, created_at, shipping_name, shipping_country').in('id', orderIds.slice(0, 5)).order('created_at', { ascending: false })
+  const { data: orders } = await db.from('orders')
+    .select('id, status, total_amount, created_at, shipping_name, shipping_country, currency')
+    .in('id', orderIds.slice(0, 5))
+    .order('created_at', { ascending: false })
 
   document.getElementById('recent-orders').innerHTML = (orders || []).map(o => `
     <div class="table-row px-5 py-4 flex items-center justify-between cursor-pointer" onclick="openOrderDetail('${o.id}')">
@@ -827,7 +801,7 @@ async function loadLowStock() {
   document.getElementById('low-stock').innerHTML = data.map(p => `
     <div class="px-5 py-3 flex items-center justify-between">
       <p class="text-xs font-medium truncate max-w-[60%]">${p.name}</p>
-      <span class="text-[10px] font-bold ${p.stock <= 2 ? 'text-error' : 'text-tertiary'} bg-${p.stock <= 2 ? 'error' : 'tertiary'}/10 px-2 py-0.5 rounded-full">${p.stock} restant${p.stock > 1 ? 's' : ''}</span>
+      <span class="text-[10px] font-bold ${p.stock <= 2 ? 'text-error' : 'text-tertiary'} px-2 py-0.5 rounded-full" style="background:${p.stock <= 2 ? 'rgba(186,26,26,0.1)' : 'rgba(116,91,0,0.1)'}">${p.stock} restant${p.stock > 1 ? 's' : ''}</span>
     </div>
   `).join('')
 }
@@ -835,7 +809,7 @@ async function loadLowStock() {
 // ── PRODUCTS ──────────────────────────────────────────────────────────────────
 async function loadProducts() {
   document.getElementById('products-table-body').innerHTML = '<tr><td colspan="6" class="text-center py-12 text-outline text-sm"><span class="loader inline-block w-5 h-5 border-2 border-primary border-t-transparent rounded-full mr-2"></span>Chargement...</td></tr>'
-  const { data, error } = await db.from('products')
+  const { data } = await db.from('products')
     .select('id, name, price, stock, status, country, origin_city, category_id, image_url, created_at')
     .eq('seller_id', currentSeller.id)
     .order('created_at', { ascending: false })
@@ -871,6 +845,7 @@ function renderProducts() {
 
   document.getElementById('products-table-body').innerHTML = page.map(p => {
     const catName = categories.find(c => c.id === p.category_id)?.name || '—'
+    const safeName = p.name.replace(/\\/g, '\\\\').replace(/'/g, "\\'")
     return `
     <tr class="table-row border-b border-outline-variant/5">
       <td class="px-5 py-3">
@@ -892,10 +867,10 @@ function renderProducts() {
       <td class="px-4 py-3">${statusBadge(p.status)}</td>
       <td class="px-5 py-3 text-right">
         <div class="flex items-center justify-end gap-1">
-          <button onclick="editProduct('${p.id}')" class="w-8 h-8 rounded-lg hover:bg-surface-container-low flex items-center justify-center text-on-surface-variant hover:text-primary transition-all">
+          <button type="button" onclick="editProduct('${p.id}')" class="w-8 h-8 rounded-lg hover:bg-surface-container-low flex items-center justify-center text-on-surface-variant hover:text-primary transition-all">
             <span class="material-symbols-outlined" style="font-size:16px">edit</span>
           </button>
-          <button onclick="deleteProduct('${p.id}', '${p.name.replace(/'/g,"\\'")}\")" class="w-8 h-8 rounded-lg hover:bg-error-container flex items-center justify-center text-on-surface-variant hover:text-error transition-all">
+          <button type="button" onclick="deleteProduct('${p.id}', '${safeName}')" class="w-8 h-8 rounded-lg hover:bg-error-container flex items-center justify-center text-on-surface-variant hover:text-error transition-all">
             <span class="material-symbols-outlined" style="font-size:16px">delete</span>
           </button>
         </div>
@@ -903,7 +878,6 @@ function renderProducts() {
     </tr>`
   }).join('')
 
-  // Pagination
   document.getElementById('products-pagination').classList.remove('hidden')
   document.getElementById('prod-count-label').textContent = `${start + 1}–${Math.min(start + PROD_PER_PAGE, total)} sur ${total} produits`
   document.getElementById('prod-prev').disabled = prodPage === 1
@@ -929,20 +903,19 @@ function openProductModal(product = null) {
   document.getElementById('product-category').value = product?.category_id || ''
   document.getElementById('product-image').value = product?.image_url || ''
   document.getElementById('product-status').value = product?.status || 'pending'
-
-  const overlay = document.getElementById('modal-overlay')
-  overlay.classList.remove('hidden')
-  requestAnimationFrame(() => {
-    overlay.style.opacity = '1'
-    document.getElementById('modal-box').style.transform = 'scale(1)'
-    document.getElementById('modal-box').style.opacity = '1'
-  })
+  document.getElementById('modal-overlay').classList.remove('hidden')
 }
 
-function closeModal(event) {
-  if (event && event.target !== document.getElementById('modal-overlay')) return
+function closeModal() {
   document.getElementById('modal-overlay').classList.add('hidden')
+  document.getElementById('product-form').reset()
+  document.getElementById('product-id').value = ''
 }
+
+// Fermer en cliquant sur l'overlay (fond)
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal()
+})
 
 async function saveProduct(e) {
   e.preventDefault()
@@ -981,12 +954,12 @@ async function saveProduct(e) {
     return
   }
   showToast(id ? 'Produit mis à jour ✓' : 'Produit créé ✓')
-  document.getElementById('modal-overlay').classList.add('hidden')
+  closeModal()
   loadProducts()
   loadOverview()
 }
 
-async function editProduct(id) {
+function editProduct(id) {
   const p = allProducts.find(x => x.id === id)
   if (p) openProductModal(p)
 }
@@ -1019,7 +992,11 @@ async function loadOrders() {
     return
   }
 
-  let query = db.from('orders').select('id, status, total_amount, currency, created_at, shipping_name, shipping_country, shipping_city').in('id', orderIds).order('created_at', { ascending: false }).limit(50)
+  let query = db.from('orders')
+    .select('id, status, total_amount, currency, created_at, shipping_name, shipping_country, shipping_city')
+    .in('id', orderIds)
+    .order('created_at', { ascending: false })
+    .limit(50)
   if (statusF) query = query.eq('status', statusF)
   const { data: orders } = await query
 
@@ -1037,7 +1014,7 @@ async function loadOrders() {
       <td class="px-4 py-3 hidden sm:table-cell text-xs text-outline">${fmtDate(o.created_at)}</td>
       <td class="px-4 py-3">${statusBadge(o.status)}</td>
       <td class="px-5 py-3 text-right">
-        <button onclick="openOrderDetail('${o.id}')" class="text-xs text-primary font-semibold hover:underline">Voir</button>
+        <button type="button" onclick="openOrderDetail('${o.id}')" class="text-xs text-primary font-semibold hover:underline">Voir</button>
       </td>
     </tr>
   `).join('')
@@ -1045,8 +1022,7 @@ async function loadOrders() {
 
 async function openOrderDetail(orderId) {
   currentOrderId = orderId
-  const overlay = document.getElementById('order-modal-overlay')
-  overlay.classList.remove('hidden')
+  document.getElementById('order-modal-overlay').classList.remove('hidden')
   document.getElementById('order-detail-content').innerHTML = '<p class="text-outline text-sm">Chargement...</p>'
 
   const { data: order } = await db.from('orders').select('*').eq('id', orderId).single()
@@ -1087,11 +1063,15 @@ async function openOrderDetail(orderId) {
   `
 }
 
-function closeOrderModal(event) {
-  if (event && event.target !== document.getElementById('order-modal-overlay')) return
+function closeOrderModal() {
   document.getElementById('order-modal-overlay').classList.add('hidden')
   currentOrderId = null
 }
+
+// Fermer modal commande en cliquant sur l'overlay
+document.getElementById('order-modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeOrderModal()
+})
 
 async function updateOrderStatus() {
   if (!currentOrderId) return
@@ -1099,7 +1079,7 @@ async function updateOrderStatus() {
   const { error } = await db.from('orders').update({ status, updated_at: new Date().toISOString() }).eq('id', currentOrderId)
   if (error) { showToast('Erreur mise à jour', 'bg-error text-on-error'); return }
   showToast('Statut mis à jour ✓')
-  document.getElementById('order-modal-overlay').classList.add('hidden')
+  closeOrderModal()
   loadOrders()
   loadOverview()
 }
@@ -1112,9 +1092,12 @@ async function loadRevenue() {
   const { data: items } = await db.from('order_items').select('order_id, quantity, unit_price').in('product_id', prodIds)
   const orderIds = [...new Set((items || []).map(i => i.order_id))]
 
-  const { data: payments } = await db.from('payments').select('amount, status, created_at, method, transaction_id, currency').in('order_id', orderIds).order('created_at', { ascending: false })
-  const paidPayments = (payments || []).filter(p => p.status === 'paid')
+  const { data: payments } = await db.from('payments')
+    .select('amount, status, created_at, method, transaction_id, currency')
+    .in('order_id', orderIds)
+    .order('created_at', { ascending: false })
 
+  const paidPayments = (payments || []).filter(p => p.status === 'paid')
   const total = paidPayments.reduce((a, p) => a + Number(p.amount), 0)
   const now = new Date()
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
@@ -1125,7 +1108,6 @@ async function loadRevenue() {
   document.getElementById('rev-count').textContent = paidPayments.length
   document.getElementById('rev-avg').textContent = paidPayments.length ? fmtAmount(total / paidPayments.length) : '— MAD'
 
-  // Graphique 6 mois
   const months = []
   for (let i = 5; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
@@ -1151,10 +1133,9 @@ async function loadRevenue() {
       </div>`
   }).join('')
 
-  // Tableau paiements
   document.getElementById('payments-table-body').innerHTML = (payments || []).slice(0, 20).map(p => `
     <tr class="table-row border-b border-outline-variant/5">
-      <td class="px-5 py-3 font-mono text-xs text-on-surface-variant">${(p.transaction_id || p.id || '').slice(0,12)}…</td>
+      <td class="px-5 py-3 font-mono text-xs text-on-surface-variant">${(p.transaction_id || '').slice(0,12)}…</td>
       <td class="px-4 py-3 text-sm font-bold">${fmtAmount(p.amount, p.currency || 'MAD')}</td>
       <td class="px-4 py-3 hidden sm:table-cell text-xs text-on-surface-variant capitalize">${p.method || '—'}</td>
       <td class="px-4 py-3 hidden md:table-cell text-xs text-outline">${fmtDate(p.created_at)}</td>
@@ -1169,7 +1150,10 @@ async function loadReviews() {
   const prodIds = prods?.map(p => p.id) || []
 
   const filter = document.getElementById('review-filter').value
-  let query = db.from('reviews').select('id, rating, comment, status, created_at, reviewer_name, product_id, products(name)').in('product_id', prodIds).order('created_at', { ascending: false })
+  let query = db.from('reviews')
+    .select('id, rating, comment, status, created_at, reviewer_name, product_id, products(name)')
+    .in('product_id', prodIds)
+    .order('created_at', { ascending: false })
   if (filter) query = query.eq('status', filter)
   const { data: reviews } = await query
 
@@ -1231,7 +1215,6 @@ async function saveProfile(e) {
   Object.assign(currentSeller, payload)
   document.getElementById('seller-name').textContent = payload.full_name || currentSeller.email
   document.getElementById('seller-country').textContent = payload.country
-
   showToast('Profil mis à jour ✓')
 }
 
