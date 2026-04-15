@@ -29,30 +29,18 @@
     body{font-family:'Inter',sans-serif;background:#f5fbf1;min-height:100dvh}
     .font-serif{font-family:'Noto Serif',serif}
     .no-scrollbar::-webkit-scrollbar{display:none}
-
-    /* Sidebar */
     #sidebar{transition:transform .3s cubic-bezier(.22,1,.36,1)}
     #sidebar-overlay{transition:opacity .3s ease}
-
-    /* Nav item */
     .nav-item{transition:all .2s ease;position:relative}
     .nav-item.active{background:#006b2a;color:#fff}
     .nav-item.active .nav-icon{color:#fff}
     .nav-item:not(.active):hover{background:#eaf0e5;color:#171d17}
-
-    /* Cards */
     .stat-card{transition:transform .2s ease,box-shadow .2s ease}
     .stat-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,107,42,.1)}
-
-    /* Table */
     .table-row{transition:background .15s ease}
     .table-row:hover{background:#eff5eb}
-
-    /* Sections */
     .section{display:none}
     .section.active{display:block}
-
-    /* Status badges */
     .status-pending{background:#fff3cd;color:#856404}
     .status-active{background:#d1e7dd;color:#0a3622}
     .status-inactive{background:#f8d7da;color:#721c24}
@@ -62,26 +50,14 @@
     .status-cancelled{background:#f8d7da;color:#721c24}
     .status-paid{background:#d1e7dd;color:#0a3622}
     .status-failed{background:#f8d7da;color:#721c24}
-
-    /* Modal */
     #modal-overlay{transition:opacity .2s ease}
     #modal-box{transition:transform .25s cubic-bezier(.22,1,.36,1),opacity .25s ease}
-
-    /* Loader */
     @keyframes spin{to{transform:rotate(360deg)}}
     .loader{animation:spin .8s linear infinite}
-
-    /* Toast */
     #toast{transition:all .3s ease}
-
-    /* Chart bars */
     .bar-fill{transition:height .6s cubic-bezier(.22,1,.36,1)}
-
-    /* Image upload */
     .upload-zone{border:2px dashed #becaba;transition:border-color .2s,background .2s}
     .upload-zone:hover,.upload-zone.drag-over{border-color:#006b2a;background:#eff5eb}
-
-    /* Responsive sidebar */
     @media(max-width:1023px){
       #sidebar{position:fixed;top:0;left:0;z-index:100;transform:translateX(-100%);height:100%;box-shadow:4px 0 30px rgba(0,0,0,.12)}
       #sidebar.open{transform:translateX(0)}
@@ -91,15 +67,14 @@
 </head>
 <body class="bg-background text-on-surface overflow-x-hidden">
 
-<!-- ══ TOAST ══ -->
+<!-- TOAST -->
 <div id="toast" class="fixed top-6 right-6 z-[400] px-5 py-3 rounded-xl bg-inverse-surface text-inverse-on-surface text-sm font-medium shadow-2xl opacity-0 pointer-events-none max-w-xs" role="status" aria-live="polite"></div>
 
-<!-- ══ SIDEBAR OVERLAY (mobile) ══ -->
+<!-- SIDEBAR OVERLAY (mobile) -->
 <div id="sidebar-overlay" class="hidden opacity-0 pointer-events-none" onclick="closeSidebar()"></div>
 
-<!-- ══ SIDEBAR ══ -->
+<!-- SIDEBAR -->
 <aside id="sidebar" class="w-64 bg-surface-container-lowest border-r border-outline-variant/20 h-screen flex flex-col fixed top-0 left-0 z-100 lg:z-auto lg:translate-x-0">
-  <!-- Logo -->
   <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/15">
     <a href="index.html" class="flex items-center gap-3">
       <span class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
@@ -115,7 +90,6 @@
     </button>
   </div>
 
-  <!-- Vendeur info -->
   <div id="seller-info" class="px-4 py-4 border-b border-outline-variant/15">
     <div class="flex items-center gap-3">
       <div id="seller-avatar" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-base flex-shrink-0">?</div>
@@ -129,7 +103,6 @@
     </div>
   </div>
 
-  <!-- Nav -->
   <nav class="flex-1 overflow-y-auto no-scrollbar px-3 py-4 space-y-1">
     <button onclick="showSection('overview')" data-nav="overview" class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-on-primary">
       <span class="nav-icon material-symbols-outlined" style="font-size:20px">dashboard</span>
@@ -152,13 +125,13 @@
       <span class="nav-icon material-symbols-outlined" style="font-size:20px">star</span>
       Avis Clients
     </button>
-    <button onclick="showSection('boutique.html')" data-nav="boutique.html" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-on-surface-variant">
+    <!-- CORRIGÉ: était showSection('boutique.html') data-nav="boutique.html" -->
+    <button onclick="showSection('profile')" data-nav="profile" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-on-surface-variant">
       <span class="nav-icon material-symbols-outlined" style="font-size:20px">store</span>
       Ma Boutique
     </button>
   </nav>
 
-  <!-- Footer sidebar -->
   <div class="px-3 py-4 border-t border-outline-variant/15 space-y-1">
     <a href="index.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-on-surface-variant">
       <span class="nav-icon material-symbols-outlined" style="font-size:20px">storefront</span>
@@ -171,10 +144,9 @@
   </div>
 </aside>
 
-<!-- ══ MAIN ══ -->
+<!-- MAIN -->
 <div class="lg:ml-64 min-h-screen flex flex-col">
 
-  <!-- Top bar -->
   <header class="bg-surface-container-lowest/80 backdrop-blur-xl sticky top-0 z-40 border-b border-outline-variant/10 px-6 py-4 flex items-center justify-between">
     <div class="flex items-center gap-4">
       <button class="lg:hidden text-on-surface" onclick="openSidebar()">
@@ -193,12 +165,10 @@
     </div>
   </header>
 
-  <!-- Content -->
   <main class="flex-1 p-6">
 
-    <!-- ══ OVERVIEW ══ -->
+    <!-- OVERVIEW -->
     <section id="section-overview" class="section active space-y-6">
-      <!-- Stats -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="stat-card bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10">
           <div class="flex items-start justify-between mb-3">
@@ -243,7 +213,6 @@
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <!-- Commandes récentes -->
         <div class="lg:col-span-2 bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
           <div class="flex items-center justify-between px-5 py-4 border-b border-outline-variant/10">
             <h3 class="font-serif italic text-lg font-bold">Commandes récentes</h3>
@@ -254,7 +223,6 @@
           </div>
         </div>
 
-        <!-- Produits à stock faible -->
         <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
           <div class="flex items-center justify-between px-5 py-4 border-b border-outline-variant/10">
             <h3 class="font-serif italic text-lg font-bold">Stock faible</h3>
@@ -267,7 +235,7 @@
       </div>
     </section>
 
-    <!-- ══ PRODUCTS ══ -->
+    <!-- PRODUCTS -->
     <section id="section-products" class="section space-y-5">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div class="flex items-center gap-3">
@@ -284,7 +252,6 @@
           Nouveau produit
         </button>
       </div>
-
       <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full">
@@ -313,7 +280,7 @@
       </div>
     </section>
 
-    <!-- ══ ORDERS ══ -->
+    <!-- ORDERS -->
     <section id="section-orders" class="section space-y-5">
       <div class="flex flex-col sm:flex-row sm:items-center gap-4">
         <select id="order-filter" onchange="loadOrders()" class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary">
@@ -325,7 +292,6 @@
           <option value="cancelled">Annulée</option>
         </select>
       </div>
-
       <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full">
@@ -347,9 +313,8 @@
       </div>
     </section>
 
-    <!-- ══ REVENUE ══ -->
+    <!-- REVENUE -->
     <section id="section-revenue" class="section space-y-6">
-      <!-- KPIs revenus -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="stat-card bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10">
           <p class="text-[10px] uppercase tracking-widest text-outline mb-2 font-bold">Total encaissé</p>
@@ -368,16 +333,12 @@
           <p id="rev-avg" class="text-2xl font-serif font-bold">— MAD</p>
         </div>
       </div>
-
-      <!-- Graphique barres simplifié -->
       <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 p-6">
         <h3 class="font-serif italic text-lg font-bold mb-6">Revenus sur 6 mois</h3>
         <div id="revenue-chart" class="flex items-end gap-3 h-40">
           <div class="text-center text-outline text-sm w-full flex items-center justify-center">Chargement...</div>
         </div>
       </div>
-
-      <!-- Tableau paiements -->
       <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
         <div class="px-5 py-4 border-b border-outline-variant/10">
           <h3 class="font-serif italic text-lg font-bold">Historique des paiements</h3>
@@ -401,7 +362,7 @@
       </div>
     </section>
 
-    <!-- ══ REVIEWS ══ -->
+    <!-- REVIEWS -->
     <section id="section-reviews" class="section space-y-5">
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div class="stat-card bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10 text-center">
@@ -418,7 +379,6 @@
           <p class="text-[10px] uppercase tracking-widest text-outline font-bold mt-2">Avis approuvés</p>
         </div>
       </div>
-
       <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
         <div class="px-5 py-4 border-b border-outline-variant/10 flex items-center justify-between">
           <h3 class="font-serif italic text-lg font-bold">Avis reçus</h3>
@@ -434,7 +394,7 @@
       </div>
     </section>
 
-    <!-- ══ PROFILE ══ -->
+    <!-- PROFILE -->
     <section id="section-profile" class="section space-y-6 max-w-2xl">
       <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
         <div class="px-5 py-4 border-b border-outline-variant/10 flex items-center justify-between">
@@ -449,7 +409,6 @@
               <p class="text-xs text-outline" id="profile-role-display">—</p>
             </div>
           </div>
-
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Prénom</label>
@@ -460,12 +419,10 @@
               <input id="pf-last-name" type="text" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary"/>
             </div>
           </div>
-
           <div>
             <label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Spécialité / Boutique</label>
             <input id="pf-specialty" type="text" placeholder="Ex: Huiles naturelles · Casablanca" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary"/>
           </div>
-
           <div>
             <label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Pays</label>
             <select id="pf-country" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary">
@@ -473,7 +430,6 @@
               <option value="Gabon">Gabon</option>
             </select>
           </div>
-
           <div class="pt-2">
             <button type="submit" class="bg-primary text-on-primary px-6 py-3 rounded-xl text-sm font-bold uppercase tracking-wider hover:opacity-90 transition-all">
               Enregistrer les modifications
@@ -481,8 +437,6 @@
           </div>
         </form>
       </div>
-
-      <!-- Changer mot de passe -->
       <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
         <div class="px-5 py-4 border-b border-outline-variant/10">
           <h3 class="font-serif italic text-lg font-bold">Sécurité</h3>
@@ -498,7 +452,7 @@
   </main>
 </div>
 
-<!-- ══ MODAL PRODUIT ══ -->
+<!-- MODAL PRODUIT -->
 <div id="modal-overlay" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4" style="background:rgba(23,29,23,.5);backdrop-filter:blur(6px)" onclick="closeModal(event)">
   <div id="modal-box" class="bg-surface-container-lowest rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
     <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10 sticky top-0 bg-surface-container-lowest z-10">
@@ -509,17 +463,14 @@
     </div>
     <form id="product-form" onsubmit="saveProduct(event)" class="p-6 space-y-5">
       <input type="hidden" id="product-id"/>
-
       <div>
         <label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Nom du produit *</label>
         <input id="product-name" type="text" required class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"/>
       </div>
-
       <div>
         <label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Description</label>
         <textarea id="product-description" rows="3" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary resize-none"></textarea>
       </div>
-
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Prix (MAD) *</label>
@@ -530,7 +481,6 @@
           <input id="product-stock" type="number" min="0" required class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"/>
         </div>
       </div>
-
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Pays *</label>
@@ -544,19 +494,16 @@
           <input id="product-city" type="text" placeholder="Ex: Casablanca" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"/>
         </div>
       </div>
-
       <div>
         <label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Catégorie</label>
         <select id="product-category" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary">
           <option value="">Sélectionner...</option>
         </select>
       </div>
-
       <div>
         <label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">URL de l'image principale</label>
         <input id="product-image" type="url" placeholder="https://..." class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"/>
       </div>
-
       <div>
         <label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Statut</label>
         <select id="product-status" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary">
@@ -565,20 +512,15 @@
           <option value="inactive">Inactif</option>
         </select>
       </div>
-
       <div class="flex gap-3 pt-2">
-        <button type="button" onclick="closeModal()" class="flex-1 border border-outline-variant/30 text-on-surface-variant px-5 py-3 rounded-xl text-sm font-medium hover:bg-surface-container-low transition-all">
-          Annuler
-        </button>
-        <button type="submit" id="modal-submit-btn" class="flex-1 bg-primary text-on-primary px-5 py-3 rounded-xl text-sm font-bold uppercase tracking-wider hover:opacity-90 transition-all">
-          Enregistrer
-        </button>
+        <button type="button" onclick="closeModal()" class="flex-1 border border-outline-variant/30 text-on-surface-variant px-5 py-3 rounded-xl text-sm font-medium hover:bg-surface-container-low transition-all">Annuler</button>
+        <button type="submit" id="modal-submit-btn" class="flex-1 bg-primary text-on-primary px-5 py-3 rounded-xl text-sm font-bold uppercase tracking-wider hover:opacity-90 transition-all">Enregistrer</button>
       </div>
     </form>
   </div>
 </div>
 
-<!-- ══ MODAL COMMANDE ══ -->
+<!-- MODAL COMMANDE -->
 <div id="order-modal-overlay" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4" style="background:rgba(23,29,23,.5);backdrop-filter:blur(6px)" onclick="closeOrderModal(event)">
   <div class="bg-surface-container-lowest rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
     <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10">
@@ -604,7 +546,7 @@
   </div>
 </div>
 
-<!-- ══ SUPABASE ══ -->
+<!-- SUPABASE + JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────────────
@@ -642,18 +584,18 @@ function fmtAmount(n, currency = 'MAD') {
 
 function statusBadge(status) {
   const map = {
-    pending: ['status-pending', 'En attente'],
-    active: ['status-active', 'Actif'],
-    inactive: ['status-inactive', 'Inactif'],
+    pending:    ['status-pending',    'En attente'],
+    active:     ['status-active',     'Actif'],
+    inactive:   ['status-inactive',   'Inactif'],
     processing: ['status-processing', 'En traitement'],
-    shipped: ['status-shipped', 'Expédiée'],
-    delivered: ['status-delivered', 'Livrée'],
-    cancelled: ['status-cancelled', 'Annulée'],
-    paid: ['status-paid', 'Payé'],
-    failed: ['status-failed', 'Échoué'],
-    refunded: ['status-processing', 'Remboursé'],
-    approved: ['status-active', 'Approuvé'],
-    rejected: ['status-inactive', 'Rejeté'],
+    shipped:    ['status-shipped',    'Expédiée'],
+    delivered:  ['status-delivered',  'Livrée'],
+    cancelled:  ['status-cancelled',  'Annulée'],
+    paid:       ['status-paid',       'Payé'],
+    failed:     ['status-failed',     'Échoué'],
+    refunded:   ['status-processing', 'Remboursé'],
+    approved:   ['status-active',     'Approuvé'],
+    rejected:   ['status-inactive',   'Rejeté'],
   }
   const [cls, label] = map[status] || ['status-pending', status || '—']
   return `<span class="${cls} text-[10px] font-bold px-2.5 py-1 rounded-full">${label}</span>`
@@ -661,36 +603,49 @@ function statusBadge(status) {
 
 function stars(rating) {
   const n = Math.round(rating || 0)
-  return Array.from({length:5}, (_,i) =>
+  return Array.from({length: 5}, (_, i) =>
     `<span class="material-symbols-outlined ${i < n ? 'text-tertiary icon-fill' : 'text-outline-variant'}" style="font-size:14px">star</span>`
   ).join('')
 }
 
 // ── NAV ───────────────────────────────────────────────────────────────────────
-const pageTitles = { overview: 'Vue d'ensemble', products: 'Mes Produits', orders: 'Commandes', revenue: 'Revenus', reviews: 'Avis Clients', profile: 'Ma Boutique' }
+const pageTitles = {
+  overview: "Vue d'ensemble",
+  products: 'Mes Produits',
+  orders:   'Commandes',
+  revenue:  'Revenus',
+  reviews:  'Avis Clients',
+  profile:  'Ma Boutique'
+}
 
+// CORRIGÉ: gestion propre des classes actif/inactif + bouton logout garde text-error
 function showSection(name) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'))
-  document.getElementById('section-' + name)?.classList.add('active')
-  document.querySelectorAll('.nav-item').forEach(b => {
-    b.classList.toggle('active', b.dataset.nav === name)
-    b.classList.toggle('text-on-primary', b.dataset.nav === name)
-    b.classList.toggle('text-on-surface-variant', b.dataset.nav !== name)
+  const target = document.getElementById('section-' + name)
+  if (target) target.classList.add('active')
+
+  document.querySelectorAll('.nav-item[data-nav]').forEach(b => {
+    const isActive = b.dataset.nav === name
+    b.classList.toggle('active', isActive)
+    b.classList.remove('text-on-primary', 'text-on-surface-variant')
+    b.classList.add(isActive ? 'text-on-primary' : 'text-on-surface-variant')
   })
-  document.getElementById('page-title').textContent = pageTitles[name] || ''
+
+  const titleEl = document.getElementById('page-title')
+  if (titleEl) titleEl.textContent = pageTitles[name] || ''
   closeSidebar()
+
   if (name === 'products') loadProducts()
-  if (name === 'orders') loadOrders()
-  if (name === 'revenue') loadRevenue()
-  if (name === 'reviews') loadReviews()
-  if (name === 'profile') loadProfile()
+  if (name === 'orders')   loadOrders()
+  if (name === 'revenue')  loadRevenue()
+  if (name === 'reviews')  loadReviews()
+  if (name === 'profile')  loadProfile()
 }
 
 function openSidebar() {
   const overlay = document.getElementById('sidebar-overlay')
   document.getElementById('sidebar').classList.add('open')
-  overlay.classList.remove('hidden')
-  overlay.classList.remove('pointer-events-none')
+  overlay.classList.remove('hidden', 'pointer-events-none')
   requestAnimationFrame(() => overlay.style.opacity = '1')
 }
 
@@ -699,18 +654,15 @@ function closeSidebar() {
   document.getElementById('sidebar').classList.remove('open')
   overlay.style.opacity = '0'
   setTimeout(() => {
-    overlay.classList.add('hidden')
-    overlay.classList.add('pointer-events-none')
+    overlay.classList.add('hidden', 'pointer-events-none')
   }, 300)
 }
 
 // ── AUTH ──────────────────────────────────────────────────────────────────────
 async function initAuth() {
   const { data: { session } } = await db.auth.getSession()
-  if (!session) {
-    window.location.href = 'login.html'
-    return
-  }
+  if (!session) { window.location.href = 'login.html'; return }
+
   const { data: user } = await db.from('users').select('*').eq('auth_id', session.user.id).single()
   if (!user || (user.role !== 'artisan' && user.role !== 'admin')) {
     showToast('Accès refusé. Compte vendeur requis.', 'bg-error text-on-error')
@@ -719,13 +671,10 @@ async function initAuth() {
   }
   currentSeller = user
 
-  // Update sidebar
   const initials = ((user.first_name?.[0] || '') + (user.last_name?.[0] || '')).toUpperCase() || user.email?.[0]?.toUpperCase() || '?'
   document.getElementById('seller-avatar').textContent = initials
   document.getElementById('seller-name').textContent = user.full_name || `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email
   document.getElementById('seller-country').textContent = user.country || '—'
-
-  // Date header
   document.getElementById('page-date').textContent = new Date().toLocaleDateString('fr-FR', { weekday:'long', year:'numeric', month:'long', day:'numeric' })
 
   loadCategories()
@@ -748,10 +697,527 @@ async function loadCategories() {
 // ── OVERVIEW ──────────────────────────────────────────────────────────────────
 async function loadOverview() {
   if (!currentSeller) return
-
   const sid = currentSeller.id
 
-  // Stats parallèles
   const [
     { count: totalProd },
-    { count: activeP
+    { count: activeProd },
+    { count: totalOrders },
+    { count: pendingOrders },
+    { data: revenueData },
+    { data: ratingData }
+  ] = await Promise.all([
+    db.from('products').select('*', { count: 'exact', head: true }).eq('vendor_id', sid),
+    db.from('products').select('*', { count: 'exact', head: true }).eq('vendor_id', sid).eq('status', 'active'),
+    db.from('orders').select('*', { count: 'exact', head: true }).eq('vendor_id', sid),
+    db.from('orders').select('*', { count: 'exact', head: true }).eq('vendor_id', sid).eq('status', 'pending'),
+    db.from('payments').select('amount').eq('vendor_id', sid).eq('status', 'paid'),
+    db.from('reviews').select('rating').eq('vendor_id', sid).eq('status', 'approved')
+  ])
+
+  const totalRevenue = (revenueData || []).reduce((s, r) => s + Number(r.amount), 0)
+  const avgRating = ratingData?.length ? (ratingData.reduce((s, r) => s + r.rating, 0) / ratingData.length).toFixed(1) : '—'
+
+  document.getElementById('ov-products').textContent = activeProd ?? '0'
+  document.getElementById('ov-products-trend').textContent = `${totalProd ?? 0} total`
+  document.getElementById('ov-orders').textContent = totalOrders ?? '0'
+  document.getElementById('ov-orders-trend').textContent = `${pendingOrders ?? 0} en attente`
+  document.getElementById('ov-revenue').textContent = totalRevenue.toFixed(0)
+  document.getElementById('ov-revenue-trend').textContent = 'MAD'
+  document.getElementById('ov-rating').textContent = avgRating
+
+  // Badge commandes en attente
+  const badge = document.getElementById('badge-orders')
+  if (pendingOrders > 0) {
+    badge.textContent = pendingOrders
+    badge.classList.remove('hidden')
+  }
+
+  loadRecentOrders()
+  loadLowStock()
+}
+
+async function loadRecentOrders() {
+  const { data } = await db.from('orders')
+    .select('id, total_amount, status, created_at, profiles(full_name)')
+    .eq('vendor_id', currentSeller.id)
+    .order('created_at', { ascending: false })
+    .limit(5)
+
+  const el = document.getElementById('recent-orders')
+  if (!data || !data.length) {
+    el.innerHTML = '<div class="px-5 py-8 text-center text-outline text-sm">Aucune commande</div>'
+    return
+  }
+  el.innerHTML = data.map(o => `
+    <div class="table-row px-5 py-3 flex items-center justify-between gap-3">
+      <div>
+        <p class="text-sm font-medium">#${o.id.slice(0,8).toUpperCase()}</p>
+        <p class="text-xs text-outline">${o.profiles?.full_name || '—'} · ${fmtDate(o.created_at)}</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="text-sm font-bold">${fmtAmount(o.total_amount)}</span>
+        ${statusBadge(o.status)}
+      </div>
+    </div>
+  `).join('')
+}
+
+async function loadLowStock() {
+  const { data } = await db.from('products')
+    .select('id, name, stock_quantity')
+    .eq('vendor_id', currentSeller.id)
+    .lte('stock_quantity', 5)
+    .order('stock_quantity', { ascending: true })
+    .limit(6)
+
+  const el = document.getElementById('low-stock')
+  if (!data || !data.length) {
+    el.innerHTML = '<div class="px-5 py-8 text-center text-outline text-sm">Aucun stock critique</div>'
+    return
+  }
+  el.innerHTML = data.map(p => `
+    <div class="px-5 py-3 flex items-center justify-between gap-2">
+      <p class="text-sm truncate">${p.name}</p>
+      <span class="text-xs font-bold px-2 py-1 rounded-full ${p.stock_quantity === 0 ? 'bg-error/10 text-error' : 'status-pending'} whitespace-nowrap">
+        ${p.stock_quantity === 0 ? 'Rupture' : p.stock_quantity + ' restants'}
+      </span>
+    </div>
+  `).join('')
+}
+
+// ── PRODUCTS ──────────────────────────────────────────────────────────────────
+async function loadProducts() {
+  if (!currentSeller) return
+  const { data } = await db.from('products')
+    .select('*, categories(name)')
+    .eq('vendor_id', currentSeller.id)
+    .order('created_at', { ascending: false })
+
+  allProducts = data || []
+  prodPage = 1
+  filterProducts()
+}
+
+function filterProducts() {
+  const search = document.getElementById('prod-search').value.toLowerCase()
+  const status = document.getElementById('prod-filter-status').value
+  let filtered = allProducts.filter(p => {
+    const matchSearch = !search || p.name?.toLowerCase().includes(search)
+    const matchStatus = !status || p.status === status
+    return matchSearch && matchStatus
+  })
+  renderProductsTable(filtered)
+}
+
+function renderProductsTable(data) {
+  const tbody = document.getElementById('products-table-body')
+  const pagination = document.getElementById('products-pagination')
+
+  if (!data.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-12 text-outline text-sm">Aucun produit trouvé</td></tr>'
+    pagination.classList.add('hidden')
+    return
+  }
+
+  const total = data.length
+  const totalPages = Math.ceil(total / PROD_PER_PAGE)
+  if (prodPage > totalPages) prodPage = 1
+  const slice = data.slice((prodPage - 1) * PROD_PER_PAGE, prodPage * PROD_PER_PAGE)
+
+  tbody.innerHTML = slice.map(p => `
+    <tr class="table-row border-b border-outline-variant/10">
+      <td class="px-5 py-4">
+        <div class="flex items-center gap-3">
+          ${p.image_url ? `<img src="${p.image_url}" class="w-10 h-10 rounded-xl object-cover bg-surface-container-low flex-shrink-0" onerror="this.style.display='none'"/>` : `<div class="w-10 h-10 rounded-xl bg-surface-container-low flex-shrink-0"></div>`}
+          <div>
+            <p class="text-sm font-medium">${p.name}</p>
+            <p class="text-xs text-outline">${p.city || p.country || '—'}</p>
+          </div>
+        </div>
+      </td>
+      <td class="px-4 py-4 hidden md:table-cell text-sm text-on-surface-variant">${p.categories?.name || '—'}</td>
+      <td class="px-4 py-4 text-sm font-bold">${fmtAmount(p.price)}</td>
+      <td class="px-4 py-4 hidden sm:table-cell">
+        <span class="text-sm ${p.stock_quantity <= 5 ? 'text-error font-bold' : 'text-on-surface-variant'}">${p.stock_quantity ?? '—'}</span>
+      </td>
+      <td class="px-4 py-4">${statusBadge(p.status)}</td>
+      <td class="px-5 py-4 text-right">
+        <div class="flex items-center justify-end gap-2">
+          <button onclick="editProduct('${p.id}')" class="text-xs text-primary font-bold hover:underline">Modifier</button>
+          <button onclick="deleteProduct('${p.id}')" class="text-xs text-error font-bold hover:underline">Supprimer</button>
+        </div>
+      </td>
+    </tr>
+  `).join('')
+
+  pagination.classList.remove('hidden')
+  document.getElementById('prod-count-label').textContent = `${total} produit${total > 1 ? 's' : ''} · Page ${prodPage}/${totalPages}`
+  document.getElementById('prod-prev').disabled = prodPage === 1
+  document.getElementById('prod-next').disabled = prodPage === totalPages
+}
+
+function changeProdPage(dir) {
+  prodPage += dir
+  filterProducts()
+}
+
+// ── PRODUCT MODAL ─────────────────────────────────────────────────────────────
+function openProductModal(product = null) {
+  document.getElementById('product-id').value = product?.id || ''
+  document.getElementById('product-name').value = product?.name || ''
+  document.getElementById('product-description').value = product?.description || ''
+  document.getElementById('product-price').value = product?.price || ''
+  document.getElementById('product-stock').value = product?.stock_quantity ?? ''
+  document.getElementById('product-country').value = product?.country || 'Maroc'
+  document.getElementById('product-city').value = product?.city || ''
+  document.getElementById('product-image').value = product?.image_url || ''
+  document.getElementById('product-status').value = product?.status || 'pending'
+  document.getElementById('product-category').value = product?.category_id || ''
+  document.getElementById('modal-title').textContent = product ? 'Modifier le produit' : 'Nouveau produit'
+  document.getElementById('modal-submit-btn').textContent = product ? 'Enregistrer' : 'Créer'
+
+  const overlay = document.getElementById('modal-overlay')
+  overlay.classList.remove('hidden')
+  requestAnimationFrame(() => overlay.style.opacity = '1')
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById('modal-overlay')) return
+  const overlay = document.getElementById('modal-overlay')
+  overlay.style.opacity = '0'
+  setTimeout(() => overlay.classList.add('hidden'), 200)
+}
+
+async function editProduct(id) {
+  const p = allProducts.find(p => p.id === id)
+  if (p) openProductModal(p)
+}
+
+async function saveProduct(e) {
+  e.preventDefault()
+  const btn = document.getElementById('modal-submit-btn')
+  btn.disabled = true
+  btn.textContent = 'Enregistrement...'
+
+  const id = document.getElementById('product-id').value
+  const payload = {
+    name:            document.getElementById('product-name').value.trim(),
+    description:     document.getElementById('product-description').value.trim(),
+    price:           parseFloat(document.getElementById('product-price').value),
+    stock_quantity:  parseInt(document.getElementById('product-stock').value),
+    country:         document.getElementById('product-country').value,
+    city:            document.getElementById('product-city').value.trim(),
+    image_url:       document.getElementById('product-image').value.trim() || null,
+    status:          document.getElementById('product-status').value,
+    category_id:     document.getElementById('product-category').value || null,
+    vendor_id:       currentSeller.id,
+    updated_at:      new Date().toISOString()
+  }
+
+  let error
+  if (id) {
+    ({ error } = await db.from('products').update(payload).eq('id', id))
+  } else {
+    payload.created_at = new Date().toISOString()
+    ;({ error } = await db.from('products').insert(payload))
+  }
+
+  btn.disabled = false
+  btn.textContent = 'Enregistrer'
+
+  if (error) {
+    showToast('Erreur : ' + error.message, 'bg-error text-on-error')
+  } else {
+    showToast(id ? 'Produit mis à jour !' : 'Produit créé !', 'bg-primary text-on-primary')
+    closeModal()
+    loadProducts()
+  }
+}
+
+async function deleteProduct(id) {
+  if (!confirm('Supprimer ce produit ?')) return
+  const { error } = await db.from('products').delete().eq('id', id)
+  if (error) {
+    showToast('Erreur : ' + error.message, 'bg-error text-on-error')
+  } else {
+    showToast('Produit supprimé', 'bg-inverse-surface text-inverse-on-surface')
+    loadProducts()
+  }
+}
+
+// ── ORDERS ────────────────────────────────────────────────────────────────────
+async function loadOrders() {
+  if (!currentSeller) return
+  const status = document.getElementById('order-filter').value
+  let query = db.from('orders')
+    .select('id, total_amount, status, created_at, profiles(full_name, email)')
+    .eq('vendor_id', currentSeller.id)
+    .order('created_at', { ascending: false })
+
+  if (status) query = query.eq('status', status)
+
+  const { data } = await query
+  const tbody = document.getElementById('orders-table-body')
+
+  if (!data || !data.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-12 text-outline text-sm">Aucune commande</td></tr>'
+    return
+  }
+
+  tbody.innerHTML = data.map(o => `
+    <tr class="table-row border-b border-outline-variant/10">
+      <td class="px-5 py-4">
+        <p class="text-sm font-medium font-mono">#${o.id.slice(0,8).toUpperCase()}</p>
+      </td>
+      <td class="px-4 py-4 hidden md:table-cell text-sm text-on-surface-variant">${o.profiles?.full_name || o.profiles?.email || '—'}</td>
+      <td class="px-4 py-4 text-sm font-bold">${fmtAmount(o.total_amount)}</td>
+      <td class="px-4 py-4 hidden sm:table-cell text-sm text-on-surface-variant">${fmtDate(o.created_at)}</td>
+      <td class="px-4 py-4">${statusBadge(o.status)}</td>
+      <td class="px-5 py-4 text-right">
+        <button onclick="openOrderModal('${o.id}')" class="text-xs text-primary font-bold hover:underline">Détails</button>
+      </td>
+    </tr>
+  `).join('')
+}
+
+async function openOrderModal(id) {
+  currentOrderId = id
+  const overlay = document.getElementById('order-modal-overlay')
+  overlay.classList.remove('hidden')
+
+  const { data: o } = await db.from('orders')
+    .select('*, profiles(full_name, email), order_items(quantity, unit_price, products(name))')
+    .eq('id', id)
+    .single()
+
+  const content = document.getElementById('order-detail-content')
+  if (!o) { content.innerHTML = 'Commande introuvable'; return }
+
+  document.getElementById('order-status-update').value = o.status
+
+  const items = (o.order_items || []).map(i => `
+    <div class="flex items-center justify-between text-sm py-1">
+      <span>${i.products?.name || '—'} × ${i.quantity}</span>
+      <span class="font-bold">${fmtAmount(i.unit_price * i.quantity)}</span>
+    </div>
+  `).join('')
+
+  content.innerHTML = `
+    <div class="space-y-3">
+      <div class="flex justify-between text-sm">
+        <span class="text-outline font-bold uppercase tracking-widest text-[10px]">Commande</span>
+        <span class="font-mono font-bold">#${o.id.slice(0,8).toUpperCase()}</span>
+      </div>
+      <div class="flex justify-between text-sm">
+        <span class="text-outline font-bold uppercase tracking-widest text-[10px]">Client</span>
+        <span>${o.profiles?.full_name || o.profiles?.email || '—'}</span>
+      </div>
+      <div class="flex justify-between text-sm">
+        <span class="text-outline font-bold uppercase tracking-widest text-[10px]">Date</span>
+        <span>${fmtDate(o.created_at)}</span>
+      </div>
+      <div class="flex justify-between text-sm">
+        <span class="text-outline font-bold uppercase tracking-widest text-[10px]">Statut</span>
+        <span>${statusBadge(o.status)}</span>
+      </div>
+      <div class="border-t border-outline-variant/10 pt-3 mt-3">
+        <p class="text-[10px] uppercase tracking-widest text-outline font-bold mb-2">Articles</p>
+        ${items || '<p class="text-sm text-outline">—</p>'}
+      </div>
+      <div class="flex justify-between text-sm border-t border-outline-variant/10 pt-3 mt-1">
+        <span class="font-bold">Total</span>
+        <span class="font-bold text-primary">${fmtAmount(o.total_amount)}</span>
+      </div>
+    </div>
+  `
+}
+
+function closeOrderModal(e) {
+  if (e && e.target !== document.getElementById('order-modal-overlay')) return
+  document.getElementById('order-modal-overlay').classList.add('hidden')
+  currentOrderId = null
+}
+
+async function updateOrderStatus() {
+  if (!currentOrderId) return
+  const status = document.getElementById('order-status-update').value
+  const { error } = await db.from('orders').update({ status, updated_at: new Date().toISOString() }).eq('id', currentOrderId)
+  if (error) {
+    showToast('Erreur : ' + error.message, 'bg-error text-on-error')
+  } else {
+    showToast('Statut mis à jour', 'bg-primary text-on-primary')
+    document.getElementById('order-modal-overlay').classList.add('hidden')
+    currentOrderId = null
+    loadOrders()
+  }
+}
+
+// ── REVENUE ───────────────────────────────────────────────────────────────────
+async function loadRevenue() {
+  if (!currentSeller) return
+  const sid = currentSeller.id
+
+  const { data: payments } = await db.from('payments')
+    .select('amount, created_at, payment_method, status')
+    .eq('vendor_id', sid)
+    .order('created_at', { ascending: false })
+
+  const paid = (payments || []).filter(p => p.status === 'paid')
+  const total = paid.reduce((s, p) => s + Number(p.amount), 0)
+
+  const now = new Date()
+  const thisMonth = paid.filter(p => {
+    const d = new Date(p.created_at)
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
+  })
+  const monthTotal = thisMonth.reduce((s, p) => s + Number(p.amount), 0)
+
+  document.getElementById('rev-total').textContent = fmtAmount(total)
+  document.getElementById('rev-month').textContent = fmtAmount(monthTotal)
+  document.getElementById('rev-count').textContent = paid.length
+  document.getElementById('rev-avg').textContent = paid.length ? fmtAmount(total / paid.length) : '— MAD'
+
+  // Graphique 6 mois
+  const months = []
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+    months.push({ label: d.toLocaleDateString('fr-FR', { month: 'short' }), month: d.getMonth(), year: d.getFullYear(), total: 0 })
+  }
+  paid.forEach(p => {
+    const d = new Date(p.created_at)
+    const m = months.find(x => x.month === d.getMonth() && x.year === d.getFullYear())
+    if (m) m.total += Number(p.amount)
+  })
+  const maxVal = Math.max(...months.map(m => m.total), 1)
+  const chartEl = document.getElementById('revenue-chart')
+  chartEl.innerHTML = months.map(m => `
+    <div class="flex flex-col items-center gap-1 flex-1">
+      <span class="text-[10px] font-bold text-on-surface-variant">${m.total > 0 ? Math.round(m.total) : ''}</span>
+      <div class="w-full rounded-t-lg bg-primary/20 relative" style="height:${Math.max((m.total / maxVal) * 120, 4)}px">
+        <div class="absolute inset-x-0 bottom-0 rounded-t-lg bg-primary bar-fill" style="height:100%"></div>
+      </div>
+      <span class="text-[10px] text-outline uppercase">${m.label}</span>
+    </div>
+  `).join('')
+
+  // Table paiements
+  const tbody = document.getElementById('payments-table-body')
+  if (!payments || !payments.length) {
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-12 text-outline text-sm">Aucun paiement</td></tr>'
+    return
+  }
+  tbody.innerHTML = payments.slice(0, 20).map(p => `
+    <tr class="table-row border-b border-outline-variant/10">
+      <td class="px-5 py-4 text-sm font-mono text-on-surface-variant">${p.created_at ? new Date(p.created_at).getTime().toString(36).toUpperCase() : '—'}</td>
+      <td class="px-4 py-4 text-sm font-bold">${fmtAmount(p.amount)}</td>
+      <td class="px-4 py-4 hidden sm:table-cell text-sm text-on-surface-variant">${p.payment_method || '—'}</td>
+      <td class="px-4 py-4 hidden md:table-cell text-sm text-on-surface-variant">${fmtDate(p.created_at)}</td>
+      <td class="px-4 py-4">${statusBadge(p.status)}</td>
+    </tr>
+  `).join('')
+}
+
+// ── REVIEWS ───────────────────────────────────────────────────────────────────
+async function loadReviews() {
+  if (!currentSeller) return
+  const filter = document.getElementById('review-filter').value
+  let query = db.from('reviews')
+    .select('id, rating, comment, status, created_at, profiles(full_name), products(name)')
+    .eq('vendor_id', currentSeller.id)
+    .order('created_at', { ascending: false })
+
+  if (filter) query = query.eq('status', filter)
+  const { data } = await query
+
+  const all = data || []
+  const approved = all.filter(r => r.status === 'approved')
+  const avgRating = approved.length ? (approved.reduce((s, r) => s + r.rating, 0) / approved.length) : 0
+
+  document.getElementById('rev-avg-rating').textContent = avgRating ? avgRating.toFixed(1) : '—'
+  document.getElementById('rev-stars').innerHTML = stars(avgRating)
+  document.getElementById('rev-total-count').textContent = all.length
+  document.getElementById('rev-approved-count').textContent = approved.length
+
+  const list = document.getElementById('reviews-list')
+  if (!all.length) {
+    list.innerHTML = '<div class="px-5 py-8 text-center text-outline text-sm">Aucun avis</div>'
+    return
+  }
+  list.innerHTML = all.map(r => `
+    <div class="px-5 py-4 space-y-1">
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <div class="flex gap-0.5">${stars(r.rating)}</div>
+          <span class="text-sm font-medium">${r.profiles?.full_name || 'Anonyme'}</span>
+        </div>
+        <div class="flex items-center gap-2">
+          ${statusBadge(r.status)}
+          <span class="text-xs text-outline">${fmtDate(r.created_at)}</span>
+        </div>
+      </div>
+      ${r.products?.name ? `<p class="text-xs text-outline">Produit : ${r.products.name}</p>` : ''}
+      ${r.comment ? `<p class="text-sm text-on-surface-variant">${r.comment}</p>` : ''}
+    </div>
+  `).join('')
+}
+
+// ── PROFILE ───────────────────────────────────────────────────────────────────
+async function loadProfile() {
+  if (!currentSeller) return
+  const u = currentSeller
+
+  const initials = ((u.first_name?.[0] || '') + (u.last_name?.[0] || '')).toUpperCase() || u.email?.[0]?.toUpperCase() || '?'
+  document.getElementById('profile-avatar-display').textContent = initials
+  document.getElementById('profile-email-display').textContent = u.email || '—'
+  document.getElementById('profile-role-display').textContent = u.role === 'artisan' ? 'Vendeur' : u.role || '—'
+  document.getElementById('pf-first-name').value = u.first_name || ''
+  document.getElementById('pf-last-name').value = u.last_name || ''
+  document.getElementById('pf-specialty').value = u.specialty || ''
+  document.getElementById('pf-country').value = u.country || 'Maroc'
+
+  const badge = document.getElementById('profile-status-badge')
+  const statusMap = { active: ['status-active', 'Actif'], pending: ['status-pending', 'En attente'], inactive: ['status-inactive', 'Inactif'] }
+  const [cls, label] = statusMap[u.status] || ['status-pending', '—']
+  badge.className = `text-[10px] font-bold px-3 py-1 rounded-full ${cls}`
+  badge.textContent = label
+}
+
+async function saveProfile(e) {
+  e.preventDefault()
+  const payload = {
+    first_name: document.getElementById('pf-first-name').value.trim(),
+    last_name:  document.getElementById('pf-last-name').value.trim(),
+    specialty:  document.getElementById('pf-specialty').value.trim(),
+    country:    document.getElementById('pf-country').value,
+    updated_at: new Date().toISOString()
+  }
+  payload.full_name = `${payload.first_name} ${payload.last_name}`.trim()
+
+  const { error } = await db.from('users').update(payload).eq('id', currentSeller.id)
+  if (error) {
+    showToast('Erreur : ' + error.message, 'bg-error text-on-error')
+  } else {
+    Object.assign(currentSeller, payload)
+    document.getElementById('seller-name').textContent = payload.full_name || currentSeller.email
+    document.getElementById('seller-country').textContent = payload.country
+    showToast('Profil mis à jour !', 'bg-primary text-on-primary')
+  }
+}
+
+async function resetPassword() {
+  const { data: { session } } = await db.auth.getSession()
+  if (!session?.user?.email) return
+  const { error } = await db.auth.resetPasswordForEmail(session.user.email)
+  if (error) {
+    showToast('Erreur : ' + error.message, 'bg-error text-on-error')
+  } else {
+    showToast('Email de réinitialisation envoyé !', 'bg-primary text-on-primary')
+  }
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', initAuth)
+</script>
+</body>
+</html>
