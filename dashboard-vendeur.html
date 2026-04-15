@@ -56,8 +56,9 @@
     .loader{animation:spin .8s linear infinite}
     #toast{transition:all .3s ease}
     .bar-fill{transition:height .6s cubic-bezier(.22,1,.36,1)}
-    .upload-zone{border:2px dashed #becaba;transition:border-color .2s,background .2s}
-    .upload-zone:hover,.upload-zone.drag-over{border-color:#006b2a;background:#eff5eb}
+    /* Écran de chargement initial */
+    #auth-loading{position:fixed;inset:0;background:#f5fbf1;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+    #auth-loading.hidden{display:none}
     @media(max-width:1023px){
       #sidebar{position:fixed;top:0;left:0;z-index:100;transform:translateX(-100%);height:100%;box-shadow:4px 0 30px rgba(0,0,0,.12)}
       #sidebar.open{transform:translateX(0)}
@@ -66,6 +67,13 @@
   </style>
 </head>
 <body class="bg-background text-on-surface overflow-x-hidden">
+
+<!-- ÉCRAN CHARGEMENT AUTH — évite le flash de redirection -->
+<div id="auth-loading">
+  <span class="font-serif italic text-3xl text-primary">WennaShop</span>
+  <div class="w-8 h-8 border-3 border-primary border-t-transparent rounded-full loader" style="border-width:3px"></div>
+  <p class="text-sm text-outline">Vérification de la session...</p>
+</div>
 
 <!-- TOAST -->
 <div id="toast" class="fixed top-6 right-6 z-[400] px-5 py-3 rounded-xl bg-inverse-surface text-inverse-on-surface text-sm font-medium shadow-2xl opacity-0 pointer-events-none max-w-xs" role="status" aria-live="polite"></div>
@@ -575,7 +583,15 @@
 // ── CONFIG ────────────────────────────────────────────────────────────────────
 const SUPABASE_URL = 'https://aakxoydznmybstfozjte.supabase.co'
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    // Persiste la session dans localStorage — crucial pour éviter la déco au reload
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    storageKey: 'wenna-seller-session'
+  }
+})
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let currentSeller = null
@@ -584,6 +600,7 @@ let prodPage = 1
 const PROD_PER_PAGE = 10
 let currentOrderId = null
 let categories = []
+let authInitialized = false  // ← garde pour éviter double init
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
 function showToast(msg, color = 'bg-inverse-surface text-inverse-on-surface') {
@@ -593,6 +610,10 @@ function showToast(msg, color = 'bg-inverse-surface text-inverse-on-surface') {
   el.style.opacity = '1'
   el.style.pointerEvents = 'auto'
   setTimeout(() => { el.style.opacity = '0'; el.style.pointerEvents = 'none' }, 3500)
+}
+
+function hideAuthLoader() {
+  document.getElementById('auth-loading').classList.add('hidden')
 }
 
 function fmtDate(d) {
@@ -677,30 +698,94 @@ function closeSidebar() {
   }, 300)
 }
 
-// ── AUTH ──────────────────────────────────────────────────────────────────────
+// ── AUTH — CORRIGÉ ────────────────────────────────────────────────────────────
+// PROBLÈME ORIGINAL : getSession() peut retourner null pendant le refresh du token
+// au premier chargement, ce qui déclenchait une redirection immédiate vers login.html.
+// SOLUTION : on utilise onAuthStateChange qui attend l'événement SIGNED_IN stable,
+// avec un timeout de sécurité pour éviter un blocage infini.
 async function initAuth() {
-  const { data: { session } } = await db.auth.getSession()
-  if (!session) { window.location.href = 'login.html'; return }
+  // Timeout de sécurité : si aucun événement auth en 8s → rediriger
+  const authTimeout = setTimeout(() => {
+    if (!authInitialized) {
+      hideAuthLoader()
+      window.location.href = 'login.html'
+    }
+  }, 8000)
 
-  const { data: user } = await db.from('users').select('*').eq('auth_id', session.user.id).single()
-  if (!user || (user.role !== 'artisan' && user.role !== 'admin')) {
-    showToast('Accès refusé. Compte vendeur requis.', 'bg-error text-on-error')
-    setTimeout(() => window.location.href = 'index.html', 2000)
-    return
+  db.auth.onAuthStateChange(async (event, session) => {
+    // Ignorer les événements après la première initialisation
+    if (authInitialized && event !== 'SIGNED_OUT') return
+
+    if (event === 'SIGNED_OUT' || !session) {
+      clearTimeout(authTimeout)
+      // Si déjà initialisé et qu'on reçoit SIGNED_OUT → déconnexion réelle
+      if (authInitialized) {
+        window.location.href = 'login.html'
+      } else {
+        // Première vérification : pas de session
+        hideAuthLoader()
+        window.location.href = 'login.html'
+      }
+      return
+    }
+
+    // Session valide (INITIAL_SESSION, SIGNED_IN ou TOKEN_REFRESHED)
+    if (!authInitialized) {
+      authInitialized = true
+      clearTimeout(authTimeout)
+      await setupDashboard(session)
+    }
+  })
+}
+
+async function setupDashboard(session) {
+  try {
+    const { data: user, error } = await db.from('users')
+      .select('*')
+      .eq('auth_id', session.user.id)
+      .single()
+
+    if (error || !user) {
+      hideAuthLoader()
+      showToast('Profil introuvable. Contactez le support.', 'bg-error text-on-error')
+      setTimeout(() => window.location.href = 'login.html', 3000)
+      return
+    }
+
+    // Vérifier que c'est bien un vendeur ou admin
+    if (user.role !== 'artisan' && user.role !== 'admin') {
+      hideAuthLoader()
+      showToast('Accès refusé. Compte vendeur requis.', 'bg-error text-on-error')
+      setTimeout(() => window.location.href = 'index.html', 2500)
+      return
+    }
+
+    currentSeller = user
+
+    // Mettre à jour l'UI sidebar
+    const initials = ((user.first_name?.[0] || '') + (user.last_name?.[0] || '')).toUpperCase() || user.email?.[0]?.toUpperCase() || '?'
+    document.getElementById('seller-avatar').textContent = initials
+    document.getElementById('seller-name').textContent = user.full_name || `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email
+    document.getElementById('seller-country').textContent = user.country || '—'
+    document.getElementById('page-date').textContent = new Date().toLocaleDateString('fr-FR', { weekday:'long', year:'numeric', month:'long', day:'numeric' })
+
+    // Cacher le loader et afficher le dashboard
+    hideAuthLoader()
+
+    // Charger les données initiales
+    await loadCategories()
+    loadOverview()
+
+  } catch (err) {
+    console.error('setupDashboard error:', err)
+    hideAuthLoader()
+    showToast('Erreur de chargement. Veuillez réessayer.', 'bg-error text-on-error')
+    setTimeout(() => window.location.href = 'login.html', 3000)
   }
-  currentSeller = user
-
-  const initials = ((user.first_name?.[0] || '') + (user.last_name?.[0] || '')).toUpperCase() || user.email?.[0]?.toUpperCase() || '?'
-  document.getElementById('seller-avatar').textContent = initials
-  document.getElementById('seller-name').textContent = user.full_name || `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email
-  document.getElementById('seller-country').textContent = user.country || '—'
-  document.getElementById('page-date').textContent = new Date().toLocaleDateString('fr-FR', { weekday:'long', year:'numeric', month:'long', day:'numeric' })
-
-  loadCategories()
-  loadOverview()
 }
 
 async function logout() {
+  authInitialized = false  // reset pour permettre la redirection propre
   await db.auth.signOut()
   window.location.href = 'login.html'
 }
@@ -721,27 +806,34 @@ async function loadOverview() {
   const [
     { count: totalProd },
     { count: activeProd },
-    { count: totalOrders },
     { count: pendingOrders },
     { data: payments },
     { data: revData }
   ] = await Promise.all([
     db.from('products').select('*', { count: 'exact', head: true }).eq('seller_id', sid),
     db.from('products').select('*', { count: 'exact', head: true }).eq('seller_id', sid).eq('status', 'active'),
-    db.from('order_items').select('order_id', { count: 'exact', head: true }).in('product_id',
-      (await db.from('products').select('id').eq('seller_id', sid)).data?.map(p => p.id) || []
-    ),
     db.from('orders').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
     db.from('payments').select('amount, status').eq('status', 'paid'),
     db.from('reviews').select('rating').eq('status', 'approved')
   ])
+
+  // Récupérer les commandes du vendeur via order_items
+  const { data: prodIds } = await db.from('products').select('id').eq('seller_id', sid)
+  const ids = prodIds?.map(p => p.id) || []
+  let totalOrders = 0
+  if (ids.length) {
+    const { count } = await db.from('order_items').select('order_id', { count: 'exact', head: true }).in('product_id', ids)
+    // count peut compter plusieurs items d'une même commande — on dédouble via une query distincte
+    const { data: orderItems } = await db.from('order_items').select('order_id').in('product_id', ids)
+    totalOrders = new Set((orderItems || []).map(i => i.order_id)).size
+  }
 
   const revenue = (payments || []).reduce((a, p) => a + Number(p.amount || 0), 0)
   const avgRating = revData?.length ? (revData.reduce((a, r) => a + r.rating, 0) / revData.length).toFixed(1) : '—'
 
   document.getElementById('ov-products').textContent = activeProd ?? '0'
   document.getElementById('ov-products-trend').textContent = (totalProd || 0) + ' total'
-  document.getElementById('ov-orders').textContent = totalOrders ?? '0'
+  document.getElementById('ov-orders').textContent = totalOrders
   document.getElementById('ov-orders-trend').textContent = (pendingOrders || 0) + ' en attente'
   document.getElementById('ov-revenue').textContent = revenue.toFixed(0)
   document.getElementById('ov-revenue-trend').textContent = 'MAD'
@@ -912,7 +1004,6 @@ function closeModal() {
   document.getElementById('product-id').value = ''
 }
 
-// Fermer en cliquant sur l'overlay (fond)
 document.getElementById('modal-overlay').addEventListener('click', function(e) {
   if (e.target === this) closeModal()
 })
@@ -1068,7 +1159,6 @@ function closeOrderModal() {
   currentOrderId = null
 }
 
-// Fermer modal commande en cliquant sur l'overlay
 document.getElementById('order-modal-overlay').addEventListener('click', function(e) {
   if (e.target === this) closeOrderModal()
 })
@@ -1094,7 +1184,7 @@ async function loadRevenue() {
 
   const { data: payments } = await db.from('payments')
     .select('amount, status, created_at, method, transaction_id, currency')
-    .in('order_id', orderIds)
+    .in('order_id', orderIds.length ? orderIds : ['00000000-0000-0000-0000-000000000000'])
     .order('created_at', { ascending: false })
 
   const paidPayments = (payments || []).filter(p => p.status === 'paid')
@@ -1135,7 +1225,7 @@ async function loadRevenue() {
 
   document.getElementById('payments-table-body').innerHTML = (payments || []).slice(0, 20).map(p => `
     <tr class="table-row border-b border-outline-variant/5">
-      <td class="px-5 py-3 font-mono text-xs text-on-surface-variant">${(p.transaction_id || '').slice(0,12)}…</td>
+      <td class="px-5 py-3 font-mono text-xs text-on-surface-variant">${(p.transaction_id || '').slice(0,12) || '—'}</td>
       <td class="px-4 py-3 text-sm font-bold">${fmtAmount(p.amount, p.currency || 'MAD')}</td>
       <td class="px-4 py-3 hidden sm:table-cell text-xs text-on-surface-variant capitalize">${p.method || '—'}</td>
       <td class="px-4 py-3 hidden md:table-cell text-xs text-outline">${fmtDate(p.created_at)}</td>
@@ -1152,7 +1242,7 @@ async function loadReviews() {
   const filter = document.getElementById('review-filter').value
   let query = db.from('reviews')
     .select('id, rating, comment, status, created_at, reviewer_name, product_id, products(name)')
-    .in('product_id', prodIds)
+    .in('product_id', prodIds.length ? prodIds : ['00000000-0000-0000-0000-000000000000'])
     .order('created_at', { ascending: false })
   if (filter) query = query.eq('status', filter)
   const { data: reviews } = await query
