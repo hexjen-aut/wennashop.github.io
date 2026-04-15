@@ -29,18 +29,30 @@
     body{font-family:'Inter',sans-serif;background:#f5fbf1;min-height:100dvh}
     .font-serif{font-family:'Noto Serif',serif}
     .no-scrollbar::-webkit-scrollbar{display:none}
+
+    /* Sidebar */
     #sidebar{transition:transform .3s cubic-bezier(.22,1,.36,1)}
     #sidebar-overlay{transition:opacity .3s ease}
+
+    /* Nav item */
     .nav-item{transition:all .2s ease;position:relative}
     .nav-item.active{background:#006b2a;color:#fff}
     .nav-item.active .nav-icon{color:#fff}
     .nav-item:not(.active):hover{background:#eaf0e5;color:#171d17}
+
+    /* Cards */
     .stat-card{transition:transform .2s ease,box-shadow .2s ease}
     .stat-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,107,42,.1)}
+
+    /* Table */
     .table-row{transition:background .15s ease}
     .table-row:hover{background:#eff5eb}
+
+    /* Sections */
     .section{display:none}
     .section.active{display:block}
+
+    /* Status badges */
     .status-pending{background:#fff3cd;color:#856404}
     .status-active{background:#d1e7dd;color:#0a3622}
     .status-inactive{background:#f8d7da;color:#721c24}
@@ -50,15 +62,26 @@
     .status-cancelled{background:#f8d7da;color:#721c24}
     .status-paid{background:#d1e7dd;color:#0a3622}
     .status-failed{background:#f8d7da;color:#721c24}
+
+    /* Modal */
     #modal-overlay{transition:opacity .2s ease}
     #modal-box{transition:transform .25s cubic-bezier(.22,1,.36,1),opacity .25s ease}
+
+    /* Loader */
     @keyframes spin{to{transform:rotate(360deg)}}
     .loader{animation:spin .8s linear infinite}
+
+    /* Toast */
     #toast{transition:all .3s ease}
+
+    /* Chart bars */
     .bar-fill{transition:height .6s cubic-bezier(.22,1,.36,1)}
-    /* Écran de chargement initial */
-    #auth-loading{position:fixed;inset:0;background:#f5fbf1;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px}
-    #auth-loading.hidden{display:none}
+
+    /* Image upload */
+    .upload-zone{border:2px dashed #becaba;transition:border-color .2s,background .2s}
+    .upload-zone:hover,.upload-zone.drag-over{border-color:#006b2a;background:#eff5eb}
+
+    /* Responsive sidebar */
     @media(max-width:1023px){
       #sidebar{position:fixed;top:0;left:0;z-index:100;transform:translateX(-100%);height:100%;box-shadow:4px 0 30px rgba(0,0,0,.12)}
       #sidebar.open{transform:translateX(0)}
@@ -68,21 +91,15 @@
 </head>
 <body class="bg-background text-on-surface overflow-x-hidden">
 
-<!-- ÉCRAN CHARGEMENT AUTH — évite le flash de redirection -->
-<div id="auth-loading">
-  <span class="font-serif italic text-3xl text-primary">WennaShop</span>
-  <div class="w-8 h-8 border-3 border-primary border-t-transparent rounded-full loader" style="border-width:3px"></div>
-  <p class="text-sm text-outline">Vérification de la session...</p>
-</div>
-
-<!-- TOAST -->
+<!-- ══ TOAST ══ -->
 <div id="toast" class="fixed top-6 right-6 z-[400] px-5 py-3 rounded-xl bg-inverse-surface text-inverse-on-surface text-sm font-medium shadow-2xl opacity-0 pointer-events-none max-w-xs" role="status" aria-live="polite"></div>
 
-<!-- SIDEBAR OVERLAY -->
+<!-- ══ SIDEBAR OVERLAY (mobile) ══ -->
 <div id="sidebar-overlay" class="hidden opacity-0 pointer-events-none" onclick="closeSidebar()"></div>
 
-<!-- SIDEBAR -->
+<!-- ══ SIDEBAR ══ -->
 <aside id="sidebar" class="w-64 bg-surface-container-lowest border-r border-outline-variant/20 h-screen flex flex-col fixed top-0 left-0 z-100 lg:z-auto lg:translate-x-0">
+  <!-- Logo -->
   <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/15">
     <a href="index.html" class="flex items-center gap-3">
       <span class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
@@ -98,6 +115,7 @@
     </button>
   </div>
 
+  <!-- Vendeur info -->
   <div id="seller-info" class="px-4 py-4 border-b border-outline-variant/15">
     <div class="flex items-center gap-3">
       <div id="seller-avatar" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-base flex-shrink-0">?</div>
@@ -111,6 +129,7 @@
     </div>
   </div>
 
+  <!-- Nav -->
   <nav class="flex-1 overflow-y-auto no-scrollbar px-3 py-4 space-y-1">
     <button onclick="showSection('overview')" data-nav="overview" class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-on-primary">
       <span class="nav-icon material-symbols-outlined" style="font-size:20px">dashboard</span>
@@ -139,6 +158,7 @@
     </button>
   </nav>
 
+  <!-- Footer sidebar -->
   <div class="px-3 py-4 border-t border-outline-variant/15 space-y-1">
     <a href="index.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-on-surface-variant">
       <span class="nav-icon material-symbols-outlined" style="font-size:20px">storefront</span>
@@ -151,9 +171,10 @@
   </div>
 </aside>
 
-<!-- MAIN -->
+<!-- ══ MAIN ══ -->
 <div class="lg:ml-64 min-h-screen flex flex-col">
 
+  <!-- Top bar -->
   <header class="bg-surface-container-lowest/80 backdrop-blur-xl sticky top-0 z-40 border-b border-outline-variant/10 px-6 py-4 flex items-center justify-between">
     <div class="flex items-center gap-4">
       <button class="lg:hidden text-on-surface" onclick="openSidebar()">
@@ -165,17 +186,19 @@
       </div>
     </div>
     <div class="flex items-center gap-3">
-      <button onclick="showSection('products'); setTimeout(openProductModal, 150)" class="btn-primary hidden sm:flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all hover:opacity-90">
+      <button onclick="showSection('products'); openProductModal()" class="btn-primary hidden sm:flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all hover:opacity-90">
         <span class="material-symbols-outlined" style="font-size:16px">add</span>
         Nouveau produit
       </button>
     </div>
   </header>
 
+  <!-- Content -->
   <main class="flex-1 p-6">
 
-    <!-- OVERVIEW -->
+    <!-- ══ OVERVIEW ══ -->
     <section id="section-overview" class="section active space-y-6">
+      <!-- Stats -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="stat-card bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10">
           <div class="flex items-start justify-between mb-3">
@@ -220,6 +243,7 @@
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <!-- Commandes récentes -->
         <div class="lg:col-span-2 bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
           <div class="flex items-center justify-between px-5 py-4 border-b border-outline-variant/10">
             <h3 class="font-serif italic text-lg font-bold">Commandes récentes</h3>
@@ -230,6 +254,7 @@
           </div>
         </div>
 
+        <!-- Produits à stock faible -->
         <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
           <div class="flex items-center justify-between px-5 py-4 border-b border-outline-variant/10">
             <h3 class="font-serif italic text-lg font-bold">Stock faible</h3>
@@ -242,7 +267,7 @@
       </div>
     </section>
 
-    <!-- PRODUCTS -->
+    <!-- ══ PRODUCTS ══ -->
     <section id="section-products" class="section space-y-5">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div class="flex items-center gap-3">
@@ -288,7 +313,7 @@
       </div>
     </section>
 
-    <!-- ORDERS -->
+    <!-- ══ ORDERS ══ -->
     <section id="section-orders" class="section space-y-5">
       <div class="flex flex-col sm:flex-row sm:items-center gap-4">
         <select id="order-filter" onchange="loadOrders()" class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary">
@@ -322,8 +347,9 @@
       </div>
     </section>
 
-    <!-- REVENUE -->
+    <!-- ══ REVENUE ══ -->
     <section id="section-revenue" class="section space-y-6">
+      <!-- KPIs revenus -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="stat-card bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10">
           <p class="text-[10px] uppercase tracking-widest text-outline mb-2 font-bold">Total encaissé</p>
@@ -343,6 +369,7 @@
         </div>
       </div>
 
+      <!-- Graphique barres simplifié -->
       <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 p-6">
         <h3 class="font-serif italic text-lg font-bold mb-6">Revenus sur 6 mois</h3>
         <div id="revenue-chart" class="flex items-end gap-3 h-40">
@@ -350,6 +377,7 @@
         </div>
       </div>
 
+      <!-- Tableau paiements -->
       <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
         <div class="px-5 py-4 border-b border-outline-variant/10">
           <h3 class="font-serif italic text-lg font-bold">Historique des paiements</h3>
@@ -373,7 +401,7 @@
       </div>
     </section>
 
-    <!-- REVIEWS -->
+    <!-- ══ REVIEWS ══ -->
     <section id="section-reviews" class="section space-y-5">
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div class="stat-card bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10 text-center">
@@ -406,7 +434,7 @@
       </div>
     </section>
 
-    <!-- PROFILE -->
+    <!-- ══ PROFILE ══ -->
     <section id="section-profile" class="section space-y-6 max-w-2xl">
       <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
         <div class="px-5 py-4 border-b border-outline-variant/10 flex items-center justify-between">
@@ -454,6 +482,7 @@
         </form>
       </div>
 
+      <!-- Changer mot de passe -->
       <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
         <div class="px-5 py-4 border-b border-outline-variant/10">
           <h3 class="font-serif italic text-lg font-bold">Sécurité</h3>
@@ -469,12 +498,12 @@
   </main>
 </div>
 
-<!-- MODAL PRODUIT -->
-<div id="modal-overlay" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4" style="background:rgba(23,29,23,.5);backdrop-filter:blur(6px)">
-  <div id="modal-box" class="bg-surface-container-lowest rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
+<!-- ══ MODAL PRODUIT ══ -->
+<div id="modal-overlay" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4" style="background:rgba(23,29,23,.5);backdrop-filter:blur(6px)" onclick="closeModal(event)">
+  <div id="modal-box" class="bg-surface-container-lowest rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
     <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10 sticky top-0 bg-surface-container-lowest z-10">
       <h3 id="modal-title" class="font-serif italic text-xl font-bold">Nouveau produit</h3>
-      <button type="button" onclick="closeModal()" class="text-outline hover:text-on-surface transition-colors">
+      <button onclick="closeModal()" class="text-outline hover:text-on-surface transition-colors">
         <span class="material-symbols-outlined">close</span>
       </button>
     </div>
@@ -549,14 +578,12 @@
   </div>
 </div>
 
-<!-- MODAL COMMANDE -->
-<div id="order-modal-overlay" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4" style="background:rgba(23,29,23,.5);backdrop-filter:blur(6px)">
-  <div class="bg-surface-container-lowest rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
+<!-- ══ MODAL COMMANDE ══ -->
+<div id="order-modal-overlay" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4" style="background:rgba(23,29,23,.5);backdrop-filter:blur(6px)" onclick="closeOrderModal(event)">
+  <div class="bg-surface-container-lowest rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
     <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10">
       <h3 class="font-serif italic text-xl font-bold">Détail commande</h3>
-      <button type="button" onclick="closeOrderModal()" class="text-outline hover:text-on-surface">
-        <span class="material-symbols-outlined">close</span>
-      </button>
+      <button onclick="closeOrderModal()" class="text-outline hover:text-on-surface"><span class="material-symbols-outlined">close</span></button>
     </div>
     <div id="order-detail-content" class="p-6 space-y-4">Chargement...</div>
     <div class="px-6 pb-6">
@@ -570,28 +597,20 @@
             <option value="delivered">Livrée</option>
             <option value="cancelled">Annulée</option>
           </select>
-          <button type="button" onclick="updateOrderStatus()" class="bg-primary text-on-primary px-5 py-2.5 rounded-xl text-sm font-bold hover:opacity-90 transition-all whitespace-nowrap">Mettre à jour</button>
+          <button onclick="updateOrderStatus()" class="bg-primary text-on-primary px-5 py-2.5 rounded-xl text-sm font-bold hover:opacity-90 transition-all whitespace-nowrap">Mettre à jour</button>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- SUPABASE -->
+<!-- ══ SUPABASE ══ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────────────
 const SUPABASE_URL = 'https://aakxoydznmybstfozjte.supabase.co'
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    // Persiste la session dans localStorage — crucial pour éviter la déco au reload
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true,
-    storageKey: 'wenna-seller-session'
-  }
-})
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let currentSeller = null
@@ -600,7 +619,6 @@ let prodPage = 1
 const PROD_PER_PAGE = 10
 let currentOrderId = null
 let categories = []
-let authInitialized = false  // ← garde pour éviter double init
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
 function showToast(msg, color = 'bg-inverse-surface text-inverse-on-surface') {
@@ -610,10 +628,6 @@ function showToast(msg, color = 'bg-inverse-surface text-inverse-on-surface') {
   el.style.opacity = '1'
   el.style.pointerEvents = 'auto'
   setTimeout(() => { el.style.opacity = '0'; el.style.pointerEvents = 'none' }, 3500)
-}
-
-function hideAuthLoader() {
-  document.getElementById('auth-loading').classList.add('hidden')
 }
 
 function fmtDate(d) {
@@ -653,23 +667,15 @@ function stars(rating) {
 }
 
 // ── NAV ───────────────────────────────────────────────────────────────────────
-const pageTitles = {
-  overview: "Vue d'ensemble",
-  products: 'Mes Produits',
-  orders: 'Commandes',
-  revenue: 'Revenus',
-  reviews: 'Avis Clients',
-  profile: 'Ma Boutique'
-}
+const pageTitles = { overview: 'Vue d'ensemble', products: 'Mes Produits', orders: 'Commandes', revenue: 'Revenus', reviews: 'Avis Clients', profile: 'Ma Boutique' }
 
 function showSection(name) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'))
   document.getElementById('section-' + name)?.classList.add('active')
-  document.querySelectorAll('.nav-item[data-nav]').forEach(b => {
-    const isActive = b.dataset.nav === name
-    b.classList.toggle('active', isActive)
-    b.classList.toggle('text-on-primary', isActive)
-    b.classList.toggle('text-on-surface-variant', !isActive)
+  document.querySelectorAll('.nav-item').forEach(b => {
+    b.classList.toggle('active', b.dataset.nav === name)
+    b.classList.toggle('text-on-primary', b.dataset.nav === name)
+    b.classList.toggle('text-on-surface-variant', b.dataset.nav !== name)
   })
   document.getElementById('page-title').textContent = pageTitles[name] || ''
   closeSidebar()
@@ -698,94 +704,35 @@ function closeSidebar() {
   }, 300)
 }
 
-// ── AUTH — CORRIGÉ ────────────────────────────────────────────────────────────
-// PROBLÈME ORIGINAL : getSession() peut retourner null pendant le refresh du token
-// au premier chargement, ce qui déclenchait une redirection immédiate vers login.html.
-// SOLUTION : on utilise onAuthStateChange qui attend l'événement SIGNED_IN stable,
-// avec un timeout de sécurité pour éviter un blocage infini.
+// ── AUTH ──────────────────────────────────────────────────────────────────────
 async function initAuth() {
-  // Timeout de sécurité : si aucun événement auth en 8s → rediriger
-  const authTimeout = setTimeout(() => {
-    if (!authInitialized) {
-      hideAuthLoader()
-      window.location.href = 'login.html'
-    }
-  }, 8000)
-
-  db.auth.onAuthStateChange(async (event, session) => {
-    // Ignorer les événements après la première initialisation
-    if (authInitialized && event !== 'SIGNED_OUT') return
-
-    if (event === 'SIGNED_OUT' || !session) {
-      clearTimeout(authTimeout)
-      // Si déjà initialisé et qu'on reçoit SIGNED_OUT → déconnexion réelle
-      if (authInitialized) {
-        window.location.href = 'login.html'
-      } else {
-        // Première vérification : pas de session
-        hideAuthLoader()
-        window.location.href = 'login.html'
-      }
-      return
-    }
-
-    // Session valide (INITIAL_SESSION, SIGNED_IN ou TOKEN_REFRESHED)
-    if (!authInitialized) {
-      authInitialized = true
-      clearTimeout(authTimeout)
-      await setupDashboard(session)
-    }
-  })
-}
-
-async function setupDashboard(session) {
-  try {
-    const { data: user, error } = await db.from('users')
-      .select('*')
-      .eq('auth_id', session.user.id)
-      .single()
-
-    if (error || !user) {
-      hideAuthLoader()
-      showToast('Profil introuvable. Contactez le support.', 'bg-error text-on-error')
-      setTimeout(() => window.location.href = 'login.html', 3000)
-      return
-    }
-
-    // Vérifier que c'est bien un vendeur ou admin
-    if (user.role !== 'artisan' && user.role !== 'admin') {
-      hideAuthLoader()
-      showToast('Accès refusé. Compte vendeur requis.', 'bg-error text-on-error')
-      setTimeout(() => window.location.href = 'index.html', 2500)
-      return
-    }
-
-    currentSeller = user
-
-    // Mettre à jour l'UI sidebar
-    const initials = ((user.first_name?.[0] || '') + (user.last_name?.[0] || '')).toUpperCase() || user.email?.[0]?.toUpperCase() || '?'
-    document.getElementById('seller-avatar').textContent = initials
-    document.getElementById('seller-name').textContent = user.full_name || `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email
-    document.getElementById('seller-country').textContent = user.country || '—'
-    document.getElementById('page-date').textContent = new Date().toLocaleDateString('fr-FR', { weekday:'long', year:'numeric', month:'long', day:'numeric' })
-
-    // Cacher le loader et afficher le dashboard
-    hideAuthLoader()
-
-    // Charger les données initiales
-    await loadCategories()
-    loadOverview()
-
-  } catch (err) {
-    console.error('setupDashboard error:', err)
-    hideAuthLoader()
-    showToast('Erreur de chargement. Veuillez réessayer.', 'bg-error text-on-error')
-    setTimeout(() => window.location.href = 'login.html', 3000)
+  const { data: { session } } = await db.auth.getSession()
+  if (!session) {
+    window.location.href = 'login.html'
+    return
   }
+  const { data: user } = await db.from('users').select('*').eq('auth_id', session.user.id).single()
+  if (!user || (user.role !== 'artisan' && user.role !== 'admin')) {
+    showToast('Accès refusé. Compte vendeur requis.', 'bg-error text-on-error')
+    setTimeout(() => window.location.href = 'index.html', 2000)
+    return
+  }
+  currentSeller = user
+
+  // Update sidebar
+  const initials = ((user.first_name?.[0] || '') + (user.last_name?.[0] || '')).toUpperCase() || user.email?.[0]?.toUpperCase() || '?'
+  document.getElementById('seller-avatar').textContent = initials
+  document.getElementById('seller-name').textContent = user.full_name || `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email
+  document.getElementById('seller-country').textContent = user.country || '—'
+
+  // Date header
+  document.getElementById('page-date').textContent = new Date().toLocaleDateString('fr-FR', { weekday:'long', year:'numeric', month:'long', day:'numeric' })
+
+  loadCategories()
+  loadOverview()
 }
 
 async function logout() {
-  authInitialized = false  // reset pour permettre la redirection propre
   await db.auth.signOut()
   window.location.href = 'login.html'
 }
@@ -801,523 +748,10 @@ async function loadCategories() {
 // ── OVERVIEW ──────────────────────────────────────────────────────────────────
 async function loadOverview() {
   if (!currentSeller) return
+
   const sid = currentSeller.id
 
+  // Stats parallèles
   const [
     { count: totalProd },
-    { count: activeProd },
-    { count: pendingOrders },
-    { data: payments },
-    { data: revData }
-  ] = await Promise.all([
-    db.from('products').select('*', { count: 'exact', head: true }).eq('seller_id', sid),
-    db.from('products').select('*', { count: 'exact', head: true }).eq('seller_id', sid).eq('status', 'active'),
-    db.from('orders').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
-    db.from('payments').select('amount, status').eq('status', 'paid'),
-    db.from('reviews').select('rating').eq('status', 'approved')
-  ])
-
-  // Récupérer les commandes du vendeur via order_items
-  const { data: prodIds } = await db.from('products').select('id').eq('seller_id', sid)
-  const ids = prodIds?.map(p => p.id) || []
-  let totalOrders = 0
-  if (ids.length) {
-    const { count } = await db.from('order_items').select('order_id', { count: 'exact', head: true }).in('product_id', ids)
-    // count peut compter plusieurs items d'une même commande — on dédouble via une query distincte
-    const { data: orderItems } = await db.from('order_items').select('order_id').in('product_id', ids)
-    totalOrders = new Set((orderItems || []).map(i => i.order_id)).size
-  }
-
-  const revenue = (payments || []).reduce((a, p) => a + Number(p.amount || 0), 0)
-  const avgRating = revData?.length ? (revData.reduce((a, r) => a + r.rating, 0) / revData.length).toFixed(1) : '—'
-
-  document.getElementById('ov-products').textContent = activeProd ?? '0'
-  document.getElementById('ov-products-trend').textContent = (totalProd || 0) + ' total'
-  document.getElementById('ov-orders').textContent = totalOrders
-  document.getElementById('ov-orders-trend').textContent = (pendingOrders || 0) + ' en attente'
-  document.getElementById('ov-revenue').textContent = revenue.toFixed(0)
-  document.getElementById('ov-revenue-trend').textContent = 'MAD'
-  document.getElementById('ov-rating').textContent = avgRating
-
-  if (pendingOrders > 0) {
-    const badge = document.getElementById('badge-orders')
-    badge.textContent = pendingOrders
-    badge.classList.remove('hidden')
-  }
-
-  loadRecentOrders()
-  loadLowStock()
-}
-
-async function loadRecentOrders() {
-  const sid = currentSeller.id
-  const { data: prodIds } = await db.from('products').select('id').eq('seller_id', sid)
-  const ids = prodIds?.map(p => p.id) || []
-  if (!ids.length) {
-    document.getElementById('recent-orders').innerHTML = '<div class="px-5 py-8 text-center text-outline text-sm">Aucune commande</div>'
-    return
-  }
-
-  const { data: items } = await db.from('order_items').select('order_id').in('product_id', ids).limit(20)
-  if (!items?.length) {
-    document.getElementById('recent-orders').innerHTML = '<div class="px-5 py-8 text-center text-outline text-sm">Aucune commande pour le moment</div>'
-    return
-  }
-
-  const orderIds = [...new Set(items.map(i => i.order_id))]
-  const { data: orders } = await db.from('orders')
-    .select('id, status, total_amount, created_at, shipping_name, shipping_country, currency')
-    .in('id', orderIds.slice(0, 5))
-    .order('created_at', { ascending: false })
-
-  document.getElementById('recent-orders').innerHTML = (orders || []).map(o => `
-    <div class="table-row px-5 py-4 flex items-center justify-between cursor-pointer" onclick="openOrderDetail('${o.id}')">
-      <div>
-        <p class="text-xs font-semibold">#${o.id.slice(0,8).toUpperCase()}</p>
-        <p class="text-[10px] text-outline">${o.shipping_name || '—'} · ${fmtDate(o.created_at)}</p>
-      </div>
-      <div class="flex items-center gap-3">
-        <span class="text-sm font-bold">${fmtAmount(o.total_amount, o.currency || 'MAD')}</span>
-        ${statusBadge(o.status)}
-      </div>
-    </div>
-  `).join('')
-}
-
-async function loadLowStock() {
-  const { data } = await db.from('products').select('id, name, stock').eq('seller_id', currentSeller.id).lte('stock', 5).gt('stock', 0).order('stock').limit(6)
-  if (!data?.length) {
-    document.getElementById('low-stock').innerHTML = '<div class="px-5 py-8 text-center text-outline text-sm">Aucun stock faible</div>'
-    return
-  }
-  document.getElementById('low-stock').innerHTML = data.map(p => `
-    <div class="px-5 py-3 flex items-center justify-between">
-      <p class="text-xs font-medium truncate max-w-[60%]">${p.name}</p>
-      <span class="text-[10px] font-bold ${p.stock <= 2 ? 'text-error' : 'text-tertiary'} px-2 py-0.5 rounded-full" style="background:${p.stock <= 2 ? 'rgba(186,26,26,0.1)' : 'rgba(116,91,0,0.1)'}">${p.stock} restant${p.stock > 1 ? 's' : ''}</span>
-    </div>
-  `).join('')
-}
-
-// ── PRODUCTS ──────────────────────────────────────────────────────────────────
-async function loadProducts() {
-  document.getElementById('products-table-body').innerHTML = '<tr><td colspan="6" class="text-center py-12 text-outline text-sm"><span class="loader inline-block w-5 h-5 border-2 border-primary border-t-transparent rounded-full mr-2"></span>Chargement...</td></tr>'
-  const { data } = await db.from('products')
-    .select('id, name, price, stock, status, country, origin_city, category_id, image_url, created_at')
-    .eq('seller_id', currentSeller.id)
-    .order('created_at', { ascending: false })
-
-  allProducts = data || []
-  renderProducts()
-}
-
-function filterProducts() {
-  prodPage = 1
-  renderProducts()
-}
-
-function renderProducts() {
-  const search = document.getElementById('prod-search').value.toLowerCase()
-  const statusF = document.getElementById('prod-filter-status').value
-
-  let filtered = allProducts.filter(p => {
-    const matchSearch = !search || p.name.toLowerCase().includes(search)
-    const matchStatus = !statusF || p.status === statusF
-    return matchSearch && matchStatus
-  })
-
-  const total = filtered.length
-  const start = (prodPage - 1) * PROD_PER_PAGE
-  const page = filtered.slice(start, start + PROD_PER_PAGE)
-
-  if (!page.length) {
-    document.getElementById('products-table-body').innerHTML = '<tr><td colspan="6" class="text-center py-12 text-outline text-sm">Aucun produit trouvé</td></tr>'
-    document.getElementById('products-pagination').classList.add('hidden')
-    return
-  }
-
-  document.getElementById('products-table-body').innerHTML = page.map(p => {
-    const catName = categories.find(c => c.id === p.category_id)?.name || '—'
-    const safeName = p.name.replace(/\\/g, '\\\\').replace(/'/g, "\\'")
-    return `
-    <tr class="table-row border-b border-outline-variant/5">
-      <td class="px-5 py-3">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-lg overflow-hidden bg-surface-container-low flex-shrink-0">
-            ${p.image_url ? `<img src="${p.image_url}" class="w-full h-full object-cover" loading="lazy" onerror="this.style.display='none'"/>` : '<div class="w-full h-full flex items-center justify-center text-outline"><span class="material-symbols-outlined" style="font-size:16px">image</span></div>'}
-          </div>
-          <div class="min-w-0">
-            <p class="text-sm font-semibold truncate max-w-[150px]">${p.name}</p>
-            <p class="text-[10px] text-outline">${p.country || '—'} · ${p.origin_city || '—'}</p>
-          </div>
-        </div>
-      </td>
-      <td class="px-4 py-3 hidden md:table-cell text-xs text-on-surface-variant">${catName}</td>
-      <td class="px-4 py-3 text-sm font-semibold">${fmtAmount(p.price)}</td>
-      <td class="px-4 py-3 hidden sm:table-cell">
-        <span class="text-xs font-medium ${p.stock <= 3 ? 'text-error' : 'text-on-surface'}">${p.stock ?? '—'}</span>
-      </td>
-      <td class="px-4 py-3">${statusBadge(p.status)}</td>
-      <td class="px-5 py-3 text-right">
-        <div class="flex items-center justify-end gap-1">
-          <button type="button" onclick="editProduct('${p.id}')" class="w-8 h-8 rounded-lg hover:bg-surface-container-low flex items-center justify-center text-on-surface-variant hover:text-primary transition-all">
-            <span class="material-symbols-outlined" style="font-size:16px">edit</span>
-          </button>
-          <button type="button" onclick="deleteProduct('${p.id}', '${safeName}')" class="w-8 h-8 rounded-lg hover:bg-error-container flex items-center justify-center text-on-surface-variant hover:text-error transition-all">
-            <span class="material-symbols-outlined" style="font-size:16px">delete</span>
-          </button>
-        </div>
-      </td>
-    </tr>`
-  }).join('')
-
-  document.getElementById('products-pagination').classList.remove('hidden')
-  document.getElementById('prod-count-label').textContent = `${start + 1}–${Math.min(start + PROD_PER_PAGE, total)} sur ${total} produits`
-  document.getElementById('prod-prev').disabled = prodPage === 1
-  document.getElementById('prod-next').disabled = start + PROD_PER_PAGE >= total
-}
-
-function changeProdPage(dir) {
-  prodPage += dir
-  renderProducts()
-}
-
-// ── PRODUCT MODAL ─────────────────────────────────────────────────────────────
-function openProductModal(product = null) {
-  document.getElementById('product-id').value = product?.id || ''
-  document.getElementById('modal-title').textContent = product ? 'Modifier le produit' : 'Nouveau produit'
-  document.getElementById('modal-submit-btn').textContent = product ? 'Enregistrer' : 'Créer le produit'
-  document.getElementById('product-name').value = product?.name || ''
-  document.getElementById('product-description').value = product?.description || ''
-  document.getElementById('product-price').value = product?.price || ''
-  document.getElementById('product-stock').value = product?.stock ?? ''
-  document.getElementById('product-country').value = product?.country || 'Maroc'
-  document.getElementById('product-city').value = product?.origin_city || ''
-  document.getElementById('product-category').value = product?.category_id || ''
-  document.getElementById('product-image').value = product?.image_url || ''
-  document.getElementById('product-status').value = product?.status || 'pending'
-  document.getElementById('modal-overlay').classList.remove('hidden')
-}
-
-function closeModal() {
-  document.getElementById('modal-overlay').classList.add('hidden')
-  document.getElementById('product-form').reset()
-  document.getElementById('product-id').value = ''
-}
-
-document.getElementById('modal-overlay').addEventListener('click', function(e) {
-  if (e.target === this) closeModal()
-})
-
-async function saveProduct(e) {
-  e.preventDefault()
-  const btn = document.getElementById('modal-submit-btn')
-  btn.disabled = true
-  btn.textContent = 'Enregistrement...'
-
-  const id = document.getElementById('product-id').value
-  const payload = {
-    seller_id: currentSeller.id,
-    name: document.getElementById('product-name').value.trim(),
-    description: document.getElementById('product-description').value.trim() || null,
-    price: parseFloat(document.getElementById('product-price').value),
-    stock: parseInt(document.getElementById('product-stock').value),
-    country: document.getElementById('product-country').value,
-    origin_city: document.getElementById('product-city').value.trim() || null,
-    category_id: document.getElementById('product-category').value || null,
-    image_url: document.getElementById('product-image').value.trim() || null,
-    status: document.getElementById('product-status').value,
-    updated_at: new Date().toISOString()
-  }
-
-  let error
-  if (id) {
-    ({ error } = await db.from('products').update(payload).eq('id', id).eq('seller_id', currentSeller.id))
-  } else {
-    payload.created_at = new Date().toISOString()
-    ;({ error } = await db.from('products').insert(payload))
-  }
-
-  btn.disabled = false
-  btn.textContent = 'Enregistrer'
-
-  if (error) {
-    showToast('Erreur : ' + error.message, 'bg-error text-on-error')
-    return
-  }
-  showToast(id ? 'Produit mis à jour ✓' : 'Produit créé ✓')
-  closeModal()
-  loadProducts()
-  loadOverview()
-}
-
-function editProduct(id) {
-  const p = allProducts.find(x => x.id === id)
-  if (p) openProductModal(p)
-}
-
-async function deleteProduct(id, name) {
-  if (!confirm(`Supprimer "${name}" ? Cette action est irréversible.`)) return
-  const { error } = await db.from('products').delete().eq('id', id).eq('seller_id', currentSeller.id)
-  if (error) { showToast('Erreur suppression', 'bg-error text-on-error'); return }
-  showToast('Produit supprimé')
-  loadProducts()
-  loadOverview()
-}
-
-// ── ORDERS ────────────────────────────────────────────────────────────────────
-async function loadOrders() {
-  document.getElementById('orders-table-body').innerHTML = '<tr><td colspan="6" class="text-center py-12 text-outline text-sm">Chargement...</td></tr>'
-  const statusF = document.getElementById('order-filter').value
-
-  const { data: prods } = await db.from('products').select('id').eq('seller_id', currentSeller.id)
-  const prodIds = prods?.map(p => p.id) || []
-  if (!prodIds.length) {
-    document.getElementById('orders-table-body').innerHTML = '<tr><td colspan="6" class="text-center py-12 text-outline text-sm">Aucune commande</td></tr>'
-    return
-  }
-
-  const { data: items } = await db.from('order_items').select('order_id').in('product_id', prodIds)
-  const orderIds = [...new Set((items || []).map(i => i.order_id))]
-  if (!orderIds.length) {
-    document.getElementById('orders-table-body').innerHTML = '<tr><td colspan="6" class="text-center py-12 text-outline text-sm">Aucune commande</td></tr>'
-    return
-  }
-
-  let query = db.from('orders')
-    .select('id, status, total_amount, currency, created_at, shipping_name, shipping_country, shipping_city')
-    .in('id', orderIds)
-    .order('created_at', { ascending: false })
-    .limit(50)
-  if (statusF) query = query.eq('status', statusF)
-  const { data: orders } = await query
-
-  document.getElementById('orders-table-body').innerHTML = (orders || []).map(o => `
-    <tr class="table-row border-b border-outline-variant/5">
-      <td class="px-5 py-3">
-        <p class="text-xs font-bold font-mono">#${o.id.slice(0,8).toUpperCase()}</p>
-        <p class="text-[10px] text-outline">${fmtDate(o.created_at)}</p>
-      </td>
-      <td class="px-4 py-3 hidden md:table-cell">
-        <p class="text-xs font-medium">${o.shipping_name || '—'}</p>
-        <p class="text-[10px] text-outline">${o.shipping_city || ''} ${o.shipping_country || ''}</p>
-      </td>
-      <td class="px-4 py-3 text-sm font-bold">${fmtAmount(o.total_amount, o.currency || 'MAD')}</td>
-      <td class="px-4 py-3 hidden sm:table-cell text-xs text-outline">${fmtDate(o.created_at)}</td>
-      <td class="px-4 py-3">${statusBadge(o.status)}</td>
-      <td class="px-5 py-3 text-right">
-        <button type="button" onclick="openOrderDetail('${o.id}')" class="text-xs text-primary font-semibold hover:underline">Voir</button>
-      </td>
-    </tr>
-  `).join('')
-}
-
-async function openOrderDetail(orderId) {
-  currentOrderId = orderId
-  document.getElementById('order-modal-overlay').classList.remove('hidden')
-  document.getElementById('order-detail-content').innerHTML = '<p class="text-outline text-sm">Chargement...</p>'
-
-  const { data: order } = await db.from('orders').select('*').eq('id', orderId).single()
-  const { data: items } = await db.from('order_items').select('quantity, unit_price, product_id, products(name)').eq('order_id', orderId)
-
-  document.getElementById('order-status-update').value = order.status
-
-  document.getElementById('order-detail-content').innerHTML = `
-    <div class="space-y-3">
-      <div class="flex justify-between items-start">
-        <div>
-          <p class="text-[10px] uppercase tracking-widest text-outline font-bold">Commande</p>
-          <p class="font-mono font-bold">#${order.id.slice(0,8).toUpperCase()}</p>
-        </div>
-        ${statusBadge(order.status)}
-      </div>
-      <div class="bg-surface-container-low rounded-xl p-4 space-y-1">
-        <p class="text-[10px] uppercase tracking-widest text-outline font-bold mb-2">Livraison</p>
-        <p class="text-sm font-semibold">${order.shipping_name || '—'}</p>
-        <p class="text-xs text-on-surface-variant">${order.shipping_address || ''}</p>
-        <p class="text-xs text-on-surface-variant">${order.shipping_city || ''}, ${order.shipping_country || ''}</p>
-      </div>
-      <div>
-        <p class="text-[10px] uppercase tracking-widest text-outline font-bold mb-2">Produits commandés</p>
-        ${(items || []).map(i => `
-          <div class="flex justify-between items-center py-2 border-b border-outline-variant/10">
-            <p class="text-sm">${i.products?.name || 'Produit supprimé'} × ${i.quantity}</p>
-            <p class="text-sm font-semibold">${fmtAmount(i.unit_price * i.quantity)}</p>
-          </div>
-        `).join('')}
-        <div class="flex justify-between items-center pt-2">
-          <p class="text-sm font-bold">Total</p>
-          <p class="text-sm font-bold text-primary">${fmtAmount(order.total_amount, order.currency || 'MAD')}</p>
-        </div>
-      </div>
-      ${order.notes ? `<div class="bg-surface-container-low rounded-xl p-3"><p class="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Notes</p><p class="text-xs text-on-surface-variant">${order.notes}</p></div>` : ''}
-    </div>
-  `
-}
-
-function closeOrderModal() {
-  document.getElementById('order-modal-overlay').classList.add('hidden')
-  currentOrderId = null
-}
-
-document.getElementById('order-modal-overlay').addEventListener('click', function(e) {
-  if (e.target === this) closeOrderModal()
-})
-
-async function updateOrderStatus() {
-  if (!currentOrderId) return
-  const status = document.getElementById('order-status-update').value
-  const { error } = await db.from('orders').update({ status, updated_at: new Date().toISOString() }).eq('id', currentOrderId)
-  if (error) { showToast('Erreur mise à jour', 'bg-error text-on-error'); return }
-  showToast('Statut mis à jour ✓')
-  closeOrderModal()
-  loadOrders()
-  loadOverview()
-}
-
-// ── REVENUE ───────────────────────────────────────────────────────────────────
-async function loadRevenue() {
-  const { data: prods } = await db.from('products').select('id').eq('seller_id', currentSeller.id)
-  const prodIds = prods?.map(p => p.id) || []
-
-  const { data: items } = await db.from('order_items').select('order_id, quantity, unit_price').in('product_id', prodIds)
-  const orderIds = [...new Set((items || []).map(i => i.order_id))]
-
-  const { data: payments } = await db.from('payments')
-    .select('amount, status, created_at, method, transaction_id, currency')
-    .in('order_id', orderIds.length ? orderIds : ['00000000-0000-0000-0000-000000000000'])
-    .order('created_at', { ascending: false })
-
-  const paidPayments = (payments || []).filter(p => p.status === 'paid')
-  const total = paidPayments.reduce((a, p) => a + Number(p.amount), 0)
-  const now = new Date()
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
-  const monthTotal = paidPayments.filter(p => new Date(p.created_at) >= monthStart).reduce((a, p) => a + Number(p.amount), 0)
-
-  document.getElementById('rev-total').textContent = fmtAmount(total)
-  document.getElementById('rev-month').textContent = fmtAmount(monthTotal)
-  document.getElementById('rev-count').textContent = paidPayments.length
-  document.getElementById('rev-avg').textContent = paidPayments.length ? fmtAmount(total / paidPayments.length) : '— MAD'
-
-  const months = []
-  for (let i = 5; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
-    const label = d.toLocaleDateString('fr-FR', { month: 'short' })
-    const end = new Date(d.getFullYear(), d.getMonth() + 1, 0)
-    const sum = paidPayments.filter(p => {
-      const pd = new Date(p.created_at)
-      return pd >= d && pd <= end
-    }).reduce((a, p) => a + Number(p.amount), 0)
-    months.push({ label, sum })
-  }
-
-  const maxVal = Math.max(...months.map(m => m.sum), 1)
-  document.getElementById('revenue-chart').innerHTML = months.map(m => {
-    const pct = Math.max((m.sum / maxVal) * 100, 2)
-    return `
-      <div class="flex-1 flex flex-col items-center gap-2">
-        <p class="text-[9px] font-bold text-outline">${m.sum > 0 ? Math.round(m.sum) : ''}</p>
-        <div class="w-full relative flex items-end" style="height:100px">
-          <div class="w-full bg-primary/20 rounded-t-lg bar-fill" style="height:${pct}%"></div>
-        </div>
-        <p class="text-[10px] uppercase tracking-widest text-outline font-bold">${m.label}</p>
-      </div>`
-  }).join('')
-
-  document.getElementById('payments-table-body').innerHTML = (payments || []).slice(0, 20).map(p => `
-    <tr class="table-row border-b border-outline-variant/5">
-      <td class="px-5 py-3 font-mono text-xs text-on-surface-variant">${(p.transaction_id || '').slice(0,12) || '—'}</td>
-      <td class="px-4 py-3 text-sm font-bold">${fmtAmount(p.amount, p.currency || 'MAD')}</td>
-      <td class="px-4 py-3 hidden sm:table-cell text-xs text-on-surface-variant capitalize">${p.method || '—'}</td>
-      <td class="px-4 py-3 hidden md:table-cell text-xs text-outline">${fmtDate(p.created_at)}</td>
-      <td class="px-4 py-3">${statusBadge(p.status)}</td>
-    </tr>
-  `).join('') || '<tr><td colspan="5" class="text-center py-12 text-outline text-sm">Aucun paiement</td></tr>'
-}
-
-// ── REVIEWS ───────────────────────────────────────────────────────────────────
-async function loadReviews() {
-  const { data: prods } = await db.from('products').select('id').eq('seller_id', currentSeller.id)
-  const prodIds = prods?.map(p => p.id) || []
-
-  const filter = document.getElementById('review-filter').value
-  let query = db.from('reviews')
-    .select('id, rating, comment, status, created_at, reviewer_name, product_id, products(name)')
-    .in('product_id', prodIds.length ? prodIds : ['00000000-0000-0000-0000-000000000000'])
-    .order('created_at', { ascending: false })
-  if (filter) query = query.eq('status', filter)
-  const { data: reviews } = await query
-
-  const all = reviews || []
-  const approved = all.filter(r => r.status === 'approved')
-  const avgR = approved.length ? (approved.reduce((a, r) => a + r.rating, 0) / approved.length).toFixed(1) : '—'
-
-  document.getElementById('rev-avg-rating').textContent = avgR
-  document.getElementById('rev-stars').innerHTML = avgR !== '—' ? stars(parseFloat(avgR)) : '—'
-  document.getElementById('rev-total-count').textContent = all.length
-  document.getElementById('rev-approved-count').textContent = approved.length
-
-  document.getElementById('reviews-list').innerHTML = all.length ? all.map(r => `
-    <div class="px-5 py-4">
-      <div class="flex items-start justify-between mb-2">
-        <div>
-          <div class="flex gap-0.5 mb-1">${stars(r.rating)}</div>
-          <p class="text-[10px] text-outline">${r.reviewer_name || 'Anonyme'} · ${r.products?.name || '—'} · ${fmtDate(r.created_at)}</p>
-        </div>
-        ${statusBadge(r.status)}
-      </div>
-      ${r.comment ? `<p class="text-sm text-on-surface-variant font-serif italic leading-relaxed">"${r.comment}"</p>` : ''}
-    </div>
-  `).join('') : '<div class="px-5 py-8 text-center text-outline text-sm">Aucun avis</div>'
-}
-
-// ── PROFILE ───────────────────────────────────────────────────────────────────
-function loadProfile() {
-  if (!currentSeller) return
-  const u = currentSeller
-  const initials = ((u.first_name?.[0] || '') + (u.last_name?.[0] || '')).toUpperCase() || '?'
-  document.getElementById('profile-avatar-display').textContent = initials
-  document.getElementById('profile-email-display').textContent = u.email || '—'
-  document.getElementById('profile-role-display').textContent = u.role === 'artisan' ? 'Artisan · Vendeur' : u.role
-  document.getElementById('pf-first-name').value = u.first_name || ''
-  document.getElementById('pf-last-name').value = u.last_name || ''
-  document.getElementById('pf-specialty').value = u.specialty || ''
-  document.getElementById('pf-country').value = u.country || 'Maroc'
-
-  const badge = document.getElementById('profile-status-badge')
-  badge.textContent = u.status === 'active' ? 'Actif' : u.status
-  badge.className = `text-[10px] font-bold px-3 py-1 rounded-full ${u.status === 'active' ? 'status-active' : 'status-pending'}`
-}
-
-async function saveProfile(e) {
-  e.preventDefault()
-  const payload = {
-    first_name: document.getElementById('pf-first-name').value.trim(),
-    last_name: document.getElementById('pf-last-name').value.trim(),
-    specialty: document.getElementById('pf-specialty').value.trim() || null,
-    country: document.getElementById('pf-country').value,
-    updated_at: new Date().toISOString()
-  }
-  payload.full_name = `${payload.first_name} ${payload.last_name}`.trim()
-
-  const { error } = await db.from('users').update(payload).eq('id', currentSeller.id)
-  if (error) { showToast('Erreur : ' + error.message, 'bg-error text-on-error'); return }
-
-  Object.assign(currentSeller, payload)
-  document.getElementById('seller-name').textContent = payload.full_name || currentSeller.email
-  document.getElementById('seller-country').textContent = payload.country
-  showToast('Profil mis à jour ✓')
-}
-
-async function resetPassword() {
-  const { data: { session } } = await db.auth.getSession()
-  if (!session) return
-  const { error } = await db.auth.resetPasswordForEmail(session.user.email)
-  if (error) { showToast('Erreur : ' + error.message, 'bg-error text-on-error'); return }
-  showToast('Email de réinitialisation envoyé ✓')
-}
-
-// ── INIT ──────────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', initAuth)
-</script>
-</body>
-</html>
+    { count: activeP
