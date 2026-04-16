@@ -11,7 +11,7 @@
 // ════════════════════════════════════════════════════════
 
 const WENNA_CONFIG = {
-  supabaseUrl:  'https://vkevqwfpzywrtvodoqli.supabase.co',
+  supabaseUrl:  'https://aakxoydznmybstfozjte.supabase.co',
 
   // ⬇️  REMPLACEZ PAR VOTRE VRAIE CLÉ ANON (Settings → API → anon public)
   supabaseKey:  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0',
