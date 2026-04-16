@@ -390,17 +390,17 @@
 
     // Vérifier profil vendeur
     const { data: userRow, error: userErr } = await db
-      .from('profiles')
-      .select('id, role')
-      .eq('id', session.user.id)
-      .single()
+  .from('users')
+  .select('id, role')
+  .eq('auth_id', session.user.id)
+  .single()
 
-    if (userErr || !userRow) {
-      toast('Profil introuvable, reconnecte-toi', true); return
-    }
-    if (!['vendor','artisan','admin'].includes(userRow.role)) {
-      toast('Compte vendeur requis pour publier', true); return
-    }
+if (userErr || !userRow) {
+  toast('Profil introuvable, reconnecte-toi', true); return
+}
+if (!['artisan', 'admin'].includes(userRow.role)) {
+  toast('Compte artisan requis pour publier', true); return
+}
 
     const btn = $('btn-submit')
     btn.disabled = true
@@ -409,22 +409,20 @@
     const imageUrl = await uploadImage(session.user.id)
 
     const { error } = await db.from('products').insert([{
-      seller_id:   userRow.id,
-      category_id: $('f-category').value || null,
-      name:        $('f-name').value.trim(),
-      description: $('f-desc').value.trim() || null,
-      price:       parseFloat($('f-price').value),
-      stock:       parseInt($('f-stock').value) || 1,
-      currency:    'MAD',
-      country:     $('f-country').value,
-      pays:        $('f-country').value.toLowerCase(),
-      origin_city: $('f-city').value.trim() || null,
-      city:        $('f-city').value.trim() || null,
-      image_url:   imageUrl,
-      images:      imageUrl ? [imageUrl] : [],
-      active:      false,   // en attente validation admin
-      status:      'pending'
-    }])
+  seller_id:   userRow.id,
+  category_id: $('f-category').value || null,
+  name:        $('f-name').value.trim(),
+  description: $('f-desc').value.trim() || null,
+  price:       parseFloat($('f-price').value),
+  stock:       parseInt($('f-stock').value) || 1,
+  currency:    'MAD',
+  country:     $('f-country').value,
+  origin_city: $('f-city').value.trim() || null,
+  image_url:   imageUrl,
+  images:      imageUrl ? [imageUrl] : [],
+  status:      'pending'
+}])
+
 
     btn.disabled = false
     $('btn-text').textContent = 'Publish to Marketplace'
@@ -451,21 +449,19 @@
   }
 
   // ── Init ──────────────────────────────────────────────────────────────────
-  document.addEventListener('DOMContentLoaded', () => {
-    // db vient de js/config.js — on attend que Supabase soit prêt
+ document.addEventListener('DOMContentLoaded', () => {
+  const tryLoad = (attempts = 0) => {
     if (typeof db !== 'undefined') {
       loadCategories()
+    } else if (attempts < 10) {
+      setTimeout(() => tryLoad(attempts + 1), 200)
     } else {
-      // fallback si config.js tarde
-      window.addEventListener('load', () => {
-        if (typeof db !== 'undefined') loadCategories()
-        else {
-          $('f-category').innerHTML = '<option value="">Erreur config Supabase</option>'
-          $('cat-loading').textContent = '(config.js manquant)'
-        }
-      })
+      $('f-category').innerHTML = '<option value="">Erreur config Supabase</option>'
+      $('cat-loading').textContent = '(config.js manquant)'
     }
-  })
+  }
+  tryLoad()
+})
 </script>
 
 </body>
