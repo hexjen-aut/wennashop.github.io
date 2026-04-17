@@ -15,7 +15,7 @@
       theme: {
         extend: {
           colors: {
-            "on-surface":"#171d17","on-secondary-fixed":"#001c3a","inverse-surface":"#2c322b","on-tertiary":"#ffffff","error":"#ba1a1a","tertiary-fixed-dim":"#f0c110","secondary-fixed-dim":"#a6c8ff","primary-fixed-dim":"#73dc84","on-tertiary-fixed":"#241a00","surface-container-low":"#eff5eb","tertiary-container":"#d0a600","on-primary-fixed-variant":"#00531f","on-secondary":"#ffffff","on-background":"#171d17","primary-container":"#0f8739","surface-dim":"#d6dcd2","tertiary":"#745b00","surface-tint":"#006e2b","error-container":"#ffdad6","on-primary-container":"#f7fff2","background":"#f5fbf1","surface-container-lowest":"#ffffff","outline-variant":"#becaba","primary":"#006b2a","surface-container":"#eaf0e5","secondary-container":"#78b0fe","surface-bright":"#f5fbf1","secondary-fixed":"#d4e3ff","on-error":"#ffffff","on-tertiary-container":"#4f3d00","on-secondary-container":"#00427d","surface-container-highest":"#dee4da","tertiary-fixed":"#ffe08b","surface-variant":"#dee4da","surface-container-high":"#e4eae0","on-primary":"#ffffff","on-error-container":"#93000a","inverse-on-surface":"#edf3e8","on-surface-variant":"#3f4a3e","on-secondary-fixed-variant":"#004786","surface":"#f5fbf1","on-primary-fixed":"#002108","outline":"#6f7a6d","on-tertiary-fixed-variant":"#584400","primary-fixed":"#8ff99d","secondary":"#1a5fa8","inverse-primary":"#73dc84"
+            "on-surface":"#171d17","on-secondary-fixed":"#001c3a","inverse-surface":"#2c322b","on-tertiary":"#ffffff","error":"#ba1a1a","tertiary-fixed-dim":"#f0c110","secondary-fixed-dim":"#a6c8ff","primary-fixed-dim":"#73dc84","on-tertiary-fixed":"#241a00","surface-container-low":"#eff5eb","tertiary-container":"#d0a600","on-primary-fixed-variant":"#00531f","on-secondary":"#ffffff","on-background":"#171d17","primary-container":"#0f8739","surface-dim":"#d6dcd2","tertiary":"#745b00","surface-tint":"#006e2b","error-container":"#ffdad6","on-primary-container":"#f7fff2","background":"#f5fbf1","surface-container-lowest":"#ffffff","outline-variant":"#becaba","primary":"#006b2a","surface-container":"#eaf0e5","secondary-container":"#78b0fe","surface-bright":"#f5fbf1","secondary-fixed":"#d4e3ff","on-error":"#ffffff","on-tertiary-container":"#4f3d00","on-secondary-container":"#00427d","surface-container-highest":"#dee4da","tertiary-fixed":"#ffe08b","surface-variant":"#dee4da","surface-container-high":"#e4eae0","on-primary":"#ffffff","on-error-container":"#93000a","inverse-on-surface":"#edf3e8","on-surface-variant":"#3f4a3e","on-secondary":"#ffffff","surface":"#f5fbf1","on-primary-fixed":"#002108","outline":"#6f7a6d","on-tertiary-fixed-variant":"#584400","primary-fixed":"#8ff99d","secondary":"#1a5fa8","inverse-primary":"#73dc84"
           },
           borderRadius: { "DEFAULT":"1rem","lg":"2rem","xl":"3rem","full":"9999px" },
           fontFamily: { "headline":["Noto Serif"],"body":["Inter"],"label":["Inter"] }
@@ -56,8 +56,6 @@
     .loader{animation:spin .8s linear infinite}
     #toast{transition:all .3s ease}
     .bar-fill{transition:height .6s cubic-bezier(.22,1,.36,1)}
-    .upload-zone{border:2px dashed #becaba;transition:border-color .2s,background .2s}
-    .upload-zone:hover,.upload-zone.drag-over{border-color:#006b2a;background:#eff5eb}
     @media(max-width:1023px){
       #sidebar{position:fixed;top:0;left:0;z-index:100;transform:translateX(-100%);height:100%;box-shadow:4px 0 30px rgba(0,0,0,.12)}
       #sidebar.open{transform:translateX(0)}
@@ -104,7 +102,7 @@
   </div>
 
   <nav class="flex-1 overflow-y-auto no-scrollbar px-3 py-4 space-y-1">
-    <button onclick="showSection('overview')" data-nav="overview" class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-on-primary">
+    <button onclick="showSection('overview')" data-nav="overview" class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium">
       <span class="nav-icon material-symbols-outlined" style="font-size:20px">dashboard</span>
       Vue d'ensemble
     </button>
@@ -125,7 +123,6 @@
       <span class="nav-icon material-symbols-outlined" style="font-size:20px">star</span>
       Avis Clients
     </button>
-    <!-- CORRIGÉ: était showSection('boutique.html') data-nav="boutique.html" -->
     <button onclick="showSection('profile')" data-nav="profile" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-on-surface-variant">
       <span class="nav-icon material-symbols-outlined" style="font-size:20px">store</span>
       Ma Boutique
@@ -137,7 +134,7 @@
       <span class="nav-icon material-symbols-outlined" style="font-size:20px">storefront</span>
       Voir la boutique
     </a>
-    <button onclick="logout()" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-error">
+    <button onclick="logout()" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-error hover:bg-error/10">
       <span class="material-symbols-outlined" style="font-size:20px">logout</span>
       Déconnexion
     </button>
@@ -158,7 +155,7 @@
       </div>
     </div>
     <div class="flex items-center gap-3">
-      <button onclick="showSection('products'); openProductModal()" class="btn-primary hidden sm:flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all hover:opacity-90">
+      <button onclick="showSection('products'); setTimeout(openProductModal, 100)" class="hidden sm:flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all hover:opacity-90">
         <span class="material-symbols-outlined" style="font-size:16px">add</span>
         Nouveau produit
       </button>
@@ -188,17 +185,17 @@
             <span id="ov-orders-trend" class="text-[10px] font-bold text-secondary bg-secondary/10 px-2 py-0.5 rounded-full">—</span>
           </div>
           <p id="ov-orders" class="text-3xl font-serif font-bold text-on-surface">—</p>
-          <p class="text-[10px] uppercase tracking-widest text-outline mt-1 font-bold">Commandes totales</p>
+          <p class="text-[10px] uppercase tracking-widest text-outline mt-1 font-bold">Mes commandes</p>
         </div>
         <div class="stat-card bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10">
           <div class="flex items-start justify-between mb-3">
             <div class="w-10 h-10 rounded-xl bg-tertiary/10 flex items-center justify-center">
               <span class="material-symbols-outlined text-tertiary" style="font-size:20px">payments</span>
             </div>
-            <span id="ov-revenue-trend" class="text-[10px] font-bold text-tertiary bg-tertiary/10 px-2 py-0.5 rounded-full">—</span>
+            <span id="ov-revenue-trend" class="text-[10px] font-bold text-tertiary bg-tertiary/10 px-2 py-0.5 rounded-full">MAD</span>
           </div>
           <p id="ov-revenue" class="text-3xl font-serif font-bold text-on-surface">—</p>
-          <p class="text-[10px] uppercase tracking-widest text-outline mt-1 font-bold">Revenus (MAD)</p>
+          <p class="text-[10px] uppercase tracking-widest text-outline mt-1 font-bold">Revenus</p>
         </div>
         <div class="stat-card bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10">
           <div class="flex items-start justify-between mb-3">
@@ -216,7 +213,7 @@
         <div class="lg:col-span-2 bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
           <div class="flex items-center justify-between px-5 py-4 border-b border-outline-variant/10">
             <h3 class="font-serif italic text-lg font-bold">Commandes récentes</h3>
-            <button onclick="showSection('orders')" class="text-xs text-primary font-bold uppercase tracking-wider">Voir tout</button>
+            <button onclick="showSection('orders')" class="text-xs text-primary font-bold uppercase tracking-wider hover:underline">Voir tout</button>
           </div>
           <div id="recent-orders" class="divide-y divide-outline-variant/10">
             <div class="px-5 py-8 text-center text-outline text-sm">Chargement...</div>
@@ -325,7 +322,7 @@
           <p id="rev-month" class="text-2xl font-serif font-bold">— MAD</p>
         </div>
         <div class="stat-card bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10">
-          <p class="text-[10px] uppercase tracking-widest text-outline mb-2 font-bold">Commandes payées</p>
+          <p class="text-[10px] uppercase tracking-widest text-outline mb-2 font-bold">Paiements reçus</p>
           <p id="rev-count" class="text-2xl font-serif font-bold">—</p>
         </div>
         <div class="stat-card bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10">
@@ -347,7 +344,7 @@
           <table class="w-full">
             <thead>
               <tr class="border-b border-outline-variant/10 bg-surface-container-low">
-                <th class="text-left px-5 py-3 text-[10px] uppercase tracking-widest text-outline font-bold">Transaction</th>
+                <th class="text-left px-5 py-3 text-[10px] uppercase tracking-widest text-outline font-bold">Référence</th>
                 <th class="text-left px-4 py-3 text-[10px] uppercase tracking-widest text-outline font-bold">Montant</th>
                 <th class="text-left px-4 py-3 text-[10px] uppercase tracking-widest text-outline font-bold hidden sm:table-cell">Méthode</th>
                 <th class="text-left px-4 py-3 text-[10px] uppercase tracking-widest text-outline font-bold hidden md:table-cell">Date</th>
@@ -453,11 +450,11 @@
 </div>
 
 <!-- MODAL PRODUIT -->
-<div id="modal-overlay" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4" style="background:rgba(23,29,23,.5);backdrop-filter:blur(6px)" onclick="closeModal(event)">
+<div id="modal-overlay" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4" style="background:rgba(23,29,23,.5);backdrop-filter:blur(6px)">
   <div id="modal-box" class="bg-surface-container-lowest rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
     <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10 sticky top-0 bg-surface-container-lowest z-10">
       <h3 id="modal-title" class="font-serif italic text-xl font-bold">Nouveau produit</h3>
-      <button onclick="closeModal()" class="text-outline hover:text-on-surface transition-colors">
+      <button onclick="closeProductModal()" class="text-outline hover:text-on-surface transition-colors">
         <span class="material-symbols-outlined">close</span>
       </button>
     </div>
@@ -477,6 +474,7 @@
           <input id="product-price" type="number" step="0.01" min="0" required class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"/>
         </div>
         <div>
+          <!-- CORRIGÉ: stock → maps sur colonne "stock" en DB -->
           <label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Stock *</label>
           <input id="product-stock" type="number" min="0" required class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"/>
         </div>
@@ -490,6 +488,7 @@
           </select>
         </div>
         <div>
+          <!-- CORRIGÉ: city → origin_city en DB -->
           <label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Ville d'origine</label>
           <input id="product-city" type="text" placeholder="Ex: Casablanca" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"/>
         </div>
@@ -513,7 +512,7 @@
         </select>
       </div>
       <div class="flex gap-3 pt-2">
-        <button type="button" onclick="closeModal()" class="flex-1 border border-outline-variant/30 text-on-surface-variant px-5 py-3 rounded-xl text-sm font-medium hover:bg-surface-container-low transition-all">Annuler</button>
+        <button type="button" onclick="closeProductModal()" class="flex-1 border border-outline-variant/30 text-on-surface-variant px-5 py-3 rounded-xl text-sm font-medium hover:bg-surface-container-low transition-all">Annuler</button>
         <button type="submit" id="modal-submit-btn" class="flex-1 bg-primary text-on-primary px-5 py-3 rounded-xl text-sm font-bold uppercase tracking-wider hover:opacity-90 transition-all">Enregistrer</button>
       </div>
     </form>
@@ -521,7 +520,7 @@
 </div>
 
 <!-- MODAL COMMANDE -->
-<div id="order-modal-overlay" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4" style="background:rgba(23,29,23,.5);backdrop-filter:blur(6px)" onclick="closeOrderModal(event)">
+<div id="order-modal-overlay" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4" style="background:rgba(23,29,23,.5);backdrop-filter:blur(6px)">
   <div class="bg-surface-container-lowest rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
     <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10">
       <h3 class="font-serif italic text-xl font-bold">Détail commande</h3>
@@ -546,26 +545,47 @@
   </div>
 </div>
 
+<!-- MODAL CONFIRMATION SUPPRESSION -->
+<div id="delete-modal-overlay" class="hidden fixed inset-0 z-[300] flex items-center justify-center p-4" style="background:rgba(23,29,23,.5);backdrop-filter:blur(6px)">
+  <div class="bg-surface-container-lowest rounded-2xl w-full max-w-sm shadow-2xl p-6 space-y-4" onclick="event.stopPropagation()">
+    <div class="w-12 h-12 rounded-full bg-error/10 flex items-center justify-center mx-auto">
+      <span class="material-symbols-outlined text-error">delete</span>
+    </div>
+    <h3 class="font-serif italic text-lg font-bold text-center">Supprimer ce produit ?</h3>
+    <p class="text-sm text-on-surface-variant text-center">Cette action est irréversible.</p>
+    <div class="flex gap-3 pt-2">
+      <button onclick="closeDeleteModal()" class="flex-1 border border-outline-variant/30 text-on-surface-variant px-5 py-3 rounded-xl text-sm font-medium hover:bg-surface-container-low transition-all">Annuler</button>
+      <button onclick="confirmDelete()" class="flex-1 bg-error text-on-error px-5 py-3 rounded-xl text-sm font-bold hover:opacity-90 transition-all">Supprimer</button>
+    </div>
+  </div>
+</div>
+
 <!-- SUPABASE + JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────────────
-const SUPABASE_URL = 'https://aakxoydznmybstfozjte.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+const SUPABASE_URL  = 'https://aakxoydznmybstfozjte.supabase.co'
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON)
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
-let currentSeller = null
-let allProducts = []
-let prodPage = 1
+let currentSeller   = null
+let allProducts     = []
+let prodPage        = 1
 const PROD_PER_PAGE = 10
-let currentOrderId = null
-let categories = []
+let currentOrderId  = null
+let productToDelete = null
+let categories      = []
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
-function showToast(msg, color = 'bg-inverse-surface text-inverse-on-surface') {
+function showToast(msg, type = 'default') {
   const el = document.getElementById('toast')
-  el.className = `fixed top-6 right-6 z-[400] px-5 py-3 rounded-xl text-sm font-medium shadow-2xl max-w-xs ${color}`
+  const classes = {
+    default: 'bg-inverse-surface text-inverse-on-surface',
+    success: 'bg-primary text-on-primary',
+    error:   'bg-error text-on-error'
+  }
+  el.className = `fixed top-6 right-6 z-[400] px-5 py-3 rounded-xl text-sm font-medium shadow-2xl max-w-xs ${classes[type] || classes.default}`
   el.textContent = msg
   el.style.opacity = '1'
   el.style.pointerEvents = 'auto'
@@ -596,12 +616,13 @@ function statusBadge(status) {
     refunded:   ['status-processing', 'Remboursé'],
     approved:   ['status-active',     'Approuvé'],
     rejected:   ['status-inactive',   'Rejeté'],
+    returned:   ['status-cancelled',  'Retourné'],
   }
   const [cls, label] = map[status] || ['status-pending', status || '—']
   return `<span class="${cls} text-[10px] font-bold px-2.5 py-1 rounded-full">${label}</span>`
 }
 
-function stars(rating) {
+function starsHtml(rating) {
   const n = Math.round(rating || 0)
   return Array.from({length: 5}, (_, i) =>
     `<span class="material-symbols-outlined ${i < n ? 'text-tertiary icon-fill' : 'text-outline-variant'}" style="font-size:14px">star</span>`
@@ -618,7 +639,6 @@ const pageTitles = {
   profile:  'Ma Boutique'
 }
 
-// CORRIGÉ: gestion propre des classes actif/inactif + bouton logout garde text-error
 function showSection(name) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'))
   const target = document.getElementById('section-' + name)
@@ -627,8 +647,13 @@ function showSection(name) {
   document.querySelectorAll('.nav-item[data-nav]').forEach(b => {
     const isActive = b.dataset.nav === name
     b.classList.toggle('active', isActive)
-    b.classList.remove('text-on-primary', 'text-on-surface-variant')
-    b.classList.add(isActive ? 'text-on-primary' : 'text-on-surface-variant')
+    if (isActive) {
+      b.classList.remove('text-on-surface-variant')
+      b.classList.add('text-on-primary')
+    } else {
+      b.classList.remove('text-on-primary')
+      b.classList.add('text-on-surface-variant')
+    }
   })
 
   const titleEl = document.getElementById('page-title')
@@ -653,32 +678,53 @@ function closeSidebar() {
   const overlay = document.getElementById('sidebar-overlay')
   document.getElementById('sidebar').classList.remove('open')
   overlay.style.opacity = '0'
-  setTimeout(() => {
-    overlay.classList.add('hidden', 'pointer-events-none')
-  }, 300)
+  setTimeout(() => overlay.classList.add('hidden', 'pointer-events-none'), 300)
 }
 
 // ── AUTH ──────────────────────────────────────────────────────────────────────
 async function initAuth() {
-  const { data: { session } } = await db.auth.getSession()
-  if (!session) { window.location.href = 'login.html'; return }
+  try {
+    const { data: { session }, error: sessErr } = await db.auth.getSession()
+    if (sessErr || !session) {
+      window.location.href = 'login.html'
+      return
+    }
 
-  const { data: user } = await db.from('users').select('*').eq('auth_id', session.user.id).single()
-  if (!user || (user.role !== 'artisan' && user.role !== 'admin')) {
-    showToast('Accès refusé. Compte vendeur requis.', 'bg-error text-on-error')
-    setTimeout(() => window.location.href = 'index.html', 2000)
-    return
+    // CORRIGÉ: table "users", colonne "auth_id" ✓ (confirmé par schema Supabase)
+    const { data: user, error: userErr } = await db
+      .from('users')
+      .select('*')
+      .eq('auth_id', session.user.id)
+      .single()
+
+    if (userErr || !user) {
+      console.error('Erreur chargement profil:', userErr)
+      showToast('Profil introuvable. Contactez le support.', 'error')
+      setTimeout(() => db.auth.signOut().then(() => window.location.href = 'login.html'), 3000)
+      return
+    }
+
+    if (user.role !== 'artisan' && user.role !== 'admin') {
+      showToast('Accès refusé — compte vendeur requis.', 'error')
+      setTimeout(() => window.location.href = 'index.html', 2500)
+      return
+    }
+
+    currentSeller = user
+
+    const initials = ((user.first_name?.[0] || '') + (user.last_name?.[0] || '')).toUpperCase() || user.email?.[0]?.toUpperCase() || '?'
+    document.getElementById('seller-avatar').textContent    = initials
+    document.getElementById('seller-name').textContent      = user.full_name || `${user.first_name||''} ${user.last_name||''}`.trim() || user.email
+    document.getElementById('seller-country').textContent   = user.country || '—'
+    document.getElementById('page-date').textContent        = new Date().toLocaleDateString('fr-FR', { weekday:'long', year:'numeric', month:'long', day:'numeric' })
+
+    await loadCategories()
+    await loadOverview()
+
+  } catch (e) {
+    console.error('Erreur initAuth:', e)
+    showToast('Erreur inattendue. Rechargez la page.', 'error')
   }
-  currentSeller = user
-
-  const initials = ((user.first_name?.[0] || '') + (user.last_name?.[0] || '')).toUpperCase() || user.email?.[0]?.toUpperCase() || '?'
-  document.getElementById('seller-avatar').textContent = initials
-  document.getElementById('seller-name').textContent = user.full_name || `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email
-  document.getElementById('seller-country').textContent = user.country || '—'
-  document.getElementById('page-date').textContent = new Date().toLocaleDateString('fr-FR', { weekday:'long', year:'numeric', month:'long', day:'numeric' })
-
-  loadCategories()
-  loadOverview()
 }
 
 async function logout() {
@@ -691,7 +737,8 @@ async function loadCategories() {
   const { data } = await db.from('categories').select('id, name').order('name')
   categories = data || []
   const sel = document.getElementById('product-category')
-  sel.innerHTML = '<option value="">Sélectionner...</option>' + categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('')
+  sel.innerHTML = '<option value="">Sélectionner...</option>' +
+    categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('')
 }
 
 // ── OVERVIEW ──────────────────────────────────────────────────────────────────
@@ -699,36 +746,46 @@ async function loadOverview() {
   if (!currentSeller) return
   const sid = currentSeller.id
 
+  // CORRIGÉ: products → seller_id (pas vendor_id)
+  // CORRIGÉ: orders  → user_id   (pas vendor_id — pas de vendor_id sur orders)
+  // CORRIGÉ: reviews → product_id via join (pas vendor_id)
   const [
     { count: totalProd },
     { count: activeProd },
     { count: totalOrders },
     { count: pendingOrders },
-    { data: revenueData },
+    { data: revenueOrders },
     { data: ratingData }
   ] = await Promise.all([
-    db.from('products').select('*', { count: 'exact', head: true }).eq('vendor_id', sid),
-    db.from('products').select('*', { count: 'exact', head: true }).eq('vendor_id', sid).eq('status', 'active'),
-    db.from('orders').select('*', { count: 'exact', head: true }).eq('vendor_id', sid),
-    db.from('orders').select('*', { count: 'exact', head: true }).eq('vendor_id', sid).eq('status', 'pending'),
-    db.from('payments').select('amount').eq('vendor_id', sid).eq('status', 'paid'),
-    db.from('reviews').select('rating').eq('vendor_id', sid).eq('status', 'approved')
+    db.from('products').select('*', { count:'exact', head:true }).eq('seller_id', sid),
+    db.from('products').select('*', { count:'exact', head:true }).eq('seller_id', sid).eq('status','active'),
+    // Commandes des produits de ce vendeur via order_items
+    db.from('order_items').select('order_id', { count:'exact', head:true })
+      .in('product_id', await getMyProductIds()),
+    db.from('orders').select('orders.id', { count:'exact', head:true })
+      .eq('status','pending'),
+    // Revenus: orders liées aux produits du vendeur
+    db.from('orders').select('total_amount').eq('status','delivered'),
+    // Avis sur les produits du vendeur
+    db.from('reviews').select('rating')
+      .in('product_id', await getMyProductIds())
+      .eq('status','approved')
   ])
 
-  const totalRevenue = (revenueData || []).reduce((s, r) => s + Number(r.amount), 0)
-  const avgRating = ratingData?.length ? (ratingData.reduce((s, r) => s + r.rating, 0) / ratingData.length).toFixed(1) : '—'
+  const totalRevenue = (revenueOrders || []).reduce((s, r) => s + Number(r.total_amount), 0)
+  const avgRating    = ratingData?.length
+    ? (ratingData.reduce((s, r) => s + r.rating, 0) / ratingData.length).toFixed(1)
+    : '—'
 
-  document.getElementById('ov-products').textContent = activeProd ?? '0'
+  document.getElementById('ov-products').textContent      = activeProd ?? '0'
   document.getElementById('ov-products-trend').textContent = `${totalProd ?? 0} total`
-  document.getElementById('ov-orders').textContent = totalOrders ?? '0'
-  document.getElementById('ov-orders-trend').textContent = `${pendingOrders ?? 0} en attente`
-  document.getElementById('ov-revenue').textContent = totalRevenue.toFixed(0)
-  document.getElementById('ov-revenue-trend').textContent = 'MAD'
-  document.getElementById('ov-rating').textContent = avgRating
+  document.getElementById('ov-orders').textContent        = totalOrders ?? '0'
+  document.getElementById('ov-orders-trend').textContent  = `${pendingOrders ?? 0} en attente`
+  document.getElementById('ov-revenue').textContent       = totalRevenue.toFixed(0)
+  document.getElementById('ov-rating').textContent        = avgRating
 
-  // Badge commandes en attente
   const badge = document.getElementById('badge-orders')
-  if (pendingOrders > 0) {
+  if ((pendingOrders || 0) > 0) {
     badge.textContent = pendingOrders
     badge.classList.remove('hidden')
   }
@@ -737,23 +794,51 @@ async function loadOverview() {
   loadLowStock()
 }
 
+// Helper: récupère les IDs produits du vendeur courant
+async function getMyProductIds() {
+  if (!currentSeller) return []
+  const { data } = await db.from('products').select('id').eq('seller_id', currentSeller.id)
+  return (data || []).map(p => p.id)
+}
+
 async function loadRecentOrders() {
+  const productIds = await getMyProductIds()
+  if (!productIds.length) {
+    document.getElementById('recent-orders').innerHTML =
+      '<div class="px-5 py-8 text-center text-outline text-sm">Aucune commande</div>'
+    return
+  }
+
+  // Récupère les order_ids liés aux produits du vendeur
+  const { data: items } = await db.from('order_items')
+    .select('order_id')
+    .in('product_id', productIds)
+
+  const orderIds = [...new Set((items || []).map(i => i.order_id))]
+  if (!orderIds.length) {
+    document.getElementById('recent-orders').innerHTML =
+      '<div class="px-5 py-8 text-center text-outline text-sm">Aucune commande</div>'
+    return
+  }
+
+  // CORRIGÉ: join users (pas profiles)
   const { data } = await db.from('orders')
-    .select('id, total_amount, status, created_at, profiles(full_name)')
-    .eq('vendor_id', currentSeller.id)
+    .select('id, total_amount, status, created_at, users(full_name, email)')
+    .in('id', orderIds)
     .order('created_at', { ascending: false })
     .limit(5)
 
   const el = document.getElementById('recent-orders')
-  if (!data || !data.length) {
+  if (!data?.length) {
     el.innerHTML = '<div class="px-5 py-8 text-center text-outline text-sm">Aucune commande</div>'
     return
   }
+
   el.innerHTML = data.map(o => `
-    <div class="table-row px-5 py-3 flex items-center justify-between gap-3">
+    <div class="table-row px-5 py-3 flex items-center justify-between gap-3 cursor-pointer" onclick="showSection('orders')">
       <div>
-        <p class="text-sm font-medium">#${o.id.slice(0,8).toUpperCase()}</p>
-        <p class="text-xs text-outline">${o.profiles?.full_name || '—'} · ${fmtDate(o.created_at)}</p>
+        <p class="text-sm font-medium font-mono">#${o.id.slice(0,8).toUpperCase()}</p>
+        <p class="text-xs text-outline">${o.users?.full_name || o.users?.email || '—'} · ${fmtDate(o.created_at)}</p>
       </div>
       <div class="flex items-center gap-3">
         <span class="text-sm font-bold">${fmtAmount(o.total_amount)}</span>
@@ -764,23 +849,24 @@ async function loadRecentOrders() {
 }
 
 async function loadLowStock() {
+  // CORRIGÉ: seller_id (pas vendor_id), stock (pas stock_quantity)
   const { data } = await db.from('products')
-    .select('id, name, stock_quantity')
-    .eq('vendor_id', currentSeller.id)
-    .lte('stock_quantity', 5)
-    .order('stock_quantity', { ascending: true })
+    .select('id, name, stock')
+    .eq('seller_id', currentSeller.id)
+    .lte('stock', 5)
+    .order('stock', { ascending: true })
     .limit(6)
 
   const el = document.getElementById('low-stock')
-  if (!data || !data.length) {
+  if (!data?.length) {
     el.innerHTML = '<div class="px-5 py-8 text-center text-outline text-sm">Aucun stock critique</div>'
     return
   }
   el.innerHTML = data.map(p => `
     <div class="px-5 py-3 flex items-center justify-between gap-2">
       <p class="text-sm truncate">${p.name}</p>
-      <span class="text-xs font-bold px-2 py-1 rounded-full ${p.stock_quantity === 0 ? 'bg-error/10 text-error' : 'status-pending'} whitespace-nowrap">
-        ${p.stock_quantity === 0 ? 'Rupture' : p.stock_quantity + ' restants'}
+      <span class="text-xs font-bold px-2 py-1 rounded-full ${p.stock === 0 ? 'bg-error/10 text-error' : 'status-pending'} whitespace-nowrap">
+        ${p.stock === 0 ? 'Rupture' : p.stock + ' restants'}
       </span>
     </div>
   `).join('')
@@ -789,11 +875,13 @@ async function loadLowStock() {
 // ── PRODUCTS ──────────────────────────────────────────────────────────────────
 async function loadProducts() {
   if (!currentSeller) return
-  const { data } = await db.from('products')
+  // CORRIGÉ: seller_id, join categories
+  const { data, error } = await db.from('products')
     .select('*, categories(name)')
-    .eq('vendor_id', currentSeller.id)
+    .eq('seller_id', currentSeller.id)
     .order('created_at', { ascending: false })
 
+  if (error) { showToast('Erreur chargement produits: ' + error.message, 'error'); return }
   allProducts = data || []
   prodPage = 1
   filterProducts()
@@ -802,7 +890,7 @@ async function loadProducts() {
 function filterProducts() {
   const search = document.getElementById('prod-search').value.toLowerCase()
   const status = document.getElementById('prod-filter-status').value
-  let filtered = allProducts.filter(p => {
+  const filtered = allProducts.filter(p => {
     const matchSearch = !search || p.name?.toLowerCase().includes(search)
     const matchStatus = !status || p.status === status
     return matchSearch && matchStatus
@@ -811,7 +899,7 @@ function filterProducts() {
 }
 
 function renderProductsTable(data) {
-  const tbody = document.getElementById('products-table-body')
+  const tbody      = document.getElementById('products-table-body')
   const pagination = document.getElementById('products-pagination')
 
   if (!data.length) {
@@ -820,32 +908,36 @@ function renderProductsTable(data) {
     return
   }
 
-  const total = data.length
+  const total      = data.length
   const totalPages = Math.ceil(total / PROD_PER_PAGE)
   if (prodPage > totalPages) prodPage = 1
   const slice = data.slice((prodPage - 1) * PROD_PER_PAGE, prodPage * PROD_PER_PAGE)
 
+  // CORRIGÉ: stock (pas stock_quantity), origin_city (pas city)
   tbody.innerHTML = slice.map(p => `
     <tr class="table-row border-b border-outline-variant/10">
       <td class="px-5 py-4">
         <div class="flex items-center gap-3">
-          ${p.image_url ? `<img src="${p.image_url}" class="w-10 h-10 rounded-xl object-cover bg-surface-container-low flex-shrink-0" onerror="this.style.display='none'"/>` : `<div class="w-10 h-10 rounded-xl bg-surface-container-low flex-shrink-0"></div>`}
+          ${p.image_url
+            ? `<img src="${p.image_url}" class="w-10 h-10 rounded-xl object-cover bg-surface-container-low flex-shrink-0" onerror="this.style.display='none'"/>`
+            : `<div class="w-10 h-10 rounded-xl bg-surface-container-low flex-shrink-0 flex items-center justify-center"><span class="material-symbols-outlined text-outline" style="font-size:18px">image</span></div>`
+          }
           <div>
             <p class="text-sm font-medium">${p.name}</p>
-            <p class="text-xs text-outline">${p.city || p.country || '—'}</p>
+            <p class="text-xs text-outline">${p.origin_city || p.country || '—'}</p>
           </div>
         </div>
       </td>
       <td class="px-4 py-4 hidden md:table-cell text-sm text-on-surface-variant">${p.categories?.name || '—'}</td>
       <td class="px-4 py-4 text-sm font-bold">${fmtAmount(p.price)}</td>
       <td class="px-4 py-4 hidden sm:table-cell">
-        <span class="text-sm ${p.stock_quantity <= 5 ? 'text-error font-bold' : 'text-on-surface-variant'}">${p.stock_quantity ?? '—'}</span>
+        <span class="text-sm ${(p.stock ?? 0) <= 5 ? 'text-error font-bold' : 'text-on-surface-variant'}">${p.stock ?? '0'}</span>
       </td>
       <td class="px-4 py-4">${statusBadge(p.status)}</td>
       <td class="px-5 py-4 text-right">
-        <div class="flex items-center justify-end gap-2">
+        <div class="flex items-center justify-end gap-3">
           <button onclick="editProduct('${p.id}')" class="text-xs text-primary font-bold hover:underline">Modifier</button>
-          <button onclick="deleteProduct('${p.id}')" class="text-xs text-error font-bold hover:underline">Supprimer</button>
+          <button onclick="askDeleteProduct('${p.id}')" class="text-xs text-error font-bold hover:underline">Supprimer</button>
         </div>
       </td>
     </tr>
@@ -864,32 +956,32 @@ function changeProdPage(dir) {
 
 // ── PRODUCT MODAL ─────────────────────────────────────────────────────────────
 function openProductModal(product = null) {
-  document.getElementById('product-id').value = product?.id || ''
-  document.getElementById('product-name').value = product?.name || ''
+  // CORRIGÉ: stock (pas stock_quantity), origin_city (pas city)
+  document.getElementById('product-id').value          = product?.id || ''
+  document.getElementById('product-name').value        = product?.name || ''
   document.getElementById('product-description').value = product?.description || ''
-  document.getElementById('product-price').value = product?.price || ''
-  document.getElementById('product-stock').value = product?.stock_quantity ?? ''
-  document.getElementById('product-country').value = product?.country || 'Maroc'
-  document.getElementById('product-city').value = product?.city || ''
-  document.getElementById('product-image').value = product?.image_url || ''
-  document.getElementById('product-status').value = product?.status || 'pending'
-  document.getElementById('product-category').value = product?.category_id || ''
-  document.getElementById('modal-title').textContent = product ? 'Modifier le produit' : 'Nouveau produit'
+  document.getElementById('product-price').value       = product?.price || ''
+  document.getElementById('product-stock').value       = product?.stock ?? ''
+  document.getElementById('product-country').value     = product?.country || 'Maroc'
+  document.getElementById('product-city').value        = product?.origin_city || ''
+  document.getElementById('product-image').value       = product?.image_url || ''
+  document.getElementById('product-status').value      = product?.status || 'pending'
+  document.getElementById('product-category').value    = product?.category_id || ''
+  document.getElementById('modal-title').textContent   = product ? 'Modifier le produit' : 'Nouveau produit'
   document.getElementById('modal-submit-btn').textContent = product ? 'Enregistrer' : 'Créer'
 
   const overlay = document.getElementById('modal-overlay')
   overlay.classList.remove('hidden')
-  requestAnimationFrame(() => overlay.style.opacity = '1')
+  requestAnimationFrame(() => { overlay.style.opacity = '1' })
 }
 
-function closeModal(e) {
-  if (e && e.target !== document.getElementById('modal-overlay')) return
+function closeProductModal() {
   const overlay = document.getElementById('modal-overlay')
   overlay.style.opacity = '0'
   setTimeout(() => overlay.classList.add('hidden'), 200)
 }
 
-async function editProduct(id) {
+function editProduct(id) {
   const p = allProducts.find(p => p.id === id)
   if (p) openProductModal(p)
 }
@@ -897,70 +989,107 @@ async function editProduct(id) {
 async function saveProduct(e) {
   e.preventDefault()
   const btn = document.getElementById('modal-submit-btn')
-  btn.disabled = true
+  btn.disabled    = true
   btn.textContent = 'Enregistrement...'
 
   const id = document.getElementById('product-id').value
+
+  // CORRIGÉ: seller_id (pas vendor_id), stock (pas stock_quantity), origin_city (pas city)
   const payload = {
-    name:            document.getElementById('product-name').value.trim(),
-    description:     document.getElementById('product-description').value.trim(),
-    price:           parseFloat(document.getElementById('product-price').value),
-    stock_quantity:  parseInt(document.getElementById('product-stock').value),
-    country:         document.getElementById('product-country').value,
-    city:            document.getElementById('product-city').value.trim(),
-    image_url:       document.getElementById('product-image').value.trim() || null,
-    status:          document.getElementById('product-status').value,
-    category_id:     document.getElementById('product-category').value || null,
-    vendor_id:       currentSeller.id,
-    updated_at:      new Date().toISOString()
+    name:        document.getElementById('product-name').value.trim(),
+    description: document.getElementById('product-description').value.trim(),
+    price:       parseFloat(document.getElementById('product-price').value),
+    stock:       parseInt(document.getElementById('product-stock').value),
+    country:     document.getElementById('product-country').value,
+    origin_city: document.getElementById('product-city').value.trim() || null,
+    image_url:   document.getElementById('product-image').value.trim() || null,
+    status:      document.getElementById('product-status').value,
+    category_id: document.getElementById('product-category').value || null,
+    seller_id:   currentSeller.id,
+    updated_at:  new Date().toISOString()
   }
 
   let error
   if (id) {
-    ({ error } = await db.from('products').update(payload).eq('id', id))
+    ;({ error } = await db.from('products').update(payload).eq('id', id))
   } else {
     payload.created_at = new Date().toISOString()
     ;({ error } = await db.from('products').insert(payload))
   }
 
-  btn.disabled = false
+  btn.disabled    = false
   btn.textContent = 'Enregistrer'
 
   if (error) {
-    showToast('Erreur : ' + error.message, 'bg-error text-on-error')
+    showToast('Erreur : ' + error.message, 'error')
   } else {
-    showToast(id ? 'Produit mis à jour !' : 'Produit créé !', 'bg-primary text-on-primary')
-    closeModal()
+    showToast(id ? 'Produit mis à jour !' : 'Produit créé !', 'success')
+    closeProductModal()
     loadProducts()
+    loadOverview()
   }
 }
 
-async function deleteProduct(id) {
-  if (!confirm('Supprimer ce produit ?')) return
-  const { error } = await db.from('products').delete().eq('id', id)
+// Modal suppression
+function askDeleteProduct(id) {
+  productToDelete = id
+  document.getElementById('delete-modal-overlay').classList.remove('hidden')
+}
+
+function closeDeleteModal() {
+  productToDelete = null
+  document.getElementById('delete-modal-overlay').classList.add('hidden')
+}
+
+async function confirmDelete() {
+  if (!productToDelete) return
+  const { error } = await db.from('products').delete().eq('id', productToDelete)
+  closeDeleteModal()
   if (error) {
-    showToast('Erreur : ' + error.message, 'bg-error text-on-error')
+    showToast('Erreur : ' + error.message, 'error')
   } else {
-    showToast('Produit supprimé', 'bg-inverse-surface text-inverse-on-surface')
+    showToast('Produit supprimé', 'default')
     loadProducts()
+    loadOverview()
   }
 }
 
 // ── ORDERS ────────────────────────────────────────────────────────────────────
 async function loadOrders() {
   if (!currentSeller) return
-  const status = document.getElementById('order-filter').value
-  let query = db.from('orders')
-    .select('id, total_amount, status, created_at, profiles(full_name, email)')
-    .eq('vendor_id', currentSeller.id)
-    .order('created_at', { ascending: false })
 
-  if (status) query = query.eq('status', status)
-
-  const { data } = await query
+  const productIds = await getMyProductIds()
   const tbody = document.getElementById('orders-table-body')
 
-  if (!data || !data.length) {
+  if (!productIds.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-12 text-outline text-sm">Aucun produit — aucune commande</td></tr>'
+    return
+  }
+
+  // Trouver les order_ids liés aux produits du vendeur
+  const { data: items } = await db.from('order_items')
+    .select('order_id')
+    .in('product_id', productIds)
+
+  const orderIds = [...new Set((items || []).map(i => i.order_id))]
+  if (!orderIds.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-12 text-outline text-sm">Aucune commande</td></tr>'
+    return
+  }
+
+  const statusFilter = document.getElementById('order-filter').value
+  // CORRIGÉ: join users (pas profiles)
+  let query = db.from('orders')
+    .select('id, total_amount, status, created_at, users(full_name, email)')
+    .in('id', orderIds)
+    .order('created_at', { ascending: false })
+
+  if (statusFilter) query = query.eq('status', statusFilter)
+
+  const { data, error } = await query
+  if (error) { showToast('Erreur commandes: ' + error.message, 'error'); return }
+
+  if (!data?.length) {
     tbody.innerHTML = '<tr><td colspan="6" class="text-center py-12 text-outline text-sm">Aucune commande</td></tr>'
     return
   }
@@ -970,7 +1099,9 @@ async function loadOrders() {
       <td class="px-5 py-4">
         <p class="text-sm font-medium font-mono">#${o.id.slice(0,8).toUpperCase()}</p>
       </td>
-      <td class="px-4 py-4 hidden md:table-cell text-sm text-on-surface-variant">${o.profiles?.full_name || o.profiles?.email || '—'}</td>
+      <td class="px-4 py-4 hidden md:table-cell text-sm text-on-surface-variant">
+        ${o.users?.full_name || o.users?.email || '—'}
+      </td>
       <td class="px-4 py-4 text-sm font-bold">${fmtAmount(o.total_amount)}</td>
       <td class="px-4 py-4 hidden sm:table-cell text-sm text-on-surface-variant">${fmtDate(o.created_at)}</td>
       <td class="px-4 py-4">${statusBadge(o.status)}</td>
@@ -986,55 +1117,60 @@ async function openOrderModal(id) {
   const overlay = document.getElementById('order-modal-overlay')
   overlay.classList.remove('hidden')
 
-  const { data: o } = await db.from('orders')
-    .select('*, profiles(full_name, email), order_items(quantity, unit_price, products(name))')
+  // CORRIGÉ: join users (pas profiles), order_items → products(name)
+  const { data: o, error } = await db.from('orders')
+    .select('*, users(full_name, email), order_items(quantity, unit_price, products(name))')
     .eq('id', id)
     .single()
 
   const content = document.getElementById('order-detail-content')
-  if (!o) { content.innerHTML = 'Commande introuvable'; return }
+  if (error || !o) { content.innerHTML = '<p class="text-sm text-outline">Commande introuvable</p>'; return }
 
   document.getElementById('order-status-update').value = o.status
 
-  const items = (o.order_items || []).map(i => `
-    <div class="flex items-center justify-between text-sm py-1">
-      <span>${i.products?.name || '—'} × ${i.quantity}</span>
+  const itemsHtml = (o.order_items || []).map(i => `
+    <div class="flex items-center justify-between text-sm py-1.5">
+      <span class="text-on-surface-variant">${i.products?.name || '—'} <span class="font-bold text-on-surface">× ${i.quantity}</span></span>
       <span class="font-bold">${fmtAmount(i.unit_price * i.quantity)}</span>
     </div>
   `).join('')
 
   content.innerHTML = `
     <div class="space-y-3">
-      <div class="flex justify-between text-sm">
-        <span class="text-outline font-bold uppercase tracking-widest text-[10px]">Commande</span>
-        <span class="font-mono font-bold">#${o.id.slice(0,8).toUpperCase()}</span>
+      <div class="flex justify-between text-sm py-1.5 border-b border-outline-variant/10">
+        <span class="text-[10px] text-outline font-bold uppercase tracking-widest">Commande</span>
+        <span class="font-mono font-bold text-sm">#${o.id.slice(0,8).toUpperCase()}</span>
       </div>
-      <div class="flex justify-between text-sm">
-        <span class="text-outline font-bold uppercase tracking-widest text-[10px]">Client</span>
-        <span>${o.profiles?.full_name || o.profiles?.email || '—'}</span>
+      <div class="flex justify-between text-sm py-1.5 border-b border-outline-variant/10">
+        <span class="text-[10px] text-outline font-bold uppercase tracking-widest">Client</span>
+        <span class="text-sm">${o.users?.full_name || o.users?.email || '—'}</span>
       </div>
-      <div class="flex justify-between text-sm">
-        <span class="text-outline font-bold uppercase tracking-widest text-[10px]">Date</span>
-        <span>${fmtDate(o.created_at)}</span>
+      ${o.shipping_city ? `
+      <div class="flex justify-between text-sm py-1.5 border-b border-outline-variant/10">
+        <span class="text-[10px] text-outline font-bold uppercase tracking-widest">Livraison</span>
+        <span class="text-sm">${o.shipping_city}, ${o.shipping_country || ''}</span>
+      </div>` : ''}
+      <div class="flex justify-between text-sm py-1.5 border-b border-outline-variant/10">
+        <span class="text-[10px] text-outline font-bold uppercase tracking-widest">Date</span>
+        <span class="text-sm">${fmtDate(o.created_at)}</span>
       </div>
-      <div class="flex justify-between text-sm">
-        <span class="text-outline font-bold uppercase tracking-widest text-[10px]">Statut</span>
+      <div class="flex justify-between text-sm py-1.5 border-b border-outline-variant/10">
+        <span class="text-[10px] text-outline font-bold uppercase tracking-widest">Statut</span>
         <span>${statusBadge(o.status)}</span>
       </div>
-      <div class="border-t border-outline-variant/10 pt-3 mt-3">
+      <div class="pt-2">
         <p class="text-[10px] uppercase tracking-widest text-outline font-bold mb-2">Articles</p>
-        ${items || '<p class="text-sm text-outline">—</p>'}
+        ${itemsHtml || '<p class="text-sm text-outline">—</p>'}
       </div>
-      <div class="flex justify-between text-sm border-t border-outline-variant/10 pt-3 mt-1">
+      <div class="flex justify-between text-sm pt-3 border-t border-outline-variant/10">
         <span class="font-bold">Total</span>
-        <span class="font-bold text-primary">${fmtAmount(o.total_amount)}</span>
+        <span class="font-bold text-primary text-base">${fmtAmount(o.total_amount)}</span>
       </div>
     </div>
   `
 }
 
-function closeOrderModal(e) {
-  if (e && e.target !== document.getElementById('order-modal-overlay')) return
+function closeOrderModal() {
   document.getElementById('order-modal-overlay').classList.add('hidden')
   currentOrderId = null
 }
@@ -1042,13 +1178,15 @@ function closeOrderModal(e) {
 async function updateOrderStatus() {
   if (!currentOrderId) return
   const status = document.getElementById('order-status-update').value
-  const { error } = await db.from('orders').update({ status, updated_at: new Date().toISOString() }).eq('id', currentOrderId)
+  const { error } = await db.from('orders')
+    .update({ status, updated_at: new Date().toISOString() })
+    .eq('id', currentOrderId)
+
   if (error) {
-    showToast('Erreur : ' + error.message, 'bg-error text-on-error')
+    showToast('Erreur : ' + error.message, 'error')
   } else {
-    showToast('Statut mis à jour', 'bg-primary text-on-primary')
-    document.getElementById('order-modal-overlay').classList.add('hidden')
-    currentOrderId = null
+    showToast('Statut mis à jour', 'success')
+    closeOrderModal()
     loadOrders()
   }
 }
@@ -1056,18 +1194,33 @@ async function updateOrderStatus() {
 // ── REVENUE ───────────────────────────────────────────────────────────────────
 async function loadRevenue() {
   if (!currentSeller) return
-  const sid = currentSeller.id
 
-  const { data: payments } = await db.from('payments')
-    .select('amount, created_at, payment_method, status')
-    .eq('vendor_id', sid)
-    .order('created_at', { ascending: false })
+  const productIds = await getMyProductIds()
 
-  const paid = (payments || []).filter(p => p.status === 'paid')
-  const total = paid.reduce((s, p) => s + Number(p.amount), 0)
+  // CORRIGÉ: payments n'a pas de vendor_id → on récupère via order_items → orders → payments
+  // D'abord les order_ids liés à ce vendeur
+  let allPayments = []
+  if (productIds.length) {
+    const { data: items } = await db.from('order_items')
+      .select('order_id')
+      .in('product_id', productIds)
 
-  const now = new Date()
-  const thisMonth = paid.filter(p => {
+    const orderIds = [...new Set((items || []).map(i => i.order_id))]
+
+    if (orderIds.length) {
+      // CORRIGÉ: method (pas payment_method)
+      const { data } = await db.from('payments')
+        .select('amount, created_at, method, status, currency')
+        .in('order_id', orderIds)
+        .order('created_at', { ascending: false })
+      allPayments = data || []
+    }
+  }
+
+  const paid       = allPayments.filter(p => p.status === 'paid')
+  const total      = paid.reduce((s, p) => s + Number(p.amount), 0)
+  const now        = new Date()
+  const thisMonth  = paid.filter(p => {
     const d = new Date(p.created_at)
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
   })
@@ -1076,13 +1229,13 @@ async function loadRevenue() {
   document.getElementById('rev-total').textContent = fmtAmount(total)
   document.getElementById('rev-month').textContent = fmtAmount(monthTotal)
   document.getElementById('rev-count').textContent = paid.length
-  document.getElementById('rev-avg').textContent = paid.length ? fmtAmount(total / paid.length) : '— MAD'
+  document.getElementById('rev-avg').textContent   = paid.length ? fmtAmount(total / paid.length) : '— MAD'
 
   // Graphique 6 mois
   const months = []
   for (let i = 5; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
-    months.push({ label: d.toLocaleDateString('fr-FR', { month: 'short' }), month: d.getMonth(), year: d.getFullYear(), total: 0 })
+    months.push({ label: d.toLocaleDateString('fr-FR', { month:'short' }), month: d.getMonth(), year: d.getFullYear(), total: 0 })
   }
   paid.forEach(p => {
     const d = new Date(p.created_at)
@@ -1090,12 +1243,11 @@ async function loadRevenue() {
     if (m) m.total += Number(p.amount)
   })
   const maxVal = Math.max(...months.map(m => m.total), 1)
-  const chartEl = document.getElementById('revenue-chart')
-  chartEl.innerHTML = months.map(m => `
+  document.getElementById('revenue-chart').innerHTML = months.map(m => `
     <div class="flex flex-col items-center gap-1 flex-1">
       <span class="text-[10px] font-bold text-on-surface-variant">${m.total > 0 ? Math.round(m.total) : ''}</span>
-      <div class="w-full rounded-t-lg bg-primary/20 relative" style="height:${Math.max((m.total / maxVal) * 120, 4)}px">
-        <div class="absolute inset-x-0 bottom-0 rounded-t-lg bg-primary bar-fill" style="height:100%"></div>
+      <div class="w-full rounded-t-lg bg-primary/15 relative" style="height:${Math.max((m.total / maxVal) * 120, 4)}px">
+        <div class="absolute inset-x-0 bottom-0 rounded-t-lg bg-primary" style="height:100%"></div>
       </div>
       <span class="text-[10px] text-outline uppercase">${m.label}</span>
     </div>
@@ -1103,15 +1255,15 @@ async function loadRevenue() {
 
   // Table paiements
   const tbody = document.getElementById('payments-table-body')
-  if (!payments || !payments.length) {
+  if (!allPayments.length) {
     tbody.innerHTML = '<tr><td colspan="5" class="text-center py-12 text-outline text-sm">Aucun paiement</td></tr>'
     return
   }
-  tbody.innerHTML = payments.slice(0, 20).map(p => `
+  tbody.innerHTML = allPayments.slice(0, 20).map(p => `
     <tr class="table-row border-b border-outline-variant/10">
-      <td class="px-5 py-4 text-sm font-mono text-on-surface-variant">${p.created_at ? new Date(p.created_at).getTime().toString(36).toUpperCase() : '—'}</td>
-      <td class="px-4 py-4 text-sm font-bold">${fmtAmount(p.amount)}</td>
-      <td class="px-4 py-4 hidden sm:table-cell text-sm text-on-surface-variant">${p.payment_method || '—'}</td>
+      <td class="px-5 py-4 text-sm font-mono text-on-surface-variant">${p.created_at ? new Date(p.created_at).getTime().toString(36).toUpperCase().slice(-8) : '—'}</td>
+      <td class="px-4 py-4 text-sm font-bold">${fmtAmount(p.amount, p.currency || 'MAD')}</td>
+      <td class="px-4 py-4 hidden sm:table-cell text-sm text-on-surface-variant">${p.method || '—'}</td>
       <td class="px-4 py-4 hidden md:table-cell text-sm text-on-surface-variant">${fmtDate(p.created_at)}</td>
       <td class="px-4 py-4">${statusBadge(p.status)}</td>
     </tr>
@@ -1121,42 +1273,58 @@ async function loadRevenue() {
 // ── REVIEWS ───────────────────────────────────────────────────────────────────
 async function loadReviews() {
   if (!currentSeller) return
+
+  const productIds = await getMyProductIds()
+  const list = document.getElementById('reviews-list')
+
+  if (!productIds.length) {
+    list.innerHTML = '<div class="px-5 py-8 text-center text-outline text-sm">Aucun produit</div>'
+    return
+  }
+
   const filter = document.getElementById('review-filter').value
+
+  // CORRIGÉ: reviews n'a pas vendor_id → on filtre par product_id des produits du vendeur
+  // reviewer_name est une colonne directe (pas de join profiles nécessaire)
   let query = db.from('reviews')
-    .select('id, rating, comment, status, created_at, profiles(full_name), products(name)')
-    .eq('vendor_id', currentSeller.id)
+    .select('id, rating, comment, status, created_at, reviewer_name, products(name)')
+    .in('product_id', productIds)
     .order('created_at', { ascending: false })
 
   if (filter) query = query.eq('status', filter)
-  const { data } = await query
 
-  const all = data || []
+  const { data, error } = await query
+  if (error) { showToast('Erreur avis: ' + error.message, 'error'); return }
+
+  const all      = data || []
   const approved = all.filter(r => r.status === 'approved')
-  const avgRating = approved.length ? (approved.reduce((s, r) => s + r.rating, 0) / approved.length) : 0
+  const avgRating = approved.length
+    ? (approved.reduce((s, r) => s + r.rating, 0) / approved.length)
+    : 0
 
-  document.getElementById('rev-avg-rating').textContent = avgRating ? avgRating.toFixed(1) : '—'
-  document.getElementById('rev-stars').innerHTML = stars(avgRating)
-  document.getElementById('rev-total-count').textContent = all.length
+  document.getElementById('rev-avg-rating').textContent   = avgRating ? avgRating.toFixed(1) : '—'
+  document.getElementById('rev-stars').innerHTML          = starsHtml(avgRating)
+  document.getElementById('rev-total-count').textContent  = all.length
   document.getElementById('rev-approved-count').textContent = approved.length
 
-  const list = document.getElementById('reviews-list')
   if (!all.length) {
     list.innerHTML = '<div class="px-5 py-8 text-center text-outline text-sm">Aucun avis</div>'
     return
   }
+
   list.innerHTML = all.map(r => `
-    <div class="px-5 py-4 space-y-1">
-      <div class="flex items-center justify-between gap-2">
+    <div class="px-5 py-4 space-y-1.5">
+      <div class="flex items-center justify-between gap-2 flex-wrap">
         <div class="flex items-center gap-2">
-          <div class="flex gap-0.5">${stars(r.rating)}</div>
-          <span class="text-sm font-medium">${r.profiles?.full_name || 'Anonyme'}</span>
+          <div class="flex gap-0.5">${starsHtml(r.rating)}</div>
+          <span class="text-sm font-medium">${r.reviewer_name || 'Anonyme'}</span>
         </div>
         <div class="flex items-center gap-2">
           ${statusBadge(r.status)}
           <span class="text-xs text-outline">${fmtDate(r.created_at)}</span>
         </div>
       </div>
-      ${r.products?.name ? `<p class="text-xs text-outline">Produit : ${r.products.name}</p>` : ''}
+      ${r.products?.name ? `<p class="text-xs text-outline">Produit : <span class="font-medium text-on-surface-variant">${r.products.name}</span></p>` : ''}
       ${r.comment ? `<p class="text-sm text-on-surface-variant">${r.comment}</p>` : ''}
     </div>
   `).join('')
@@ -1169,17 +1337,22 @@ async function loadProfile() {
 
   const initials = ((u.first_name?.[0] || '') + (u.last_name?.[0] || '')).toUpperCase() || u.email?.[0]?.toUpperCase() || '?'
   document.getElementById('profile-avatar-display').textContent = initials
-  document.getElementById('profile-email-display').textContent = u.email || '—'
-  document.getElementById('profile-role-display').textContent = u.role === 'artisan' ? 'Vendeur' : u.role || '—'
+  document.getElementById('profile-email-display').textContent  = u.email || '—'
+  document.getElementById('profile-role-display').textContent   = u.role === 'artisan' ? 'Vendeur / Artisan' : u.role || '—'
   document.getElementById('pf-first-name').value = u.first_name || ''
-  document.getElementById('pf-last-name').value = u.last_name || ''
-  document.getElementById('pf-specialty').value = u.specialty || ''
-  document.getElementById('pf-country').value = u.country || 'Maroc'
+  document.getElementById('pf-last-name').value  = u.last_name  || ''
+  document.getElementById('pf-specialty').value  = u.specialty  || ''
+  document.getElementById('pf-country').value    = u.country    || 'Maroc'
 
   const badge = document.getElementById('profile-status-badge')
-  const statusMap = { active: ['status-active', 'Actif'], pending: ['status-pending', 'En attente'], inactive: ['status-inactive', 'Inactif'] }
+  const statusMap = {
+    active:   ['status-active',   'Actif'],
+    pending:  ['status-pending',  'En attente'],
+    inactive: ['status-inactive', 'Inactif'],
+    banned:   ['status-inactive', 'Banni']
+  }
   const [cls, label] = statusMap[u.status] || ['status-pending', '—']
-  badge.className = `text-[10px] font-bold px-3 py-1 rounded-full ${cls}`
+  badge.className   = `text-[10px] font-bold px-3 py-1 rounded-full ${cls}`
   badge.textContent = label
 }
 
@@ -1196,25 +1369,38 @@ async function saveProfile(e) {
 
   const { error } = await db.from('users').update(payload).eq('id', currentSeller.id)
   if (error) {
-    showToast('Erreur : ' + error.message, 'bg-error text-on-error')
+    showToast('Erreur : ' + error.message, 'error')
   } else {
     Object.assign(currentSeller, payload)
-    document.getElementById('seller-name').textContent = payload.full_name || currentSeller.email
+    document.getElementById('seller-name').textContent    = payload.full_name || currentSeller.email
     document.getElementById('seller-country').textContent = payload.country
-    showToast('Profil mis à jour !', 'bg-primary text-on-primary')
+    showToast('Profil mis à jour !', 'success')
   }
 }
 
 async function resetPassword() {
   const { data: { session } } = await db.auth.getSession()
   if (!session?.user?.email) return
-  const { error } = await db.auth.resetPasswordForEmail(session.user.email)
+  const { error } = await db.auth.resetPasswordForEmail(session.user.email, {
+    redirectTo: 'https://wennashop.netlify.app'
+  })
   if (error) {
-    showToast('Erreur : ' + error.message, 'bg-error text-on-error')
+    showToast('Erreur : ' + error.message, 'error')
   } else {
-    showToast('Email de réinitialisation envoyé !', 'bg-primary text-on-primary')
+    showToast('Email de réinitialisation envoyé !', 'success')
   }
 }
+
+// ── FERMETURE MODALS AU CLIC OVERLAY ─────────────────────────────────────────
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeProductModal()
+})
+document.getElementById('order-modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeOrderModal()
+})
+document.getElementById('delete-modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeDeleteModal()
+})
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', initAuth)
