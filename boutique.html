@@ -6,14 +6,12 @@
 <meta name="description" content="WennaShop — Artisanat authentique du Gabon et du Maroc"/>
 <title>WennaShop | Boutique</title>
 
-<!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
-<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/cart.js"></script>
 
-<!-- Tailwind -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script>
 tailwind.config = {
@@ -37,95 +35,40 @@ tailwind.config = {
 </script>
 
 <style>
-  /* ─── Base ─── */
   .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24;}
   body{font-family:'Inter',sans-serif;min-height:max(884px,100dvh);}
   h1,h2,h3{font-family:'Noto Serif',serif;}
   .hide-scrollbar::-webkit-scrollbar{display:none;}
   .hide-scrollbar{-ms-overflow-style:none;scrollbar-width:none;}
-
-  /* ─── Skeleton ─── */
   @keyframes shimmer{0%{background-position:-600px 0;}100%{background-position:600px 0;}}
-  .skeleton{
-    background:linear-gradient(90deg,#dde8d8 25%,#cdd8c8 50%,#dde8d8 75%);
-    background-size:600px 100%;
-    animation:shimmer 1.4s infinite linear;
-    border-radius:.75rem;
-  }
-
-  /* ─── Toast ─── */
-  #toast{
-    position:fixed;bottom:90px;left:50%;
-    transform:translateX(-50%) translateY(10px);
-    opacity:0;background:#006b2a;color:#fff;
-    padding:10px 22px;border-radius:9999px;
-    font-size:.8rem;font-weight:600;
-    transition:all .3s ease;z-index:9999;
-    white-space:nowrap;pointer-events:none;
-  }
+  .skeleton{background:linear-gradient(90deg,#dde8d8 25%,#cdd8c8 50%,#dde8d8 75%);background-size:600px 100%;animation:shimmer 1.4s infinite linear;border-radius:.75rem;}
+  #toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(10px);opacity:0;background:#006b2a;color:#fff;padding:10px 22px;border-radius:9999px;font-size:.8rem;font-weight:600;transition:all .3s ease;z-index:9999;white-space:nowrap;pointer-events:none;}
   #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
-  /* ─── Filtres actifs ─── */
-  .filter-pill{
-    display:inline-flex;align-items:center;gap:6px;
-    padding:4px 12px;border-radius:9999px;
-    font-size:.75rem;font-weight:600;
-    background:#eaf0e5;border:1px solid #becaba;
-    color:#3f4a3e;cursor:pointer;transition:all .2s;
-  }
+  .filter-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:9999px;font-size:.75rem;font-weight:600;background:#eaf0e5;border:1px solid #becaba;color:#3f4a3e;cursor:pointer;transition:all .2s;}
   .filter-pill:hover{background:#dee4da;}
   .filter-pill.active{background:#006b2a;color:#fff;border-color:#006b2a;}
-
-  /* ─── Card hover ─── */
   .product-card{transition:transform .3s ease;}
   .product-card:hover{transform:translateY(-4px);}
-
-  /* ─── View toggle ─── */
   .view-btn{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;border:1px solid #becaba;background:#fff;}
   .view-btn.active{background:#006b2a;border-color:#006b2a;color:#fff;}
   .view-btn:not(.active){color:#6f7a6d;}
   .view-btn:not(.active):hover{background:#eaf0e5;}
-
-  /* ─── Grid / List ─── */
   #products-grid.list-view{grid-template-columns:1fr !important;}
   #products-grid.list-view .product-card{display:flex;flex-direction:row;gap:20px;aspect-ratio:auto !important;}
   #products-grid.list-view .card-img-wrap{width:140px;flex-shrink:0;aspect-ratio:1/1 !important;}
   #products-grid.list-view .card-body{flex:1;display:flex;flex-direction:column;justify-content:space-between;padding:4px 0;}
-
-  /* ─── Sort select ─── */
-  .sort-select{
-    appearance:none;background:#eff5eb url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236f7a6d' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 10px center;
-    border:1px solid #becaba;border-radius:8px;
-    padding:8px 32px 8px 12px;font-size:.8rem;
-    color:#171d17;cursor:pointer;outline:none;
-    font-family:'Inter',sans-serif;
-  }
-
-  /* ─── Pagination ─── */
-  .page-btn{
-    width:36px;height:36px;border-radius:8px;
-    display:flex;align-items:center;justify-content:center;
-    font-size:.85rem;font-weight:600;cursor:pointer;
-    border:1px solid #becaba;background:#fff;color:#3f4a3e;
-    transition:all .15s;
-  }
+  .sort-select{appearance:none;background:#eff5eb url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236f7a6d' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 10px center;border:1px solid #becaba;border-radius:8px;padding:8px 32px 8px 12px;font-size:.8rem;color:#171d17;cursor:pointer;outline:none;font-family:'Inter',sans-serif;}
+  .page-btn{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:600;cursor:pointer;border:1px solid #becaba;background:#fff;color:#3f4a3e;transition:all .15s;}
   .page-btn:hover{background:#eaf0e5;}
   .page-btn.active{background:#006b2a;border-color:#006b2a;color:#fff;}
   .page-btn:disabled{opacity:.4;cursor:not-allowed;}
-
-  /* ─── Sticky filters on desktop ─── */
-  @media(min-width:1024px){
-    .filters-sidebar{position:sticky;top:88px;max-height:calc(100vh - 100px);overflow-y:auto;}
-  }
+  @media(min-width:1024px){.filters-sidebar{position:sticky;top:88px;max-height:calc(100vh - 100px);overflow-y:auto;}}
 </style>
 </head>
 <body class="bg-background text-on-surface antialiased">
 
 <div id="toast"></div>
 
-<!-- ═══════════════════════════════════════
-     HEADER
-═══════════════════════════════════════ -->
 <header class="fixed top-0 w-full z-50 bg-[#f5fbf1]/90 backdrop-blur-xl border-b border-outline-variant/20">
   <div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
     <div class="flex items-center gap-4">
@@ -135,7 +78,7 @@ tailwind.config = {
       <a href="index.html" class="font-['Noto_Serif'] font-black italic text-primary text-2xl tracking-tight">WennaShop</a>
     </div>
     <div class="hidden md:flex items-center gap-6 text-sm font-medium">
-      <a href="hero.html" class="text-on-surface-variant hover:text-primary transition-colors">Accueil</a>
+      <a href="index.html" class="text-on-surface-variant hover:text-primary transition-colors">Accueil</a>
       <a href="boutique.html" class="text-primary font-semibold border-b-2 border-primary pb-0.5">Boutique</a>
       <a href="recherche.html" class="text-on-surface-variant hover:text-primary transition-colors">Explorer</a>
       <a href="dashboard-vendeur.html" class="text-on-surface-variant hover:text-primary transition-colors">Vendre</a>
@@ -155,9 +98,6 @@ tailwind.config = {
   </div>
 </header>
 
-<!-- ═══════════════════════════════════════
-     HERO BOUTIQUE
-═══════════════════════════════════════ -->
 <section class="pt-24 pb-10 px-6 max-w-7xl mx-auto">
   <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
     <div>
@@ -165,7 +105,6 @@ tailwind.config = {
       <h1 class="font-headline text-5xl font-bold text-on-surface leading-tight">Boutique</h1>
       <p class="text-on-surface-variant mt-2 max-w-md">Artisanat authentique du Gabon et du Maroc — sélectionné par nos curateurs.</p>
     </div>
-    <!-- Compteur résultats + tri -->
     <div class="flex items-center gap-3 flex-shrink-0">
       <span id="results-label" class="text-sm text-on-surface-variant"></span>
       <select id="sort-select" class="sort-select" onchange="applySort()">
@@ -186,17 +125,9 @@ tailwind.config = {
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════
-     LAYOUT PRINCIPAL
-═══════════════════════════════════════ -->
 <div class="px-6 pb-32 max-w-7xl mx-auto flex gap-8">
 
-  <!-- ──────────────────────────
-       SIDEBAR FILTRES (desktop)
-  ────────────────────────── -->
   <aside class="hidden lg:block w-60 flex-shrink-0 filters-sidebar">
-
-    <!-- Recherche -->
     <div class="mb-6">
       <label class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant block mb-2">Recherche</label>
       <div class="relative">
@@ -206,19 +137,12 @@ tailwind.config = {
           oninput="onSearchInput(this.value)" />
       </div>
     </div>
-
-    <!-- Catégories -->
     <div class="mb-6">
       <label class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant block mb-3">Catégories</label>
       <div id="cat-filter" class="flex flex-col gap-1">
-        <button data-id="" onclick="selectCat(this)"
-          class="cat-btn text-left px-3 py-2 rounded-lg text-sm font-medium bg-primary text-white">
-          Toutes les catégories
-        </button>
+        <button data-id="" onclick="selectCat(this)" class="cat-btn text-left px-3 py-2 rounded-lg text-sm font-medium bg-primary text-white">Toutes les catégories</button>
       </div>
     </div>
-
-    <!-- Origine -->
     <div class="mb-6">
       <label class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant block mb-3">Origine</label>
       <div class="flex flex-col gap-2">
@@ -232,56 +156,36 @@ tailwind.config = {
         </label>
       </div>
     </div>
-
-    <!-- Prix -->
     <div class="mb-6">
       <label class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant block mb-3">
         Prix — <span id="price-display" class="text-primary">0 – 50 000 MAD</span>
       </label>
       <div class="space-y-2">
-        <input type="range" id="price-min" min="0" max="50000" value="0" step="100"
-          class="w-full accent-primary" oninput="updatePriceDisplay()" onchange="applyFilters()"/>
-        <input type="range" id="price-max" min="0" max="50000" value="50000" step="100"
-          class="w-full accent-primary" oninput="updatePriceDisplay()" onchange="applyFilters()"/>
+        <input type="range" id="price-min" min="0" max="50000" value="0" step="100" class="w-full accent-primary" oninput="updatePriceDisplay()" onchange="applyFilters()"/>
+        <input type="range" id="price-max" min="0" max="50000" value="50000" step="100" class="w-full accent-primary" oninput="updatePriceDisplay()" onchange="applyFilters()"/>
       </div>
     </div>
-
-    <!-- Stock dispo -->
     <div class="mb-6">
       <label class="flex items-center gap-2 cursor-pointer">
         <input type="checkbox" id="f-stock" class="w-4 h-4 accent-primary" onchange="applyFilters()"/>
         <span class="text-sm font-medium">En stock uniquement</span>
       </label>
     </div>
-
-    <!-- Reset -->
-    <button onclick="resetFilters()"
-      class="w-full py-2 text-sm font-semibold text-on-surface-variant border border-outline-variant/40 rounded-lg hover:bg-surface-container-low transition-colors">
-      Réinitialiser les filtres
-    </button>
-
+    <button onclick="resetFilters()" class="w-full py-2 text-sm font-semibold text-on-surface-variant border border-outline-variant/40 rounded-lg hover:bg-surface-container-low transition-colors">Réinitialiser les filtres</button>
   </aside>
 
-  <!-- ──────────────────────────
-       COLONNE PRINCIPALE
-  ────────────────────────── -->
   <div class="flex-1 min-w-0">
-
-    <!-- Filtres actifs (chips) -->
     <div id="active-filters" class="flex flex-wrap gap-2 mb-4 hidden"></div>
 
-    <!-- Filtres mobile -->
     <div class="lg:hidden mb-5 flex gap-2 overflow-x-auto hide-scrollbar pb-1">
       <input id="search-mobile" type="text" placeholder="Rechercher..."
         class="flex-1 min-w-[160px] px-4 py-2 bg-surface-container-high border border-outline-variant/20 rounded-full text-sm focus:outline-none focus:border-primary"
         oninput="onSearchInput(this.value)"/>
-      <button onclick="toggleMobileFilters()"
-        class="flex-shrink-0 px-4 py-2 bg-surface-container-high border border-outline-variant/20 rounded-full text-sm font-medium flex items-center gap-1">
+      <button onclick="toggleMobileFilters()" class="flex-shrink-0 px-4 py-2 bg-surface-container-high border border-outline-variant/20 rounded-full text-sm font-medium flex items-center gap-1">
         <span class="material-symbols-outlined" style="font-size:16px">tune</span> Filtres
       </button>
     </div>
 
-    <!-- Panel mobile filtres -->
     <div id="mobile-filters" class="hidden lg:hidden mb-5 p-4 bg-surface-container-low rounded-xl border border-outline-variant/20">
       <div class="grid grid-cols-2 gap-4">
         <div>
@@ -297,50 +201,29 @@ tailwind.config = {
       </div>
     </div>
 
-    <!-- Catégories scroll mobile -->
     <div class="lg:hidden flex gap-2 overflow-x-auto hide-scrollbar pb-3 mb-5">
-      <button data-id="" onclick="selectCat(this)"
-        class="cat-btn flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium bg-primary text-white">
-        Tout
-      </button>
+      <button data-id="" onclick="selectCat(this)" class="cat-btn flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium bg-primary text-white">Tout</button>
     </div>
 
-    <!-- GRILLE PRODUITS -->
-    <div id="products-grid"
-      class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8">
-      <!-- Skeletons -->
+    <div id="products-grid" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8">
       <div class="skeleton aspect-[3/4]"></div>
       <div class="skeleton aspect-[3/4]"></div>
       <div class="skeleton aspect-[3/4]"></div>
       <div class="skeleton aspect-[3/4]"></div>
-      <div class="skeleton aspect-[3/4] hidden md:block"></div>
-      <div class="skeleton aspect-[3/4] hidden md:block"></div>
-      <div class="skeleton aspect-[3/4] hidden xl:block"></div>
-      <div class="skeleton aspect-[3/4] hidden xl:block"></div>
     </div>
 
-    <!-- Aucun résultat -->
     <div id="no-results" class="hidden flex flex-col items-center justify-center py-24 text-center gap-4">
       <span class="material-symbols-outlined text-5xl text-outline">search_off</span>
       <p class="font-headline text-xl font-bold">Aucun produit trouvé</p>
       <p class="text-on-surface-variant text-sm">Essayez d'autres filtres ou revenez plus tard.</p>
-      <button onclick="resetFilters()" class="mt-2 px-6 py-2.5 bg-primary text-white rounded-full text-sm font-semibold hover:opacity-90 transition-opacity">
-        Voir tous les produits
-      </button>
+      <button onclick="resetFilters()" class="mt-2 px-6 py-2.5 bg-primary text-white rounded-full text-sm font-semibold hover:opacity-90 transition-opacity">Voir tous les produits</button>
     </div>
 
-    <!-- PAGINATION -->
     <div id="pagination" class="hidden flex justify-center items-center gap-2 mt-12"></div>
-
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════
-     BOTTOM NAV MOBILE
-═══════════════════════════════════════ -->
-<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3
-  bg-[#f5fbf1]/90 backdrop-blur-xl rounded-t-[2rem] z-50
-  shadow-[0_-8px_40px_rgba(23,29,23,0.06)] md:hidden">
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-[#f5fbf1]/90 backdrop-blur-xl rounded-t-[2rem] z-50 shadow-[0_-8px_40px_rgba(23,29,23,0.06)] md:hidden">
   <a href="index.html" class="flex flex-col items-center text-on-surface/60 hover:text-primary transition-colors">
     <span class="material-symbols-outlined">home</span>
     <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Accueil</span>
@@ -349,7 +232,7 @@ tailwind.config = {
     <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">storefront</span>
     <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Boutique</span>
   </a>
-  <a href="sell.html" class="flex flex-col items-center text-on-surface/60 hover:text-primary transition-colors">
+  <a href="dashboard-vendeur.html" class="flex flex-col items-center text-on-surface/60 hover:text-primary transition-colors">
     <span class="material-symbols-outlined">add_circle</span>
     <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Vendre</span>
   </a>
@@ -359,60 +242,42 @@ tailwind.config = {
   </a>
 </nav>
 
-<!-- ═══════════════════════════════════════
-     SCRIPT
-═══════════════════════════════════════ -->
 <script>
-// ─── CONFIG SUPABASE ──────────────────────────────────
 const SUPABASE_URL  = 'https://aakxoydznmybstfozjte.supabase.co'
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON)
-// ─────────────────────────────────────────────────────
+// Réutiliser l'instance Cart si déjà créée
+const sb = window._wennaSb || (window._wennaSb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON))
 
-// ─── CONSTANTES ───────────────────────────────────────
 const PAGE_SIZE = 12
 
-// ─── ÉTAT ─────────────────────────────────────────────
 let state = {
-  page:       1,
-  total:      0,
-  search:     '',
-  catId:      '',
-  country:    null,
-  priceMin:   0,
-  priceMax:   50000,
-  stockOnly:  false,
-  sort:       'created_at:desc',
-  view:       'grid',
-  debounce:   null
+  page:1, total:0, search:'', catId:'', country:null,
+  priceMin:0, priceMax:50000, stockOnly:false,
+  sort:'created_at:desc', view:'grid', debounce:null
 }
 
-// ─── UTILS ────────────────────────────────────────────
 const $ = id => document.getElementById(id)
-const fmt = (n, c='MAD') => new Intl.NumberFormat('fr-FR',{style:'currency',currency:c}).format(n)
+const fmt = (n, c='MAD') => {
+  try { return new Intl.NumberFormat('fr-FR',{style:'currency',currency:c}).format(n) }
+  catch { return `${Number(n).toFixed(2)} ${c}` }
+}
 
 function toast(msg) {
   const t = $('toast'); t.textContent = msg; t.classList.add('show')
   setTimeout(() => t.classList.remove('show'), 2800)
 }
 
-// ─── PANIER localStorage ──────────────────────────────
-function getCart()       { return JSON.parse(localStorage.getItem('wenna_cart')||'[]') }
-function saveCart(cart)  { localStorage.setItem('wenna_cart', JSON.stringify(cart)); updateBadge() }
-
-function updateBadge() {
-  const n = getCart().reduce((s,i)=>s+i.qty,0)
-  const b = $('cart-badge'); b.textContent = n
-  n > 0 ? b.classList.remove('hidden') : b.classList.add('hidden')
-}
-
-function addToCart(id, name, price, image, currency) {
-  const cart = getCart()
-  const idx  = cart.findIndex(i=>i.id===id)
-  if (idx >= 0) cart[idx].qty++
-  else cart.push({id, name, price, image, currency, qty:1})
-  saveCart(cart)
-  toast(`« ${name} » ajouté au panier`)
+// ─── PANIER SUPABASE ──────────────────────────────────
+async function addToCart(id, name, price, image, currency) {
+  const result = await Cart.add(id, name, price, image, currency)
+  if (!result.success && result.error === 'not_logged_in') {
+    toast('Connecte-toi pour ajouter au panier')
+    setTimeout(() => { window.location.href = 'compte.html?redirect=boutique.html' }, 1200)
+    return
+  }
+  if (!result.success) { toast('Erreur : ' + result.message); return }
+  toast(result.message)
+  await Cart.updateBadge('cart-badge')
 }
 
 // ─── CATÉGORIES ───────────────────────────────────────
@@ -436,8 +301,6 @@ async function loadCategories() {
   }
 
   addBtns('cat-filter', false)
-
-  // Mobile scroll
   const mobileRow = document.querySelector('.lg\\:hidden .flex.gap-2.overflow-x-auto')
   if (mobileRow) {
     data.forEach(cat => {
@@ -458,7 +321,6 @@ function selectCat(btn) {
       ? 'cat-btn flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium bg-surface-container-highest text-on-surface-variant'
       : 'cat-btn text-left px-3 py-2 rounded-lg text-sm font-medium text-on-surface-variant hover:bg-surface-container-low transition-colors'
   })
-  // Activer tous les boutons avec ce data-id
   document.querySelectorAll(`.cat-btn[data-id="${btn.dataset.id}"]`).forEach(b => {
     const isMobile = b.closest('.lg\\:hidden') !== null
     b.className = isMobile
@@ -470,29 +332,23 @@ function selectCat(btn) {
   loadProducts()
 }
 
-// ─── FILTRES ──────────────────────────────────────────
 function updatePriceDisplay() {
-  const mn = parseInt($('price-min').value)
-  const mx = parseInt($('price-max').value)
+  const mn = parseInt($('price-min').value), mx = parseInt($('price-max').value)
   $('price-display').textContent = `${mn.toLocaleString('fr-FR')} – ${mx.toLocaleString('fr-FR')} MAD`
 }
 
 function applyFilters() {
-  const gabon = $('f-gabon')?.checked
-  const maroc = $('f-maroc')?.checked
+  const gabon = $('f-gabon')?.checked, maroc = $('f-maroc')?.checked
   state.country   = (gabon && maroc) || (!gabon && !maroc) ? null : gabon ? 'Gabon' : 'Maroc'
   state.priceMin  = parseInt($('price-min')?.value || 0)
   state.priceMax  = parseInt($('price-max')?.value || 50000)
   state.stockOnly = $('f-stock')?.checked || false
   state.page      = 1
-  updatePriceDisplay()
-  renderActiveFilters()
-  loadProducts()
+  updatePriceDisplay(); renderActiveFilters(); loadProducts()
 }
 
 function syncMobileFilters() {
-  const g = $('fm-gabon')?.checked
-  const m = $('fm-maroc')?.checked
+  const g = $('fm-gabon')?.checked, m = $('fm-maroc')?.checked
   if ($('f-gabon')) $('f-gabon').checked = g
   if ($('f-maroc')) $('f-maroc').checked = m
   const pmax = parseInt($('fm-price')?.value || 50000)
@@ -501,11 +357,7 @@ function syncMobileFilters() {
   applyFilters()
 }
 
-function applySort() {
-  state.sort = $('sort-select').value
-  state.page = 1
-  loadProducts()
-}
+function applySort() { state.sort = $('sort-select').value; state.page = 1; loadProducts() }
 
 function onSearchInput(val) {
   state.search = val.trim()
@@ -514,201 +366,132 @@ function onSearchInput(val) {
 }
 
 function resetFilters() {
-  state.search = ''; state.catId = ''; state.country = null
-  state.priceMin = 0; state.priceMax = 50000; state.stockOnly = false; state.page = 1
-  $('search-desktop') && ($('search-desktop').value = '')
-  $('search-mobile')  && ($('search-mobile').value  = '')
-  $('f-gabon')  && ($('f-gabon').checked  = false)
-  $('f-maroc')  && ($('f-maroc').checked  = false)
-  $('f-stock')  && ($('f-stock').checked  = false)
-  $('price-min') && ($('price-min').value = 0)
-  $('price-max') && ($('price-max').value = 50000)
+  state.search=''; state.catId=''; state.country=null
+  state.priceMin=0; state.priceMax=50000; state.stockOnly=false; state.page=1
+  $('search-desktop')&&($('search-desktop').value='')
+  $('search-mobile')&&($('search-mobile').value='')
+  $('f-gabon')&&($('f-gabon').checked=false)
+  $('f-maroc')&&($('f-maroc').checked=false)
+  $('f-stock')&&($('f-stock').checked=false)
+  $('price-min')&&($('price-min').value=0)
+  $('price-max')&&($('price-max').value=50000)
   updatePriceDisplay()
   document.querySelectorAll('.cat-btn[data-id=""]').forEach(b => {
     const isMobile = b.closest('.lg\\:hidden') !== null
-    b.className = isMobile
-      ? 'cat-btn flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium bg-primary text-white'
-      : 'cat-btn text-left px-3 py-2 rounded-lg text-sm font-medium bg-primary text-white'
+    b.className = isMobile ? 'cat-btn flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium bg-primary text-white' : 'cat-btn text-left px-3 py-2 rounded-lg text-sm font-medium bg-primary text-white'
   })
   document.querySelectorAll('.cat-btn:not([data-id=""])').forEach(b => {
     const isMobile = b.closest('.lg\\:hidden') !== null
-    b.className = isMobile
-      ? 'cat-btn flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium bg-surface-container-highest text-on-surface-variant'
-      : 'cat-btn text-left px-3 py-2 rounded-lg text-sm font-medium text-on-surface-variant hover:bg-surface-container-low transition-colors'
+    b.className = isMobile ? 'cat-btn flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium bg-surface-container-highest text-on-surface-variant' : 'cat-btn text-left px-3 py-2 rounded-lg text-sm font-medium text-on-surface-variant hover:bg-surface-container-low transition-colors'
   })
-  renderActiveFilters()
-  loadProducts()
+  renderActiveFilters(); loadProducts()
 }
 
 function renderActiveFilters() {
   const container = $('active-filters')
   const chips = []
-  if (state.country)    chips.push({ label: state.country === 'Gabon' ? '🇬🇦 Gabon' : '🇲🇦 Maroc', clear: () => { $('f-gabon').checked=false; $('f-maroc').checked=false; applyFilters() } })
-  if (state.priceMax < 50000) chips.push({ label: `≤ ${state.priceMax.toLocaleString('fr-FR')} MAD`, clear: () => { $('price-max').value=50000; applyFilters() } })
-  if (state.stockOnly)  chips.push({ label: 'En stock', clear: () => { $('f-stock').checked=false; applyFilters() } })
-  if (state.search)     chips.push({ label: `"${state.search}"`, clear: () => { state.search=''; $('search-desktop')&&($('search-desktop').value=''); $('search-mobile')&&($('search-mobile').value=''); state.page=1; renderActiveFilters(); loadProducts() } })
-
+  if (state.country) chips.push({label:state.country==='Gabon'?'🇬🇦 Gabon':'🇲🇦 Maroc',clear:()=>{$('f-gabon').checked=false;$('f-maroc').checked=false;applyFilters()}})
+  if (state.priceMax<50000) chips.push({label:`≤ ${state.priceMax.toLocaleString('fr-FR')} MAD`,clear:()=>{$('price-max').value=50000;applyFilters()}})
+  if (state.stockOnly) chips.push({label:'En stock',clear:()=>{$('f-stock').checked=false;applyFilters()}})
+  if (state.search) chips.push({label:`"${state.search}"`,clear:()=>{state.search='';$('search-desktop')&&($('search-desktop').value='');$('search-mobile')&&($('search-mobile').value='');state.page=1;renderActiveFilters();loadProducts()}})
   if (!chips.length) { container.classList.add('hidden'); return }
   container.classList.remove('hidden')
-  container.innerHTML = chips.map((c,i) => `
-    <button class="filter-pill active" onclick="window._clearFilter(${i})">
-      ${c.label} <span class="material-symbols-outlined" style="font-size:13px">close</span>
-    </button>`).join('')
+  container.innerHTML = chips.map((c,i) => `<button class="filter-pill active" onclick="window._clearFilter(${i})">${c.label} <span class="material-symbols-outlined" style="font-size:13px">close</span></button>`).join('')
   chips.forEach((c,i) => { window._clearFilter = (idx) => chips[idx].clear() })
 }
 
-function toggleMobileFilters() {
-  $('mobile-filters').classList.toggle('hidden')
-}
+function toggleMobileFilters() { $('mobile-filters').classList.toggle('hidden') }
 
-// ─── VUE GRILLE / LISTE ───────────────────────────────
 function setView(v) {
   state.view = v
   const grid = $('products-grid')
-  if (v === 'list') {
-    grid.classList.add('list-view')
-    grid.classList.remove('grid-cols-2','md:grid-cols-3','xl:grid-cols-4')
-    $('btn-grid').classList.remove('active')
-    $('btn-list').classList.add('active')
-  } else {
-    grid.classList.remove('list-view')
-    grid.classList.add('grid-cols-2','md:grid-cols-3','xl:grid-cols-4')
-    $('btn-list').classList.remove('active')
-    $('btn-grid').classList.add('active')
-  }
+  if (v==='list') { grid.classList.add('list-view'); grid.classList.remove('grid-cols-2','md:grid-cols-3','xl:grid-cols-4'); $('btn-grid').classList.remove('active'); $('btn-list').classList.add('active') }
+  else { grid.classList.remove('list-view'); grid.classList.add('grid-cols-2','md:grid-cols-3','xl:grid-cols-4'); $('btn-list').classList.remove('active'); $('btn-grid').classList.add('active') }
 }
 
-// ─── CHARGEMENT PRODUITS ──────────────────────────────
 async function loadProducts() {
   const grid = $('products-grid')
-  grid.innerHTML = Array(PAGE_SIZE).fill(0).map(() =>
-    `<div class="skeleton aspect-[3/4] rounded-xl"></div>`).join('')
+  grid.innerHTML = Array(8).fill(0).map(()=>`<div class="skeleton aspect-[3/4] rounded-xl"></div>`).join('')
   $('no-results').classList.add('hidden')
   $('pagination').classList.add('hidden')
 
-  const [col, dir] = state.sort.split(':')
-  const asc = dir === 'asc'
-  const offset = (state.page - 1) * PAGE_SIZE
+  const [col,dir] = state.sort.split(':')
+  const asc = dir==='asc'
+  const offset = (state.page-1)*PAGE_SIZE
 
-  // ── Essai RPC full-text ──────────────────────────────
-  let products = [], total = 0
+  let products=[], total=0
 
   if (state.search) {
-    const { data, error } = await sb.rpc('search_products', {
-      term:            state.search,
-      country_filter:  state.country,
-      category_filter: state.catId || null,
-      price_min:       state.priceMin,
-      price_max:       state.priceMax
-    })
+    const { data, error } = await sb.rpc('search_products',{term:state.search,country_filter:state.country,category_filter:state.catId||null,price_min:state.priceMin,price_max:state.priceMax})
     if (!error && data) {
       let res = data
-      if (state.stockOnly) res = res.filter(p => (p.stock||0) > 0)
-      total    = res.length
-      products = res.slice(offset, offset + PAGE_SIZE)
-    } else {
-      // Fallback ilike
-      await fallbackLoad()
-      return
-    }
+      if (state.stockOnly) res = res.filter(p=>(p.stock||0)>0)
+      total=res.length; products=res.slice(offset,offset+PAGE_SIZE)
+    } else { await fallbackLoad(); return }
   } else {
-    // Requête standard paginée
     let q = sb.from('products')
-      .select('id,name,description,price,currency,country,origin_city,image_url,images,category_id,stock,status', {count:'exact'})
-      .eq('status','active')
-      .gte('price', state.priceMin)
-      .lte('price', state.priceMax)
-      .range(offset, offset + PAGE_SIZE - 1)
-      .order(col, {ascending: asc})
-
-    if (state.country)    q = q.eq('country', state.country)
-    if (state.catId)      q = q.eq('category_id', state.catId)
-    if (state.stockOnly)  q = q.gt('stock', 0)
-
-    const { data, count, error } = await q
-    if (error) { console.error(error); grid.innerHTML='<p class="text-center col-span-full text-sm text-error py-8">Erreur de chargement. Réessayez.</p>'; return }
-    products = data || []
-    total    = count || 0
+      .select('id,name,description,price,currency,country,origin_city,image_url,images,category_id,stock,status',{count:'exact'})
+      .eq('status','active').gte('price',state.priceMin).lte('price',state.priceMax)
+      .range(offset,offset+PAGE_SIZE-1).order(col,{ascending:asc})
+    if (state.country)   q=q.eq('country',state.country)
+    if (state.catId)     q=q.eq('category_id',state.catId)
+    if (state.stockOnly) q=q.gt('stock',0)
+    const {data,count,error}=await q
+    if (error) { grid.innerHTML='<p class="text-center col-span-full text-sm text-error py-8">Erreur de chargement. Réessayez.</p>'; return }
+    products=data||[]; total=count||0
   }
-
-  state.total = total
-  renderProducts(products, total)
+  state.total=total
+  renderProducts(products,total)
 }
 
 async function fallbackLoad() {
-  const [col, dir] = state.sort.split(':')
-  const asc = dir === 'asc'
-  const offset = (state.page - 1) * PAGE_SIZE
-
-  let q = sb.from('products')
-    .select('id,name,description,price,currency,country,origin_city,image_url,images,category_id,stock,status',{count:'exact'})
-    .eq('status','active')
-    .gte('price', state.priceMin)
-    .lte('price', state.priceMax)
-    .ilike('name', `%${state.search}%`)
-    .range(offset, offset + PAGE_SIZE - 1)
-    .order(col, {ascending:asc})
-
-  if (state.country)   q = q.eq('country', state.country)
-  if (state.catId)     q = q.eq('category_id', state.catId)
-  if (state.stockOnly) q = q.gt('stock', 0)
-
-  const { data, count } = await q
-  state.total = count || 0
-  renderProducts(data || [], count || 0)
+  const [col,dir]=state.sort.split(':')
+  const offset=(state.page-1)*PAGE_SIZE
+  let q=sb.from('products').select('id,name,description,price,currency,country,origin_city,image_url,images,category_id,stock,status',{count:'exact'})
+    .eq('status','active').gte('price',state.priceMin).lte('price',state.priceMax)
+    .ilike('name',`%${state.search}%`).range(offset,offset+PAGE_SIZE-1).order(col,{ascending:dir==='asc'})
+  if (state.country)   q=q.eq('country',state.country)
+  if (state.catId)     q=q.eq('category_id',state.catId)
+  if (state.stockOnly) q=q.gt('stock',0)
+  const {data,count}=await q
+  state.total=count||0
+  renderProducts(data||[],count||0)
 }
 
-// ─── RENDU PRODUITS ───────────────────────────────────
-function renderProducts(products, total) {
-  const grid = $('products-grid')
-
-  // Label résultats
-  $('results-label').textContent = total
-    ? `${total} produit${total > 1 ? 's' : ''}`
-    : ''
-
-  if (!products.length) {
-    grid.innerHTML = ''
-    $('no-results').classList.remove('hidden')
-    return
-  }
-
+function renderProducts(products,total) {
+  const grid=$('products-grid')
+  $('results-label').textContent=total?`${total} produit${total>1?'s':''}`  :''
+  if (!products.length) { grid.innerHTML=''; $('no-results').classList.remove('hidden'); return }
   $('no-results').classList.add('hidden')
-
   grid.innerHTML = products.map(p => {
-    const imgs  = Array.isArray(p.images) && p.images.length ? p.images : [p.image_url || '']
-    const img   = imgs[0] || ''
-    const cur   = p.currency || 'MAD'
-    const badge = p.country === 'Maroc'
-      ? `<span class="px-2 py-0.5 bg-secondary text-on-secondary text-[9px] font-bold uppercase tracking-widest rounded-full">Maroc</span>`
-      : `<span class="px-2 py-0.5 bg-primary text-on-primary text-[9px] font-bold uppercase tracking-widest rounded-full">Gabon</span>`
-    const outOfStock = (p.stock || 0) === 0
-      ? `<span class="absolute top-2 right-2 px-2 py-0.5 bg-surface-container-lowest/90 text-on-surface-variant text-[9px] font-bold uppercase tracking-widest rounded-full">Rupture</span>` : ''
-
+    const imgs=Array.isArray(p.images)&&p.images.length?p.images:[p.image_url||'']
+    const img=imgs[0]||''
+    const cur=p.currency||'MAD'
+    const safeName=p.name.replace(/'/g,"\\'").replace(/"/g,'&quot;')
+    const badge=p.country==='Maroc'
+      ?`<span class="px-2 py-0.5 bg-secondary text-on-secondary text-[9px] font-bold uppercase tracking-widest rounded-full">Maroc</span>`
+      :`<span class="px-2 py-0.5 bg-primary text-on-primary text-[9px] font-bold uppercase tracking-widest rounded-full">Gabon</span>`
+    const outOfStock=(p.stock||0)===0
+      ?`<span class="absolute top-2 right-2 px-2 py-0.5 bg-surface-container-lowest/90 text-on-surface-variant text-[9px] font-bold uppercase tracking-widest rounded-full">Rupture</span>`:''
     return `
       <article class="product-card group">
         <a href="detail_produit.html?id=${p.id}" class="block">
           <div class="card-img-wrap relative aspect-[3/4] overflow-hidden rounded-xl bg-surface-container-low mb-3">
-            ${img
-              ? `<img src="${img}" alt="${p.name}" loading="lazy"
-                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />`
-              : `<div class="w-full h-full flex items-center justify-center"><span class="material-symbols-outlined text-4xl text-outline">image</span></div>`
-            }
+            ${img?`<img src="${img}" alt="${p.name}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onerror="this.parentElement.innerHTML='<div class=\'w-full h-full flex items-center justify-center\'><span class=\'material-symbols-outlined text-4xl text-outline\'>image</span></div>'"  />`:`<div class="w-full h-full flex items-center justify-center"><span class="material-symbols-outlined text-4xl text-outline">image</span></div>`}
             <div class="absolute top-2 left-2">${badge}</div>
             ${outOfStock}
           </div>
           <div class="card-body">
             <div>
-              <p class="text-[10px] font-medium uppercase tracking-widest text-on-surface-variant mb-0.5">${p.origin_city || ''}</p>
+              <p class="text-[10px] font-medium uppercase tracking-widest text-on-surface-variant mb-0.5">${p.origin_city||''}</p>
               <h3 class="font-headline font-bold text-sm leading-snug group-hover:text-primary transition-colors line-clamp-2 mb-1">${p.name}</h3>
             </div>
             <div class="flex items-center justify-between mt-2">
-              <span class="text-sm font-bold text-primary">${fmt(p.price, cur)}</span>
+              <span class="text-sm font-bold text-primary">${fmt(p.price,cur)}</span>
               <button
-                onclick="event.preventDefault(); addToCart('${p.id}','${p.name.replace(/'/g,"\\'")}',${p.price},'${img}','${cur}')"
-                ${outOfStock ? 'disabled' : ''}
-                class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center
-                  hover:bg-primary-container transition-colors active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed">
+                onclick="event.preventDefault(); addToCart('${p.id}','${safeName}',${p.price},'${img}','${cur}')"
+                ${outOfStock?'disabled':''}
+                class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center hover:bg-primary-container transition-colors active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed">
                 <span class="material-symbols-outlined" style="font-size:15px">add</span>
               </button>
             </div>
@@ -716,50 +499,27 @@ function renderProducts(products, total) {
         </a>
       </article>`
   }).join('')
-
   renderPagination(total)
 }
 
-// ─── PAGINATION ───────────────────────────────────────
 function renderPagination(total) {
-  const totalPages = Math.ceil(total / PAGE_SIZE)
-  if (totalPages <= 1) { $('pagination').classList.add('hidden'); return }
-
+  const totalPages=Math.ceil(total/PAGE_SIZE)
+  if (totalPages<=1) { $('pagination').classList.add('hidden'); return }
   $('pagination').classList.remove('hidden')
-  const p = state.page
-  let html = ''
-
-  // Prev
-  html += `<button class="page-btn" onclick="goPage(${p-1})" ${p===1?'disabled':''}>
-    <span class="material-symbols-outlined" style="font-size:16px">chevron_left</span>
-  </button>`
-
-  // Pages
-  for (let i=1; i<=totalPages; i++) {
-    if (i===1 || i===totalPages || (i>=p-1 && i<=p+1)) {
-      html += `<button class="page-btn ${i===p?'active':''}" onclick="goPage(${i})">${i}</button>`
-    } else if (i===p-2 || i===p+2) {
-      html += `<span style="display:flex;align-items:center;color:#6f7a6d;font-size:.8rem">…</span>`
-    }
+  const p=state.page; let html=''
+  html+=`<button class="page-btn" onclick="goPage(${p-1})" ${p===1?'disabled':''}><span class="material-symbols-outlined" style="font-size:16px">chevron_left</span></button>`
+  for(let i=1;i<=totalPages;i++) {
+    if(i===1||i===totalPages||(i>=p-1&&i<=p+1)) html+=`<button class="page-btn ${i===p?'active':''}" onclick="goPage(${i})">${i}</button>`
+    else if(i===p-2||i===p+2) html+=`<span style="display:flex;align-items:center;color:#6f7a6d;font-size:.8rem">…</span>`
   }
-
-  // Next
-  html += `<button class="page-btn" onclick="goPage(${p+1})" ${p===totalPages?'disabled':''}>
-    <span class="material-symbols-outlined" style="font-size:16px">chevron_right</span>
-  </button>`
-
-  $('pagination').innerHTML = html
+  html+=`<button class="page-btn" onclick="goPage(${p+1})" ${p===totalPages?'disabled':''}><span class="material-symbols-outlined" style="font-size:16px">chevron_right</span></button>`
+  $('pagination').innerHTML=html
 }
 
-function goPage(p) {
-  state.page = p
-  loadProducts()
-  window.scrollTo({top:80, behavior:'smooth'})
-}
+function goPage(p) { state.page=p; loadProducts(); window.scrollTo({top:80,behavior:'smooth'}) }
 
-// ─── INIT ─────────────────────────────────────────────
 async function init() {
-  updateBadge()
+  await Cart.updateBadge('cart-badge')
   updatePriceDisplay()
   await loadCategories()
   await loadProducts()
@@ -767,6 +527,5 @@ async function init() {
 
 document.addEventListener('DOMContentLoaded', init)
 </script>
-
 </body>
 </html>
