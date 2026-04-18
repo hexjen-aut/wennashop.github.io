@@ -55,7 +55,11 @@
     @keyframes spin{to{transform:rotate(360deg)}}
     .loader{animation:spin .8s linear infinite}
     #toast{transition:all .3s ease}
-    .bar-fill{transition:height .6s cubic-bezier(.22,1,.36,1)}
+    /* Loading screen */
+    #init-screen{position:fixed;inset:0;background:#f5fbf1;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem}
+    #init-screen.hidden{display:none}
+    @keyframes spin2{to{transform:rotate(360deg)}}
+    .spinner-init{width:36px;height:36px;border:3px solid #e4eae0;border-top-color:#006b2a;border-radius:50%;animation:spin2 .8s linear infinite}
     @media(max-width:1023px){
       #sidebar{position:fixed;top:0;left:0;z-index:100;transform:translateX(-100%);height:100%;box-shadow:4px 0 30px rgba(0,0,0,.12)}
       #sidebar.open{transform:translateX(0)}
@@ -64,6 +68,13 @@
   </style>
 </head>
 <body class="bg-background text-on-surface overflow-x-hidden">
+
+<!-- LOADING SCREEN -->
+<div id="init-screen">
+  <span class="font-serif italic text-3xl text-primary tracking-tighter">WennaShop</span>
+  <div class="spinner-init"></div>
+  <p id="init-msg" class="text-sm text-on-surface-variant">Vérification du compte…</p>
+</div>
 
 <!-- TOAST -->
 <div id="toast" class="fixed top-6 right-6 z-[400] px-5 py-3 rounded-xl bg-inverse-surface text-inverse-on-surface text-sm font-medium shadow-2xl opacity-0 pointer-events-none max-w-xs" role="status" aria-live="polite"></div>
@@ -219,7 +230,6 @@
             <div class="px-5 py-8 text-center text-outline text-sm">Chargement...</div>
           </div>
         </div>
-
         <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
           <div class="flex items-center justify-between px-5 py-4 border-b border-outline-variant/10">
             <h3 class="font-serif italic text-lg font-bold">Stock faible</h3>
@@ -474,7 +484,6 @@
           <input id="product-price" type="number" step="0.01" min="0" required class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"/>
         </div>
         <div>
-          <!-- CORRIGÉ: stock → maps sur colonne "stock" en DB -->
           <label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Stock *</label>
           <input id="product-stock" type="number" min="0" required class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"/>
         </div>
@@ -488,7 +497,6 @@
           </select>
         </div>
         <div>
-          <!-- CORRIGÉ: city → origin_city en DB -->
           <label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Ville d'origine</label>
           <input id="product-city" type="text" placeholder="Ex: Casablanca" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"/>
         </div>
@@ -545,7 +553,7 @@
   </div>
 </div>
 
-<!-- MODAL CONFIRMATION SUPPRESSION -->
+<!-- MODAL SUPPRESSION -->
 <div id="delete-modal-overlay" class="hidden fixed inset-0 z-[300] flex items-center justify-center p-4" style="background:rgba(23,29,23,.5);backdrop-filter:blur(6px)">
   <div class="bg-surface-container-lowest rounded-2xl w-full max-w-sm shadow-2xl p-6 space-y-4" onclick="event.stopPropagation()">
     <div class="w-12 h-12 rounded-full bg-error/10 flex items-center justify-center mx-auto">
@@ -560,15 +568,12 @@
   </div>
 </div>
 
-<!-- SUPABASE + JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// ── CONFIG ────────────────────────────────────────────────────────────────────
 const SUPABASE_URL  = 'https://aakxoydznmybstfozjte.supabase.co'
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON)
 
-// ── STATE ─────────────────────────────────────────────────────────────────────
 let currentSeller   = null
 let allProducts     = []
 let prodPage        = 1
@@ -578,152 +583,180 @@ let productToDelete = null
 let categories      = []
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
+function setInitMsg(msg) {
+  const el = document.getElementById('init-msg')
+  if (el) el.textContent = msg
+}
+
+function hideInitScreen() {
+  document.getElementById('init-screen').classList.add('hidden')
+}
+
 function showToast(msg, type = 'default') {
   const el = document.getElementById('toast')
-  const classes = {
-    default: 'bg-inverse-surface text-inverse-on-surface',
-    success: 'bg-primary text-on-primary',
-    error:   'bg-error text-on-error'
-  }
-  el.className = `fixed top-6 right-6 z-[400] px-5 py-3 rounded-xl text-sm font-medium shadow-2xl max-w-xs ${classes[type] || classes.default}`
+  const classes = { default:'bg-inverse-surface text-inverse-on-surface', success:'bg-primary text-on-primary', error:'bg-error text-on-error' }
+  el.className = `fixed top-6 right-6 z-[400] px-5 py-3 rounded-xl text-sm font-medium shadow-2xl max-w-xs ${classes[type]||classes.default}`
   el.textContent = msg
   el.style.opacity = '1'
   el.style.pointerEvents = 'auto'
-  setTimeout(() => { el.style.opacity = '0'; el.style.pointerEvents = 'none' }, 3500)
+  setTimeout(() => { el.style.opacity='0'; el.style.pointerEvents='none' }, 3500)
 }
 
-function fmtDate(d) {
-  if (!d) return '—'
-  return new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })
-}
-
-function fmtAmount(n, currency = 'MAD') {
-  if (n == null) return '—'
-  return Number(n).toFixed(2) + ' ' + currency
-}
+function fmtDate(d) { return d ? new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}) : '—' }
+function fmtAmount(n, currency='MAD') { return n==null ? '—' : Number(n).toFixed(2)+' '+currency }
 
 function statusBadge(status) {
   const map = {
-    pending:    ['status-pending',    'En attente'],
-    active:     ['status-active',     'Actif'],
-    inactive:   ['status-inactive',   'Inactif'],
-    processing: ['status-processing', 'En traitement'],
-    shipped:    ['status-shipped',    'Expédiée'],
-    delivered:  ['status-delivered',  'Livrée'],
-    cancelled:  ['status-cancelled',  'Annulée'],
-    paid:       ['status-paid',       'Payé'],
-    failed:     ['status-failed',     'Échoué'],
-    refunded:   ['status-processing', 'Remboursé'],
-    approved:   ['status-active',     'Approuvé'],
-    rejected:   ['status-inactive',   'Rejeté'],
-    returned:   ['status-cancelled',  'Retourné'],
+    pending:['status-pending','En attente'], active:['status-active','Actif'], inactive:['status-inactive','Inactif'],
+    processing:['status-processing','En traitement'], shipped:['status-shipped','Expédiée'],
+    delivered:['status-delivered','Livrée'], cancelled:['status-cancelled','Annulée'],
+    paid:['status-paid','Payé'], failed:['status-failed','Échoué'],
+    refunded:['status-processing','Remboursé'], approved:['status-active','Approuvé'],
+    rejected:['status-inactive','Rejeté'], returned:['status-cancelled','Retourné'],
   }
-  const [cls, label] = map[status] || ['status-pending', status || '—']
+  const [cls,label] = map[status]||['status-pending',status||'—']
   return `<span class="${cls} text-[10px] font-bold px-2.5 py-1 rounded-full">${label}</span>`
 }
 
 function starsHtml(rating) {
-  const n = Math.round(rating || 0)
-  return Array.from({length: 5}, (_, i) =>
-    `<span class="material-symbols-outlined ${i < n ? 'text-tertiary icon-fill' : 'text-outline-variant'}" style="font-size:14px">star</span>`
+  const n = Math.round(rating||0)
+  return Array.from({length:5},(_,i)=>
+    `<span class="material-symbols-outlined ${i<n?'text-tertiary icon-fill':'text-outline-variant'}" style="font-size:14px">star</span>`
   ).join('')
 }
 
 // ── NAV ───────────────────────────────────────────────────────────────────────
-const pageTitles = {
-  overview: "Vue d'ensemble",
-  products: 'Mes Produits',
-  orders:   'Commandes',
-  revenue:  'Revenus',
-  reviews:  'Avis Clients',
-  profile:  'Ma Boutique'
-}
+const pageTitles = { overview:"Vue d'ensemble", products:'Mes Produits', orders:'Commandes', revenue:'Revenus', reviews:'Avis Clients', profile:'Ma Boutique' }
 
 function showSection(name) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'))
-  const target = document.getElementById('section-' + name)
-  if (target) target.classList.add('active')
-
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'))
+  const t = document.getElementById('section-'+name)
+  if (t) t.classList.add('active')
   document.querySelectorAll('.nav-item[data-nav]').forEach(b => {
-    const isActive = b.dataset.nav === name
-    b.classList.toggle('active', isActive)
-    if (isActive) {
-      b.classList.remove('text-on-surface-variant')
-      b.classList.add('text-on-primary')
-    } else {
-      b.classList.remove('text-on-primary')
-      b.classList.add('text-on-surface-variant')
-    }
+    const isActive = b.dataset.nav===name
+    b.classList.toggle('active',isActive)
+    b.classList.toggle('text-on-surface-variant',!isActive)
   })
-
-  const titleEl = document.getElementById('page-title')
-  if (titleEl) titleEl.textContent = pageTitles[name] || ''
+  document.getElementById('page-title').textContent = pageTitles[name]||''
   closeSidebar()
-
-  if (name === 'products') loadProducts()
-  if (name === 'orders')   loadOrders()
-  if (name === 'revenue')  loadRevenue()
-  if (name === 'reviews')  loadReviews()
-  if (name === 'profile')  loadProfile()
+  if (name==='products') loadProducts()
+  if (name==='orders')   loadOrders()
+  if (name==='revenue')  loadRevenue()
+  if (name==='reviews')  loadReviews()
+  if (name==='profile')  loadProfileSection()
 }
 
 function openSidebar() {
-  const overlay = document.getElementById('sidebar-overlay')
+  const o=document.getElementById('sidebar-overlay')
   document.getElementById('sidebar').classList.add('open')
-  overlay.classList.remove('hidden', 'pointer-events-none')
-  requestAnimationFrame(() => overlay.style.opacity = '1')
+  o.classList.remove('hidden','pointer-events-none')
+  requestAnimationFrame(()=>o.style.opacity='1')
 }
-
 function closeSidebar() {
-  const overlay = document.getElementById('sidebar-overlay')
+  const o=document.getElementById('sidebar-overlay')
   document.getElementById('sidebar').classList.remove('open')
-  overlay.style.opacity = '0'
-  setTimeout(() => overlay.classList.add('hidden', 'pointer-events-none'), 300)
+  o.style.opacity='0'
+  setTimeout(()=>o.classList.add('hidden','pointer-events-none'),300)
 }
 
-// ── AUTH ──────────────────────────────────────────────────────────────────────
+// ── AUTH — VERSION ROBUSTE ────────────────────────────────────────────────────
 async function initAuth() {
   try {
+    setInitMsg('Vérification de la session…')
     const { data: { session }, error: sessErr } = await db.auth.getSession()
+
     if (sessErr || !session) {
       window.location.href = 'login.html'
       return
     }
 
-    // CORRIGÉ: table "users", colonne "auth_id" ✓ (confirmé par schema Supabase)
-    const { data: user, error: userErr } = await db
+    setInitMsg('Chargement du profil…')
+
+    // Tentative 1 : lookup par auth_id
+    let { data: user, error: userErr } = await db
       .from('users')
       .select('*')
       .eq('auth_id', session.user.id)
-      .single()
+      .maybeSingle()  // maybeSingle : ne throw pas si 0 résultat
 
-    if (userErr || !user) {
-      console.error('Erreur chargement profil:', userErr)
-      showToast('Profil introuvable. Contactez le support.', 'error')
-      setTimeout(() => db.auth.signOut().then(() => window.location.href = 'login.html'), 3000)
+    // Tentative 2 : fallback par email si auth_id non trouvé
+    if (!user) {
+      const { data: userByEmail } = await db
+        .from('users')
+        .select('*')
+        .ilike('email', session.user.email)
+        .maybeSingle()
+
+      if (userByEmail) {
+        user = userByEmail
+        // Corriger l'auth_id manquant silencieusement
+        await db.from('users').update({ auth_id: session.user.id }).eq('id', user.id)
+        user.auth_id = session.user.id
+      }
+    }
+
+    // Tentative 3 : créer le profil si vraiment introuvable
+    if (!user) {
+      setInitMsg('Création du profil…')
+      const { data: newUser } = await db
+        .from('users')
+        .insert({
+          auth_id: session.user.id,
+          email: session.user.email,
+          role: 'buyer',
+          status: 'active',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .select()
+        .single()
+      user = newUser
+    }
+
+    if (!user) {
+      showToast('Impossible de charger le profil.', 'error')
+      hideInitScreen()
       return
     }
 
+    // Vérification du rôle — PAS de redirect, juste un message
     if (user.role !== 'artisan' && user.role !== 'admin') {
-      showToast('Accès refusé — compte vendeur requis.', 'error')
-      setTimeout(() => window.location.href = 'index.html', 2500)
+      hideInitScreen()
+      // Afficher un écran d'accès refusé propre au lieu de rediriger brutalement
+      document.querySelector('.lg\\:ml-64').innerHTML = `
+        <div class="flex flex-col items-center justify-center min-h-screen gap-6 p-8 text-center">
+          <div class="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center">
+            <span class="material-symbols-outlined text-amber-600" style="font-size:32px">lock</span>
+          </div>
+          <div>
+            <h2 class="font-serif italic text-2xl font-bold mb-2">Accès Espace Vendeur</h2>
+            <p class="text-on-surface-variant text-sm max-w-sm">Ton compte n'a pas encore accès à l'espace vendeur. Deviens vendeur depuis ton compte pour accéder à ce dashboard.</p>
+          </div>
+          <div class="flex gap-3">
+            <a href="compte.html?mode=vendeur" class="bg-primary text-on-primary px-6 py-3 rounded-xl text-sm font-bold">Devenir vendeur</a>
+            <a href="index.html" class="border border-outline-variant/30 text-on-surface-variant px-6 py-3 rounded-xl text-sm font-medium">Accueil</a>
+          </div>
+        </div>
+      `
       return
     }
 
     currentSeller = user
 
-    const initials = ((user.first_name?.[0] || '') + (user.last_name?.[0] || '')).toUpperCase() || user.email?.[0]?.toUpperCase() || '?'
-    document.getElementById('seller-avatar').textContent    = initials
-    document.getElementById('seller-name').textContent      = user.full_name || `${user.first_name||''} ${user.last_name||''}`.trim() || user.email
-    document.getElementById('seller-country').textContent   = user.country || '—'
-    document.getElementById('page-date').textContent        = new Date().toLocaleDateString('fr-FR', { weekday:'long', year:'numeric', month:'long', day:'numeric' })
+    const initials = ((user.first_name?.[0]||'')+(user.last_name?.[0]||'')).toUpperCase() || user.email?.[0]?.toUpperCase() || '?'
+    document.getElementById('seller-avatar').textContent  = initials
+    document.getElementById('seller-name').textContent    = user.full_name || `${user.first_name||''} ${user.last_name||''}`.trim() || user.email
+    document.getElementById('seller-country').textContent = user.country || '—'
+    document.getElementById('page-date').textContent      = new Date().toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'})
 
     await loadCategories()
     await loadOverview()
+    hideInitScreen()
 
   } catch (e) {
-    console.error('Erreur initAuth:', e)
-    showToast('Erreur inattendue. Rechargez la page.', 'error')
+    console.error('initAuth error:', e)
+    hideInitScreen()
+    showToast('Erreur inattendue : '+e.message, 'error')
   }
 }
 
@@ -738,107 +771,83 @@ async function loadCategories() {
   categories = data || []
   const sel = document.getElementById('product-category')
   sel.innerHTML = '<option value="">Sélectionner...</option>' +
-    categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('')
+    categories.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')
+}
+
+// ── HELPERS PRODUITS IDs ──────────────────────────────────────────────────────
+async function getMyProductIds() {
+  if (!currentSeller) return []
+  const { data } = await db.from('products').select('id').eq('seller_id', currentSeller.id)
+  return (data||[]).map(p=>p.id)
 }
 
 // ── OVERVIEW ──────────────────────────────────────────────────────────────────
 async function loadOverview() {
   if (!currentSeller) return
   const sid = currentSeller.id
+  const productIds = await getMyProductIds()
 
-  // CORRIGÉ: products → seller_id (pas vendor_id)
-  // CORRIGÉ: orders  → user_id   (pas vendor_id — pas de vendor_id sur orders)
-  // CORRIGÉ: reviews → product_id via join (pas vendor_id)
   const [
     { count: totalProd },
-    { count: activeProd },
-    { count: totalOrders },
-    { count: pendingOrders },
-    { data: revenueOrders },
-    { data: ratingData }
+    { count: activeProd }
   ] = await Promise.all([
-    db.from('products').select('*', { count:'exact', head:true }).eq('seller_id', sid),
-    db.from('products').select('*', { count:'exact', head:true }).eq('seller_id', sid).eq('status','active'),
-    // Commandes des produits de ce vendeur via order_items
-    db.from('order_items').select('order_id', { count:'exact', head:true })
-      .in('product_id', await getMyProductIds()),
-    db.from('orders').select('orders.id', { count:'exact', head:true })
-      .eq('status','pending'),
-    // Revenus: orders liées aux produits du vendeur
-    db.from('orders').select('total_amount').eq('status','delivered'),
-    // Avis sur les produits du vendeur
-    db.from('reviews').select('rating')
-      .in('product_id', await getMyProductIds())
-      .eq('status','approved')
+    db.from('products').select('*',{count:'exact',head:true}).eq('seller_id',sid),
+    db.from('products').select('*',{count:'exact',head:true}).eq('seller_id',sid).eq('status','active'),
   ])
 
-  const totalRevenue = (revenueOrders || []).reduce((s, r) => s + Number(r.total_amount), 0)
-  const avgRating    = ratingData?.length
-    ? (ratingData.reduce((s, r) => s + r.rating, 0) / ratingData.length).toFixed(1)
-    : '—'
+  let totalOrders = 0, pendingOrders = 0, totalRevenue = 0, avgRating = '—'
 
-  document.getElementById('ov-products').textContent      = activeProd ?? '0'
-  document.getElementById('ov-products-trend').textContent = `${totalProd ?? 0} total`
-  document.getElementById('ov-orders').textContent        = totalOrders ?? '0'
-  document.getElementById('ov-orders-trend').textContent  = `${pendingOrders ?? 0} en attente`
-  document.getElementById('ov-revenue').textContent       = totalRevenue.toFixed(0)
-  document.getElementById('ov-rating').textContent        = avgRating
+  if (productIds.length) {
+    const { data: items } = await db.from('order_items').select('order_id').in('product_id', productIds)
+    const orderIds = [...new Set((items||[]).map(i=>i.order_id))]
+
+    if (orderIds.length) {
+      const { count: tc } = await db.from('orders').select('*',{count:'exact',head:true}).in('id',orderIds)
+      const { count: pc } = await db.from('orders').select('*',{count:'exact',head:true}).in('id',orderIds).eq('status','pending')
+      const { data: revOrders } = await db.from('orders').select('total_amount').in('id',orderIds).eq('status','delivered')
+      totalOrders   = tc || 0
+      pendingOrders = pc || 0
+      totalRevenue  = (revOrders||[]).reduce((s,r)=>s+Number(r.total_amount),0)
+    }
+
+    const { data: ratingData } = await db.from('reviews').select('rating').in('product_id',productIds).eq('status','approved')
+    if (ratingData?.length) avgRating = (ratingData.reduce((s,r)=>s+r.rating,0)/ratingData.length).toFixed(1)
+  }
+
+  document.getElementById('ov-products').textContent       = activeProd ?? '0'
+  document.getElementById('ov-products-trend').textContent = `${totalProd??0} total`
+  document.getElementById('ov-orders').textContent         = totalOrders
+  document.getElementById('ov-orders-trend').textContent   = `${pendingOrders} en attente`
+  document.getElementById('ov-revenue').textContent        = totalRevenue.toFixed(0)
+  document.getElementById('ov-rating').textContent         = avgRating
 
   const badge = document.getElementById('badge-orders')
-  if ((pendingOrders || 0) > 0) {
-    badge.textContent = pendingOrders
-    badge.classList.remove('hidden')
-  }
+  if (pendingOrders > 0) { badge.textContent=pendingOrders; badge.classList.remove('hidden') }
 
   loadRecentOrders()
   loadLowStock()
 }
 
-// Helper: récupère les IDs produits du vendeur courant
-async function getMyProductIds() {
-  if (!currentSeller) return []
-  const { data } = await db.from('products').select('id').eq('seller_id', currentSeller.id)
-  return (data || []).map(p => p.id)
-}
-
 async function loadRecentOrders() {
   const productIds = await getMyProductIds()
-  if (!productIds.length) {
-    document.getElementById('recent-orders').innerHTML =
-      '<div class="px-5 py-8 text-center text-outline text-sm">Aucune commande</div>'
-    return
-  }
+  const el = document.getElementById('recent-orders')
+  if (!productIds.length) { el.innerHTML='<div class="px-5 py-8 text-center text-outline text-sm">Aucune commande</div>'; return }
 
-  // Récupère les order_ids liés aux produits du vendeur
-  const { data: items } = await db.from('order_items')
-    .select('order_id')
-    .in('product_id', productIds)
+  const { data: items } = await db.from('order_items').select('order_id').in('product_id',productIds)
+  const orderIds = [...new Set((items||[]).map(i=>i.order_id))]
+  if (!orderIds.length) { el.innerHTML='<div class="px-5 py-8 text-center text-outline text-sm">Aucune commande</div>'; return }
 
-  const orderIds = [...new Set((items || []).map(i => i.order_id))]
-  if (!orderIds.length) {
-    document.getElementById('recent-orders').innerHTML =
-      '<div class="px-5 py-8 text-center text-outline text-sm">Aucune commande</div>'
-    return
-  }
-
-  // CORRIGÉ: join users (pas profiles)
   const { data } = await db.from('orders')
     .select('id, total_amount, status, created_at, users(full_name, email)')
-    .in('id', orderIds)
-    .order('created_at', { ascending: false })
-    .limit(5)
+    .in('id',orderIds).order('created_at',{ascending:false}).limit(5)
 
-  const el = document.getElementById('recent-orders')
-  if (!data?.length) {
-    el.innerHTML = '<div class="px-5 py-8 text-center text-outline text-sm">Aucune commande</div>'
-    return
-  }
+  if (!data?.length) { el.innerHTML='<div class="px-5 py-8 text-center text-outline text-sm">Aucune commande</div>'; return }
 
-  el.innerHTML = data.map(o => `
+  el.innerHTML = data.map(o=>`
     <div class="table-row px-5 py-3 flex items-center justify-between gap-3 cursor-pointer" onclick="showSection('orders')">
       <div>
         <p class="text-sm font-medium font-mono">#${o.id.slice(0,8).toUpperCase()}</p>
-        <p class="text-xs text-outline">${o.users?.full_name || o.users?.email || '—'} · ${fmtDate(o.created_at)}</p>
+        <p class="text-xs text-outline">${o.users?.full_name||o.users?.email||'—'} · ${fmtDate(o.created_at)}</p>
       </div>
       <div class="flex items-center gap-3">
         <span class="text-sm font-bold">${fmtAmount(o.total_amount)}</span>
@@ -849,24 +858,14 @@ async function loadRecentOrders() {
 }
 
 async function loadLowStock() {
-  // CORRIGÉ: seller_id (pas vendor_id), stock (pas stock_quantity)
-  const { data } = await db.from('products')
-    .select('id, name, stock')
-    .eq('seller_id', currentSeller.id)
-    .lte('stock', 5)
-    .order('stock', { ascending: true })
-    .limit(6)
-
+  const { data } = await db.from('products').select('id,name,stock').eq('seller_id',currentSeller.id).lte('stock',5).order('stock',{ascending:true}).limit(6)
   const el = document.getElementById('low-stock')
-  if (!data?.length) {
-    el.innerHTML = '<div class="px-5 py-8 text-center text-outline text-sm">Aucun stock critique</div>'
-    return
-  }
-  el.innerHTML = data.map(p => `
+  if (!data?.length) { el.innerHTML='<div class="px-5 py-8 text-center text-outline text-sm">Aucun stock critique</div>'; return }
+  el.innerHTML = data.map(p=>`
     <div class="px-5 py-3 flex items-center justify-between gap-2">
       <p class="text-sm truncate">${p.name}</p>
-      <span class="text-xs font-bold px-2 py-1 rounded-full ${p.stock === 0 ? 'bg-error/10 text-error' : 'status-pending'} whitespace-nowrap">
-        ${p.stock === 0 ? 'Rupture' : p.stock + ' restants'}
+      <span class="text-xs font-bold px-2 py-1 rounded-full ${p.stock===0?'bg-error/10 text-error':'status-pending'} whitespace-nowrap">
+        ${p.stock===0?'Rupture':p.stock+' restants'}
       </span>
     </div>
   `).join('')
@@ -875,14 +874,9 @@ async function loadLowStock() {
 // ── PRODUCTS ──────────────────────────────────────────────────────────────────
 async function loadProducts() {
   if (!currentSeller) return
-  // CORRIGÉ: seller_id, join categories
-  const { data, error } = await db.from('products')
-    .select('*, categories(name)')
-    .eq('seller_id', currentSeller.id)
-    .order('created_at', { ascending: false })
-
-  if (error) { showToast('Erreur chargement produits: ' + error.message, 'error'); return }
-  allProducts = data || []
+  const { data, error } = await db.from('products').select('*, categories(name)').eq('seller_id',currentSeller.id).order('created_at',{ascending:false})
+  if (error) { showToast('Erreur produits: '+error.message,'error'); return }
+  allProducts = data||[]
   prodPage = 1
   filterProducts()
 }
@@ -890,49 +884,28 @@ async function loadProducts() {
 function filterProducts() {
   const search = document.getElementById('prod-search').value.toLowerCase()
   const status = document.getElementById('prod-filter-status').value
-  const filtered = allProducts.filter(p => {
-    const matchSearch = !search || p.name?.toLowerCase().includes(search)
-    const matchStatus = !status || p.status === status
-    return matchSearch && matchStatus
-  })
+  const filtered = allProducts.filter(p=>(!search||p.name?.toLowerCase().includes(search))&&(!status||p.status===status))
   renderProductsTable(filtered)
 }
 
 function renderProductsTable(data) {
-  const tbody      = document.getElementById('products-table-body')
+  const tbody = document.getElementById('products-table-body')
   const pagination = document.getElementById('products-pagination')
-
-  if (!data.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-12 text-outline text-sm">Aucun produit trouvé</td></tr>'
-    pagination.classList.add('hidden')
-    return
-  }
-
-  const total      = data.length
-  const totalPages = Math.ceil(total / PROD_PER_PAGE)
-  if (prodPage > totalPages) prodPage = 1
-  const slice = data.slice((prodPage - 1) * PROD_PER_PAGE, prodPage * PROD_PER_PAGE)
-
-  // CORRIGÉ: stock (pas stock_quantity), origin_city (pas city)
-  tbody.innerHTML = slice.map(p => `
+  if (!data.length) { tbody.innerHTML='<tr><td colspan="6" class="text-center py-12 text-outline text-sm">Aucun produit</td></tr>'; pagination.classList.add('hidden'); return }
+  const total=data.length, totalPages=Math.ceil(total/PROD_PER_PAGE)
+  if (prodPage>totalPages) prodPage=1
+  const slice=data.slice((prodPage-1)*PROD_PER_PAGE,prodPage*PROD_PER_PAGE)
+  tbody.innerHTML = slice.map(p=>`
     <tr class="table-row border-b border-outline-variant/10">
       <td class="px-5 py-4">
         <div class="flex items-center gap-3">
-          ${p.image_url
-            ? `<img src="${p.image_url}" class="w-10 h-10 rounded-xl object-cover bg-surface-container-low flex-shrink-0" onerror="this.style.display='none'"/>`
-            : `<div class="w-10 h-10 rounded-xl bg-surface-container-low flex-shrink-0 flex items-center justify-center"><span class="material-symbols-outlined text-outline" style="font-size:18px">image</span></div>`
-          }
-          <div>
-            <p class="text-sm font-medium">${p.name}</p>
-            <p class="text-xs text-outline">${p.origin_city || p.country || '—'}</p>
-          </div>
+          ${p.image_url?`<img src="${p.image_url}" class="w-10 h-10 rounded-xl object-cover bg-surface-container-low flex-shrink-0" onerror="this.style.display='none'"/>`:`<div class="w-10 h-10 rounded-xl bg-surface-container-low flex-shrink-0 flex items-center justify-center"><span class="material-symbols-outlined text-outline" style="font-size:18px">image</span></div>`}
+          <div><p class="text-sm font-medium">${p.name}</p><p class="text-xs text-outline">${p.origin_city||p.country||'—'}</p></div>
         </div>
       </td>
-      <td class="px-4 py-4 hidden md:table-cell text-sm text-on-surface-variant">${p.categories?.name || '—'}</td>
+      <td class="px-4 py-4 hidden md:table-cell text-sm text-on-surface-variant">${p.categories?.name||'—'}</td>
       <td class="px-4 py-4 text-sm font-bold">${fmtAmount(p.price)}</td>
-      <td class="px-4 py-4 hidden sm:table-cell">
-        <span class="text-sm ${(p.stock ?? 0) <= 5 ? 'text-error font-bold' : 'text-on-surface-variant'}">${p.stock ?? '0'}</span>
-      </td>
+      <td class="px-4 py-4 hidden sm:table-cell"><span class="text-sm ${(p.stock??0)<=5?'text-error font-bold':'text-on-surface-variant'}">${p.stock??'0'}</span></td>
       <td class="px-4 py-4">${statusBadge(p.status)}</td>
       <td class="px-5 py-4 text-right">
         <div class="flex items-center justify-end gap-3">
@@ -942,328 +915,173 @@ function renderProductsTable(data) {
       </td>
     </tr>
   `).join('')
-
   pagination.classList.remove('hidden')
-  document.getElementById('prod-count-label').textContent = `${total} produit${total > 1 ? 's' : ''} · Page ${prodPage}/${totalPages}`
-  document.getElementById('prod-prev').disabled = prodPage === 1
-  document.getElementById('prod-next').disabled = prodPage === totalPages
+  document.getElementById('prod-count-label').textContent=`${total} produit${total>1?'s':''} · Page ${prodPage}/${totalPages}`
+  document.getElementById('prod-prev').disabled=prodPage===1
+  document.getElementById('prod-next').disabled=prodPage===totalPages
 }
 
-function changeProdPage(dir) {
-  prodPage += dir
-  filterProducts()
-}
+function changeProdPage(dir) { prodPage+=dir; filterProducts() }
 
-// ── PRODUCT MODAL ─────────────────────────────────────────────────────────────
-function openProductModal(product = null) {
-  // CORRIGÉ: stock (pas stock_quantity), origin_city (pas city)
-  document.getElementById('product-id').value          = product?.id || ''
-  document.getElementById('product-name').value        = product?.name || ''
-  document.getElementById('product-description').value = product?.description || ''
-  document.getElementById('product-price').value       = product?.price || ''
-  document.getElementById('product-stock').value       = product?.stock ?? ''
-  document.getElementById('product-country').value     = product?.country || 'Maroc'
-  document.getElementById('product-city').value        = product?.origin_city || ''
-  document.getElementById('product-image').value       = product?.image_url || ''
-  document.getElementById('product-status').value      = product?.status || 'pending'
-  document.getElementById('product-category').value    = product?.category_id || ''
-  document.getElementById('modal-title').textContent   = product ? 'Modifier le produit' : 'Nouveau produit'
-  document.getElementById('modal-submit-btn').textContent = product ? 'Enregistrer' : 'Créer'
-
-  const overlay = document.getElementById('modal-overlay')
-  overlay.classList.remove('hidden')
-  requestAnimationFrame(() => { overlay.style.opacity = '1' })
+function openProductModal(product=null) {
+  document.getElementById('product-id').value          = product?.id||''
+  document.getElementById('product-name').value        = product?.name||''
+  document.getElementById('product-description').value = product?.description||''
+  document.getElementById('product-price').value       = product?.price||''
+  document.getElementById('product-stock').value       = product?.stock??''
+  document.getElementById('product-country').value     = product?.country||'Maroc'
+  document.getElementById('product-city').value        = product?.origin_city||''
+  document.getElementById('product-image').value       = product?.image_url||''
+  document.getElementById('product-status').value      = product?.status||'pending'
+  document.getElementById('product-category').value    = product?.category_id||''
+  document.getElementById('modal-title').textContent   = product?'Modifier le produit':'Nouveau produit'
+  document.getElementById('modal-submit-btn').textContent = product?'Enregistrer':'Créer'
+  const o=document.getElementById('modal-overlay')
+  o.classList.remove('hidden')
+  requestAnimationFrame(()=>o.style.opacity='1')
 }
 
 function closeProductModal() {
-  const overlay = document.getElementById('modal-overlay')
-  overlay.style.opacity = '0'
-  setTimeout(() => overlay.classList.add('hidden'), 200)
+  const o=document.getElementById('modal-overlay')
+  o.style.opacity='0'
+  setTimeout(()=>o.classList.add('hidden'),200)
 }
 
-function editProduct(id) {
-  const p = allProducts.find(p => p.id === id)
-  if (p) openProductModal(p)
-}
+function editProduct(id) { const p=allProducts.find(p=>p.id===id); if(p) openProductModal(p) }
 
 async function saveProduct(e) {
   e.preventDefault()
-  const btn = document.getElementById('modal-submit-btn')
-  btn.disabled    = true
-  btn.textContent = 'Enregistrement...'
-
-  const id = document.getElementById('product-id').value
-
-  // CORRIGÉ: seller_id (pas vendor_id), stock (pas stock_quantity), origin_city (pas city)
+  const btn=document.getElementById('modal-submit-btn')
+  btn.disabled=true; btn.textContent='Enregistrement...'
+  const id=document.getElementById('product-id').value
   const payload = {
     name:        document.getElementById('product-name').value.trim(),
     description: document.getElementById('product-description').value.trim(),
     price:       parseFloat(document.getElementById('product-price').value),
     stock:       parseInt(document.getElementById('product-stock').value),
     country:     document.getElementById('product-country').value,
-    origin_city: document.getElementById('product-city').value.trim() || null,
-    image_url:   document.getElementById('product-image').value.trim() || null,
+    origin_city: document.getElementById('product-city').value.trim()||null,
+    image_url:   document.getElementById('product-image').value.trim()||null,
     status:      document.getElementById('product-status').value,
-    category_id: document.getElementById('product-category').value || null,
+    category_id: document.getElementById('product-category').value||null,
     seller_id:   currentSeller.id,
     updated_at:  new Date().toISOString()
   }
-
   let error
-  if (id) {
-    ;({ error } = await db.from('products').update(payload).eq('id', id))
-  } else {
-    payload.created_at = new Date().toISOString()
-    ;({ error } = await db.from('products').insert(payload))
-  }
-
-  btn.disabled    = false
-  btn.textContent = 'Enregistrer'
-
-  if (error) {
-    showToast('Erreur : ' + error.message, 'error')
-  } else {
-    showToast(id ? 'Produit mis à jour !' : 'Produit créé !', 'success')
-    closeProductModal()
-    loadProducts()
-    loadOverview()
-  }
+  if (id) { ({error}=await db.from('products').update(payload).eq('id',id)) }
+  else { payload.created_at=new Date().toISOString(); ({error}=await db.from('products').insert(payload)) }
+  btn.disabled=false; btn.textContent='Enregistrer'
+  if (error) { showToast('Erreur : '+error.message,'error') }
+  else { showToast(id?'Produit mis à jour !':'Produit créé !','success'); closeProductModal(); loadProducts(); loadOverview() }
 }
 
-// Modal suppression
-function askDeleteProduct(id) {
-  productToDelete = id
-  document.getElementById('delete-modal-overlay').classList.remove('hidden')
-}
-
-function closeDeleteModal() {
-  productToDelete = null
-  document.getElementById('delete-modal-overlay').classList.add('hidden')
-}
-
+function askDeleteProduct(id) { productToDelete=id; document.getElementById('delete-modal-overlay').classList.remove('hidden') }
+function closeDeleteModal() { productToDelete=null; document.getElementById('delete-modal-overlay').classList.add('hidden') }
 async function confirmDelete() {
   if (!productToDelete) return
-  const { error } = await db.from('products').delete().eq('id', productToDelete)
+  const {error}=await db.from('products').delete().eq('id',productToDelete)
   closeDeleteModal()
-  if (error) {
-    showToast('Erreur : ' + error.message, 'error')
-  } else {
-    showToast('Produit supprimé', 'default')
-    loadProducts()
-    loadOverview()
-  }
+  if (error) showToast('Erreur : '+error.message,'error')
+  else { showToast('Produit supprimé','default'); loadProducts(); loadOverview() }
 }
 
 // ── ORDERS ────────────────────────────────────────────────────────────────────
 async function loadOrders() {
   if (!currentSeller) return
-
-  const productIds = await getMyProductIds()
-  const tbody = document.getElementById('orders-table-body')
-
-  if (!productIds.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-12 text-outline text-sm">Aucun produit — aucune commande</td></tr>'
-    return
-  }
-
-  // Trouver les order_ids liés aux produits du vendeur
-  const { data: items } = await db.from('order_items')
-    .select('order_id')
-    .in('product_id', productIds)
-
-  const orderIds = [...new Set((items || []).map(i => i.order_id))]
-  if (!orderIds.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-12 text-outline text-sm">Aucune commande</td></tr>'
-    return
-  }
-
-  const statusFilter = document.getElementById('order-filter').value
-  // CORRIGÉ: join users (pas profiles)
-  let query = db.from('orders')
-    .select('id, total_amount, status, created_at, users(full_name, email)')
-    .in('id', orderIds)
-    .order('created_at', { ascending: false })
-
-  if (statusFilter) query = query.eq('status', statusFilter)
-
-  const { data, error } = await query
-  if (error) { showToast('Erreur commandes: ' + error.message, 'error'); return }
-
-  if (!data?.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-12 text-outline text-sm">Aucune commande</td></tr>'
-    return
-  }
-
-  tbody.innerHTML = data.map(o => `
+  const productIds=await getMyProductIds()
+  const tbody=document.getElementById('orders-table-body')
+  if (!productIds.length) { tbody.innerHTML='<tr><td colspan="6" class="text-center py-12 text-outline text-sm">Aucun produit</td></tr>'; return }
+  const {data:items}=await db.from('order_items').select('order_id').in('product_id',productIds)
+  const orderIds=[...new Set((items||[]).map(i=>i.order_id))]
+  if (!orderIds.length) { tbody.innerHTML='<tr><td colspan="6" class="text-center py-12 text-outline text-sm">Aucune commande</td></tr>'; return }
+  const statusFilter=document.getElementById('order-filter').value
+  let query=db.from('orders').select('id,total_amount,status,created_at,users(full_name,email)').in('id',orderIds).order('created_at',{ascending:false})
+  if (statusFilter) query=query.eq('status',statusFilter)
+  const {data,error}=await query
+  if (error) { showToast('Erreur commandes: '+error.message,'error'); return }
+  if (!data?.length) { tbody.innerHTML='<tr><td colspan="6" class="text-center py-12 text-outline text-sm">Aucune commande</td></tr>'; return }
+  tbody.innerHTML=data.map(o=>`
     <tr class="table-row border-b border-outline-variant/10">
-      <td class="px-5 py-4">
-        <p class="text-sm font-medium font-mono">#${o.id.slice(0,8).toUpperCase()}</p>
-      </td>
-      <td class="px-4 py-4 hidden md:table-cell text-sm text-on-surface-variant">
-        ${o.users?.full_name || o.users?.email || '—'}
-      </td>
+      <td class="px-5 py-4"><p class="text-sm font-medium font-mono">#${o.id.slice(0,8).toUpperCase()}</p></td>
+      <td class="px-4 py-4 hidden md:table-cell text-sm text-on-surface-variant">${o.users?.full_name||o.users?.email||'—'}</td>
       <td class="px-4 py-4 text-sm font-bold">${fmtAmount(o.total_amount)}</td>
       <td class="px-4 py-4 hidden sm:table-cell text-sm text-on-surface-variant">${fmtDate(o.created_at)}</td>
       <td class="px-4 py-4">${statusBadge(o.status)}</td>
-      <td class="px-5 py-4 text-right">
-        <button onclick="openOrderModal('${o.id}')" class="text-xs text-primary font-bold hover:underline">Détails</button>
-      </td>
+      <td class="px-5 py-4 text-right"><button onclick="openOrderModal('${o.id}')" class="text-xs text-primary font-bold hover:underline">Détails</button></td>
     </tr>
   `).join('')
 }
 
 async function openOrderModal(id) {
-  currentOrderId = id
-  const overlay = document.getElementById('order-modal-overlay')
-  overlay.classList.remove('hidden')
-
-  // CORRIGÉ: join users (pas profiles), order_items → products(name)
-  const { data: o, error } = await db.from('orders')
-    .select('*, users(full_name, email), order_items(quantity, unit_price, products(name))')
-    .eq('id', id)
-    .single()
-
-  const content = document.getElementById('order-detail-content')
-  if (error || !o) { content.innerHTML = '<p class="text-sm text-outline">Commande introuvable</p>'; return }
-
-  document.getElementById('order-status-update').value = o.status
-
-  const itemsHtml = (o.order_items || []).map(i => `
-    <div class="flex items-center justify-between text-sm py-1.5">
-      <span class="text-on-surface-variant">${i.products?.name || '—'} <span class="font-bold text-on-surface">× ${i.quantity}</span></span>
-      <span class="font-bold">${fmtAmount(i.unit_price * i.quantity)}</span>
-    </div>
-  `).join('')
-
-  content.innerHTML = `
-    <div class="space-y-3">
-      <div class="flex justify-between text-sm py-1.5 border-b border-outline-variant/10">
-        <span class="text-[10px] text-outline font-bold uppercase tracking-widest">Commande</span>
-        <span class="font-mono font-bold text-sm">#${o.id.slice(0,8).toUpperCase()}</span>
-      </div>
-      <div class="flex justify-between text-sm py-1.5 border-b border-outline-variant/10">
-        <span class="text-[10px] text-outline font-bold uppercase tracking-widest">Client</span>
-        <span class="text-sm">${o.users?.full_name || o.users?.email || '—'}</span>
-      </div>
-      ${o.shipping_city ? `
-      <div class="flex justify-between text-sm py-1.5 border-b border-outline-variant/10">
-        <span class="text-[10px] text-outline font-bold uppercase tracking-widest">Livraison</span>
-        <span class="text-sm">${o.shipping_city}, ${o.shipping_country || ''}</span>
-      </div>` : ''}
-      <div class="flex justify-between text-sm py-1.5 border-b border-outline-variant/10">
-        <span class="text-[10px] text-outline font-bold uppercase tracking-widest">Date</span>
-        <span class="text-sm">${fmtDate(o.created_at)}</span>
-      </div>
-      <div class="flex justify-between text-sm py-1.5 border-b border-outline-variant/10">
-        <span class="text-[10px] text-outline font-bold uppercase tracking-widest">Statut</span>
-        <span>${statusBadge(o.status)}</span>
-      </div>
-      <div class="pt-2">
-        <p class="text-[10px] uppercase tracking-widest text-outline font-bold mb-2">Articles</p>
-        ${itemsHtml || '<p class="text-sm text-outline">—</p>'}
-      </div>
-      <div class="flex justify-between text-sm pt-3 border-t border-outline-variant/10">
-        <span class="font-bold">Total</span>
-        <span class="font-bold text-primary text-base">${fmtAmount(o.total_amount)}</span>
-      </div>
-    </div>
-  `
+  currentOrderId=id
+  document.getElementById('order-modal-overlay').classList.remove('hidden')
+  const {data:o,error}=await db.from('orders').select('*, users(full_name,email), order_items(quantity,unit_price,products(name))').eq('id',id).single()
+  const content=document.getElementById('order-detail-content')
+  if (error||!o) { content.innerHTML='<p class="text-sm text-outline">Commande introuvable</p>'; return }
+  document.getElementById('order-status-update').value=o.status
+  const itemsHtml=(o.order_items||[]).map(i=>`<div class="flex items-center justify-between text-sm py-1.5"><span class="text-on-surface-variant">${i.products?.name||'—'} <span class="font-bold text-on-surface">× ${i.quantity}</span></span><span class="font-bold">${fmtAmount(i.unit_price*i.quantity)}</span></div>`).join('')
+  content.innerHTML=`<div class="space-y-3">
+    <div class="flex justify-between text-sm py-1.5 border-b border-outline-variant/10"><span class="text-[10px] text-outline font-bold uppercase tracking-widest">Commande</span><span class="font-mono font-bold text-sm">#${o.id.slice(0,8).toUpperCase()}</span></div>
+    <div class="flex justify-between text-sm py-1.5 border-b border-outline-variant/10"><span class="text-[10px] text-outline font-bold uppercase tracking-widest">Client</span><span class="text-sm">${o.users?.full_name||o.users?.email||'—'}</span></div>
+    <div class="flex justify-between text-sm py-1.5 border-b border-outline-variant/10"><span class="text-[10px] text-outline font-bold uppercase tracking-widest">Date</span><span class="text-sm">${fmtDate(o.created_at)}</span></div>
+    <div class="flex justify-between text-sm py-1.5 border-b border-outline-variant/10"><span class="text-[10px] text-outline font-bold uppercase tracking-widest">Statut</span><span>${statusBadge(o.status)}</span></div>
+    <div class="pt-2"><p class="text-[10px] uppercase tracking-widest text-outline font-bold mb-2">Articles</p>${itemsHtml||'<p class="text-sm text-outline">—</p>'}</div>
+    <div class="flex justify-between text-sm pt-3 border-t border-outline-variant/10"><span class="font-bold">Total</span><span class="font-bold text-primary text-base">${fmtAmount(o.total_amount)}</span></div>
+  </div>`
 }
 
-function closeOrderModal() {
-  document.getElementById('order-modal-overlay').classList.add('hidden')
-  currentOrderId = null
-}
+function closeOrderModal() { document.getElementById('order-modal-overlay').classList.add('hidden'); currentOrderId=null }
 
 async function updateOrderStatus() {
   if (!currentOrderId) return
-  const status = document.getElementById('order-status-update').value
-  const { error } = await db.from('orders')
-    .update({ status, updated_at: new Date().toISOString() })
-    .eq('id', currentOrderId)
-
-  if (error) {
-    showToast('Erreur : ' + error.message, 'error')
-  } else {
-    showToast('Statut mis à jour', 'success')
-    closeOrderModal()
-    loadOrders()
-  }
+  const status=document.getElementById('order-status-update').value
+  const {error}=await db.from('orders').update({status,updated_at:new Date().toISOString()}).eq('id',currentOrderId)
+  if (error) showToast('Erreur : '+error.message,'error')
+  else { showToast('Statut mis à jour','success'); closeOrderModal(); loadOrders() }
 }
 
 // ── REVENUE ───────────────────────────────────────────────────────────────────
 async function loadRevenue() {
   if (!currentSeller) return
-
-  const productIds = await getMyProductIds()
-
-  // CORRIGÉ: payments n'a pas de vendor_id → on récupère via order_items → orders → payments
-  // D'abord les order_ids liés à ce vendeur
-  let allPayments = []
+  const productIds=await getMyProductIds()
+  let allPayments=[]
   if (productIds.length) {
-    const { data: items } = await db.from('order_items')
-      .select('order_id')
-      .in('product_id', productIds)
-
-    const orderIds = [...new Set((items || []).map(i => i.order_id))]
-
+    const {data:items}=await db.from('order_items').select('order_id').in('product_id',productIds)
+    const orderIds=[...new Set((items||[]).map(i=>i.order_id))]
     if (orderIds.length) {
-      // CORRIGÉ: method (pas payment_method)
-      const { data } = await db.from('payments')
-        .select('amount, created_at, method, status, currency')
-        .in('order_id', orderIds)
-        .order('created_at', { ascending: false })
-      allPayments = data || []
+      const {data}=await db.from('payments').select('amount,created_at,method,status,currency').in('order_id',orderIds).order('created_at',{ascending:false})
+      allPayments=data||[]
     }
   }
-
-  const paid       = allPayments.filter(p => p.status === 'paid')
-  const total      = paid.reduce((s, p) => s + Number(p.amount), 0)
-  const now        = new Date()
-  const thisMonth  = paid.filter(p => {
-    const d = new Date(p.created_at)
-    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
-  })
-  const monthTotal = thisMonth.reduce((s, p) => s + Number(p.amount), 0)
-
-  document.getElementById('rev-total').textContent = fmtAmount(total)
-  document.getElementById('rev-month').textContent = fmtAmount(monthTotal)
-  document.getElementById('rev-count').textContent = paid.length
-  document.getElementById('rev-avg').textContent   = paid.length ? fmtAmount(total / paid.length) : '— MAD'
-
-  // Graphique 6 mois
-  const months = []
-  for (let i = 5; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
-    months.push({ label: d.toLocaleDateString('fr-FR', { month:'short' }), month: d.getMonth(), year: d.getFullYear(), total: 0 })
-  }
-  paid.forEach(p => {
-    const d = new Date(p.created_at)
-    const m = months.find(x => x.month === d.getMonth() && x.year === d.getFullYear())
-    if (m) m.total += Number(p.amount)
-  })
-  const maxVal = Math.max(...months.map(m => m.total), 1)
-  document.getElementById('revenue-chart').innerHTML = months.map(m => `
+  const paid=allPayments.filter(p=>p.status==='paid')
+  const total=paid.reduce((s,p)=>s+Number(p.amount),0)
+  const now=new Date()
+  const thisMonth=paid.filter(p=>{const d=new Date(p.created_at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()})
+  const monthTotal=thisMonth.reduce((s,p)=>s+Number(p.amount),0)
+  document.getElementById('rev-total').textContent=fmtAmount(total)
+  document.getElementById('rev-month').textContent=fmtAmount(monthTotal)
+  document.getElementById('rev-count').textContent=paid.length
+  document.getElementById('rev-avg').textContent=paid.length?fmtAmount(total/paid.length):'— MAD'
+  const months=[]
+  for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);months.push({label:d.toLocaleDateString('fr-FR',{month:'short'}),month:d.getMonth(),year:d.getFullYear(),total:0})}
+  paid.forEach(p=>{const d=new Date(p.created_at);const m=months.find(x=>x.month===d.getMonth()&&x.year===d.getFullYear());if(m)m.total+=Number(p.amount)})
+  const maxVal=Math.max(...months.map(m=>m.total),1)
+  document.getElementById('revenue-chart').innerHTML=months.map(m=>`
     <div class="flex flex-col items-center gap-1 flex-1">
-      <span class="text-[10px] font-bold text-on-surface-variant">${m.total > 0 ? Math.round(m.total) : ''}</span>
-      <div class="w-full rounded-t-lg bg-primary/15 relative" style="height:${Math.max((m.total / maxVal) * 120, 4)}px">
+      <span class="text-[10px] font-bold text-on-surface-variant">${m.total>0?Math.round(m.total):''}</span>
+      <div class="w-full rounded-t-lg bg-primary/15 relative" style="height:${Math.max((m.total/maxVal)*120,4)}px">
         <div class="absolute inset-x-0 bottom-0 rounded-t-lg bg-primary" style="height:100%"></div>
       </div>
       <span class="text-[10px] text-outline uppercase">${m.label}</span>
     </div>
   `).join('')
-
-  // Table paiements
-  const tbody = document.getElementById('payments-table-body')
-  if (!allPayments.length) {
-    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-12 text-outline text-sm">Aucun paiement</td></tr>'
-    return
-  }
-  tbody.innerHTML = allPayments.slice(0, 20).map(p => `
+  const tbody=document.getElementById('payments-table-body')
+  if (!allPayments.length) { tbody.innerHTML='<tr><td colspan="5" class="text-center py-12 text-outline text-sm">Aucun paiement</td></tr>'; return }
+  tbody.innerHTML=allPayments.slice(0,20).map(p=>`
     <tr class="table-row border-b border-outline-variant/10">
-      <td class="px-5 py-4 text-sm font-mono text-on-surface-variant">${p.created_at ? new Date(p.created_at).getTime().toString(36).toUpperCase().slice(-8) : '—'}</td>
-      <td class="px-4 py-4 text-sm font-bold">${fmtAmount(p.amount, p.currency || 'MAD')}</td>
-      <td class="px-4 py-4 hidden sm:table-cell text-sm text-on-surface-variant">${p.method || '—'}</td>
+      <td class="px-5 py-4 text-sm font-mono text-on-surface-variant">${p.created_at?new Date(p.created_at).getTime().toString(36).toUpperCase().slice(-8):'—'}</td>
+      <td class="px-4 py-4 text-sm font-bold">${fmtAmount(p.amount,p.currency||'MAD')}</td>
+      <td class="px-4 py-4 hidden sm:table-cell text-sm text-on-surface-variant">${p.method||'—'}</td>
       <td class="px-4 py-4 hidden md:table-cell text-sm text-on-surface-variant">${fmtDate(p.created_at)}</td>
       <td class="px-4 py-4">${statusBadge(p.status)}</td>
     </tr>
@@ -1273,134 +1091,85 @@ async function loadRevenue() {
 // ── REVIEWS ───────────────────────────────────────────────────────────────────
 async function loadReviews() {
   if (!currentSeller) return
-
-  const productIds = await getMyProductIds()
-  const list = document.getElementById('reviews-list')
-
-  if (!productIds.length) {
-    list.innerHTML = '<div class="px-5 py-8 text-center text-outline text-sm">Aucun produit</div>'
-    return
-  }
-
-  const filter = document.getElementById('review-filter').value
-
-  // CORRIGÉ: reviews n'a pas vendor_id → on filtre par product_id des produits du vendeur
-  // reviewer_name est une colonne directe (pas de join profiles nécessaire)
-  let query = db.from('reviews')
-    .select('id, rating, comment, status, created_at, reviewer_name, products(name)')
-    .in('product_id', productIds)
-    .order('created_at', { ascending: false })
-
-  if (filter) query = query.eq('status', filter)
-
-  const { data, error } = await query
-  if (error) { showToast('Erreur avis: ' + error.message, 'error'); return }
-
-  const all      = data || []
-  const approved = all.filter(r => r.status === 'approved')
-  const avgRating = approved.length
-    ? (approved.reduce((s, r) => s + r.rating, 0) / approved.length)
-    : 0
-
-  document.getElementById('rev-avg-rating').textContent   = avgRating ? avgRating.toFixed(1) : '—'
-  document.getElementById('rev-stars').innerHTML          = starsHtml(avgRating)
-  document.getElementById('rev-total-count').textContent  = all.length
-  document.getElementById('rev-approved-count').textContent = approved.length
-
-  if (!all.length) {
-    list.innerHTML = '<div class="px-5 py-8 text-center text-outline text-sm">Aucun avis</div>'
-    return
-  }
-
-  list.innerHTML = all.map(r => `
+  const productIds=await getMyProductIds()
+  const list=document.getElementById('reviews-list')
+  if (!productIds.length) { list.innerHTML='<div class="px-5 py-8 text-center text-outline text-sm">Aucun produit</div>'; return }
+  const filter=document.getElementById('review-filter').value
+  let query=db.from('reviews').select('id,rating,comment,status,created_at,reviewer_name,products(name)').in('product_id',productIds).order('created_at',{ascending:false})
+  if (filter) query=query.eq('status',filter)
+  const {data,error}=await query
+  if (error) { showToast('Erreur avis: '+error.message,'error'); return }
+  const all=data||[]
+  const approved=all.filter(r=>r.status==='approved')
+  const avg=approved.length?(approved.reduce((s,r)=>s+r.rating,0)/approved.length):0
+  document.getElementById('rev-avg-rating').textContent=avg?avg.toFixed(1):'—'
+  document.getElementById('rev-stars').innerHTML=starsHtml(avg)
+  document.getElementById('rev-total-count').textContent=all.length
+  document.getElementById('rev-approved-count').textContent=approved.length
+  if (!all.length) { list.innerHTML='<div class="px-5 py-8 text-center text-outline text-sm">Aucun avis</div>'; return }
+  list.innerHTML=all.map(r=>`
     <div class="px-5 py-4 space-y-1.5">
       <div class="flex items-center justify-between gap-2 flex-wrap">
-        <div class="flex items-center gap-2">
-          <div class="flex gap-0.5">${starsHtml(r.rating)}</div>
-          <span class="text-sm font-medium">${r.reviewer_name || 'Anonyme'}</span>
-        </div>
-        <div class="flex items-center gap-2">
-          ${statusBadge(r.status)}
-          <span class="text-xs text-outline">${fmtDate(r.created_at)}</span>
-        </div>
+        <div class="flex items-center gap-2"><div class="flex gap-0.5">${starsHtml(r.rating)}</div><span class="text-sm font-medium">${r.reviewer_name||'Anonyme'}</span></div>
+        <div class="flex items-center gap-2">${statusBadge(r.status)}<span class="text-xs text-outline">${fmtDate(r.created_at)}</span></div>
       </div>
-      ${r.products?.name ? `<p class="text-xs text-outline">Produit : <span class="font-medium text-on-surface-variant">${r.products.name}</span></p>` : ''}
-      ${r.comment ? `<p class="text-sm text-on-surface-variant">${r.comment}</p>` : ''}
+      ${r.products?.name?`<p class="text-xs text-outline">Produit : <span class="font-medium text-on-surface-variant">${r.products.name}</span></p>`:''}
+      ${r.comment?`<p class="text-sm text-on-surface-variant">${r.comment}</p>`:''}
     </div>
   `).join('')
 }
 
 // ── PROFILE ───────────────────────────────────────────────────────────────────
-async function loadProfile() {
+function loadProfileSection() {
   if (!currentSeller) return
-  const u = currentSeller
-
-  const initials = ((u.first_name?.[0] || '') + (u.last_name?.[0] || '')).toUpperCase() || u.email?.[0]?.toUpperCase() || '?'
-  document.getElementById('profile-avatar-display').textContent = initials
-  document.getElementById('profile-email-display').textContent  = u.email || '—'
-  document.getElementById('profile-role-display').textContent   = u.role === 'artisan' ? 'Vendeur / Artisan' : u.role || '—'
-  document.getElementById('pf-first-name').value = u.first_name || ''
-  document.getElementById('pf-last-name').value  = u.last_name  || ''
-  document.getElementById('pf-specialty').value  = u.specialty  || ''
-  document.getElementById('pf-country').value    = u.country    || 'Maroc'
-
-  const badge = document.getElementById('profile-status-badge')
-  const statusMap = {
-    active:   ['status-active',   'Actif'],
-    pending:  ['status-pending',  'En attente'],
-    inactive: ['status-inactive', 'Inactif'],
-    banned:   ['status-inactive', 'Banni']
-  }
-  const [cls, label] = statusMap[u.status] || ['status-pending', '—']
-  badge.className   = `text-[10px] font-bold px-3 py-1 rounded-full ${cls}`
-  badge.textContent = label
+  const u=currentSeller
+  const initials=((u.first_name?.[0]||'')+(u.last_name?.[0]||'')).toUpperCase()||u.email?.[0]?.toUpperCase()||'?'
+  document.getElementById('profile-avatar-display').textContent=initials
+  document.getElementById('profile-email-display').textContent=u.email||'—'
+  document.getElementById('profile-role-display').textContent=u.role==='artisan'?'Vendeur / Artisan':u.role||'—'
+  document.getElementById('pf-first-name').value=u.first_name||''
+  document.getElementById('pf-last-name').value=u.last_name||''
+  document.getElementById('pf-specialty').value=u.specialty||''
+  document.getElementById('pf-country').value=u.country||'Maroc'
+  const badge=document.getElementById('profile-status-badge')
+  const statusMap={active:['status-active','Actif'],pending:['status-pending','En attente'],inactive:['status-inactive','Inactif'],banned:['status-inactive','Banni']}
+  const [cls,label]=statusMap[u.status]||['status-pending','—']
+  badge.className=`text-[10px] font-bold px-3 py-1 rounded-full ${cls}`
+  badge.textContent=label
 }
 
 async function saveProfile(e) {
   e.preventDefault()
-  const payload = {
-    first_name: document.getElementById('pf-first-name').value.trim(),
-    last_name:  document.getElementById('pf-last-name').value.trim(),
-    specialty:  document.getElementById('pf-specialty').value.trim(),
-    country:    document.getElementById('pf-country').value,
-    updated_at: new Date().toISOString()
+  const payload={
+    first_name:document.getElementById('pf-first-name').value.trim(),
+    last_name:document.getElementById('pf-last-name').value.trim(),
+    specialty:document.getElementById('pf-specialty').value.trim(),
+    country:document.getElementById('pf-country').value,
+    updated_at:new Date().toISOString()
   }
-  payload.full_name = `${payload.first_name} ${payload.last_name}`.trim()
-
-  const { error } = await db.from('users').update(payload).eq('id', currentSeller.id)
-  if (error) {
-    showToast('Erreur : ' + error.message, 'error')
-  } else {
-    Object.assign(currentSeller, payload)
-    document.getElementById('seller-name').textContent    = payload.full_name || currentSeller.email
-    document.getElementById('seller-country').textContent = payload.country
-    showToast('Profil mis à jour !', 'success')
+  payload.full_name=`${payload.first_name} ${payload.last_name}`.trim()
+  const {error}=await db.from('users').update(payload).eq('id',currentSeller.id)
+  if (error) showToast('Erreur : '+error.message,'error')
+  else {
+    Object.assign(currentSeller,payload)
+    document.getElementById('seller-name').textContent=payload.full_name||currentSeller.email
+    document.getElementById('seller-country').textContent=payload.country
+    showToast('Profil mis à jour !','success')
   }
 }
 
 async function resetPassword() {
-  const { data: { session } } = await db.auth.getSession()
+  const {data:{session}}=await db.auth.getSession()
   if (!session?.user?.email) return
-  const { error } = await db.auth.resetPasswordForEmail(session.user.email, {
-    redirectTo: 'https://wennashop.netlify.app'
-  })
-  if (error) {
-    showToast('Erreur : ' + error.message, 'error')
-  } else {
-    showToast('Email de réinitialisation envoyé !', 'success')
-  }
+  const {error}=await db.auth.resetPasswordForEmail(session.user.email,{redirectTo:'https://wennashop.netlify.app'})
+  if (error) showToast('Erreur : '+error.message,'error')
+  else showToast('Email de réinitialisation envoyé !','success')
 }
 
-// ── FERMETURE MODALS AU CLIC OVERLAY ─────────────────────────────────────────
-document.getElementById('modal-overlay').addEventListener('click', function(e) {
-  if (e.target === this) closeProductModal()
-})
-document.getElementById('order-modal-overlay').addEventListener('click', function(e) {
-  if (e.target === this) closeOrderModal()
-})
-document.getElementById('delete-modal-overlay').addEventListener('click', function(e) {
-  if (e.target === this) closeDeleteModal()
-})
+// ── MODAL FERMETURE ───────────────────────────────────────────────────────────
+document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeProductModal()})
+document.getElementById('order-modal-overlay').addEventListener('click',function(e){if(e.target===this)closeOrderModal()})
+document.getElementById('delete-modal-overlay').addEventListener('click',function(e){if(e.target===this)closeDeleteModal()})
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', initAuth)
