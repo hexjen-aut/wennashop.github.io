@@ -11,120 +11,83 @@
 <script id="tailwind-config">
 tailwind.config = {
   darkMode:"class",
-  theme:{
-    extend:{
-      colors:{
-        "on-surface":"#171d17","on-secondary-fixed":"#001c3a","inverse-surface":"#2c322b","on-tertiary":"#ffffff","error":"#ba1a1a","tertiary-fixed-dim":"#f0c110","secondary-fixed-dim":"#a6c8ff","primary-fixed-dim":"#73dc84","on-tertiary-fixed":"#241a00","surface-container-low":"#eff5eb","tertiary-container":"#d0a600","on-primary-fixed-variant":"#00531f","on-secondary":"#ffffff","on-background":"#171d17","primary-container":"#0f8739","surface-dim":"#d6dcd2","tertiary":"#745b00","surface-tint":"#006e2b","error-container":"#ffdad6","on-primary-container":"#f7fff2","background":"#f5fbf1","surface-container-lowest":"#ffffff","outline-variant":"#becaba","primary":"#006b2a","surface-container":"#eaf0e5","secondary-container":"#78b0fe","surface-bright":"#f5fbf1","secondary-fixed":"#d4e3ff","on-error":"#ffffff","on-tertiary-container":"#4f3d00","on-secondary-container":"#00427d","surface-container-highest":"#dee4da","tertiary-fixed":"#ffe08b","surface-variant":"#dee4da","surface-container-high":"#e4eae0","on-primary":"#ffffff","on-error-container":"#93000a","inverse-on-surface":"#edf3e8","on-surface-variant":"#3f4a3e","on-secondary-fixed-variant":"#004786","surface":"#f5fbf1","on-primary-fixed":"#002108","outline":"#6f7a6d","on-tertiary-fixed-variant":"#584400","primary-fixed":"#8ff99d","secondary":"#1a5fa8","inverse-primary":"#73dc84"
-      },
-      borderRadius:{"DEFAULT":"1rem","lg":"2rem","xl":"3rem","full":"9999px"},
-      fontFamily:{"headline":["Noto Serif"],"body":["Inter"],"label":["Inter"]}
-    }
-  }
+  theme:{extend:{colors:{"on-surface":"#171d17","on-secondary-fixed":"#001c3a","inverse-surface":"#2c322b","on-tertiary":"#ffffff","error":"#ba1a1a","tertiary-fixed-dim":"#f0c110","secondary-fixed-dim":"#a6c8ff","primary-fixed-dim":"#73dc84","on-tertiary-fixed":"#241a00","surface-container-low":"#eff5eb","tertiary-container":"#d0a600","on-primary-fixed-variant":"#00531f","on-secondary":"#ffffff","on-background":"#171d17","primary-container":"#0f8739","surface-dim":"#d6dcd2","tertiary":"#745b00","surface-tint":"#006e2b","error-container":"#ffdad6","on-primary-container":"#f7fff2","background":"#f5fbf1","surface-container-lowest":"#ffffff","outline-variant":"#becaba","primary":"#006b2a","surface-container":"#eaf0e5","secondary-container":"#78b0fe","surface-bright":"#f5fbf1","secondary-fixed":"#d4e3ff","on-error":"#ffffff","on-tertiary-container":"#4f3d00","on-secondary-container":"#00427d","surface-container-highest":"#dee4da","tertiary-fixed":"#ffe08b","surface-variant":"#dee4da","surface-container-high":"#e4eae0","on-primary":"#ffffff","on-error-container":"#93000a","inverse-on-surface":"#edf3e8","on-surface-variant":"#3f4a3e","on-secondary-fixed-variant":"#004786","surface":"#f5fbf1","on-primary-fixed":"#002108","outline":"#6f7a6d","on-tertiary-fixed-variant":"#584400","primary-fixed":"#8ff99d","secondary":"#1a5fa8","inverse-primary":"#73dc84"},borderRadius:{"DEFAULT":"1rem","lg":"2rem","xl":"3rem","full":"9999px"},fontFamily:{"headline":["Noto Serif"],"body":["Inter"],"label":["Inter"]}}}
 }
 </script>
 <style>
-  .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24; vertical-align:middle; }
-  body { font-family:'Inter',sans-serif; min-height:max(884px,100dvh); }
-  h1,h2,h3 { font-family:'Noto Serif',serif; }
-
-  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
-  @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
-  @keyframes scaleIn { from{opacity:0;transform:scale(0.96);} to{opacity:1;transform:scale(1);} }
-  @keyframes spin { to{transform:rotate(360deg);} }
-  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
-
-  .anim-up { animation:fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) forwards; opacity:0; }
-  .anim-in { animation:scaleIn 0.4s cubic-bezier(0.22,1,0.36,1) forwards; opacity:0; }
-  .d-50{animation-delay:.05s;} .d-100{animation-delay:.1s;} .d-150{animation-delay:.15s;}
-  .d-200{animation-delay:.2s;} .d-250{animation-delay:.25s;} .d-300{animation-delay:.3s;}
-  .d-350{animation-delay:.35s;} .d-400{animation-delay:.4s;} .d-500{animation-delay:.5s;}
-
-  .tab-panel { display:none; }
-  .tab-panel.active { display:block; animation:fadeIn 0.3s ease; }
-  .mode-panel { display:none; }
-  .mode-panel.active { display:block; animation:fadeIn 0.3s ease; }
-
-  .section-card { background:#fff; border-radius:1.25rem; padding:1.5rem; box-shadow:0 2px 16px rgba(0,107,42,0.06); }
-  .stat-card { background:linear-gradient(135deg,#eff5eb 0%,#e4eae0 100%); border-radius:1.25rem; padding:1.25rem; }
-  .order-row { transition:all 0.2s; border-radius:1rem; }
-  .order-row:hover { background:#eff5eb; }
-  .listing-row { transition:all 0.2s; border-radius:1rem; }
-  .listing-row:hover { background:#eff5eb; }
-  .btn-primary { background:linear-gradient(135deg,#006b2a 0%,#0f8739 100%); transition:all 0.2s; }
-  .btn-primary:hover { opacity:0.9; transform:scale(0.99); }
-  .btn-primary:active { transform:scale(0.97); }
-  .avatar-ring { box-shadow:0 0 0 3px #fff, 0 0 0 5px #006b2a; }
-  .chip { display:inline-flex; align-items:center; padding:0.2rem 0.75rem; border-radius:999px; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; }
-  .chip-green { background:#dcfce7; color:#166534; }
-  .chip-amber { background:#fef9c3; color:#854d0e; }
-  .chip-blue { background:#dbeafe; color:#1e40af; }
-  .chip-red { background:#fee2e2; color:#991b1b; }
-  .chip-gray { background:#f1f5f9; color:#475569; }
-  .mode-toggle-btn { transition:all 0.25s; border-radius:999px; padding:0.5rem 1.5rem; font-size:0.75rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; }
-  .mode-toggle-btn.active { background:linear-gradient(135deg,#006b2a,#0f8739); color:#fff; box-shadow:0 4px 14px rgba(0,107,42,0.25); }
-  .mode-toggle-btn:not(.active) { color:#3f4a3e; background:transparent; }
-  .mode-toggle-btn:not(.active):hover { background:#e4eae0; }
-  .nav-tab { transition:all 0.2s; border-bottom:2px solid transparent; padding-bottom:0.5rem; font-size:0.7rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#6f7a6d; }
-  .nav-tab.active { color:#006b2a; border-color:#006b2a; }
-  .nav-tab:not(.active):hover { color:#171d17; }
-  .edit-field { background:#eff5eb; border:none; border-bottom:2px solid #becaba; border-radius:0.5rem 0.5rem 0 0; padding:0.75rem 1rem; width:100%; font-family:'Inter',sans-serif; font-size:0.875rem; outline:none; transition:border-color 0.2s; }
-  .edit-field:focus { border-color:#006b2a; }
-  .product-thumb { width:56px; height:56px; border-radius:0.75rem; object-fit:cover; background:#eaf0e5; flex-shrink:0; }
-  .toggle-track { width:44px; height:24px; border-radius:999px; background:#becaba; transition:background 0.2s; cursor:pointer; position:relative; }
-  .toggle-track.on { background:#006b2a; }
-  .toggle-thumb { width:18px; height:18px; background:#fff; border-radius:50%; position:absolute; top:3px; left:3px; transition:left 0.2s; box-shadow:0 1px 4px rgba(0,0,0,0.2); }
-  .toggle-track.on .toggle-thumb { left:23px; }
-  .notification-dot { width:8px; height:8px; background:#ba1a1a; border-radius:50%; position:absolute; top:2px; right:2px; border:1.5px solid #fff; }
-  .spinner { width:20px; height:20px; border:2px solid #e4eae0; border-top-color:#006b2a; border-radius:50%; animation:spin 0.7s linear infinite; display:inline-block; }
-
-  /* Vendeur upgrade card */
-  .upgrade-card { background:linear-gradient(135deg,#f5fbf1 0%,#eaf0e5 100%); border:2px dashed #becaba; border-radius:1.25rem; padding:2rem; text-align:center; }
-  .upgrade-card:hover { border-color:#006b2a; }
-  .feature-item { display:flex; align-items:flex-start; gap:0.75rem; padding:0.75rem 0; border-bottom:1px solid #eaf0e5; }
-  .feature-item:last-child { border-bottom:none; }
-
-  /* Toast */
-  #toast { position:fixed; bottom:100px; left:50%; transform:translateX(-50%) translateY(20px); background:#171d17; color:#fff; padding:0.75rem 1.5rem; border-radius:999px; font-size:0.8rem; font-weight:600; z-index:9999; opacity:0; transition:all 0.3s; pointer-events:none; white-space:nowrap; }
-  #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-  #toast.success { background:#006b2a; }
-  #toast.error { background:#ba1a1a; }
-
-  /* Loading overlay */
-  #loading-overlay { position:fixed; inset:0; background:#f5fbf1; z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1rem; }
-  #loading-overlay.hidden { display:none; }
-
-  /* Upgrade modal */
-  #upgrade-modal { position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:9998; display:flex; align-items:flex-end; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.3s; }
-  #upgrade-modal.open { opacity:1; pointer-events:all; }
-  #upgrade-modal .modal-sheet { background:#fff; border-radius:2rem 2rem 0 0; padding:2rem; width:100%; max-width:480px; transform:translateY(100%); transition:transform 0.4s cubic-bezier(0.22,1,0.36,1); max-height:90vh; overflow-y:auto; }
-  #upgrade-modal.open .modal-sheet { transform:translateY(0); }
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24;vertical-align:middle}
+  body{font-family:'Inter',sans-serif;min-height:max(884px,100dvh)}
+  h1,h2,h3{font-family:'Noto Serif',serif}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes scaleIn{from{opacity:0;transform:scale(0.96)}to{opacity:1;transform:scale(1)}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .anim-up{animation:fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) forwards;opacity:0}
+  .anim-in{animation:scaleIn 0.4s cubic-bezier(0.22,1,0.36,1) forwards;opacity:0}
+  .d-50{animation-delay:.05s}.d-100{animation-delay:.1s}.d-150{animation-delay:.15s}
+  .d-200{animation-delay:.2s}.d-250{animation-delay:.25s}.d-300{animation-delay:.3s}
+  .tab-panel{display:none}.tab-panel.active{display:block;animation:fadeIn 0.3s ease}
+  .mode-panel{display:none}.mode-panel.active{display:block;animation:fadeIn 0.3s ease}
+  .section-card{background:#fff;border-radius:1.25rem;padding:1.5rem;box-shadow:0 2px 16px rgba(0,107,42,0.06)}
+  .stat-card{background:linear-gradient(135deg,#eff5eb 0%,#e4eae0 100%);border-radius:1.25rem;padding:1.25rem}
+  .order-row{transition:all 0.2s;border-radius:1rem}.order-row:hover{background:#eff5eb}
+  .listing-row{transition:all 0.2s;border-radius:1rem}.listing-row:hover{background:#eff5eb}
+  .btn-primary{background:linear-gradient(135deg,#006b2a 0%,#0f8739 100%);transition:all 0.2s}
+  .btn-primary:hover{opacity:0.9;transform:scale(0.99)}.btn-primary:active{transform:scale(0.97)}
+  .avatar-ring{box-shadow:0 0 0 3px #fff,0 0 0 5px #006b2a}
+  .chip{display:inline-flex;align-items:center;padding:0.2rem 0.75rem;border-radius:999px;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em}
+  .chip-green{background:#dcfce7;color:#166534}.chip-amber{background:#fef9c3;color:#854d0e}
+  .chip-blue{background:#dbeafe;color:#1e40af}.chip-red{background:#fee2e2;color:#991b1b}
+  .chip-gray{background:#f1f5f9;color:#475569}
+  .mode-toggle-btn{transition:all 0.25s;border-radius:999px;padding:0.5rem 1.5rem;font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase}
+  .mode-toggle-btn.active{background:linear-gradient(135deg,#006b2a,#0f8739);color:#fff;box-shadow:0 4px 14px rgba(0,107,42,0.25)}
+  .mode-toggle-btn:not(.active){color:#3f4a3e;background:transparent}
+  .mode-toggle-btn:not(.active):hover{background:#e4eae0}
+  .nav-tab{transition:all 0.2s;border-bottom:2px solid transparent;padding-bottom:0.5rem;font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#6f7a6d}
+  .nav-tab.active{color:#006b2a;border-color:#006b2a}
+  .nav-tab:not(.active):hover{color:#171d17}
+  .edit-field{background:#eff5eb;border:none;border-bottom:2px solid #becaba;border-radius:0.5rem 0.5rem 0 0;padding:0.75rem 1rem;width:100%;font-family:'Inter',sans-serif;font-size:0.875rem;outline:none;transition:border-color 0.2s}
+  .edit-field:focus{border-color:#006b2a}
+  .product-thumb{width:56px;height:56px;border-radius:0.75rem;object-fit:cover;background:#eaf0e5;flex-shrink:0}
+  .toggle-track{width:44px;height:24px;border-radius:999px;background:#becaba;transition:background 0.2s;cursor:pointer;position:relative}
+  .toggle-track.on{background:#006b2a}
+  .toggle-thumb{width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;top:3px;left:3px;transition:left 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.2)}
+  .toggle-track.on .toggle-thumb{left:23px}
+  .notification-dot{width:8px;height:8px;background:#ba1a1a;border-radius:50%;position:absolute;top:2px;right:2px;border:1.5px solid #fff}
+  .spinner{width:20px;height:20px;border:2px solid #e4eae0;border-top-color:#006b2a;border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block}
+  .feature-item{display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;border-bottom:1px solid #eaf0e5}
+  .feature-item:last-child{border-bottom:none}
+  #toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:#171d17;color:#fff;padding:0.75rem 1.5rem;border-radius:999px;font-size:0.8rem;font-weight:600;z-index:9999;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  #toast.success{background:#006b2a}#toast.error{background:#ba1a1a}
+  #loading-overlay{position:fixed;inset:0;background:#f5fbf1;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem}
+  #loading-overlay.hidden{display:none}
+  /* Progress bar avatar */
+  #avatar-progress-wrap{height:3px;background:#e4eae0;border-radius:999px;overflow:hidden;margin-top:8px;display:none}
+  #avatar-progress-bar{height:3px;background:#4ade80;border-radius:999px;transition:width 0.3s;width:0%}
+  /* Label caméra */
+  .cam-label{cursor:pointer;position:absolute;bottom:0;right:0;width:28px;height:28px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.15);transition:background 0.2s}
+  .cam-label:hover{background:#006b2a}
+  .cam-label:hover span{color:#fff}
 </style>
 </head>
 <body class="bg-background text-on-surface min-h-screen pb-32">
 
-<!-- Loading overlay -->
 <div id="loading-overlay">
   <span class="font-serif italic text-3xl text-primary tracking-tighter">WennaShop</span>
   <div class="spinner" style="width:32px;height:32px;border-width:3px;"></div>
 </div>
-
-<!-- Toast -->
 <div id="toast"></div>
 
 <!-- Header -->
 <header class="bg-surface/80 backdrop-blur-xl fixed top-0 w-full z-50 border-b border-outline-variant/10">
   <div class="flex justify-between items-center px-6 py-4 max-w-4xl mx-auto">
     <div class="flex items-center gap-3">
-      <a href="hero.html" class="text-on-surface hover:opacity-70 transition-opacity">
-        <span class="material-symbols-outlined">arrow_back</span>
-      </a>
+      <a href="hero.html" class="text-on-surface hover:opacity-70 transition-opacity"><span class="material-symbols-outlined">arrow_back</span></a>
       <span class="font-serif italic text-xl tracking-tighter text-primary">WennaShop</span>
     </div>
     <div class="flex items-center gap-3">
-      <button class="relative text-on-surface hover:opacity-70 transition-opacity">
-        <span class="material-symbols-outlined">notifications</span>
-        <span class="notification-dot"></span>
-      </button>
+      <button class="relative text-on-surface hover:opacity-70 transition-opacity"><span class="material-symbols-outlined">notifications</span><span class="notification-dot"></span></button>
       <a href="panier.html" class="relative text-on-surface hover:opacity-70 transition-opacity">
         <span class="material-symbols-outlined">shopping_bag</span>
         <span class="absolute -top-1 -right-1 bg-primary text-on-primary text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center" id="cart-count">0</span>
@@ -142,6 +105,7 @@ tailwind.config = {
         <span class="font-serif italic font-black text-white" style="font-size:120px;">W</span>
       </div>
       <div class="relative z-10 p-6 flex items-center gap-5">
+        <!-- Avatar avec bouton upload -->
         <div class="relative flex-shrink-0">
           <div class="w-20 h-20 rounded-full overflow-hidden avatar-ring bg-surface-container">
             <img id="profile-avatar" src="" alt="Avatar" class="w-full h-full object-cover hidden"/>
@@ -149,15 +113,19 @@ tailwind.config = {
               <span class="material-symbols-outlined text-white" style="font-size:36px;">person</span>
             </div>
           </div>
-          <label for="avatar-input" class="absolute bottom-0 right-0 w-7 h-7 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-surface-container-low transition-colors cursor-pointer">
+          <!-- Bouton caméra — CORRECTION: label lié à avatar-input -->
+          <label for="avatar-input" class="cam-label" title="Changer la photo de profil">
             <span class="material-symbols-outlined text-primary" style="font-size:14px;">photo_camera</span>
           </label>
-          <input type="file" id="avatar-input" accept="image/*" class="hidden"/>
+          <!-- Input file caché — accept uniquement les formats supportés par le bucket -->
+          <input type="file" id="avatar-input" accept="image/jpeg,image/png,image/webp" class="hidden"/>
         </div>
         <div class="flex-1 text-white">
           <p id="profile-country" class="text-white/60 text-[10px] uppercase tracking-widest font-bold mb-0.5">—</p>
           <h1 id="profile-name" class="font-serif italic text-2xl font-bold mb-1">Chargement…</h1>
           <p id="profile-email" class="text-white/70 text-xs">—</p>
+          <!-- Barre de progression upload -->
+          <div id="avatar-progress-wrap"><div id="avatar-progress-bar"></div></div>
           <div class="flex items-center gap-2 mt-2">
             <span id="profile-since" class="chip" style="background:rgba(255,255,255,0.2);color:#fff;">—</span>
             <span id="badge-role" class="chip" style="background:rgba(255,224,139,0.3);color:#ffe08b;">—</span>
@@ -167,7 +135,7 @@ tailwind.config = {
     </div>
   </section>
 
-  <!-- MODE SWITCHER — visible pour TOUS les utilisateurs connectés -->
+  <!-- MODE SWITCHER -->
   <section class="anim-up d-100 mb-6">
     <div class="flex justify-center p-1.5 bg-surface-container-high rounded-full w-fit mx-auto gap-1">
       <button id="btn-client" onclick="switchMode('client')" class="mode-toggle-btn active">Espace Client</button>
@@ -178,230 +146,89 @@ tailwind.config = {
     </div>
   </section>
 
-  <!-- ══ MODE CLIENT ══ -->
+  <!-- MODE CLIENT -->
   <div id="mode-client" class="mode-panel active">
-
-    <!-- Stats client -->
     <div class="grid grid-cols-3 gap-3 mb-6 anim-up d-150">
-      <div class="stat-card text-center">
-        <p id="stat-orders" class="text-2xl font-bold text-primary font-serif">—</p>
-        <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Commandes</p>
-      </div>
-      <div class="stat-card text-center">
-        <p id="stat-favoris" class="text-2xl font-bold text-secondary font-serif">—</p>
-        <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Favoris</p>
-      </div>
-      <div class="stat-card text-center">
-        <p id="stat-reviews" class="text-2xl font-bold text-tertiary font-serif">—</p>
-        <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Avis donnés</p>
-      </div>
+      <div class="stat-card text-center"><p id="stat-orders" class="text-2xl font-bold text-primary font-serif">—</p><p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Commandes</p></div>
+      <div class="stat-card text-center"><p id="stat-favoris" class="text-2xl font-bold text-secondary font-serif">—</p><p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Favoris</p></div>
+      <div class="stat-card text-center"><p id="stat-reviews" class="text-2xl font-bold text-tertiary font-serif">—</p><p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Avis donnés</p></div>
     </div>
-
-    <!-- Tabs client -->
     <div class="flex gap-6 border-b border-outline-variant/20 mb-6 anim-up d-200 overflow-x-auto">
       <button class="nav-tab active" onclick="switchClientTab('commandes', this)">Commandes</button>
       <button class="nav-tab" onclick="switchClientTab('adresses', this)">Adresses</button>
       <button class="nav-tab" onclick="switchClientTab('parametres', this)">Paramètres</button>
     </div>
-
-    <!-- TAB: Commandes -->
     <div id="client-commandes" class="tab-panel active anim-up d-250">
-      <div class="section-card">
-        <h2 class="font-serif italic text-xl mb-5">Mes Commandes</h2>
-        <div id="orders-list" class="space-y-1">
-          <div class="flex justify-center py-8"><div class="spinner"></div></div>
-        </div>
-      </div>
+      <div class="section-card"><h2 class="font-serif italic text-xl mb-5">Mes Commandes</h2><div id="orders-list" class="space-y-1"><div class="flex justify-center py-8"><div class="spinner"></div></div></div></div>
     </div>
-
-    <!-- TAB: Adresses -->
     <div id="client-adresses" class="tab-panel">
       <div class="section-card">
         <h2 class="font-serif italic text-xl mb-5">Mes Adresses</h2>
         <div class="space-y-4">
-          <div class="p-4 border border-outline-variant/30 rounded-xl">
-            <div class="flex items-start gap-3">
-              <span class="material-symbols-outlined text-on-surface-variant mt-0.5">home</span>
-              <div id="address-display" class="flex-1">
-                <p class="text-xs text-on-surface-variant">Aucune adresse enregistrée.</p>
-              </div>
-            </div>
-          </div>
-          <button class="w-full py-4 border-2 border-dashed border-outline-variant/40 rounded-xl flex items-center justify-center gap-2 text-sm font-bold text-on-surface-variant hover:border-primary hover:text-primary transition-colors">
-            <span class="material-symbols-outlined" style="font-size:18px;">add</span>
-            Ajouter une adresse
-          </button>
+          <div class="p-4 border border-outline-variant/30 rounded-xl"><div class="flex items-start gap-3"><span class="material-symbols-outlined text-on-surface-variant mt-0.5">home</span><div id="address-display" class="flex-1"><p class="text-xs text-on-surface-variant">Aucune adresse enregistrée.</p></div></div></div>
+          <button class="w-full py-4 border-2 border-dashed border-outline-variant/40 rounded-xl flex items-center justify-center gap-2 text-sm font-bold text-on-surface-variant hover:border-primary hover:text-primary transition-colors"><span class="material-symbols-outlined" style="font-size:18px;">add</span>Ajouter une adresse</button>
         </div>
       </div>
     </div>
-
-    <!-- TAB: Paramètres -->
     <div id="client-parametres" class="tab-panel">
       <div class="section-card">
         <h2 class="font-serif italic text-xl mb-5">Paramètres du compte</h2>
-
         <div class="mb-8">
           <p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Informations personnelles</p>
           <div class="space-y-4">
             <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Prénom</label>
-                <input id="input-firstname" class="edit-field" placeholder="Prénom"/>
-              </div>
-              <div>
-                <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Nom</label>
-                <input id="input-lastname" class="edit-field" placeholder="Nom"/>
-              </div>
+              <div><label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Prénom</label><input id="input-firstname" class="edit-field" placeholder="Prénom"/></div>
+              <div><label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Nom</label><input id="input-lastname" class="edit-field" placeholder="Nom"/></div>
             </div>
-            <div>
-              <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Email</label>
-              <input id="input-email" class="edit-field" type="email" disabled style="opacity:0.6;cursor:not-allowed;"/>
-            </div>
+            <div><label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Email</label><input id="input-email" class="edit-field" type="email" disabled style="opacity:0.6;cursor:not-allowed;"/></div>
             <div id="save-feedback" class="text-xs text-primary font-bold hidden">✓ Modifications sauvegardées</div>
-            <button onclick="saveProfile()" class="btn-primary text-on-primary px-8 py-3 rounded-xl text-sm font-bold tracking-wide">
-              Sauvegarder les modifications
-            </button>
+            <button onclick="saveProfile()" class="btn-primary text-on-primary px-8 py-3 rounded-xl text-sm font-bold tracking-wide">Sauvegarder les modifications</button>
           </div>
         </div>
-
         <div class="mb-8">
           <p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Notifications</p>
           <div class="space-y-4">
-            <div class="flex items-center justify-between py-2">
-              <div>
-                <p class="text-sm font-bold">Suivi de commande</p>
-                <p class="text-xs text-on-surface-variant">Mises à jour de livraison en temps réel</p>
-              </div>
-              <div class="toggle-track on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div>
-            </div>
-            <div class="flex items-center justify-between py-2 border-t border-outline-variant/10">
-              <div>
-                <p class="text-sm font-bold">Nouvelles collections</p>
-                <p class="text-xs text-on-surface-variant">Alertes drops & exclusivités</p>
-              </div>
-              <div class="toggle-track on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div>
-            </div>
-            <div class="flex items-center justify-between py-2 border-t border-outline-variant/10">
-              <div>
-                <p class="text-sm font-bold">Offres promotionnelles</p>
-                <p class="text-xs text-on-surface-variant">Codes promo et réductions exclusives</p>
-              </div>
-              <div class="toggle-track" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div>
-            </div>
+            <div class="flex items-center justify-between py-2"><div><p class="text-sm font-bold">Suivi de commande</p><p class="text-xs text-on-surface-variant">Mises à jour de livraison en temps réel</p></div><div class="toggle-track on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div></div>
+            <div class="flex items-center justify-between py-2 border-t border-outline-variant/10"><div><p class="text-sm font-bold">Nouvelles collections</p><p class="text-xs text-on-surface-variant">Alertes drops & exclusivités</p></div><div class="toggle-track on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div></div>
+            <div class="flex items-center justify-between py-2 border-t border-outline-variant/10"><div><p class="text-sm font-bold">Offres promotionnelles</p><p class="text-xs text-on-surface-variant">Codes promo et réductions exclusives</p></div><div class="toggle-track" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div></div>
           </div>
         </div>
-
         <div>
           <p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Sécurité</p>
           <div class="space-y-3">
-            <button class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-surface-container-low transition-colors">
-              <div class="flex items-center gap-3">
-                <span class="material-symbols-outlined text-on-surface-variant">lock</span>
-                <span class="text-sm font-bold">Changer le mot de passe</span>
-              </div>
-              <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
-            </button>
-            <button onclick="handleLogout()" class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-error/5 transition-colors text-error">
-              <div class="flex items-center gap-3">
-                <span class="material-symbols-outlined">logout</span>
-                <span class="text-sm font-bold">Se déconnecter</span>
-              </div>
-              <span class="material-symbols-outlined">chevron_right</span>
-            </button>
+            <button class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-surface-container-low transition-colors"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-on-surface-variant">lock</span><span class="text-sm font-bold">Changer le mot de passe</span></div><span class="material-symbols-outlined text-on-surface-variant">chevron_right</span></button>
+            <button onclick="handleLogout()" class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-error/5 transition-colors text-error"><div class="flex items-center gap-3"><span class="material-symbols-outlined">logout</span><span class="text-sm font-bold">Se déconnecter</span></div><span class="material-symbols-outlined">chevron_right</span></button>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-  </div><!-- end mode-client -->
-
-  <!-- ══ MODE VENDEUR ══ -->
+  <!-- MODE VENDEUR -->
   <div id="mode-vendeur" class="mode-panel">
-
-    <!-- CTA Upgrade — visible uniquement si pas encore vendeur -->
     <div id="vendeur-upgrade-section">
       <div class="anim-up d-150">
-        <!-- Banner accroche -->
         <div class="relative rounded-xl overflow-hidden mb-6" style="background:linear-gradient(135deg,#745b00 0%,#ffe08b 100%);">
           <div class="absolute right-4 top-1/2 -translate-y-1/2 opacity-10 text-8xl font-black select-none pointer-events-none">🛍️</div>
-          <div class="relative z-10 p-6">
-            <p class="text-[10px] uppercase tracking-widest font-black text-amber-900/70 mb-1">Rejoins les vendeurs</p>
-            <h2 class="font-serif italic text-2xl font-bold text-amber-900 mb-2">Vends sur WennaShop</h2>
-            <p class="text-sm text-amber-800/80 max-w-xs">Gabon ↔ Maroc · Rejoins des milliers d'artisans et commerçants qui vendent leurs produits sans frontières.</p>
-          </div>
+          <div class="relative z-10 p-6"><p class="text-[10px] uppercase tracking-widest font-black text-amber-900/70 mb-1">Rejoins les vendeurs</p><h2 class="font-serif italic text-2xl font-bold text-amber-900 mb-2">Vends sur WennaShop</h2><p class="text-sm text-amber-800/80 max-w-xs">Gabon ↔ Maroc · Rejoins des milliers d'artisans et commerçants qui vendent leurs produits sans frontières.</p></div>
         </div>
-
-        <!-- Features -->
         <div class="section-card mb-6">
           <p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Ce que tu obtiens</p>
-          <div class="feature-item">
-            <div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-              <span class="material-symbols-outlined text-primary" style="font-size:18px;">storefront</span>
-            </div>
-            <div>
-              <p class="text-sm font-bold">Boutique personnalisée</p>
-              <p class="text-xs text-on-surface-variant">Ta page vendeur avec tes produits, ton nom, ta description.</p>
-            </div>
-          </div>
-          <div class="feature-item">
-            <div class="w-9 h-9 rounded-xl bg-secondary/10 flex items-center justify-center flex-shrink-0">
-              <span class="material-symbols-outlined text-secondary" style="font-size:18px;">payments</span>
-            </div>
-            <div>
-              <p class="text-sm font-bold">Paiements sécurisés</p>
-              <p class="text-xs text-on-surface-variant">Encaisse en MAD ou XAF, reçois directement sur ton compte.</p>
-            </div>
-          </div>
-          <div class="feature-item">
-            <div class="w-9 h-9 rounded-xl bg-tertiary/10 flex items-center justify-center flex-shrink-0">
-              <span class="material-symbols-outlined text-tertiary" style="font-size:18px;">analytics</span>
-            </div>
-            <div>
-              <p class="text-sm font-bold">Dashboard & statistiques</p>
-              <p class="text-xs text-on-surface-variant">Suis tes ventes, revenus et avis clients en temps réel.</p>
-            </div>
-          </div>
-          <div class="feature-item">
-            <div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-              <span class="material-symbols-outlined text-primary" style="font-size:18px;">public</span>
-            </div>
-            <div>
-              <p class="text-sm font-bold">Marché international</p>
-              <p class="text-xs text-on-surface-variant">Accès à des acheteurs au Maroc, au Gabon et partout en Afrique.</p>
-            </div>
-          </div>
+          <div class="feature-item"><div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-primary" style="font-size:18px;">storefront</span></div><div><p class="text-sm font-bold">Boutique personnalisée</p><p class="text-xs text-on-surface-variant">Ta page vendeur avec tes produits, ton nom, ta description.</p></div></div>
+          <div class="feature-item"><div class="w-9 h-9 rounded-xl bg-secondary/10 flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-secondary" style="font-size:18px;">payments</span></div><div><p class="text-sm font-bold">Paiements sécurisés</p><p class="text-xs text-on-surface-variant">Encaisse en MAD ou XAF, reçois directement sur ton compte.</p></div></div>
+          <div class="feature-item"><div class="w-9 h-9 rounded-xl bg-tertiary/10 flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-tertiary" style="font-size:18px;">analytics</span></div><div><p class="text-sm font-bold">Dashboard & statistiques</p><p class="text-xs text-on-surface-variant">Suis tes ventes, revenus et avis clients en temps réel.</p></div></div>
+          <div class="feature-item"><div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-primary" style="font-size:18px;">public</span></div><div><p class="text-sm font-bold">Marché international</p><p class="text-xs text-on-surface-variant">Accès à des acheteurs au Maroc, au Gabon et partout en Afrique.</p></div></div>
         </div>
-
-        <!-- Formulaire inscription vendeur -->
         <div class="section-card">
           <h3 class="font-serif italic text-xl mb-1">Créer ma boutique</h3>
           <p class="text-xs text-on-surface-variant mb-6">Quelques infos et tu es prêt à vendre.</p>
-
           <div class="space-y-4">
-            <div>
-              <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Nom de la boutique *</label>
-              <input id="upgrade-shop-name" class="edit-field" placeholder="Ex: Artisanat Marrakech, Épices du Gabon…"/>
-            </div>
-            <div>
-              <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Spécialité *</label>
-              <input id="upgrade-specialty" class="edit-field" placeholder="Ex: Huiles naturelles, Bijoux artisanaux…"/>
-            </div>
-            <div>
-              <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Pays d'origine *</label>
-              <select id="upgrade-country" class="edit-field">
-                <option value="">Sélectionner…</option>
-                <option value="Maroc">🇲🇦 Maroc</option>
-                <option value="Gabon">🇬🇦 Gabon</option>
-              </select>
-            </div>
-            <div>
-              <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Description courte</label>
-              <textarea id="upgrade-bio" class="edit-field" rows="3" placeholder="Présente ta boutique en quelques mots…" style="resize:none; height:auto;"></textarea>
-            </div>
-
+            <div><label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Nom de la boutique *</label><input id="upgrade-shop-name" class="edit-field" placeholder="Ex: Artisanat Marrakech, Épices du Gabon…"/></div>
+            <div><label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Spécialité *</label><input id="upgrade-specialty" class="edit-field" placeholder="Ex: Huiles naturelles, Bijoux artisanaux…"/></div>
+            <div><label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Pays d'origine *</label><select id="upgrade-country" class="edit-field"><option value="">Sélectionner…</option><option value="Maroc">🇲🇦 Maroc</option><option value="Gabon">🇬🇦 Gabon</option></select></div>
+            <div><label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Description courte</label><textarea id="upgrade-bio" class="edit-field" rows="3" placeholder="Présente ta boutique en quelques mots…" style="resize:none;height:auto;"></textarea></div>
             <button onclick="upgradeToVendeur()" id="upgrade-btn" class="btn-primary text-on-primary px-8 py-4 rounded-xl text-sm font-bold tracking-wide w-full flex items-center justify-center gap-2">
-              <span class="material-symbols-outlined" style="font-size:18px;">store</span>
-              Devenir vendeur — c'est gratuit
+              <span class="material-symbols-outlined" style="font-size:18px;">store</span>Devenir vendeur — c'est gratuit
             </button>
             <p class="text-[10px] text-center text-on-surface-variant">En continuant, tu acceptes les conditions vendeurs de WennaShop.</p>
           </div>
@@ -409,685 +236,363 @@ tailwind.config = {
       </div>
     </div>
 
-    <!-- DASHBOARD VENDEUR — visible uniquement si role === artisan -->
-    <div id="vendeur-dashboard-section" class="visible">
-
-      <!-- Stats vendeur -->
+    <div id="vendeur-dashboard-section" class="hidden">
       <div class="grid grid-cols-2 gap-3 mb-4 anim-up d-150">
-        <div class="section-card flex items-center gap-4">
-          <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-            <span class="material-symbols-outlined text-primary">payments</span>
-          </div>
-          <div>
-            <p id="stat-revenue-month" class="text-xl font-bold text-primary font-serif">—</p>
-            <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Revenus ce mois</p>
-          </div>
-        </div>
-        <div class="section-card flex items-center gap-4">
-          <div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center flex-shrink-0">
-            <span class="material-symbols-outlined text-secondary">shopping_cart</span>
-          </div>
-          <div>
-            <p id="stat-total-sales" class="text-xl font-bold text-secondary font-serif">—</p>
-            <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Ventes totales</p>
-          </div>
-        </div>
+        <div class="section-card flex items-center gap-4"><div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-primary">payments</span></div><div><p id="stat-revenue-month" class="text-xl font-bold text-primary font-serif">—</p><p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Revenus ce mois</p></div></div>
+        <div class="section-card flex items-center gap-4"><div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-secondary">shopping_cart</span></div><div><p id="stat-total-sales" class="text-xl font-bold text-secondary font-serif">—</p><p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Ventes totales</p></div></div>
       </div>
       <div class="grid grid-cols-3 gap-3 mb-6">
-        <div class="stat-card text-center">
-          <p id="stat-listings" class="text-xl font-bold text-on-surface font-serif">—</p>
-          <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Annonces</p>
-        </div>
-        <div class="stat-card text-center">
-          <p id="stat-rating" class="text-xl font-bold text-on-surface font-serif">—</p>
-          <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Note moy.</p>
-        </div>
-        <div class="stat-card text-center">
-          <p class="text-xl font-bold text-on-surface font-serif">—</p>
-          <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Vues / mois</p>
-        </div>
+        <div class="stat-card text-center"><p id="stat-listings" class="text-xl font-bold text-on-surface font-serif">—</p><p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Annonces</p></div>
+        <div class="stat-card text-center"><p id="stat-rating" class="text-xl font-bold text-on-surface font-serif">—</p><p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Note moy.</p></div>
+        <div class="stat-card text-center"><p class="text-xl font-bold text-on-surface font-serif">—</p><p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Vues / mois</p></div>
       </div>
-
-      <!-- Tabs vendeur -->
       <div class="flex gap-6 border-b border-outline-variant/20 mb-6 overflow-x-auto">
         <button class="nav-tab active" onclick="switchVendeurTab('annonces', this)">Mes Annonces</button>
         <button class="nav-tab" onclick="switchVendeurTab('ventes', this)">Ventes</button>
         <button class="nav-tab" onclick="switchVendeurTab('paiements', this)">Paiements</button>
         <button class="nav-tab" onclick="switchVendeurTab('boutique', this)">Ma Boutique</button>
       </div>
-
-      <!-- TAB: Annonces -->
       <div id="vendeur-annonces" class="tab-panel active">
-        <div class="section-card">
-          <div class="flex items-center justify-between mb-5">
-            <h2 class="font-serif italic text-xl">Mes Annonces</h2>
-            <a href="dashboard-vendeur.html" class="btn-primary text-on-primary px-4 py-2.5 rounded-xl text-xs font-bold tracking-wide flex items-center gap-1">
-              <span class="material-symbols-outlined" style="font-size:16px;">add</span>
-              Nouvelle
-            </a>
-          </div>
-          <div id="listings-list" class="space-y-1">
-            <div class="flex justify-center py-8"><div class="spinner"></div></div>
-          </div>
-        </div>
+        <div class="section-card"><div class="flex items-center justify-between mb-5"><h2 class="font-serif italic text-xl">Mes Annonces</h2><a href="dashboard-vendeur.html" class="btn-primary text-on-primary px-4 py-2.5 rounded-xl text-xs font-bold tracking-wide flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:16px;">add</span>Nouvelle</a></div><div id="listings-list" class="space-y-1"><div class="flex justify-center py-8"><div class="spinner"></div></div></div></div>
       </div>
-
-      <!-- TAB: Ventes -->
       <div id="vendeur-ventes" class="tab-panel">
-        <div class="section-card">
-          <h2 class="font-serif italic text-xl mb-5">Historique des ventes</h2>
-          <div id="sales-list" class="space-y-1">
-            <div class="flex justify-center py-8"><div class="spinner"></div></div>
-          </div>
-        </div>
+        <div class="section-card"><h2 class="font-serif italic text-xl mb-5">Historique des ventes</h2><div id="sales-list" class="space-y-1"><div class="flex justify-center py-8"><div class="spinner"></div></div></div></div>
       </div>
-
-      <!-- TAB: Paiements -->
       <div id="vendeur-paiements" class="tab-panel">
         <div class="space-y-4">
           <div class="section-card" style="background:linear-gradient(135deg,#006b2a,#0f8739);color:#fff;">
             <p class="text-white/70 text-[10px] uppercase tracking-widest font-bold mb-1">Solde disponible</p>
             <p id="solde-vendeur" class="text-4xl font-bold font-serif mb-4">—</p>
-            <div class="flex gap-4">
-              <button class="flex-1 py-3 bg-white/20 hover:bg-white/30 transition-colors rounded-xl text-sm font-bold backdrop-blur">
-                Retirer les fonds
-              </button>
-              <button class="flex-1 py-3 bg-white/20 hover:bg-white/30 transition-colors rounded-xl text-sm font-bold backdrop-blur">
-                Voir le détail
-              </button>
-            </div>
+            <div class="flex gap-4"><button class="flex-1 py-3 bg-white/20 hover:bg-white/30 transition-colors rounded-xl text-sm font-bold backdrop-blur">Retirer les fonds</button><button class="flex-1 py-3 bg-white/20 hover:bg-white/30 transition-colors rounded-xl text-sm font-bold backdrop-blur">Voir le détail</button></div>
           </div>
-          <div class="section-card">
-            <h3 class="font-serif italic text-lg mb-4">Mode de versement</h3>
-            <div class="p-4 border border-outline-variant/30 rounded-xl flex items-center gap-4">
-              <span class="material-symbols-outlined text-secondary">account_balance</span>
-              <div class="flex-1">
-                <p class="font-bold text-sm">Compte bancaire</p>
-                <p class="text-xs text-on-surface-variant">Non configuré</p>
-              </div>
-              <button class="text-xs font-bold text-secondary hover:underline">Configurer</button>
-            </div>
-          </div>
-          <div class="section-card">
-            <h3 class="font-serif italic text-lg mb-4">Historique des paiements</h3>
-            <div id="payments-list" class="space-y-3">
-              <div class="flex justify-center py-6"><div class="spinner"></div></div>
-            </div>
-          </div>
+          <div class="section-card"><h3 class="font-serif italic text-lg mb-4">Mode de versement</h3><div class="p-4 border border-outline-variant/30 rounded-xl flex items-center gap-4"><span class="material-symbols-outlined text-secondary">account_balance</span><div class="flex-1"><p class="font-bold text-sm">Compte bancaire</p><p class="text-xs text-on-surface-variant">Non configuré</p></div><button class="text-xs font-bold text-secondary hover:underline">Configurer</button></div></div>
+          <div class="section-card"><h3 class="font-serif italic text-lg mb-4">Historique des paiements</h3><div id="payments-list" class="space-y-3"><div class="flex justify-center py-6"><div class="spinner"></div></div></div></div>
         </div>
       </div>
-
-      <!-- TAB: Boutique -->
       <div id="vendeur-boutique" class="tab-panel">
         <div class="section-card">
           <h2 class="font-serif italic text-xl mb-5">Ma Boutique</h2>
           <div class="space-y-5">
-            <div>
-              <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Nom de la boutique</label>
-              <input id="shop-name" class="edit-field" placeholder="Nom de votre boutique"/>
-            </div>
-            <div>
-              <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Spécialité</label>
-              <input id="shop-specialty" class="edit-field" placeholder="Ex: Huiles naturelles, Artisanat…"/>
-            </div>
-            <div>
-              <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Pays d'origine</label>
-              <select id="shop-country" class="edit-field">
-                <option value="Maroc">🇲🇦 Maroc</option>
-                <option value="Gabon">🇬🇦 Gabon</option>
-              </select>
-            </div>
+            <div><label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Nom de la boutique</label><input id="shop-name" class="edit-field" placeholder="Nom de votre boutique"/></div>
+            <div><label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Spécialité</label><input id="shop-specialty" class="edit-field" placeholder="Ex: Huiles naturelles, Artisanat…"/></div>
+            <div><label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Pays d'origine</label><select id="shop-country" class="edit-field"><option value="Maroc">🇲🇦 Maroc</option><option value="Gabon">🇬🇦 Gabon</option></select></div>
             <div id="shop-save-feedback" class="text-xs text-primary font-bold hidden">✓ Boutique mise à jour</div>
-            <button onclick="saveShop()" class="btn-primary text-on-primary px-8 py-3.5 rounded-xl text-sm font-bold tracking-wide w-full">
-              Mettre à jour la boutique
-            </button>
+            <button onclick="saveShop()" class="btn-primary text-on-primary px-8 py-3.5 rounded-xl text-sm font-bold tracking-wide w-full">Mettre à jour la boutique</button>
           </div>
         </div>
       </div>
-
-    </div><!-- end vendeur-dashboard-section -->
-
-  </div><!-- end mode-vendeur -->
+    </div>
+  </div>
 
 </main>
 
 <!-- Bottom nav -->
 <nav class="bg-surface/80 backdrop-blur-xl fixed bottom-0 w-full z-50 rounded-t-[2rem] shadow-[0_-8px_40px_rgba(0,0,0,0.06)] md:hidden border-t border-outline-variant/10">
   <div class="flex justify-around items-center w-full px-4 pb-6 pt-3">
-    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="hero.html">
-      <span class="material-symbols-outlined">home</span>
-      <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Home</span>
-    </a>
-    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="boutique.html">
-      <span class="material-symbols-outlined">storefront</span>
-      <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Shop</span>
-    </a>
-    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="dashboard-vendeur.html">
-      <span class="material-symbols-outlined">add_circle</span>
-      <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Sell</span>
-    </a>
-    <a class="flex flex-col items-center justify-center text-primary" href="#">
-      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">person</span>
-      <span class="text-[10px] font-bold uppercase tracking-widest mt-0.5">Profil</span>
-    </a>
+    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="hero.html"><span class="material-symbols-outlined">home</span><span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Home</span></a>
+    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="boutique.html"><span class="material-symbols-outlined">storefront</span><span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Shop</span></a>
+    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="dashboard-vendeur.html"><span class="material-symbols-outlined">add_circle</span><span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Sell</span></a>
+    <a class="flex flex-col items-center justify-center text-primary" href="#"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">person</span><span class="text-[10px] font-bold uppercase tracking-widest mt-0.5">Profil</span></a>
   </div>
 </nav>
 
 <script>
-  // ─── SUPABASE INIT ───────────────────────────────────────────────
-  const SUPABASE_URL = 'https://aakxoydznmybstfozjte.supabase.co'
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
-  const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+const SUPABASE_URL = 'https://aakxoydznmybstfozjte.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-  let currentUser = null
-  let currentProfile = null
-  let currentMode = 'client'
-  let isVendeur = false
+let currentUser = null, currentProfile = null, currentMode = 'client', isVendeur = false
 
-  // ─── TOAST ──────────────────────────────────────────────────────
-  function showToast(msg, type = '') {
-    const t = document.getElementById('toast')
-    t.textContent = msg
-    t.className = 'show ' + type
-    setTimeout(() => { t.className = '' }, 3000)
+function showToast(msg, type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='show '+type;setTimeout(()=>{t.className=''},3000)}
+
+const statusChip={delivered:'<span class="chip chip-green">Livré</span>',shipped:'<span class="chip chip-blue">En transit</span>',processing:'<span class="chip chip-amber">En préparation</span>',pending:'<span class="chip chip-amber">En attente</span>',cancelled:'<span class="chip chip-gray">Annulée</span>',returned:'<span class="chip chip-red">Retourné</span>',active:'<span class="chip chip-green">En ligne</span>',inactive:'<span class="chip chip-gray">Inactif</span>',paid:'<span class="chip chip-green">Payé</span>',failed:'<span class="chip chip-red">Échoué</span>',refunded:'<span class="chip chip-blue">Remboursé</span>'}
+
+function fmt(amount,currency='MAD'){return new Intl.NumberFormat('fr-MA',{style:'currency',currency,maximumFractionDigits:2}).format(amount)}
+function fmtDate(iso){return new Date(iso).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})}
+function countryFlag(c){if(!c)return'🌍';if(c.toLowerCase().includes('maroc'))return'🇲🇦';if(c.toLowerCase().includes('gabon'))return'🇬🇦';return'🌍'}
+
+// ─── UPLOAD AVATAR ──────────────────────────────────────────────────────────
+// CORRECTIONS apportées :
+// 1. Chemin : `{auth_uid}/{auth_uid}.ext` pour correspondre à la policy storage
+// 2. Validation taille (2MB) et type MIME avant upload
+// 3. Barre de progression visuelle
+// 4. Gestion erreur avec message précis
+// 5. Cache-busting sur l'URL publique via ?t=timestamp
+// 6. Reset de l'input après upload pour permettre re-sélection du même fichier
+document.getElementById('avatar-input').addEventListener('change', async (e) => {
+  const file = e.target.files[0]
+  if (!file || !currentUser) return
+
+  // Validation taille max 2MB
+  if (file.size > 2 * 1024 * 1024) {
+    showToast('Image trop lourde — max 2 Mo', 'error')
+    e.target.value = ''
+    return
   }
 
-  // ─── HELPERS ────────────────────────────────────────────────────
-  const statusChip = {
-    delivered: '<span class="chip chip-green">Livré</span>',
-    shipped:   '<span class="chip chip-blue">En transit</span>',
-    processing:'<span class="chip chip-amber">En préparation</span>',
-    pending:   '<span class="chip chip-amber">En attente</span>',
-    cancelled: '<span class="chip chip-gray">Annulée</span>',
-    returned:  '<span class="chip chip-red">Retourné</span>',
-    active:    '<span class="chip chip-green">En ligne</span>',
-    inactive:  '<span class="chip chip-gray">Inactif</span>',
-    paid:      '<span class="chip chip-green">Payé</span>',
-    failed:    '<span class="chip chip-red">Échoué</span>',
-    refunded:  '<span class="chip chip-blue">Remboursé</span>',
+  // Validation type MIME
+  if (!['image/jpeg','image/png','image/webp'].includes(file.type)) {
+    showToast('Format non supporté — JPG, PNG ou WEBP uniquement', 'error')
+    e.target.value = ''
+    return
   }
 
-  function fmt(amount, currency = 'MAD') {
-    return new Intl.NumberFormat('fr-MA', { style: 'currency', currency, maximumFractionDigits: 2 }).format(amount)
-  }
-  function fmtDate(iso) {
-    return new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
-  }
-  function countryFlag(c) {
-    if (!c) return '🌍'
-    if (c.toLowerCase().includes('maroc')) return '🇲🇦'
-    if (c.toLowerCase().includes('gabon')) return '🇬🇦'
-    return '🌍'
-  }
+  const ext = file.name.split('.').pop().toLowerCase().replace('jpg','jpeg')
+  // ✅ CHEMIN CORRIGÉ : auth.uid() comme dossier racine (requis par la policy)
+  const filePath = `${currentUser.id}/${currentUser.id}.${ext}`
 
-  // ─── AUTH & INIT ─────────────────────────────────────────────────
-  async function init() {
-    const { data: { session } } = await db.auth.getSession()
-    if (!session) {
-      window.location.href = 'login.html'
-      return
-    }
-    currentUser = session.user
+  // Afficher barre de progression
+  const pw = document.getElementById('avatar-progress-wrap')
+  const pb = document.getElementById('avatar-progress-bar')
+  pw.style.display = 'block'
+  pb.style.width = '20%'
 
-    // Check URL param ?mode=vendeur
-    const urlParams = new URLSearchParams(window.location.search)
-    const modeParam = urlParams.get('mode')
+  try {
+    // Upload dans le bucket avatars (upsert = remplace si existe)
+    const { error: uploadError } = await db.storage
+      .from('avatars')
+      .upload(filePath, file, { upsert: true, contentType: file.type })
 
-    await loadProfile()
-    hideOverlay()
+    if (uploadError) throw uploadError
+    pb.style.width = '65%'
 
-    // Auto-switch si ?mode=vendeur dans l'URL
-    if (modeParam === 'vendeur') {
-      switchMode('vendeur')
-    }
-  }
+    // Récupérer l'URL publique
+    const { data: urlData } = db.storage.from('avatars').getPublicUrl(filePath)
+    const publicUrl = urlData.publicUrl
 
-  function hideOverlay() {
-    document.getElementById('loading-overlay').classList.add('hidden')
-  }
-
-  // ─── PROFIL ──────────────────────────────────────────────────────
-  async function loadProfile() {
-    const { data, error } = await db
+    // Sauvegarder dans la table users
+    const { error: dbError } = await db
       .from('users')
-      .select('*')
-      .eq('auth_id', currentUser.id)
-      .single()
-
-    if (error || !data) {
-      document.getElementById('profile-name').textContent = currentUser.email
-      document.getElementById('profile-email').textContent = currentUser.email
-      document.getElementById('input-email').value = currentUser.email
-      loadClientStats(null)
-      loadOrders(null)
-      // Afficher le badge NEW sur l'espace vendeur
-      document.getElementById('new-badge').classList.remove('hidden')
-      return
-    }
-
-    currentProfile = data
-    isVendeur = (data.role === 'artisan' || data.role === 'admin')
-
-    // Hero
-    const fullName = data.full_name || [data.first_name, data.last_name].filter(Boolean).join(' ') || currentUser.email
-    document.getElementById('profile-name').textContent = fullName
-    document.getElementById('profile-email').textContent = data.email || currentUser.email
-    document.getElementById('profile-since').textContent = 'Membre depuis ' + new Date(data.created_at).getFullYear()
-
-    const flag = countryFlag(data.country)
-    document.getElementById('profile-country').textContent = `${flag} ${data.country || '—'}`
-
-    const roleLabels = { buyer: 'Client', artisan: 'Vendeur', admin: 'Admin' }
-    document.getElementById('badge-role').textContent = roleLabels[data.role] || data.role || '—'
-
-    if (data.avatar_url) {
-      const img = document.getElementById('profile-avatar')
-      img.src = data.avatar_url
-      img.classList.remove('hidden')
-      document.getElementById('profile-avatar-placeholder').style.display = 'none'
-    }
-
-    document.getElementById('input-firstname').value = data.first_name || ''
-    document.getElementById('input-lastname').value = data.last_name || ''
-    document.getElementById('input-email').value = data.email || currentUser.email
-
-    // Mode vendeur : afficher upgrade ou dashboard selon rôle
-    if (isVendeur) {
-      // Vendeur confirmé → dashboard direct
-      document.getElementById('vendeur-upgrade-section').classList.add('hidden')
-      document.getElementById('vendeur-dashboard-section').classList.remove('hidden')
-      // Pré-remplir boutique
-      if (data.specialty) document.getElementById('shop-specialty').value = data.specialty
-      if (data.country) document.getElementById('shop-country').value = data.country
-      if (fullName) document.getElementById('shop-name').value = fullName
-      loadVendeurData()
-    } else {
-      // Pas encore vendeur → afficher upgrade avec badge NEW
-      document.getElementById('vendeur-upgrade-section').classList.remove('hidden')
-      document.getElementById('vendeur-dashboard-section').classList.add('hidden')
-      document.getElementById('new-badge').classList.remove('hidden')
-    }
-
-    loadClientStats(data.id)
-    loadOrders(data.id)
-  }
-
-  // ─── UPGRADE VERS VENDEUR ────────────────────────────────────────
-  async function upgradeToVendeur() {
-    const shopName = document.getElementById('upgrade-shop-name').value.trim()
-    const specialty = document.getElementById('upgrade-specialty').value.trim()
-    const country = document.getElementById('upgrade-country').value
-    const bio = document.getElementById('upgrade-bio').value.trim()
-
-    if (!shopName || !specialty || !country) {
-      showToast('Remplis tous les champs obligatoires (*)', 'error')
-      return
-    }
-
-    const btn = document.getElementById('upgrade-btn')
-    btn.disabled = true
-    btn.innerHTML = '<div class="spinner" style="border-color:#fff3;border-top-color:#fff;"></div> Création en cours…'
-
-    try {
-      // 1. Mettre à jour le rôle dans la table users
-      const { error: updateError } = await db
-        .from('users')
-        .update({
-          role: 'artisan',
-          specialty,
-          country,
-          bio: bio || null,
-          updated_at: new Date().toISOString()
-        })
-        .eq('auth_id', currentUser.id)
-
-      if (updateError) throw updateError
-
-      // 2. Créer un profil vendeur dans vendor_profiles si la table existe
-      if (currentProfile?.id) {
-        await db.from('vendor_profiles').upsert({
-          user_id: currentProfile.id,
-          shop_name: shopName,
-          specialty,
-          country,
-          bio: bio || null,
-          status: 'active',
-          created_at: new Date().toISOString()
-        }, { onConflict: 'user_id' })
-      }
-
-      // 3. Mettre à jour badge rôle dans le hero
-      document.getElementById('badge-role').textContent = 'Vendeur'
-
-      // 4. Masquer upgrade, afficher dashboard
-      isVendeur = true
-      document.getElementById('vendeur-upgrade-section').classList.add('hidden')
-      document.getElementById('vendeur-dashboard-section').classList.remove('hidden')
-      document.getElementById('new-badge').classList.add('hidden')
-
-      // 5. Pré-remplir la tab boutique
-      document.getElementById('shop-name').value = shopName
-      document.getElementById('shop-specialty').value = specialty
-      document.getElementById('shop-country').value = country
-
-      // 6. Charger les données vendeur (vides pour l'instant)
-      loadVendeurData()
-
-      showToast('🎉 Bienvenue parmi les vendeurs WennaShop !', 'success')
-
-      // Mise à jour locale du profil
-      if (currentProfile) {
-        currentProfile.role = 'artisan'
-        currentProfile.specialty = specialty
-        currentProfile.country = country
-      }
-
-    } catch (err) {
-      console.error(err)
-      showToast('Erreur lors de la création. Réessaie.', 'error')
-      btn.disabled = false
-      btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">store</span> Devenir vendeur — c\'est gratuit'
-    }
-  }
-
-  // ─── STATS CLIENT ────────────────────────────────────────────────
-  async function loadClientStats(userId) {
-    if (!userId) {
-      document.getElementById('stat-orders').textContent = '0'
-      document.getElementById('stat-favoris').textContent = '0'
-      document.getElementById('stat-reviews').textContent = '0'
-      return
-    }
-    const [ordersRes, reviewsRes] = await Promise.all([
-      db.from('orders').select('id', { count: 'exact', head: true }).eq('user_id', userId),
-      db.from('reviews').select('id', { count: 'exact', head: true }).eq('user_id', userId)
-    ])
-    document.getElementById('stat-orders').textContent = ordersRes.count ?? 0
-    document.getElementById('stat-favoris').textContent = '0'
-    document.getElementById('stat-reviews').textContent = reviewsRes.count ?? 0
-  }
-
-  // ─── COMMANDES ───────────────────────────────────────────────────
-  async function loadOrders(userId) {
-    const container = document.getElementById('orders-list')
-    if (!userId) {
-      container.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-6">Aucune commande.</p>'
-      return
-    }
-    const { data, error } = await db
-      .from('orders')
-      .select('id, status, total_amount, currency, created_at, order_items(quantity, unit_price, products(name, image_url))')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(10)
-
-    if (error || !data || data.length === 0) {
-      container.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-6">Aucune commande pour l\'instant.</p>'
-      return
-    }
-    container.innerHTML = data.map(order => {
-      const item = order.order_items?.[0]
-      const product = item?.products
-      const imgHtml = product?.image_url
-        ? `<img src="${product.image_url}" alt="${product.name}" class="product-thumb"/>`
-        : `<div class="product-thumb flex items-center justify-center bg-surface-container-low"><span class="material-symbols-outlined text-on-surface-variant">inventory_2</span></div>`
-      const productName = product?.name || 'Commande #' + order.id.slice(0, 8).toUpperCase()
-      const chip = statusChip[order.status] || `<span class="chip chip-gray">${order.status}</span>`
-      const shortId = order.id.slice(0, 8).toUpperCase()
-      return `
-        <div class="order-row p-4 flex items-center gap-4 cursor-pointer">
-          ${imgHtml}
-          <div class="flex-1">
-            <div class="flex items-center gap-2 mb-1">
-              <p class="font-bold text-sm">${productName}</p>
-              ${chip}
-            </div>
-            <p class="text-[11px] text-on-surface-variant">Commande #WS-${shortId} · ${fmtDate(order.created_at)}</p>
-            <p class="text-xs font-bold text-primary mt-1">${fmt(order.total_amount, order.currency || 'MAD')}</p>
-          </div>
-          <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
-        </div>`
-    }).join('')
-  }
-
-  // ─── DONNÉES VENDEUR ─────────────────────────────────────────────
-  async function loadVendeurData() {
-    if (!currentProfile) return
-    const sellerId = currentProfile.id
-
-    const { data: products } = await db
-      .from('products')
-      .select('id, name, price, currency, status, origin_city, country, image_url, created_at')
-      .eq('seller_id', sellerId)
-      .order('created_at', { ascending: false })
-
-    renderListings(products || [])
-
-    const { data: sales } = await db
-      .from('order_items')
-      .select('id, quantity, unit_price, created_at, products!inner(name, seller_id), orders(status, currency)')
-      .eq('products.seller_id', sellerId)
-      .order('created_at', { ascending: false })
-      .limit(20)
-
-    renderSales(sales || [])
-
-    const totalSales = (sales || []).length
-    const now = new Date()
-    const revenueMonth = (sales || [])
-      .filter(i => new Date(i.created_at).getMonth() === now.getMonth())
-      .reduce((s, i) => s + (parseFloat(i.unit_price) * i.quantity), 0)
-
-    document.getElementById('stat-revenue-month').textContent = fmt(revenueMonth)
-    document.getElementById('stat-total-sales').textContent = totalSales
-    document.getElementById('stat-listings').textContent = (products || []).length
-
-    const productIds = (products || []).map(p => p.id)
-    if (productIds.length > 0) {
-      const { data: reviews } = await db
-        .from('reviews').select('rating').in('product_id', productIds).eq('status', 'approved')
-      if (reviews && reviews.length > 0) {
-        const avg = (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
-        document.getElementById('stat-rating').textContent = avg
-      } else {
-        document.getElementById('stat-rating').textContent = '—'
-      }
-    }
-
-    loadSoldeVendeur(sales || [])
-    loadPaymentsHistory(sales || [])
-  }
-
-  async function loadSoldeVendeur(sales) {
-    const orderIds = [...new Set((sales || []).map(s => s.orders ? s.orders.id : null).filter(Boolean))]
-    if (orderIds.length === 0) {
-      document.getElementById('solde-vendeur').textContent = fmt(0)
-      return
-    }
-    const { data: payments } = await db
-      .from('payments').select('amount, currency, status').in('order_id', orderIds).eq('status', 'paid')
-    const total = (payments || []).reduce((s, p) => s + parseFloat(p.amount), 0)
-    document.getElementById('solde-vendeur').textContent = fmt(total)
-  }
-
-  async function loadPaymentsHistory(sales) {
-    const container = document.getElementById('payments-list')
-    const orderIds = [...new Set((sales || []).map(s => s.orders ? s.orders.id : null).filter(Boolean))]
-    if (orderIds.length === 0) {
-      container.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-4">Aucun paiement.</p>'
-      return
-    }
-    const { data: payments } = await db
-      .from('payments').select('id, amount, currency, status, created_at, method')
-      .in('order_id', orderIds).order('created_at', { ascending: false }).limit(10)
-
-    if (!payments || payments.length === 0) {
-      container.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-4">Aucun paiement.</p>'
-      return
-    }
-    container.innerHTML = payments.map(p => {
-      const chip = statusChip[p.status] || `<span class="chip chip-gray">${p.status}</span>`
-      return `
-        <div class="flex justify-between items-center py-3 border-b border-outline-variant/10 last:border-0">
-          <div>
-            <p class="text-sm font-bold">Paiement du ${fmtDate(p.created_at)}</p>
-            <p class="text-[11px] text-on-surface-variant">${p.method || 'En ligne'}</p>
-          </div>
-          <div class="text-right">
-            <p class="font-bold text-primary">${fmt(p.amount, p.currency || 'MAD')}</p>
-            ${chip}
-          </div>
-        </div>`
-    }).join('')
-  }
-
-  function renderListings(products) {
-    const container = document.getElementById('listings-list')
-    if (!products.length) {
-      container.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-6">Aucune annonce. <a href="sell.html" class="text-primary font-bold">Créer une annonce</a></p>'
-      return
-    }
-    container.innerHTML = products.map(p => {
-      const chip = statusChip[p.status] || `<span class="chip chip-gray">${p.status}</span>`
-      const imgHtml = p.image_url
-        ? `<img src="${p.image_url}" alt="${p.name}" class="product-thumb"/>`
-        : `<div class="product-thumb flex items-center justify-center bg-surface-container-low"><span class="material-symbols-outlined text-on-surface-variant">image</span></div>`
-      return `
-        <div class="listing-row p-4 flex items-center gap-4 cursor-pointer">
-          ${imgHtml}
-          <div class="flex-1">
-            <div class="flex items-center gap-2 mb-1">
-              <p class="font-bold text-sm">${p.name}</p>
-              ${chip}
-            </div>
-            <p class="text-[11px] text-on-surface-variant">${p.country || ''} ${p.origin_city ? '· ' + p.origin_city : ''}</p>
-            <p class="text-xs font-bold text-primary mt-1">${fmt(p.price, p.currency || 'MAD')}</p>
-          </div>
-          <a href="sell.html?edit=${p.id}" class="text-on-surface-variant hover:text-primary transition-colors p-2">
-            <span class="material-symbols-outlined" style="font-size:18px;">edit</span>
-          </a>
-        </div>`
-    }).join('')
-  }
-
-  function renderSales(sales) {
-    const container = document.getElementById('sales-list')
-    if (!sales.length) {
-      container.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-6">Aucune vente pour l\'instant.</p>'
-      return
-    }
-    container.innerHTML = sales.map(s => {
-      const orderStatus = s.orders?.status || 'pending'
-      const chip = statusChip[orderStatus] || `<span class="chip chip-gray">${orderStatus}</span>`
-      const isCompleted = ['delivered', 'shipped'].includes(orderStatus)
-      return `
-        <div class="order-row p-4 flex items-center gap-4">
-          <div class="w-10 h-10 rounded-full ${isCompleted ? 'bg-green-100' : 'bg-blue-100'} flex items-center justify-center flex-shrink-0">
-            <span class="material-symbols-outlined ${isCompleted ? 'text-primary' : 'text-secondary'}" style="font-size:18px;">${isCompleted ? 'arrow_downward' : 'schedule'}</span>
-          </div>
-          <div class="flex-1">
-            <p class="font-bold text-sm">${s.products?.name || '—'} × ${s.quantity}</p>
-            <p class="text-[11px] text-on-surface-variant">${fmtDate(s.created_at)}</p>
-          </div>
-          <div class="text-right">
-            <p class="font-bold text-primary text-sm">+${fmt(parseFloat(s.unit_price) * s.quantity)}</p>
-            ${chip}
-          </div>
-        </div>`
-    }).join('')
-  }
-
-  // ─── SAUVEGARDER PROFIL ──────────────────────────────────────────
-  async function saveProfile() {
-    if (!currentProfile) return
-    const first = document.getElementById('input-firstname').value.trim()
-    const last = document.getElementById('input-lastname').value.trim()
-    const { error } = await db
-      .from('users')
-      .update({ first_name: first, last_name: last, full_name: [first, last].filter(Boolean).join(' '), updated_at: new Date().toISOString() })
+      .update({ avatar_url: publicUrl, updated_at: new Date().toISOString() })
       .eq('id', currentProfile.id)
-    if (!error) {
-      document.getElementById('profile-name').textContent = [first, last].filter(Boolean).join(' ')
-      showToast('✓ Profil sauvegardé', 'success')
-    } else {
-      showToast('Erreur lors de la sauvegarde', 'error')
-    }
-  }
 
-  // ─── SAUVEGARDER BOUTIQUE ────────────────────────────────────────
-  async function saveShop() {
-    if (!currentProfile) return
-    const { error } = await db
-      .from('users')
-      .update({ specialty: document.getElementById('shop-specialty').value.trim(), country: document.getElementById('shop-country').value, updated_at: new Date().toISOString() })
-      .eq('id', currentProfile.id)
-    if (!error) {
-      showToast('✓ Boutique mise à jour', 'success')
-    } else {
-      showToast('Erreur lors de la mise à jour', 'error')
-    }
-  }
+    if (dbError) throw dbError
+    pb.style.width = '100%'
 
-  // ─── UPLOAD AVATAR ───────────────────────────────────────────────
-  document.getElementById('avatar-input').addEventListener('change', async (e) => {
-    const file = e.target.files[0]
-    if (!file || !currentProfile) return
-    const ext = file.name.split('.').pop()
-    const path = `avatars/${currentProfile.id}.${ext}`
-    const { error: uploadError } = await db.storage.from('avatars').upload(path, file, { upsert: true })
-    if (uploadError) { showToast('Erreur upload avatar', 'error'); return }
-    const { data: urlData } = db.storage.from('avatars').getPublicUrl(path)
-    await db.from('users').update({ avatar_url: urlData.publicUrl }).eq('id', currentProfile.id)
+    // Mettre à jour l'image dans le DOM (+ cache-busting)
     const img = document.getElementById('profile-avatar')
-    img.src = urlData.publicUrl
+    img.src = publicUrl + '?t=' + Date.now()
     img.classList.remove('hidden')
     document.getElementById('profile-avatar-placeholder').style.display = 'none'
+    currentProfile.avatar_url = publicUrl
+
     showToast('✓ Photo de profil mise à jour', 'success')
-  })
+  } catch (err) {
+    console.error('Upload avatar:', err)
+    showToast('Erreur upload : ' + (err.message || 'réessaie'), 'error')
+  } finally {
+    setTimeout(() => { pw.style.display = 'none'; pb.style.width = '0%' }, 1200)
+    e.target.value = '' // Reset pour permettre re-sélection du même fichier
+  }
+})
 
-  // ─── DÉCONNEXION ─────────────────────────────────────────────────
-  async function handleLogout() {
-    await db.auth.signOut()
-    window.location.href = 'index.html'
+// ─── AUTH & INIT ─────────────────────────────────────────────────────────────
+async function init() {
+  const { data: { session } } = await db.auth.getSession()
+  if (!session) { window.location.href = 'login.html'; return }
+  currentUser = session.user
+  const urlParams = new URLSearchParams(window.location.search)
+  await loadProfile()
+  hideOverlay()
+  if (urlParams.get('mode') === 'vendeur') switchMode('vendeur')
+}
+
+function hideOverlay() { document.getElementById('loading-overlay').classList.add('hidden') }
+
+async function loadProfile() {
+  const { data, error } = await db.from('users').select('*').eq('auth_id', currentUser.id).single()
+  if (error || !data) {
+    document.getElementById('profile-name').textContent = currentUser.email
+    document.getElementById('profile-email').textContent = currentUser.email
+    document.getElementById('input-email').value = currentUser.email
+    loadClientStats(null); loadOrders(null)
+    document.getElementById('new-badge').classList.remove('hidden')
+    return
+  }
+  currentProfile = data
+  isVendeur = (data.role === 'artisan' || data.role === 'admin')
+  const fullName = data.full_name || [data.first_name, data.last_name].filter(Boolean).join(' ') || currentUser.email
+  document.getElementById('profile-name').textContent = fullName
+  document.getElementById('profile-email').textContent = data.email || currentUser.email
+  document.getElementById('profile-since').textContent = 'Membre depuis ' + new Date(data.created_at).getFullYear()
+  document.getElementById('profile-country').textContent = `${countryFlag(data.country)} ${data.country || '—'}`
+  const roleLabels = { buyer: 'Client', artisan: 'Vendeur', admin: 'Admin' }
+  document.getElementById('badge-role').textContent = roleLabels[data.role] || data.role || '—'
+
+  // Affichage avatar avec gestion erreur et cache-busting
+  if (data.avatar_url) {
+    const img = document.getElementById('profile-avatar')
+    img.onload = () => { img.classList.remove('hidden'); document.getElementById('profile-avatar-placeholder').style.display = 'none' }
+    img.onerror = () => { img.classList.add('hidden'); document.getElementById('profile-avatar-placeholder').style.display = 'flex' }
+    img.src = data.avatar_url + '?t=' + Date.now()
   }
 
-  // ─── TABS / MODES ────────────────────────────────────────────────
-  function switchMode(mode) {
-    currentMode = mode
-    document.querySelectorAll('.mode-panel').forEach(p => p.classList.remove('active'))
-    document.getElementById('mode-' + mode).classList.add('active')
-    document.getElementById('btn-client').classList.toggle('active', mode === 'client')
-    document.getElementById('btn-vendeur').classList.toggle('active', mode === 'vendeur')
-    if (mode === 'client') {
-      switchClientTab('commandes', document.querySelector('#mode-client .nav-tab'))
-    }
+  document.getElementById('input-firstname').value = data.first_name || ''
+  document.getElementById('input-lastname').value = data.last_name || ''
+  document.getElementById('input-email').value = data.email || currentUser.email
+
+  if (isVendeur) {
+    document.getElementById('vendeur-upgrade-section').classList.add('hidden')
+    document.getElementById('vendeur-dashboard-section').classList.remove('hidden')
+    if (data.specialty) document.getElementById('shop-specialty').value = data.specialty
+    if (data.country) document.getElementById('shop-country').value = data.country
+    if (fullName) document.getElementById('shop-name').value = fullName
+    loadVendeurData()
+  } else {
+    document.getElementById('vendeur-upgrade-section').classList.remove('hidden')
+    document.getElementById('vendeur-dashboard-section').classList.add('hidden')
+    document.getElementById('new-badge').classList.remove('hidden')
   }
+  loadClientStats(data.id); loadOrders(data.id)
+}
 
-  function switchClientTab(tab, btn) {
-    document.querySelectorAll('#mode-client .tab-panel').forEach(p => p.classList.remove('active'))
-    document.querySelectorAll('#mode-client .nav-tab').forEach(t => t.classList.remove('active'))
-    document.getElementById('client-' + tab).classList.add('active')
-    if (btn) btn.classList.add('active')
+async function upgradeToVendeur() {
+  const shopName = document.getElementById('upgrade-shop-name').value.trim()
+  const specialty = document.getElementById('upgrade-specialty').value.trim()
+  const country = document.getElementById('upgrade-country').value
+  const bio = document.getElementById('upgrade-bio').value.trim()
+  if (!shopName || !specialty || !country) { showToast('Remplis tous les champs obligatoires (*)', 'error'); return }
+  const btn = document.getElementById('upgrade-btn')
+  btn.disabled = true
+  btn.innerHTML = '<div class="spinner" style="border-color:#fff3;border-top-color:#fff;"></div> Création en cours…'
+  try {
+    const { error } = await db.from('users').update({ role:'artisan', specialty, country, updated_at: new Date().toISOString() }).eq('auth_id', currentUser.id)
+    if (error) throw error
+    document.getElementById('badge-role').textContent = 'Vendeur'
+    isVendeur = true
+    document.getElementById('vendeur-upgrade-section').classList.add('hidden')
+    document.getElementById('vendeur-dashboard-section').classList.remove('hidden')
+    document.getElementById('new-badge').classList.add('hidden')
+    document.getElementById('shop-name').value = shopName
+    document.getElementById('shop-specialty').value = specialty
+    document.getElementById('shop-country').value = country
+    if (currentProfile) { currentProfile.role = 'artisan'; currentProfile.specialty = specialty; currentProfile.country = country }
+    loadVendeurData()
+    showToast('🎉 Bienvenue parmi les vendeurs WennaShop !', 'success')
+  } catch (err) {
+    console.error(err); showToast('Erreur lors de la création. Réessaie.', 'error')
+    btn.disabled = false
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">store</span> Devenir vendeur — c\'est gratuit'
   }
+}
 
-  function switchVendeurTab(tab, btn) {
-    document.querySelectorAll('#vendeur-dashboard-section .tab-panel').forEach(p => p.classList.remove('active'))
-    document.querySelectorAll('#vendeur-dashboard-section .nav-tab').forEach(t => t.classList.remove('active'))
-    document.getElementById('vendeur-' + tab).classList.add('active')
-    if (btn) btn.classList.add('active')
+async function loadClientStats(userId) {
+  if (!userId) { ['stat-orders','stat-favoris','stat-reviews'].forEach(id => document.getElementById(id).textContent = '0'); return }
+  const [o, r] = await Promise.all([db.from('orders').select('id',{count:'exact',head:true}).eq('user_id',userId), db.from('reviews').select('id',{count:'exact',head:true}).eq('user_id',userId)])
+  document.getElementById('stat-orders').textContent = o.count ?? 0
+  document.getElementById('stat-favoris').textContent = '0'
+  document.getElementById('stat-reviews').textContent = r.count ?? 0
+}
+
+async function loadOrders(userId) {
+  const container = document.getElementById('orders-list')
+  if (!userId) { container.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-6">Aucune commande.</p>'; return }
+  const { data, error } = await db.from('orders').select('id, status, total_amount, currency, created_at, order_items(quantity, unit_price, products(name, image_url))').eq('user_id', userId).order('created_at',{ascending:false}).limit(10)
+  if (error || !data || data.length === 0) { container.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-6">Aucune commande pour l\'instant.</p>'; return }
+  container.innerHTML = data.map(order => {
+    const p = order.order_items?.[0]?.products
+    const imgHtml = p?.image_url ? `<img src="${p.image_url}" alt="${p.name}" class="product-thumb"/>` : `<div class="product-thumb flex items-center justify-center bg-surface-container-low"><span class="material-symbols-outlined text-on-surface-variant">inventory_2</span></div>`
+    return `<div class="order-row p-4 flex items-center gap-4 cursor-pointer">${imgHtml}<div class="flex-1"><div class="flex items-center gap-2 mb-1"><p class="font-bold text-sm">${p?.name||'Commande #'+order.id.slice(0,8).toUpperCase()}</p>${statusChip[order.status]||'<span class="chip chip-gray">'+order.status+'</span>'}</div><p class="text-[11px] text-on-surface-variant">Commande #WS-${order.id.slice(0,8).toUpperCase()} · ${fmtDate(order.created_at)}</p><p class="text-xs font-bold text-primary mt-1">${fmt(order.total_amount, order.currency||'MAD')}</p></div><span class="material-symbols-outlined text-on-surface-variant">chevron_right</span></div>`
+  }).join('')
+}
+
+async function loadVendeurData() {
+  if (!currentProfile) return
+  const sellerId = currentProfile.id
+  const { data: products } = await db.from('products').select('id,name,price,currency,status,origin_city,country,image_url,created_at').eq('seller_id',sellerId).order('created_at',{ascending:false})
+  renderListings(products||[])
+  const { data: sales } = await db.from('order_items').select('id,quantity,unit_price,created_at,products!inner(name,seller_id),orders(status,currency)').eq('products.seller_id',sellerId).order('created_at',{ascending:false}).limit(20)
+  renderSales(sales||[])
+  const now = new Date()
+  const revenueMonth = (sales||[]).filter(i=>new Date(i.created_at).getMonth()===now.getMonth()).reduce((s,i)=>s+(parseFloat(i.unit_price)*i.quantity),0)
+  document.getElementById('stat-revenue-month').textContent = fmt(revenueMonth)
+  document.getElementById('stat-total-sales').textContent = (sales||[]).length
+  document.getElementById('stat-listings').textContent = (products||[]).length
+  const productIds = (products||[]).map(p=>p.id)
+  if (productIds.length > 0) {
+    const { data: reviews } = await db.from('reviews').select('rating').in('product_id',productIds).eq('status','approved')
+    document.getElementById('stat-rating').textContent = (reviews&&reviews.length>0) ? (reviews.reduce((s,r)=>s+r.rating,0)/reviews.length).toFixed(1) : '—'
   }
+  loadSoldeVendeur(sales||[]); loadPaymentsHistory(sales||[])
+}
 
-  // ─── ANIMATIONS ──────────────────────────────────────────────────
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.style.animationPlayState = 'running' })
-  }, { threshold: 0.05 })
-  document.querySelectorAll('.anim-up, .anim-in').forEach(el => {
-    el.style.animationPlayState = 'paused'
-    observer.observe(el)
-  })
+async function loadSoldeVendeur(sales) {
+  const orderIds=[...new Set((sales).map(s=>s.orders?.id).filter(Boolean))]
+  if(!orderIds.length){document.getElementById('solde-vendeur').textContent=fmt(0);return}
+  const{data:payments}=await db.from('payments').select('amount,status').in('order_id',orderIds).eq('status','paid')
+  document.getElementById('solde-vendeur').textContent=fmt((payments||[]).reduce((s,p)=>s+parseFloat(p.amount),0))
+}
 
-  // ─── START ───────────────────────────────────────────────────────
-  init()
+async function loadPaymentsHistory(sales) {
+  const container=document.getElementById('payments-list')
+  const orderIds=[...new Set((sales).map(s=>s.orders?.id).filter(Boolean))]
+  if(!orderIds.length){container.innerHTML='<p class="text-sm text-on-surface-variant text-center py-4">Aucun paiement.</p>';return}
+  const{data:payments}=await db.from('payments').select('id,amount,currency,status,created_at,method').in('order_id',orderIds).order('created_at',{ascending:false}).limit(10)
+  if(!payments||!payments.length){container.innerHTML='<p class="text-sm text-on-surface-variant text-center py-4">Aucun paiement.</p>';return}
+  container.innerHTML=payments.map(p=>`<div class="flex justify-between items-center py-3 border-b border-outline-variant/10 last:border-0"><div><p class="text-sm font-bold">Paiement du ${fmtDate(p.created_at)}</p><p class="text-[11px] text-on-surface-variant">${p.method||'En ligne'}</p></div><div class="text-right"><p class="font-bold text-primary">${fmt(p.amount,p.currency||'MAD')}</p>${statusChip[p.status]||'<span class="chip chip-gray">'+p.status+'</span>'}</div></div>`).join('')
+}
+
+function renderListings(products) {
+  const c=document.getElementById('listings-list')
+  if(!products.length){c.innerHTML='<p class="text-sm text-on-surface-variant text-center py-6">Aucune annonce. <a href="dashboard-vendeur.html" class="text-primary font-bold">Créer une annonce</a></p>';return}
+  c.innerHTML=products.map(p=>{
+    const imgHtml=p.image_url?`<img src="${p.image_url}" alt="${p.name}" class="product-thumb"/>`:`<div class="product-thumb flex items-center justify-center bg-surface-container-low"><span class="material-symbols-outlined text-on-surface-variant">image</span></div>`
+    return`<div class="listing-row p-4 flex items-center gap-4">${imgHtml}<div class="flex-1"><div class="flex items-center gap-2 mb-1"><p class="font-bold text-sm">${p.name}</p>${statusChip[p.status]||'<span class="chip chip-gray">'+p.status+'</span>'}</div><p class="text-[11px] text-on-surface-variant">${p.country||''} ${p.origin_city?'· '+p.origin_city:''}</p><p class="text-xs font-bold text-primary mt-1">${fmt(p.price,p.currency||'MAD')}</p></div><a href="dashboard-vendeur.html?edit=${p.id}" class="text-on-surface-variant hover:text-primary transition-colors p-2"><span class="material-symbols-outlined" style="font-size:18px;">edit</span></a></div>`
+  }).join('')
+}
+
+function renderSales(sales) {
+  const c=document.getElementById('sales-list')
+  if(!sales.length){c.innerHTML='<p class="text-sm text-on-surface-variant text-center py-6">Aucune vente pour l\'instant.</p>';return}
+  c.innerHTML=sales.map(s=>{
+    const st=s.orders?.status||'pending';const done=['delivered','shipped'].includes(st)
+    return`<div class="order-row p-4 flex items-center gap-4"><div class="w-10 h-10 rounded-full ${done?'bg-green-100':'bg-blue-100'} flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined ${done?'text-primary':'text-secondary'}" style="font-size:18px;">${done?'arrow_downward':'schedule'}</span></div><div class="flex-1"><p class="font-bold text-sm">${s.products?.name||'—'} × ${s.quantity}</p><p class="text-[11px] text-on-surface-variant">${fmtDate(s.created_at)}</p></div><div class="text-right"><p class="font-bold text-primary text-sm">+${fmt(parseFloat(s.unit_price)*s.quantity)}</p>${statusChip[st]||'<span class="chip chip-gray">'+st+'</span>'}</div></div>`
+  }).join('')
+}
+
+async function saveProfile() {
+  if(!currentProfile)return
+  const first=document.getElementById('input-firstname').value.trim()
+  const last=document.getElementById('input-lastname').value.trim()
+  const{error}=await db.from('users').update({first_name:first,last_name:last,full_name:[first,last].filter(Boolean).join(' '),updated_at:new Date().toISOString()}).eq('id',currentProfile.id)
+  if(!error){document.getElementById('profile-name').textContent=[first,last].filter(Boolean).join(' ');showToast('✓ Profil sauvegardé','success')}
+  else showToast('Erreur lors de la sauvegarde','error')
+}
+
+async function saveShop() {
+  if(!currentProfile)return
+  const{error}=await db.from('users').update({specialty:document.getElementById('shop-specialty').value.trim(),country:document.getElementById('shop-country').value,updated_at:new Date().toISOString()}).eq('id',currentProfile.id)
+  if(!error)showToast('✓ Boutique mise à jour','success')
+  else showToast('Erreur lors de la mise à jour','error')
+}
+
+async function handleLogout(){await db.auth.signOut();window.location.href='index.html'}
+
+function switchMode(mode){
+  currentMode=mode
+  document.querySelectorAll('.mode-panel').forEach(p=>p.classList.remove('active'))
+  document.getElementById('mode-'+mode).classList.add('active')
+  document.getElementById('btn-client').classList.toggle('active',mode==='client')
+  document.getElementById('btn-vendeur').classList.toggle('active',mode==='vendeur')
+  if(mode==='client')switchClientTab('commandes',document.querySelector('#mode-client .nav-tab'))
+}
+function switchClientTab(tab,btn){
+  document.querySelectorAll('#mode-client .tab-panel').forEach(p=>p.classList.remove('active'))
+  document.querySelectorAll('#mode-client .nav-tab').forEach(t=>t.classList.remove('active'))
+  document.getElementById('client-'+tab).classList.add('active')
+  if(btn)btn.classList.add('active')
+}
+function switchVendeurTab(tab,btn){
+  document.querySelectorAll('#vendeur-dashboard-section .tab-panel').forEach(p=>p.classList.remove('active'))
+  document.querySelectorAll('#vendeur-dashboard-section .nav-tab').forEach(t=>t.classList.remove('active'))
+  document.getElementById('vendeur-'+tab).classList.add('active')
+  if(btn)btn.classList.add('active')
+}
+
+const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.style.animationPlayState='running'})},{threshold:0.05})
+document.querySelectorAll('.anim-up,.anim-in').forEach(el=>{el.style.animationPlayState='paused';observer.observe(el)})
+
+init()
 </script>
 </body>
 </html>
