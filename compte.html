@@ -31,6 +31,7 @@ tailwind.config = {
   @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
   @keyframes scaleIn { from{opacity:0;transform:scale(0.96);} to{opacity:1;transform:scale(1);} }
   @keyframes spin { to{transform:rotate(360deg);} }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
 
   .anim-up { animation:fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) forwards; opacity:0; }
   .anim-in { animation:scaleIn 0.4s cubic-bezier(0.22,1,0.36,1) forwards; opacity:0; }
@@ -41,7 +42,7 @@ tailwind.config = {
   .tab-panel { display:none; }
   .tab-panel.active { display:block; animation:fadeIn 0.3s ease; }
   .mode-panel { display:none; }
-  .mode-panel.active { display:block; }
+  .mode-panel.active { display:block; animation:fadeIn 0.3s ease; }
 
   .section-card { background:#fff; border-radius:1.25rem; padding:1.5rem; box-shadow:0 2px 16px rgba(0,107,42,0.06); }
   .stat-card { background:linear-gradient(135deg,#eff5eb 0%,#e4eae0 100%); border-radius:1.25rem; padding:1.25rem; }
@@ -76,9 +77,27 @@ tailwind.config = {
   .notification-dot { width:8px; height:8px; background:#ba1a1a; border-radius:50%; position:absolute; top:2px; right:2px; border:1.5px solid #fff; }
   .spinner { width:20px; height:20px; border:2px solid #e4eae0; border-top-color:#006b2a; border-radius:50%; animation:spin 0.7s linear infinite; display:inline-block; }
 
+  /* Vendeur upgrade card */
+  .upgrade-card { background:linear-gradient(135deg,#f5fbf1 0%,#eaf0e5 100%); border:2px dashed #becaba; border-radius:1.25rem; padding:2rem; text-align:center; }
+  .upgrade-card:hover { border-color:#006b2a; }
+  .feature-item { display:flex; align-items:flex-start; gap:0.75rem; padding:0.75rem 0; border-bottom:1px solid #eaf0e5; }
+  .feature-item:last-child { border-bottom:none; }
+
+  /* Toast */
+  #toast { position:fixed; bottom:100px; left:50%; transform:translateX(-50%) translateY(20px); background:#171d17; color:#fff; padding:0.75rem 1.5rem; border-radius:999px; font-size:0.8rem; font-weight:600; z-index:9999; opacity:0; transition:all 0.3s; pointer-events:none; white-space:nowrap; }
+  #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  #toast.success { background:#006b2a; }
+  #toast.error { background:#ba1a1a; }
+
   /* Loading overlay */
   #loading-overlay { position:fixed; inset:0; background:#f5fbf1; z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1rem; }
   #loading-overlay.hidden { display:none; }
+
+  /* Upgrade modal */
+  #upgrade-modal { position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:9998; display:flex; align-items:flex-end; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.3s; }
+  #upgrade-modal.open { opacity:1; pointer-events:all; }
+  #upgrade-modal .modal-sheet { background:#fff; border-radius:2rem 2rem 0 0; padding:2rem; width:100%; max-width:480px; transform:translateY(100%); transition:transform 0.4s cubic-bezier(0.22,1,0.36,1); max-height:90vh; overflow-y:auto; }
+  #upgrade-modal.open .modal-sheet { transform:translateY(0); }
 </style>
 </head>
 <body class="bg-background text-on-surface min-h-screen pb-32">
@@ -88,6 +107,9 @@ tailwind.config = {
   <span class="font-serif italic text-3xl text-primary tracking-tighter">WennaShop</span>
   <div class="spinner" style="width:32px;height:32px;border-width:3px;"></div>
 </div>
+
+<!-- Toast -->
+<div id="toast"></div>
 
 <!-- Header -->
 <header class="bg-surface/80 backdrop-blur-xl fixed top-0 w-full z-50 border-b border-outline-variant/10">
@@ -145,11 +167,14 @@ tailwind.config = {
     </div>
   </section>
 
-  <!-- MODE SWITCHER -->
-  <section class="anim-up d-100 mb-6" id="mode-switcher" style="display:none;">
+  <!-- MODE SWITCHER — visible pour TOUS les utilisateurs connectés -->
+  <section class="anim-up d-100 mb-6">
     <div class="flex justify-center p-1.5 bg-surface-container-high rounded-full w-fit mx-auto gap-1">
       <button id="btn-client" onclick="switchMode('client')" class="mode-toggle-btn active">Espace Client</button>
-      <button id="btn-vendeur" onclick="switchMode('vendeur')" class="mode-toggle-btn">Espace Vendeur</button>
+      <button id="btn-vendeur" onclick="switchMode('vendeur')" class="mode-toggle-btn">
+        Espace Vendeur
+        <span id="new-badge" class="hidden ml-1.5 bg-tertiary-fixed text-on-tertiary-fixed text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider">NEW</span>
+      </button>
     </div>
   </section>
 
@@ -293,138 +318,234 @@ tailwind.config = {
   <!-- ══ MODE VENDEUR ══ -->
   <div id="mode-vendeur" class="mode-panel">
 
-    <!-- Stats vendeur -->
-    <div class="grid grid-cols-2 gap-3 mb-4 anim-up d-150">
-      <div class="section-card flex items-center gap-4">
-        <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-          <span class="material-symbols-outlined text-primary">payments</span>
-        </div>
-        <div>
-          <p id="stat-revenue-month" class="text-xl font-bold text-primary font-serif">—</p>
-          <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Revenus ce mois</p>
-        </div>
-      </div>
-      <div class="section-card flex items-center gap-4">
-        <div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center flex-shrink-0">
-          <span class="material-symbols-outlined text-secondary">shopping_cart</span>
-        </div>
-        <div>
-          <p id="stat-total-sales" class="text-xl font-bold text-secondary font-serif">—</p>
-          <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Ventes totales</p>
-        </div>
-      </div>
-    </div>
-    <div class="grid grid-cols-3 gap-3 mb-6">
-      <div class="stat-card text-center">
-        <p id="stat-listings" class="text-xl font-bold text-on-surface font-serif">—</p>
-        <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Annonces</p>
-      </div>
-      <div class="stat-card text-center">
-        <p id="stat-rating" class="text-xl font-bold text-on-surface font-serif">—</p>
-        <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Note moy.</p>
-      </div>
-      <div class="stat-card text-center">
-        <p class="text-xl font-bold text-on-surface font-serif">—</p>
-        <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Vues / mois</p>
-      </div>
-    </div>
-
-    <!-- Tabs vendeur -->
-    <div class="flex gap-6 border-b border-outline-variant/20 mb-6 overflow-x-auto">
-      <button class="nav-tab active" onclick="switchVendeurTab('annonces', this)">Mes Annonces</button>
-      <button class="nav-tab" onclick="switchVendeurTab('ventes', this)">Ventes</button>
-      <button class="nav-tab" onclick="switchVendeurTab('paiements', this)">Paiements</button>
-      <button class="nav-tab" onclick="switchVendeurTab('boutique', this)">Ma Boutique</button>
-    </div>
-
-    <!-- TAB: Annonces -->
-    <div id="vendeur-annonces" class="tab-panel active">
-      <div class="section-card">
-        <div class="flex items-center justify-between mb-5">
-          <h2 class="font-serif italic text-xl">Mes Annonces</h2>
-          <a href="sell.html" class="btn-primary text-on-primary px-4 py-2.5 rounded-xl text-xs font-bold tracking-wide flex items-center gap-1">
-            <span class="material-symbols-outlined" style="font-size:16px;">add</span>
-            Nouvelle
-          </a>
-        </div>
-        <div id="listings-list" class="space-y-1">
-          <div class="flex justify-center py-8"><div class="spinner"></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB: Ventes -->
-    <div id="vendeur-ventes" class="tab-panel">
-      <div class="section-card">
-        <h2 class="font-serif italic text-xl mb-5">Historique des ventes</h2>
-        <div id="sales-list" class="space-y-1">
-          <div class="flex justify-center py-8"><div class="spinner"></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB: Paiements -->
-    <div id="vendeur-paiements" class="tab-panel">
-      <div class="space-y-4">
-        <div class="section-card" style="background:linear-gradient(135deg,#006b2a,#0f8739);color:#fff;">
-          <p class="text-white/70 text-[10px] uppercase tracking-widest font-bold mb-1">Solde disponible</p>
-          <p id="solde-vendeur" class="text-4xl font-bold font-serif mb-4">—</p>
-          <div class="flex gap-4">
-            <button class="flex-1 py-3 bg-white/20 hover:bg-white/30 transition-colors rounded-xl text-sm font-bold backdrop-blur">
-              Retirer les fonds
-            </button>
-            <button class="flex-1 py-3 bg-white/20 hover:bg-white/30 transition-colors rounded-xl text-sm font-bold backdrop-blur">
-              Voir le détail
-            </button>
+    <!-- CTA Upgrade — visible uniquement si pas encore vendeur -->
+    <div id="vendeur-upgrade-section">
+      <div class="anim-up d-150">
+        <!-- Banner accroche -->
+        <div class="relative rounded-xl overflow-hidden mb-6" style="background:linear-gradient(135deg,#745b00 0%,#ffe08b 100%);">
+          <div class="absolute right-4 top-1/2 -translate-y-1/2 opacity-10 text-8xl font-black select-none pointer-events-none">🛍️</div>
+          <div class="relative z-10 p-6">
+            <p class="text-[10px] uppercase tracking-widest font-black text-amber-900/70 mb-1">Rejoins les vendeurs</p>
+            <h2 class="font-serif italic text-2xl font-bold text-amber-900 mb-2">Vends sur WennaShop</h2>
+            <p class="text-sm text-amber-800/80 max-w-xs">Gabon ↔ Maroc · Rejoins des milliers d'artisans et commerçants qui vendent leurs produits sans frontières.</p>
           </div>
         </div>
-        <div class="section-card">
-          <h3 class="font-serif italic text-lg mb-4">Mode de versement</h3>
-          <div class="p-4 border border-outline-variant/30 rounded-xl flex items-center gap-4">
-            <span class="material-symbols-outlined text-secondary">account_balance</span>
-            <div class="flex-1">
-              <p class="font-bold text-sm">Compte bancaire</p>
-              <p class="text-xs text-on-surface-variant">Non configuré</p>
+
+        <!-- Features -->
+        <div class="section-card mb-6">
+          <p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Ce que tu obtiens</p>
+          <div class="feature-item">
+            <div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-primary" style="font-size:18px;">storefront</span>
             </div>
-            <button class="text-xs font-bold text-secondary hover:underline">Configurer</button>
+            <div>
+              <p class="text-sm font-bold">Boutique personnalisée</p>
+              <p class="text-xs text-on-surface-variant">Ta page vendeur avec tes produits, ton nom, ta description.</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="w-9 h-9 rounded-xl bg-secondary/10 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-secondary" style="font-size:18px;">payments</span>
+            </div>
+            <div>
+              <p class="text-sm font-bold">Paiements sécurisés</p>
+              <p class="text-xs text-on-surface-variant">Encaisse en MAD ou XAF, reçois directement sur ton compte.</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="w-9 h-9 rounded-xl bg-tertiary/10 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-tertiary" style="font-size:18px;">analytics</span>
+            </div>
+            <div>
+              <p class="text-sm font-bold">Dashboard & statistiques</p>
+              <p class="text-xs text-on-surface-variant">Suis tes ventes, revenus et avis clients en temps réel.</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-primary" style="font-size:18px;">public</span>
+            </div>
+            <div>
+              <p class="text-sm font-bold">Marché international</p>
+              <p class="text-xs text-on-surface-variant">Accès à des acheteurs au Maroc, au Gabon et partout en Afrique.</p>
+            </div>
           </div>
         </div>
+
+        <!-- Formulaire inscription vendeur -->
         <div class="section-card">
-          <h3 class="font-serif italic text-lg mb-4">Historique des paiements</h3>
-          <div id="payments-list" class="space-y-3">
-            <div class="flex justify-center py-6"><div class="spinner"></div></div>
+          <h3 class="font-serif italic text-xl mb-1">Créer ma boutique</h3>
+          <p class="text-xs text-on-surface-variant mb-6">Quelques infos et tu es prêt à vendre.</p>
+
+          <div class="space-y-4">
+            <div>
+              <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Nom de la boutique *</label>
+              <input id="upgrade-shop-name" class="edit-field" placeholder="Ex: Artisanat Marrakech, Épices du Gabon…"/>
+            </div>
+            <div>
+              <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Spécialité *</label>
+              <input id="upgrade-specialty" class="edit-field" placeholder="Ex: Huiles naturelles, Bijoux artisanaux…"/>
+            </div>
+            <div>
+              <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Pays d'origine *</label>
+              <select id="upgrade-country" class="edit-field">
+                <option value="">Sélectionner…</option>
+                <option value="Maroc">🇲🇦 Maroc</option>
+                <option value="Gabon">🇬🇦 Gabon</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Description courte</label>
+              <textarea id="upgrade-bio" class="edit-field" rows="3" placeholder="Présente ta boutique en quelques mots…" style="resize:none; height:auto;"></textarea>
+            </div>
+
+            <button onclick="upgradeToVendeur()" id="upgrade-btn" class="btn-primary text-on-primary px-8 py-4 rounded-xl text-sm font-bold tracking-wide w-full flex items-center justify-center gap-2">
+              <span class="material-symbols-outlined" style="font-size:18px;">store</span>
+              Devenir vendeur — c'est gratuit
+            </button>
+            <p class="text-[10px] text-center text-on-surface-variant">En continuant, tu acceptes les conditions vendeurs de WennaShop.</p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- TAB: Boutique -->
-    <div id="vendeur-boutique" class="tab-panel">
-      <div class="section-card">
-        <h2 class="font-serif italic text-xl mb-5">Ma Boutique</h2>
-        <div class="space-y-5">
-          <div>
-            <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Nom de la boutique</label>
-            <input id="shop-name" class="edit-field" placeholder="Nom de votre boutique"/>
+    <!-- DASHBOARD VENDEUR — visible uniquement si role === artisan -->
+    <div id="vendeur-dashboard-section" class="hidden">
+
+      <!-- Stats vendeur -->
+      <div class="grid grid-cols-2 gap-3 mb-4 anim-up d-150">
+        <div class="section-card flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-primary">payments</span>
           </div>
           <div>
-            <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Spécialité</label>
-            <input id="shop-specialty" class="edit-field" placeholder="Ex: Huiles naturelles, Artisanat…"/>
+            <p id="stat-revenue-month" class="text-xl font-bold text-primary font-serif">—</p>
+            <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Revenus ce mois</p>
+          </div>
+        </div>
+        <div class="section-card flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-secondary">shopping_cart</span>
           </div>
           <div>
-            <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Pays d'origine</label>
-            <select id="shop-country" class="edit-field">
-              <option value="Maroc">🇲🇦 Maroc</option>
-              <option value="Gabon">🇬🇦 Gabon</option>
-            </select>
+            <p id="stat-total-sales" class="text-xl font-bold text-secondary font-serif">—</p>
+            <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Ventes totales</p>
           </div>
-          <div id="shop-save-feedback" class="text-xs text-primary font-bold hidden">✓ Boutique mise à jour</div>
-          <button onclick="saveShop()" class="btn-primary text-on-primary px-8 py-3.5 rounded-xl text-sm font-bold tracking-wide w-full">
-            Mettre à jour la boutique
-          </button>
         </div>
       </div>
-    </div>
+      <div class="grid grid-cols-3 gap-3 mb-6">
+        <div class="stat-card text-center">
+          <p id="stat-listings" class="text-xl font-bold text-on-surface font-serif">—</p>
+          <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Annonces</p>
+        </div>
+        <div class="stat-card text-center">
+          <p id="stat-rating" class="text-xl font-bold text-on-surface font-serif">—</p>
+          <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Note moy.</p>
+        </div>
+        <div class="stat-card text-center">
+          <p class="text-xl font-bold text-on-surface font-serif">—</p>
+          <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Vues / mois</p>
+        </div>
+      </div>
+
+      <!-- Tabs vendeur -->
+      <div class="flex gap-6 border-b border-outline-variant/20 mb-6 overflow-x-auto">
+        <button class="nav-tab active" onclick="switchVendeurTab('annonces', this)">Mes Annonces</button>
+        <button class="nav-tab" onclick="switchVendeurTab('ventes', this)">Ventes</button>
+        <button class="nav-tab" onclick="switchVendeurTab('paiements', this)">Paiements</button>
+        <button class="nav-tab" onclick="switchVendeurTab('boutique', this)">Ma Boutique</button>
+      </div>
+
+      <!-- TAB: Annonces -->
+      <div id="vendeur-annonces" class="tab-panel active">
+        <div class="section-card">
+          <div class="flex items-center justify-between mb-5">
+            <h2 class="font-serif italic text-xl">Mes Annonces</h2>
+            <a href="sell.html" class="btn-primary text-on-primary px-4 py-2.5 rounded-xl text-xs font-bold tracking-wide flex items-center gap-1">
+              <span class="material-symbols-outlined" style="font-size:16px;">add</span>
+              Nouvelle
+            </a>
+          </div>
+          <div id="listings-list" class="space-y-1">
+            <div class="flex justify-center py-8"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: Ventes -->
+      <div id="vendeur-ventes" class="tab-panel">
+        <div class="section-card">
+          <h2 class="font-serif italic text-xl mb-5">Historique des ventes</h2>
+          <div id="sales-list" class="space-y-1">
+            <div class="flex justify-center py-8"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: Paiements -->
+      <div id="vendeur-paiements" class="tab-panel">
+        <div class="space-y-4">
+          <div class="section-card" style="background:linear-gradient(135deg,#006b2a,#0f8739);color:#fff;">
+            <p class="text-white/70 text-[10px] uppercase tracking-widest font-bold mb-1">Solde disponible</p>
+            <p id="solde-vendeur" class="text-4xl font-bold font-serif mb-4">—</p>
+            <div class="flex gap-4">
+              <button class="flex-1 py-3 bg-white/20 hover:bg-white/30 transition-colors rounded-xl text-sm font-bold backdrop-blur">
+                Retirer les fonds
+              </button>
+              <button class="flex-1 py-3 bg-white/20 hover:bg-white/30 transition-colors rounded-xl text-sm font-bold backdrop-blur">
+                Voir le détail
+              </button>
+            </div>
+          </div>
+          <div class="section-card">
+            <h3 class="font-serif italic text-lg mb-4">Mode de versement</h3>
+            <div class="p-4 border border-outline-variant/30 rounded-xl flex items-center gap-4">
+              <span class="material-symbols-outlined text-secondary">account_balance</span>
+              <div class="flex-1">
+                <p class="font-bold text-sm">Compte bancaire</p>
+                <p class="text-xs text-on-surface-variant">Non configuré</p>
+              </div>
+              <button class="text-xs font-bold text-secondary hover:underline">Configurer</button>
+            </div>
+          </div>
+          <div class="section-card">
+            <h3 class="font-serif italic text-lg mb-4">Historique des paiements</h3>
+            <div id="payments-list" class="space-y-3">
+              <div class="flex justify-center py-6"><div class="spinner"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: Boutique -->
+      <div id="vendeur-boutique" class="tab-panel">
+        <div class="section-card">
+          <h2 class="font-serif italic text-xl mb-5">Ma Boutique</h2>
+          <div class="space-y-5">
+            <div>
+              <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Nom de la boutique</label>
+              <input id="shop-name" class="edit-field" placeholder="Nom de votre boutique"/>
+            </div>
+            <div>
+              <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Spécialité</label>
+              <input id="shop-specialty" class="edit-field" placeholder="Ex: Huiles naturelles, Artisanat…"/>
+            </div>
+            <div>
+              <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Pays d'origine</label>
+              <select id="shop-country" class="edit-field">
+                <option value="Maroc">🇲🇦 Maroc</option>
+                <option value="Gabon">🇬🇦 Gabon</option>
+              </select>
+            </div>
+            <div id="shop-save-feedback" class="text-xs text-primary font-bold hidden">✓ Boutique mise à jour</div>
+            <button onclick="saveShop()" class="btn-primary text-on-primary px-8 py-3.5 rounded-xl text-sm font-bold tracking-wide w-full">
+              Mettre à jour la boutique
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end vendeur-dashboard-section -->
 
   </div><!-- end mode-vendeur -->
 
@@ -461,6 +582,15 @@ tailwind.config = {
   let currentUser = null
   let currentProfile = null
   let currentMode = 'client'
+  let isVendeur = false
+
+  // ─── TOAST ──────────────────────────────────────────────────────
+  function showToast(msg, type = '') {
+    const t = document.getElementById('toast')
+    t.textContent = msg
+    t.className = 'show ' + type
+    setTimeout(() => { t.className = '' }, 3000)
+  }
 
   // ─── HELPERS ────────────────────────────────────────────────────
   const statusChip = {
@@ -480,11 +610,9 @@ tailwind.config = {
   function fmt(amount, currency = 'MAD') {
     return new Intl.NumberFormat('fr-MA', { style: 'currency', currency, maximumFractionDigits: 2 }).format(amount)
   }
-
   function fmtDate(iso) {
     return new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
   }
-
   function countryFlag(c) {
     if (!c) return '🌍'
     if (c.toLowerCase().includes('maroc')) return '🇲🇦'
@@ -494,15 +622,24 @@ tailwind.config = {
 
   // ─── AUTH & INIT ─────────────────────────────────────────────────
   async function init() {
-    const { data: { session }, error } = await db.auth.getSession()
+    const { data: { session } } = await db.auth.getSession()
     if (!session) {
-      // Pas connecté → redirect login
       window.location.href = 'login.html'
       return
     }
     currentUser = session.user
+
+    // Check URL param ?mode=vendeur
+    const urlParams = new URLSearchParams(window.location.search)
+    const modeParam = urlParams.get('mode')
+
     await loadProfile()
     hideOverlay()
+
+    // Auto-switch si ?mode=vendeur dans l'URL
+    if (modeParam === 'vendeur') {
+      switchMode('vendeur')
+    }
   }
 
   function hideOverlay() {
@@ -518,16 +655,18 @@ tailwind.config = {
       .single()
 
     if (error || !data) {
-      // Profil non trouvé → afficher email depuis auth
       document.getElementById('profile-name').textContent = currentUser.email
       document.getElementById('profile-email').textContent = currentUser.email
       document.getElementById('input-email').value = currentUser.email
       loadClientStats(null)
       loadOrders(null)
+      // Afficher le badge NEW sur l'espace vendeur
+      document.getElementById('new-badge').classList.remove('hidden')
       return
     }
 
     currentProfile = data
+    isVendeur = (data.role === 'artisan' || data.role === 'admin')
 
     // Hero
     const fullName = data.full_name || [data.first_name, data.last_name].filter(Boolean).join(' ') || currentUser.email
@@ -535,15 +674,12 @@ tailwind.config = {
     document.getElementById('profile-email').textContent = data.email || currentUser.email
     document.getElementById('profile-since').textContent = 'Membre depuis ' + new Date(data.created_at).getFullYear()
 
-    // Country
     const flag = countryFlag(data.country)
     document.getElementById('profile-country').textContent = `${flag} ${data.country || '—'}`
 
-    // Badge rôle
     const roleLabels = { buyer: 'Client', artisan: 'Vendeur', admin: 'Admin' }
     document.getElementById('badge-role').textContent = roleLabels[data.role] || data.role || '—'
 
-    // Avatar
     if (data.avatar_url) {
       const img = document.getElementById('profile-avatar')
       img.src = data.avatar_url
@@ -551,25 +687,107 @@ tailwind.config = {
       document.getElementById('profile-avatar-placeholder').style.display = 'none'
     }
 
-    // Formulaire paramètres
     document.getElementById('input-firstname').value = data.first_name || ''
     document.getElementById('input-lastname').value = data.last_name || ''
     document.getElementById('input-email').value = data.email || currentUser.email
 
-    // Mode switcher visible si artisan
-    if (data.role === 'artisan' || data.role === 'admin') {
-      document.getElementById('mode-switcher').style.display = 'flex'
+    // Mode vendeur : afficher upgrade ou dashboard selon rôle
+    if (isVendeur) {
+      // Vendeur confirmé → dashboard direct
+      document.getElementById('vendeur-upgrade-section').classList.add('hidden')
+      document.getElementById('vendeur-dashboard-section').classList.remove('hidden')
+      // Pré-remplir boutique
+      if (data.specialty) document.getElementById('shop-specialty').value = data.specialty
+      if (data.country) document.getElementById('shop-country').value = data.country
+      if (fullName) document.getElementById('shop-name').value = fullName
       loadVendeurData()
+    } else {
+      // Pas encore vendeur → afficher upgrade avec badge NEW
+      document.getElementById('vendeur-upgrade-section').classList.remove('hidden')
+      document.getElementById('vendeur-dashboard-section').classList.add('hidden')
+      document.getElementById('new-badge').classList.remove('hidden')
     }
 
-    // Charger les stats et données client
     loadClientStats(data.id)
     loadOrders(data.id)
+  }
 
-    // Boutique
-    if (data.specialty) document.getElementById('shop-specialty').value = data.specialty
-    if (data.country) document.getElementById('shop-country').value = data.country
-    if (fullName) document.getElementById('shop-name').value = fullName
+  // ─── UPGRADE VERS VENDEUR ────────────────────────────────────────
+  async function upgradeToVendeur() {
+    const shopName = document.getElementById('upgrade-shop-name').value.trim()
+    const specialty = document.getElementById('upgrade-specialty').value.trim()
+    const country = document.getElementById('upgrade-country').value
+    const bio = document.getElementById('upgrade-bio').value.trim()
+
+    if (!shopName || !specialty || !country) {
+      showToast('Remplis tous les champs obligatoires (*)', 'error')
+      return
+    }
+
+    const btn = document.getElementById('upgrade-btn')
+    btn.disabled = true
+    btn.innerHTML = '<div class="spinner" style="border-color:#fff3;border-top-color:#fff;"></div> Création en cours…'
+
+    try {
+      // 1. Mettre à jour le rôle dans la table users
+      const { error: updateError } = await db
+        .from('users')
+        .update({
+          role: 'artisan',
+          specialty,
+          country,
+          bio: bio || null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('auth_id', currentUser.id)
+
+      if (updateError) throw updateError
+
+      // 2. Créer un profil vendeur dans vendor_profiles si la table existe
+      if (currentProfile?.id) {
+        await db.from('vendor_profiles').upsert({
+          user_id: currentProfile.id,
+          shop_name: shopName,
+          specialty,
+          country,
+          bio: bio || null,
+          status: 'active',
+          created_at: new Date().toISOString()
+        }, { onConflict: 'user_id' })
+      }
+
+      // 3. Mettre à jour badge rôle dans le hero
+      document.getElementById('badge-role').textContent = 'Vendeur'
+
+      // 4. Masquer upgrade, afficher dashboard
+      isVendeur = true
+      document.getElementById('vendeur-upgrade-section').classList.add('hidden')
+      document.getElementById('vendeur-dashboard-section').classList.remove('hidden')
+      document.getElementById('new-badge').classList.add('hidden')
+
+      // 5. Pré-remplir la tab boutique
+      document.getElementById('shop-name').value = shopName
+      document.getElementById('shop-specialty').value = specialty
+      document.getElementById('shop-country').value = country
+
+      // 6. Charger les données vendeur (vides pour l'instant)
+      loadVendeurData()
+
+      showToast('🎉 Bienvenue parmi les vendeurs WennaShop !', 'success')
+
+      // Mise à jour locale du profil
+      if (currentProfile) {
+        currentProfile.role = 'artisan'
+        currentProfile.specialty = specialty
+        currentProfile.country = country
+      }
+
+    } catch (err) {
+      console.error(err)
+      showToast('Erreur lors de la création. Réessaie.', 'error')
+      btn.disabled = false
+      btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">store</span> Devenir vendeur — c\'est gratuit'
+    }
   }
 
   // ─── STATS CLIENT ────────────────────────────────────────────────
@@ -580,14 +798,12 @@ tailwind.config = {
       document.getElementById('stat-reviews').textContent = '0'
       return
     }
-
     const [ordersRes, reviewsRes] = await Promise.all([
       db.from('orders').select('id', { count: 'exact', head: true }).eq('user_id', userId),
       db.from('reviews').select('id', { count: 'exact', head: true }).eq('user_id', userId)
     ])
-
     document.getElementById('stat-orders').textContent = ordersRes.count ?? 0
-    document.getElementById('stat-favoris').textContent = '0' // table favoris non implémentée
+    document.getElementById('stat-favoris').textContent = '0'
     document.getElementById('stat-reviews').textContent = reviewsRes.count ?? 0
   }
 
@@ -598,7 +814,6 @@ tailwind.config = {
       container.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-6">Aucune commande.</p>'
       return
     }
-
     const { data, error } = await db
       .from('orders')
       .select('id, status, total_amount, currency, created_at, order_items(quantity, unit_price, products(name, image_url))')
@@ -610,7 +825,6 @@ tailwind.config = {
       container.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-6">Aucune commande pour l\'instant.</p>'
       return
     }
-
     container.innerHTML = data.map(order => {
       const item = order.order_items?.[0]
       const product = item?.products
@@ -620,7 +834,6 @@ tailwind.config = {
       const productName = product?.name || 'Commande #' + order.id.slice(0, 8).toUpperCase()
       const chip = statusChip[order.status] || `<span class="chip chip-gray">${order.status}</span>`
       const shortId = order.id.slice(0, 8).toUpperCase()
-
       return `
         <div class="order-row p-4 flex items-center gap-4 cursor-pointer">
           ${imgHtml}
@@ -642,8 +855,7 @@ tailwind.config = {
     if (!currentProfile) return
     const sellerId = currentProfile.id
 
-    // Annonces
-    const { data: products, error: prodErr } = await db
+    const { data: products } = await db
       .from('products')
       .select('id, name, price, currency, status, origin_city, country, image_url, created_at')
       .eq('seller_id', sellerId)
@@ -651,7 +863,6 @@ tailwind.config = {
 
     renderListings(products || [])
 
-    // Ventes (order_items pour ce vendeur via products)
     const { data: sales } = await db
       .from('order_items')
       .select('id, quantity, unit_price, created_at, products!inner(name, seller_id), orders(status, currency)')
@@ -661,9 +872,7 @@ tailwind.config = {
 
     renderSales(sales || [])
 
-    // Stats vendeur
     const totalSales = (sales || []).length
-    const revenueAll = (sales || []).reduce((s, i) => s + (parseFloat(i.unit_price) * i.quantity), 0)
     const now = new Date()
     const revenueMonth = (sales || [])
       .filter(i => new Date(i.created_at).getMonth() === now.getMonth())
@@ -673,14 +882,10 @@ tailwind.config = {
     document.getElementById('stat-total-sales').textContent = totalSales
     document.getElementById('stat-listings').textContent = (products || []).length
 
-    // Avis vendeur
     const productIds = (products || []).map(p => p.id)
     if (productIds.length > 0) {
       const { data: reviews } = await db
-        .from('reviews')
-        .select('rating')
-        .in('product_id', productIds)
-        .eq('status', 'approved')
+        .from('reviews').select('rating').in('product_id', productIds).eq('status', 'approved')
       if (reviews && reviews.length > 0) {
         const avg = (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
         document.getElementById('stat-rating').textContent = avg
@@ -689,48 +894,37 @@ tailwind.config = {
       }
     }
 
-    // Solde = somme des payments liés aux order_items de ce vendeur
     loadSoldeVendeur(sales || [])
     loadPaymentsHistory(sales || [])
   }
 
   async function loadSoldeVendeur(sales) {
-    // Récupère les order_ids associés aux ventes de ce vendeur
     const orderIds = [...new Set((sales || []).map(s => s.orders ? s.orders.id : null).filter(Boolean))]
     if (orderIds.length === 0) {
       document.getElementById('solde-vendeur').textContent = fmt(0)
       return
     }
     const { data: payments } = await db
-      .from('payments')
-      .select('amount, currency, status')
-      .in('order_id', orderIds)
-      .eq('status', 'paid')
-
+      .from('payments').select('amount, currency, status').in('order_id', orderIds).eq('status', 'paid')
     const total = (payments || []).reduce((s, p) => s + parseFloat(p.amount), 0)
     document.getElementById('solde-vendeur').textContent = fmt(total)
   }
 
   async function loadPaymentsHistory(sales) {
     const container = document.getElementById('payments-list')
-    // Récupère les order_ids
     const orderIds = [...new Set((sales || []).map(s => s.orders ? s.orders.id : null).filter(Boolean))]
     if (orderIds.length === 0) {
       container.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-4">Aucun paiement.</p>'
       return
     }
     const { data: payments } = await db
-      .from('payments')
-      .select('id, amount, currency, status, created_at, method')
-      .in('order_id', orderIds)
-      .order('created_at', { ascending: false })
-      .limit(10)
+      .from('payments').select('id, amount, currency, status, created_at, method')
+      .in('order_id', orderIds).order('created_at', { ascending: false }).limit(10)
 
     if (!payments || payments.length === 0) {
       container.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-4">Aucun paiement.</p>'
       return
     }
-
     container.innerHTML = payments.map(p => {
       const chip = statusChip[p.status] || `<span class="chip chip-gray">${p.status}</span>`
       return `
@@ -785,14 +979,11 @@ tailwind.config = {
     container.innerHTML = sales.map(s => {
       const orderStatus = s.orders?.status || 'pending'
       const chip = statusChip[orderStatus] || `<span class="chip chip-gray">${orderStatus}</span>`
-      const isCompleted = ['delivered','shipped'].includes(orderStatus)
-      const iconColor = isCompleted ? 'text-primary' : 'text-secondary'
-      const bgColor = isCompleted ? 'bg-green-100' : 'bg-blue-100'
-      const icon = isCompleted ? 'arrow_downward' : 'schedule'
+      const isCompleted = ['delivered', 'shipped'].includes(orderStatus)
       return `
         <div class="order-row p-4 flex items-center gap-4">
-          <div class="w-10 h-10 rounded-full ${bgColor} flex items-center justify-center flex-shrink-0">
-            <span class="material-symbols-outlined ${iconColor}" style="font-size:18px;">${icon}</span>
+          <div class="w-10 h-10 rounded-full ${isCompleted ? 'bg-green-100' : 'bg-blue-100'} flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined ${isCompleted ? 'text-primary' : 'text-secondary'}" style="font-size:18px;">${isCompleted ? 'arrow_downward' : 'schedule'}</span>
           </div>
           <div class="flex-1">
             <p class="font-bold text-sm">${s.products?.name || '—'} × ${s.quantity}</p>
@@ -811,22 +1002,15 @@ tailwind.config = {
     if (!currentProfile) return
     const first = document.getElementById('input-firstname').value.trim()
     const last = document.getElementById('input-lastname').value.trim()
-
     const { error } = await db
       .from('users')
-      .update({
-        first_name: first,
-        last_name: last,
-        full_name: [first, last].filter(Boolean).join(' '),
-        updated_at: new Date().toISOString()
-      })
+      .update({ first_name: first, last_name: last, full_name: [first, last].filter(Boolean).join(' '), updated_at: new Date().toISOString() })
       .eq('id', currentProfile.id)
-
-    const feedback = document.getElementById('save-feedback')
     if (!error) {
       document.getElementById('profile-name').textContent = [first, last].filter(Boolean).join(' ')
-      feedback.classList.remove('hidden')
-      setTimeout(() => feedback.classList.add('hidden'), 3000)
+      showToast('✓ Profil sauvegardé', 'success')
+    } else {
+      showToast('Erreur lors de la sauvegarde', 'error')
     }
   }
 
@@ -835,17 +1019,12 @@ tailwind.config = {
     if (!currentProfile) return
     const { error } = await db
       .from('users')
-      .update({
-        specialty: document.getElementById('shop-specialty').value.trim(),
-        country: document.getElementById('shop-country').value,
-        updated_at: new Date().toISOString()
-      })
+      .update({ specialty: document.getElementById('shop-specialty').value.trim(), country: document.getElementById('shop-country').value, updated_at: new Date().toISOString() })
       .eq('id', currentProfile.id)
-
-    const feedback = document.getElementById('shop-save-feedback')
     if (!error) {
-      feedback.classList.remove('hidden')
-      setTimeout(() => feedback.classList.add('hidden'), 3000)
+      showToast('✓ Boutique mise à jour', 'success')
+    } else {
+      showToast('Erreur lors de la mise à jour', 'error')
     }
   }
 
@@ -855,19 +1034,15 @@ tailwind.config = {
     if (!file || !currentProfile) return
     const ext = file.name.split('.').pop()
     const path = `avatars/${currentProfile.id}.${ext}`
-
     const { error: uploadError } = await db.storage.from('avatars').upload(path, file, { upsert: true })
-    if (uploadError) return
-
+    if (uploadError) { showToast('Erreur upload avatar', 'error'); return }
     const { data: urlData } = db.storage.from('avatars').getPublicUrl(path)
-    const url = urlData.publicUrl
-
-    await db.from('users').update({ avatar_url: url }).eq('id', currentProfile.id)
-
+    await db.from('users').update({ avatar_url: urlData.publicUrl }).eq('id', currentProfile.id)
     const img = document.getElementById('profile-avatar')
-    img.src = url
+    img.src = urlData.publicUrl
     img.classList.remove('hidden')
     document.getElementById('profile-avatar-placeholder').style.display = 'none'
+    showToast('✓ Photo de profil mise à jour', 'success')
   })
 
   // ─── DÉCONNEXION ─────────────────────────────────────────────────
@@ -883,8 +1058,9 @@ tailwind.config = {
     document.getElementById('mode-' + mode).classList.add('active')
     document.getElementById('btn-client').classList.toggle('active', mode === 'client')
     document.getElementById('btn-vendeur').classList.toggle('active', mode === 'vendeur')
-    if (mode === 'client') switchClientTab('commandes', document.querySelector('#mode-client .nav-tab'))
-    else switchVendeurTab('annonces', document.querySelector('#mode-vendeur .nav-tab'))
+    if (mode === 'client') {
+      switchClientTab('commandes', document.querySelector('#mode-client .nav-tab'))
+    }
   }
 
   function switchClientTab(tab, btn) {
@@ -895,8 +1071,8 @@ tailwind.config = {
   }
 
   function switchVendeurTab(tab, btn) {
-    document.querySelectorAll('#mode-vendeur .tab-panel').forEach(p => p.classList.remove('active'))
-    document.querySelectorAll('#mode-vendeur .nav-tab').forEach(t => t.classList.remove('active'))
+    document.querySelectorAll('#vendeur-dashboard-section .tab-panel').forEach(p => p.classList.remove('active'))
+    document.querySelectorAll('#vendeur-dashboard-section .nav-tab').forEach(t => t.classList.remove('active'))
     document.getElementById('vendeur-' + tab).classList.add('active')
     if (btn) btn.classList.add('active')
   }
