@@ -1,0 +1,495 @@
+/* ============================================================
+   WENNASHOP — PALETTE CONVERSION
+   Stratégie : Orange (#FF6B2B) + Bleu marine (#0D2B55) + Blanc
+   Objectif   : Maximiser le taux de conversion
+   Applique ce fichier en DERNIER dans chaque <head>
+   <link rel="stylesheet" href="/css/wenna-palette-conversion.css">
+   ============================================================ */
+
+:root {
+  /* ── Couleurs primaires ── */
+  --w-orange:        #FF6B2B;   /* CTA principal — boutons d'achat, panier */
+  --w-orange-hover:  #E85A1A;   /* Hover / pressed */
+  --w-orange-light:  #FFF0E9;   /* Backgrounds doux, badges promo */
+  --w-orange-glow:   rgba(255, 107, 43, 0.18);
+
+  --w-navy:          #0D2B55;   /* Header, sidebar, textes clés */
+  --w-navy-mid:      #1A4080;   /* Hover nav, accents secondaires */
+  --w-navy-light:    #E8EFF8;   /* Backgrounds sections, cards subtiles */
+
+  --w-white:         #FFFFFF;
+  --w-off-white:     #F8F9FB;   /* Fond général des pages */
+  --w-gray-100:      #F1F4F8;
+  --w-gray-200:      #DDE3EC;
+  --w-gray-400:      #8A96A8;
+  --w-gray-700:      #3D4A5C;
+
+  /* ── Sémantique UI ── */
+  --w-success:       #1A9E5C;
+  --w-warning:       #F59E0B;
+  --w-error:         #E53935;
+  --w-info:          #1565C0;
+
+  /* ── Typographie ── */
+  --w-text-primary:  #0D2B55;   /* Titres, labels */
+  --w-text-body:     #3D4A5C;   /* Corps de texte */
+  --w-text-muted:    #8A96A8;   /* Placeholders, infos secondaires */
+}
+
+/* ============================================================
+   RESET COULEURS GLOBALES
+   ============================================================ */
+
+body {
+  background-color: var(--w-off-white) !important;
+  color: var(--w-text-body) !important;
+}
+
+/* ============================================================
+   HEADER / NAVBAR
+   ============================================================ */
+
+header,
+.navbar,
+nav,
+.header,
+.site-header {
+  background-color: var(--w-navy) !important;
+  border-bottom: 3px solid var(--w-orange) !important;
+  color: var(--w-white) !important;
+}
+
+header a,
+.navbar a,
+nav a {
+  color: var(--w-white) !important;
+  opacity: 0.85;
+  transition: opacity 0.2s, color 0.2s;
+}
+
+header a:hover,
+.navbar a:hover,
+nav a:hover {
+  color: var(--w-orange) !important;
+  opacity: 1;
+}
+
+.logo,
+.brand,
+.site-logo {
+  color: var(--w-white) !important;
+}
+
+/* ============================================================
+   SIDEBAR (Dashboard vendeur)
+   ============================================================ */
+
+.sidebar,
+aside,
+.side-nav,
+.drawer {
+  background-color: var(--w-navy) !important;
+  border-right: 1px solid var(--w-navy-mid) !important;
+}
+
+.sidebar a,
+.side-nav a,
+aside a {
+  color: rgba(255,255,255,0.75) !important;
+  transition: all 0.2s;
+  border-radius: 8px;
+}
+
+.sidebar a:hover,
+.side-nav a:hover,
+.sidebar a.active,
+.side-nav a.active {
+  background-color: var(--w-orange) !important;
+  color: var(--w-white) !important;
+  opacity: 1 !important;
+}
+
+.sidebar .nav-item.active,
+.side-nav .nav-item.active {
+  background: var(--w-orange) !important;
+  color: var(--w-white) !important;
+}
+
+/* ============================================================
+   BOUTONS — HIÉRARCHIE CONVERSION
+   ============================================================ */
+
+/* CTA Principal : Ajouter au panier, Commander, Confirmer */
+button,
+.btn,
+input[type="submit"],
+input[type="button"] {
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary,
+button[type="submit"],
+.btn-main,
+.btn-cta,
+.add-to-cart,
+.checkout-btn,
+.order-btn {
+  background-color: var(--w-orange) !important;
+  color: var(--w-white) !important;
+  border: none !important;
+  padding: 12px 24px !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 16px var(--w-orange-glow) !important;
+}
+
+.btn-primary:hover,
+button[type="submit"]:hover,
+.btn-cta:hover,
+.add-to-cart:hover,
+.checkout-btn:hover {
+  background-color: var(--w-orange-hover) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px var(--w-orange-glow) !important;
+}
+
+/* CTA Secondaire */
+.btn-secondary,
+.btn-outline {
+  background-color: transparent !important;
+  color: var(--w-navy) !important;
+  border: 2px solid var(--w-navy) !important;
+  padding: 10px 22px !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+}
+
+.btn-secondary:hover,
+.btn-outline:hover {
+  background-color: var(--w-navy) !important;
+  color: var(--w-white) !important;
+}
+
+/* Bouton fantôme / annuler */
+.btn-ghost,
+.btn-cancel,
+button.cancel {
+  background: transparent !important;
+  color: var(--w-gray-400) !important;
+  border: 1px solid var(--w-gray-200) !important;
+}
+
+/* ============================================================
+   CARDS PRODUIT
+   ============================================================ */
+
+.card,
+.product-card,
+.item-card,
+.card-product {
+  background: var(--w-white) !important;
+  border: 1px solid var(--w-gray-200) !important;
+  border-radius: 12px !important;
+  transition: box-shadow 0.25s, transform 0.25s !important;
+  overflow: hidden;
+}
+
+.card:hover,
+.product-card:hover {
+  box-shadow: 0 8px 32px rgba(13, 43, 85, 0.12) !important;
+  transform: translateY(-3px) !important;
+  border-color: var(--w-orange) !important;
+}
+
+/* Badge prix */
+.price,
+.product-price,
+.prix {
+  color: var(--w-orange) !important;
+  font-weight: 700 !important;
+}
+
+/* Badge promo / nouveau */
+.badge,
+.tag-promo,
+.badge-new,
+.badge-sale {
+  background-color: var(--w-orange) !important;
+  color: var(--w-white) !important;
+  border-radius: 4px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  padding: 2px 8px !important;
+}
+
+/* Badge statut commande */
+.badge-success,
+.status-livree,
+.status-delivered {
+  background-color: #E8F5EE !important;
+  color: var(--w-success) !important;
+}
+
+.badge-pending,
+.status-attente {
+  background-color: var(--w-orange-light) !important;
+  color: var(--w-orange) !important;
+}
+
+.badge-navy,
+.status-traitement {
+  background-color: var(--w-navy-light) !important;
+  color: var(--w-navy) !important;
+}
+
+/* ============================================================
+   FORMULAIRES
+   ============================================================ */
+
+input,
+select,
+textarea {
+  border: 1.5px solid var(--w-gray-200) !important;
+  border-radius: 8px !important;
+  background: var(--w-white) !important;
+  color: var(--w-text-body) !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none !important;
+  border-color: var(--w-orange) !important;
+  box-shadow: 0 0 0 3px var(--w-orange-glow) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--w-text-muted) !important;
+}
+
+label {
+  color: var(--w-text-primary) !important;
+  font-weight: 500 !important;
+}
+
+/* ============================================================
+   LIENS
+   ============================================================ */
+
+a {
+  color: var(--w-navy) !important;
+  text-decoration: none !important;
+  transition: color 0.2s !important;
+}
+
+a:hover {
+  color: var(--w-orange) !important;
+}
+
+/* ============================================================
+   TABLEAU (commandes, produits)
+   ============================================================ */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead,
+th {
+  background-color: var(--w-navy) !important;
+  color: var(--w-white) !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+}
+
+tbody tr:nth-child(even) {
+  background-color: var(--w-gray-100) !important;
+}
+
+tbody tr:hover {
+  background-color: var(--w-navy-light) !important;
+}
+
+td {
+  border-bottom: 1px solid var(--w-gray-200) !important;
+  color: var(--w-text-body) !important;
+}
+
+/* ============================================================
+   STATS / KPI CARDS (Dashboard)
+   ============================================================ */
+
+.stat-card,
+.kpi-card,
+.overview-card,
+.metric-card {
+  background: var(--w-white) !important;
+  border: 1px solid var(--w-gray-200) !important;
+  border-radius: 12px !important;
+  border-left: 4px solid var(--w-orange) !important;
+}
+
+.stat-value,
+.kpi-value,
+.metric-value {
+  color: var(--w-navy) !important;
+  font-weight: 700 !important;
+}
+
+.stat-label,
+.kpi-label {
+  color: var(--w-text-muted) !important;
+  font-size: 13px !important;
+}
+
+/* ============================================================
+   SECTION HERO (page boutique / accueil)
+   ============================================================ */
+
+.hero,
+.banner,
+.hero-section {
+  background: linear-gradient(135deg, var(--w-navy) 0%, var(--w-navy-mid) 60%, var(--w-orange) 100%) !important;
+  color: var(--w-white) !important;
+}
+
+.hero h1,
+.hero h2,
+.banner h1 {
+  color: var(--w-white) !important;
+}
+
+/* ============================================================
+   PAGINATION
+   ============================================================ */
+
+.pagination button,
+.page-btn,
+.btn-page {
+  background: var(--w-white) !important;
+  border: 1px solid var(--w-gray-200) !important;
+  color: var(--w-navy) !important;
+  border-radius: 6px !important;
+}
+
+.pagination button.active,
+.page-btn.active {
+  background: var(--w-orange) !important;
+  color: var(--w-white) !important;
+  border-color: var(--w-orange) !important;
+}
+
+/* ============================================================
+   MODALS / OVERLAY
+   ============================================================ */
+
+.modal,
+.modal-content,
+.dialog,
+.overlay-content {
+  background: var(--w-white) !important;
+  border-radius: 16px !important;
+  border-top: 4px solid var(--w-orange) !important;
+}
+
+.modal-header,
+.modal h2,
+.modal h3 {
+  color: var(--w-navy) !important;
+}
+
+.modal-backdrop,
+.overlay-bg {
+  background: rgba(13, 43, 85, 0.65) !important;
+  backdrop-filter: blur(4px);
+}
+
+/* ============================================================
+   NOTIFICATIONS / TOAST
+   ============================================================ */
+
+.toast,
+.notification,
+.alert {
+  border-radius: 10px !important;
+  font-weight: 500 !important;
+}
+
+.toast-success,
+.alert-success {
+  background: #E8F5EE !important;
+  border-left: 4px solid var(--w-success) !important;
+  color: var(--w-success) !important;
+}
+
+.toast-error,
+.alert-error {
+  background: #FEECEC !important;
+  border-left: 4px solid var(--w-error) !important;
+  color: var(--w-error) !important;
+}
+
+.toast-warning,
+.alert-warning {
+  background: var(--w-orange-light) !important;
+  border-left: 4px solid var(--w-orange) !important;
+  color: var(--w-orange-hover) !important;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+footer,
+.footer {
+  background-color: var(--w-navy) !important;
+  color: rgba(255,255,255,0.7) !important;
+  border-top: 3px solid var(--w-orange) !important;
+}
+
+footer a,
+.footer a {
+  color: rgba(255,255,255,0.7) !important;
+}
+
+footer a:hover,
+.footer a:hover {
+  color: var(--w-orange) !important;
+}
+
+/* ============================================================
+   SCROLLBAR CUSTOM
+   ============================================================ */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--w-gray-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--w-gray-400);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--w-orange);
+}
+
+/* ============================================================
+   SÉLECTION TEXTE
+   ============================================================ */
+
+::selection {
+  background: var(--w-orange-light);
+  color: var(--w-orange-hover);
+}
