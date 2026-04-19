@@ -4,12 +4,12 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="description" content="WennaShop — Artisanat authentique du Gabon et du Maroc. Livraison express entre Casablanca et Libreville."/>
-  <meta name="theme-color" content="#006b2a"/>
+  <meta name="theme-color" content="#FF6B2B"/>
   <meta property="og:title" content="WennaShop – Gabon × Maroc"/>
   <meta property="og:description" content="Artisanat authentique. Produits sourcés à la source. Une passerelle entre deux cultures vibrantes."/>
   <meta property="og:type" content="website"/>
   <title>WennaShop – Gabon × Maroc</title>
-  <link rel="canonical" href="https://wennashop.netlify.app/"/>
+  <link rel="canonical" href="https://wennassshop.netlify.app/"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -19,7 +19,60 @@
       theme: {
         extend: {
           colors: {
-            "on-surface":"#171d17","on-secondary-fixed":"#001c3a","inverse-surface":"#2c322b","on-tertiary":"#ffffff","error":"#ba1a1a","tertiary-fixed-dim":"#f0c110","secondary-fixed-dim":"#a6c8ff","primary-fixed-dim":"#73dc84","on-tertiary-fixed":"#241a00","surface-container-low":"#eff5eb","tertiary-container":"#d0a600","on-primary-fixed-variant":"#00531f","on-secondary":"#ffffff","on-background":"#171d17","primary-container":"#0f8739","surface-dim":"#d6dcd2","tertiary":"#745b00","surface-tint":"#006e2b","error-container":"#ffdad6","on-primary-container":"#f7fff2","background":"#f5fbf1","surface-container-lowest":"#ffffff","outline-variant":"#becaba","primary":"#006b2a","surface-container":"#eaf0e5","secondary-container":"#78b0fe","surface-bright":"#f5fbf1","secondary-fixed":"#d4e3ff","on-error":"#ffffff","on-tertiary-container":"#4f3d00","on-secondary-container":"#00427d","surface-container-highest":"#dee4da","tertiary-fixed":"#ffe08b","surface-variant":"#dee4da","surface-container-high":"#e4eae0","on-primary":"#ffffff","on-error-container":"#93000a","inverse-on-surface":"#edf3e8","on-surface-variant":"#3f4a3e","on-secondary-fixed-variant":"#004786","surface":"#f5fbf1","on-primary-fixed":"#002108","outline":"#6f7a6d","on-tertiary-fixed-variant":"#584400","primary-fixed":"#8ff99d","secondary":"#1a5fa8","inverse-primary":"#73dc84"
+            /* ── PALETTE CONVERSION : Orange + Navy + Blanc ── */
+            "primary":                    "#FF6B2B",   /* Orange CTA */
+            "primary-hover":              "#E85A1A",
+            "primary-fixed":              "#FF6B2B",
+            "primary-fixed-dim":          "#FFB38A",   /* Orange clair sur fond sombre */
+            "on-primary":                 "#ffffff",
+            "on-primary-fixed":           "#ffffff",
+            "on-primary-fixed-variant":   "#7A2800",
+            "primary-container":          "#FFE0D0",
+            "on-primary-container":       "#3D1100",
+            "inverse-primary":            "#FFB38A",
+
+            "secondary":                  "#0D2B55",   /* Navy confiance */
+            "secondary-fixed":            "#D4E3FF",
+            "secondary-fixed-dim":        "#A8C4F0",   /* Navy clair sur fond sombre */
+            "on-secondary":               "#ffffff",
+            "on-secondary-fixed":         "#001C3A",
+            "on-secondary-fixed-variant": "#004786",
+            "on-secondary-container":     "#001C3A",
+            "secondary-container":        "#1A4080",
+
+            "tertiary":                   "#C45200",   /* Orange brûlé — étoiles, accents */
+            "tertiary-fixed":             "#FFD9C4",
+            "tertiary-fixed-dim":         "#FFB38A",
+            "on-tertiary":                "#ffffff",
+            "on-tertiary-fixed":          "#3D1100",
+            "on-tertiary-fixed-variant":  "#7A2800",
+            "tertiary-container":         "#FF8C55",
+            "on-tertiary-container":      "#3D1100",
+
+            "surface-tint":               "#FF6B2B",
+            "on-surface":                 "#1A1A2E",
+            "on-surface-variant":         "#4A5568",
+            "on-background":              "#1A1A2E",
+            "background":                 "#F8F9FB",
+            "surface":                    "#F8F9FB",
+            "surface-bright":             "#FFFFFF",
+            "surface-dim":                "#DDE3EC",
+            "surface-variant":            "#EDF0F7",
+            "surface-container-lowest":   "#FFFFFF",
+            "surface-container-low":      "#F1F4F8",
+            "surface-container":          "#E8EFF8",
+            "surface-container-high":     "#DDE3EC",
+            "surface-container-highest":  "#D0D8E8",
+
+            "outline":                    "#8A96A8",
+            "outline-variant":            "#C5CFD8",
+            "inverse-surface":            "#0D2B55",
+            "inverse-on-surface":         "#F1F4F8",
+
+            "error":                      "#E53935",
+            "on-error":                   "#ffffff",
+            "error-container":            "#FFDAD6",
+            "on-error-container":         "#93000A",
           },
           borderRadius: { "DEFAULT":"1rem","lg":"2rem","xl":"3rem","full":"9999px" },
           fontFamily: { "headline":["Noto Serif"],"body":["Inter"],"label":["Inter"] }
@@ -38,7 +91,6 @@
     @keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
     @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
     @keyframes pulse-dot{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.7}}
-    @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
     @keyframes overlayFadeIn{from{opacity:0}to{opacity:1}}
     @keyframes overlaySlideDown{from{opacity:0;transform:translateY(-12px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 
@@ -52,21 +104,35 @@
 
     .hero-img{transition:transform 8s ease}
     .hero-img:hover{transform:scale(1.04)}
-    .hero-overlay{background:linear-gradient(160deg,rgba(0,107,42,.55) 0%,rgba(0,107,42,.2) 40%,rgba(0,0,0,.5) 100%)}
 
-    .card-hover{transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s ease}
-    .card-hover:hover{transform:translateY(-6px);box-shadow:0 20px 60px rgba(0,107,42,.12)}
+    /* ── Hero overlay : Navy → Orange, contraste maximal conversion ── */
+    .hero-overlay{
+      background:linear-gradient(
+        160deg,
+        rgba(13,43,85,.72) 0%,
+        rgba(13,43,85,.35) 40%,
+        rgba(255,107,43,.25) 100%
+      )
+    }
 
-    .btn-primary{background:linear-gradient(135deg,#006b2a 0%,#0f8739 100%);transition:all .2s}
-    .btn-primary:hover{opacity:.9;transform:scale(.98)}
+    .card-hover{transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s ease,border-color .25s}
+    .card-hover:hover{transform:translateY(-6px);box-shadow:0 20px 60px rgba(255,107,43,.15)}
+
+    /* ── CTA primaire : Orange pur, shadow dopamine ── */
+    .btn-primary{
+      background:linear-gradient(135deg,#FF6B2B 0%,#E85A1A 100%);
+      box-shadow:0 6px 24px rgba(255,107,43,.38);
+      transition:all .2s
+    }
+    .btn-primary:hover{opacity:.92;transform:scale(.98);box-shadow:0 8px 30px rgba(255,107,43,.48)}
     .btn-primary:active{transform:scale(.96)}
 
     .floating-badge{animation:float 4s ease-in-out infinite}
     .live-dot{animation:pulse-dot 1.5s ease-in-out infinite}
 
     .category-chip{transition:all .2s ease}
-    .category-chip:hover{background:#006b2a;color:#fff;transform:translateY(-2px)}
-    .category-chip.active{background:#006b2a;color:#fff}
+    .category-chip:hover{background:#FF6B2B;color:#fff;transform:translateY(-2px)}
+    .category-chip.active{background:#FF6B2B;color:#fff}
 
     .trust-item{transition:transform .3s ease}
     .trust-item:hover{transform:translateY(-4px)}
@@ -74,7 +140,7 @@
     .section-enter{opacity:0;transform:translateY(40px);transition:all .7s cubic-bezier(.22,1,.36,1)}
     .section-enter.visible{opacity:1;transform:translateY(0)}
 
-    .glass{background:rgba(245,251,241,.75);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(190,202,186,.3)}
+    .glass{background:rgba(255,255,255,.18);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.25)}
     .star-fill{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24}
 
     #search-overlay{animation:overlayFadeIn .2s ease forwards}
@@ -82,34 +148,44 @@
     #search-overlay.hidden{display:none!important}
 
     #toast{transition:all .3s ease}
+
+    /* ── Produit card — prix orange, hover border ── */
+    .product-price{color:#FF6B2B;font-weight:700}
+    .card-hover:hover{border-color:#FF6B2B !important}
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar{width:5px}
+    ::-webkit-scrollbar-thumb{background:#FF6B2B;border-radius:3px}
+    ::selection{background:#FFE0D0;color:#E85A1A}
   </style>
-  <link rel="stylesheet" href="/css/wenna-palette-conversion.css">
 </head>
 <body class="bg-background text-on-surface min-h-screen overflow-x-hidden">
 
 <!-- ══ HEADER ══ -->
-<header class="bg-surface/80 backdrop-blur-xl fixed top-0 w-full z-50 border-b border-outline-variant/10">
+<header class="bg-secondary backdrop-blur-xl fixed top-0 w-full z-50 border-b-2 border-primary">
   <div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto w-full">
     <div class="flex items-center gap-4">
-      <button aria-label="Menu" class="text-on-surface hover:opacity-70 transition-opacity anim-fade-in">
+      <button aria-label="Menu" class="text-white hover:text-primary transition-colors anim-fade-in">
         <span class="material-symbols-outlined">menu</span>
       </button>
       <a href="/" aria-label="WennaShop accueil">
-        <h1 class="font-serif italic text-2xl tracking-tighter text-primary anim-fade-in d-100">WennaShop</h1>
+        <h1 class="font-serif italic text-2xl tracking-tighter text-white anim-fade-in d-100">
+          Wenna<span class="text-primary">Shop</span>
+        </h1>
       </a>
     </div>
-    <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-on-surface-variant" aria-label="Navigation principale">
+    <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-white/75" aria-label="Navigation principale">
       <a href="boutique.html" class="hover:text-primary transition-colors">Shop</a>
     </nav>
     <div class="flex items-center gap-4 anim-fade-in d-200">
-      <button onclick="openSearch()" aria-label="Rechercher" class="text-on-surface hover:opacity-70 transition-opacity">
+      <button onclick="openSearch()" aria-label="Rechercher" class="text-white hover:text-primary transition-colors">
         <span class="material-symbols-outlined">search</span>
       </button>
-      <a href="panier.html" aria-label="Panier" class="text-on-surface hover:opacity-70 transition-opacity relative">
+      <a href="panier.html" aria-label="Panier" class="text-white hover:text-primary transition-colors relative">
         <span class="material-symbols-outlined">shopping_bag</span>
-        <span id="cart-badge" class="absolute -top-1 -right-1 bg-primary text-on-primary text-[9px] font-bold w-4 h-4 rounded-full items-center justify-center hidden">0</span>
+        <span id="cart-badge" class="absolute -top-1 -right-1 bg-primary text-white text-[9px] font-bold w-4 h-4 rounded-full items-center justify-center hidden">0</span>
       </a>
-      <a href="compte.html" aria-label="Mon compte" class="text-on-surface hover:opacity-70 transition-opacity hidden md:block">
+      <a href="compte.html" aria-label="Mon compte" class="text-white hover:text-primary transition-colors hidden md:block">
         <span class="material-symbols-outlined">person</span>
       </a>
     </div>
@@ -117,7 +193,7 @@
 </header>
 
 <!-- ══ TICKER ══ -->
-<div class="fixed top-[68px] w-full z-40 bg-primary text-on-primary text-[10px] font-bold uppercase tracking-[.2em] overflow-hidden py-1.5" aria-hidden="true">
+<div class="fixed top-[68px] w-full z-40 bg-primary text-white text-[10px] font-bold uppercase tracking-[.2em] overflow-hidden py-1.5" aria-hidden="true">
   <div class="ticker-track gap-16 flex">
     <span class="whitespace-nowrap px-8">✦ Livraison express Casablanca → Libreville</span>
     <span class="whitespace-nowrap px-8">✦ Nouveaux artisans rejoignent la communauté</span>
@@ -145,35 +221,41 @@
         />
       </div>
       <div class="absolute inset-0 hero-overlay z-10"></div>
+
+      <!-- Badge flottant -->
       <div class="absolute top-8 right-8 z-20 floating-badge">
         <div class="glass rounded-lg px-5 py-4 text-center">
           <p class="text-2xl font-serif font-bold text-primary" id="hero-rating">4.9★</p>
-          <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mt-1" id="hero-reviews">1 200+ avis</p>
+          <p class="text-[10px] uppercase tracking-widest text-white/80 font-bold mt-1" id="hero-reviews">1 200+ avis</p>
         </div>
       </div>
+
+      <!-- Badge actifs -->
       <div class="absolute top-8 left-8 z-20 flex items-center gap-2 glass rounded-full px-4 py-2">
-        <span class="w-2 h-2 rounded-full bg-red-500 live-dot"></span>
-        <span class="text-[10px] font-bold uppercase tracking-widest text-on-surface" id="active-count">— acheteurs actifs</span>
+        <span class="w-2 h-2 rounded-full bg-primary live-dot"></span>
+        <span class="text-[10px] font-bold uppercase tracking-widest text-white" id="active-count">— acheteurs actifs</span>
       </div>
+
+      <!-- Contenu hero -->
       <div class="relative z-20 max-w-2xl">
-        <span class="inline-block px-4 py-1.5 rounded-full bg-tertiary text-on-tertiary text-[10px] font-bold uppercase tracking-widest mb-5 anim-fade-in">
+        <span class="inline-block px-4 py-1.5 rounded-full bg-primary/90 text-white text-[10px] font-bold uppercase tracking-widest mb-5 anim-fade-in">
           L'Union Culturelle ✦ Nouveau
         </span>
         <h2 class="text-5xl md:text-7xl font-serif italic text-white leading-[1.05] mb-6 anim-fade-up d-200">
           Du cœur de<br/>
-          <span class="text-primary-fixed-dim">Casablanca</span><br/>
+          <span class="text-primary">Casablanca</span><br/>
           à l'âme de<br/>
           <span class="text-secondary-fixed-dim">Libreville.</span>
         </h2>
-        <p class="text-white/75 text-base mb-8 max-w-md anim-fade-up d-400 leading-relaxed">
+        <p class="text-white/80 text-base mb-8 max-w-md anim-fade-up d-400 leading-relaxed">
           Artisanat authentique. Produits sourcés à la source. Une passerelle entre deux cultures vibrantes.
         </p>
         <div class="flex flex-wrap gap-4 anim-fade-up d-500">
-          <a href="shop.html" class="btn-primary text-on-primary px-8 py-4 rounded-xl font-bold text-sm tracking-widest uppercase flex items-center gap-3 shadow-2xl">
+          <a href="boutique.html" class="btn-primary text-white px-8 py-4 rounded-xl font-bold text-sm tracking-widest uppercase flex items-center gap-3">
             Explorer la Collection
             <span class="material-symbols-outlined text-lg">arrow_forward</span>
           </a>
-          <a href="artisans.html" class="glass text-white px-8 py-4 rounded-xl font-bold text-sm tracking-widest uppercase">
+          <a href="artisans.html" class="glass text-white px-8 py-4 rounded-xl font-bold text-sm tracking-widest uppercase hover:bg-white/30 transition-all">
             Nos Artisans
           </a>
         </div>
@@ -184,7 +266,7 @@
   <!-- ══ CATÉGORIES ══ -->
   <section class="px-4 py-8 section-enter" aria-label="Filtrer par catégorie">
     <div class="flex gap-3 overflow-x-auto pb-2 no-scrollbar" role="list">
-      <button role="listitem" data-cat="all" class="category-chip active flex-shrink-0 px-5 py-2.5 rounded-full bg-primary text-on-primary text-xs font-bold uppercase tracking-widest border border-outline-variant/20">Tout</button>
+      <button role="listitem" data-cat="all" class="category-chip active flex-shrink-0 px-5 py-2.5 rounded-full bg-primary text-white text-xs font-bold uppercase tracking-widest border border-primary/30">Tout</button>
       <button role="listitem" data-cat="beaute" class="category-chip flex-shrink-0 px-5 py-2.5 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-bold uppercase tracking-widest border border-outline-variant/20">Beauté</button>
       <button role="listitem" data-cat="artisanat" class="category-chip flex-shrink-0 px-5 py-2.5 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-bold uppercase tracking-widest border border-outline-variant/20">Artisanat</button>
       <button role="listitem" data-cat="epicerie" class="category-chip flex-shrink-0 px-5 py-2.5 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-bold uppercase tracking-widest border border-outline-variant/20">Épicerie</button>
@@ -196,19 +278,19 @@
   <!-- ══ BRIDGE 2 PAYS ══ -->
   <section class="px-4 py-4 section-enter" aria-label="Explorer par pays">
     <div class="grid grid-cols-2 gap-4">
-      <a href="shop.html?pays=gabon" class="relative rounded-lg overflow-hidden min-h-[220px] group card-hover cursor-pointer block">
+      <a href="boutique.html?pays=gabon" class="relative rounded-lg overflow-hidden min-h-[220px] group card-hover cursor-pointer block border border-transparent">
         <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://images.unsplash.com/photo-1523805009345-7448845a9e53?w=600&q=80&fit=crop" alt="Gabon forêt équatoriale" loading="lazy" width="600" height="440"/>
-        <div class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/20 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/20 to-transparent"></div>
         <div class="absolute bottom-5 left-5 right-5 z-10">
-          <span class="text-[9px] font-bold uppercase tracking-[.25em] text-primary-fixed-dim block mb-1">Afrique Centrale</span>
+          <span class="text-[9px] font-bold uppercase tracking-[.25em] text-primary block mb-1">Afrique Centrale</span>
           <h3 class="font-serif italic text-white text-xl font-bold leading-tight">Gabon</h3>
           <p class="text-white/70 text-xs mt-1">Forêt · Cacao · Artisanat Punu</p>
         </div>
-        <div class="absolute top-4 right-4 z-10 bg-primary/80 backdrop-blur px-2 py-1 rounded-full">
-          <span class="text-[9px] font-bold text-on-primary uppercase tracking-wider" id="count-gabon">— produits</span>
+        <div class="absolute top-4 right-4 z-10 bg-secondary/80 backdrop-blur px-2 py-1 rounded-full">
+          <span class="text-[9px] font-bold text-white uppercase tracking-wider" id="count-gabon">— produits</span>
         </div>
       </a>
-      <a href="shop.html?pays=maroc" class="relative rounded-lg overflow-hidden min-h-[220px] group card-hover cursor-pointer block">
+      <a href="boutique.html?pays=maroc" class="relative rounded-lg overflow-hidden min-h-[220px] group card-hover cursor-pointer block border border-transparent">
         <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=600&q=80&fit=crop" alt="Maroc médina" loading="lazy" width="600" height="440"/>
         <div class="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/20 to-transparent"></div>
         <div class="absolute bottom-5 left-5 right-5 z-10">
@@ -216,8 +298,8 @@
           <h3 class="font-serif italic text-white text-xl font-bold leading-tight">Maroc</h3>
           <p class="text-white/70 text-xs mt-1">Argan · Zellige · Soie de Fès</p>
         </div>
-        <div class="absolute top-4 right-4 z-10 bg-secondary/80 backdrop-blur px-2 py-1 rounded-full">
-          <span class="text-[9px] font-bold text-on-secondary uppercase tracking-wider" id="count-maroc">— produits</span>
+        <div class="absolute top-4 right-4 z-10 bg-primary/80 backdrop-blur px-2 py-1 rounded-full">
+          <span class="text-[9px] font-bold text-white uppercase tracking-wider" id="count-maroc">— produits</span>
         </div>
       </a>
     </div>
@@ -225,19 +307,19 @@
 
   <!-- ══ STATS ══ -->
   <section class="px-4 py-10 section-enter" aria-label="Chiffres clés">
-    <div class="bg-surface-container-lowest rounded-lg p-8">
+    <div class="bg-secondary rounded-lg p-8">
       <div class="grid grid-cols-3 gap-6 text-center">
         <div class="trust-item">
           <p class="text-4xl font-serif font-bold text-primary mb-1" id="stat-artisans">—</p>
-          <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Artisans actifs</p>
+          <p class="text-[10px] uppercase tracking-widest text-white/60 font-bold">Artisans actifs</p>
         </div>
-        <div class="trust-item border-x border-outline-variant/20">
-          <p class="text-4xl font-serif font-bold text-secondary mb-1" id="stat-orders">—</p>
-          <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Commandes livrées</p>
+        <div class="trust-item border-x border-white/10">
+          <p class="text-4xl font-serif font-bold text-white mb-1" id="stat-orders">—</p>
+          <p class="text-[10px] uppercase tracking-widest text-white/60 font-bold">Commandes livrées</p>
         </div>
         <div class="trust-item">
-          <p class="text-4xl font-serif font-bold text-tertiary mb-1" id="stat-satisfaction">—</p>
-          <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Satisfaction</p>
+          <p class="text-4xl font-serif font-bold text-primary mb-1" id="stat-satisfaction">—</p>
+          <p class="text-[10px] uppercase tracking-widest text-white/60 font-bold">Satisfaction</p>
         </div>
       </div>
     </div>
@@ -247,17 +329,16 @@
   <section class="px-4 py-6 section-enter" aria-labelledby="featured-title">
     <div class="flex justify-between items-end mb-6">
       <div>
-        <p class="text-[10px] uppercase tracking-[.2em] text-tertiary font-bold mb-1">Sélection du moment</p>
-        <h2 id="featured-title" class="font-serif italic text-3xl font-bold">À la Une</h2>
+        <p class="text-[10px] uppercase tracking-[.2em] text-primary font-bold mb-1">Sélection du moment</p>
+        <h2 id="featured-title" class="font-serif italic text-3xl font-bold text-secondary">À la Une</h2>
       </div>
-      <a href="shop.html" class="text-xs font-bold uppercase tracking-widest text-primary border-b border-primary/20 pb-1 hover:border-primary transition-colors">Tout voir</a>
+      <a href="boutique.html" class="text-xs font-bold uppercase tracking-widest text-primary border-b border-primary/30 pb-1 hover:border-primary transition-colors">Tout voir</a>
     </div>
     <div id="products-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <!-- Skeleton loading -->
-      <div class="bg-surface-container-lowest rounded-lg p-3 animate-pulse"><div class="aspect-square rounded-md bg-surface-container-high mb-4"></div><div class="h-2 bg-surface-container-high rounded mb-2 w-2/3"></div><div class="h-3 bg-surface-container-high rounded mb-2"></div><div class="h-3 bg-surface-container-high rounded w-1/3"></div></div>
-      <div class="bg-surface-container-lowest rounded-lg p-3 animate-pulse"><div class="aspect-square rounded-md bg-surface-container-high mb-4"></div><div class="h-2 bg-surface-container-high rounded mb-2 w-2/3"></div><div class="h-3 bg-surface-container-high rounded mb-2"></div><div class="h-3 bg-surface-container-high rounded w-1/3"></div></div>
-      <div class="bg-surface-container-lowest rounded-lg p-3 animate-pulse hidden md:block"><div class="aspect-square rounded-md bg-surface-container-high mb-4"></div><div class="h-2 bg-surface-container-high rounded mb-2 w-2/3"></div><div class="h-3 bg-surface-container-high rounded mb-2"></div><div class="h-3 bg-surface-container-high rounded w-1/3"></div></div>
-      <div class="bg-surface-container-lowest rounded-lg p-3 animate-pulse hidden md:block"><div class="aspect-square rounded-md bg-surface-container-high mb-4"></div><div class="h-2 bg-surface-container-high rounded mb-2 w-2/3"></div><div class="h-3 bg-surface-container-high rounded mb-2"></div><div class="h-3 bg-surface-container-high rounded w-1/3"></div></div>
+      <div class="bg-surface-container-lowest rounded-lg p-3 animate-pulse border border-outline-variant/20"><div class="aspect-square rounded-md bg-surface-container-high mb-4"></div><div class="h-2 bg-surface-container-high rounded mb-2 w-2/3"></div><div class="h-3 bg-surface-container-high rounded mb-2"></div><div class="h-3 bg-surface-container-high rounded w-1/3"></div></div>
+      <div class="bg-surface-container-lowest rounded-lg p-3 animate-pulse border border-outline-variant/20"><div class="aspect-square rounded-md bg-surface-container-high mb-4"></div><div class="h-2 bg-surface-container-high rounded mb-2 w-2/3"></div><div class="h-3 bg-surface-container-high rounded mb-2"></div><div class="h-3 bg-surface-container-high rounded w-1/3"></div></div>
+      <div class="bg-surface-container-lowest rounded-lg p-3 animate-pulse hidden md:block border border-outline-variant/20"><div class="aspect-square rounded-md bg-surface-container-high mb-4"></div><div class="h-2 bg-surface-container-high rounded mb-2 w-2/3"></div><div class="h-3 bg-surface-container-high rounded mb-2"></div><div class="h-3 bg-surface-container-high rounded w-1/3"></div></div>
+      <div class="bg-surface-container-lowest rounded-lg p-3 animate-pulse hidden md:block border border-outline-variant/20"><div class="aspect-square rounded-md bg-surface-container-high mb-4"></div><div class="h-2 bg-surface-container-high rounded mb-2 w-2/3"></div><div class="h-3 bg-surface-container-high rounded mb-2"></div><div class="h-3 bg-surface-container-high rounded w-1/3"></div></div>
     </div>
   </section>
 
@@ -265,12 +346,12 @@
   <section class="px-4 py-8 section-enter">
     <div class="relative rounded-lg overflow-hidden min-h-[300px] md:min-h-[360px]">
       <img class="absolute inset-0 w-full h-full object-cover" src="https://images.unsplash.com/photo-1534361960057-19f4434a0b78?w=1200&q=80&fit=crop" alt="Artisan au travail" loading="lazy" width="1200" height="360"/>
-      <div class="absolute inset-0 bg-gradient-to-r from-inverse-surface/90 via-inverse-surface/60 to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-r from-secondary/92 via-secondary/60 to-transparent"></div>
       <div class="relative z-10 p-8 md:p-12 max-w-lg">
-        <span class="text-[10px] uppercase tracking-[.25em] text-primary-fixed-dim font-bold block mb-4">Portrait d'Artisan</span>
+        <span class="text-[10px] uppercase tracking-[.25em] text-primary font-bold block mb-4">Portrait d'Artisan</span>
         <h3 class="font-serif italic text-3xl md:text-4xl text-white font-bold leading-tight mb-4">« Chaque pièce porte<br/>l'âme de son auteur. »</h3>
         <p class="text-white/70 text-sm leading-relaxed mb-6">Fatima Benali, coopérative d'Essaouira depuis 1987. Elle presse l'argan à la main, comme sa mère l'a fait avant elle.</p>
-        <a href="artisans.html" class="inline-block bg-white text-primary px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-primary hover:text-white transition-all">Lire son histoire</a>
+        <a href="artisans.html" class="inline-block bg-primary text-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-primary-hover transition-all shadow-lg">Lire son histoire</a>
       </div>
     </div>
   </section>
@@ -279,26 +360,26 @@
   <section class="px-4 py-8 section-enter" aria-labelledby="season-title">
     <div class="flex justify-between items-end mb-6">
       <div>
-        <p class="text-[10px] uppercase tracking-[.2em] text-secondary font-bold mb-1">Été 2025</p>
-        <h2 id="season-title" class="font-serif italic text-3xl font-bold">Collection Saison</h2>
+        <p class="text-[10px] uppercase tracking-[.2em] text-primary font-bold mb-1">Été 2025</p>
+        <h2 id="season-title" class="font-serif italic text-3xl font-bold text-secondary">Collection Saison</h2>
       </div>
-      <a href="shop.html" class="text-xs font-bold uppercase tracking-widest text-primary border-b border-primary/20 pb-1">Voir tout</a>
+      <a href="boutique.html" class="text-xs font-bold uppercase tracking-widest text-primary border-b border-primary/30 pb-1">Voir tout</a>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <a href="shop.html?col=wax-soie" class="md:col-span-2 relative rounded-lg overflow-hidden min-h-[240px] group card-hover cursor-pointer block">
-        <img class="w-full h-full object-cover absolute inset-0 transition-transform duration-700 group-hover:scale-105" src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&q=80&fit=crop" alt="Mode africaine Wax & Soie" loading="lazy" width="800" height="240"/>
-        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+      <a href="boutique.html?col=wax-soie" class="md:col-span-2 relative rounded-lg overflow-hidden min-h-[240px] group card-hover cursor-pointer block border border-transparent">
+        <img class="w-full h-full object-cover absolute inset-0 transition-transform duration-700 group-hover:scale-105" src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&q=80&fit=crop" alt="Mode africaine Wax et Soie" loading="lazy" width="800" height="240"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-secondary/85 via-transparent to-transparent"></div>
         <div class="absolute bottom-6 left-6">
-          <span class="text-[9px] font-bold uppercase tracking-widest text-white/60 block mb-1">Mode · Textile</span>
+          <span class="text-[9px] font-bold uppercase tracking-widest text-primary block mb-1">Mode · Textile</span>
           <h4 class="font-serif italic text-white text-2xl font-bold">Wax & Soie</h4>
           <p class="text-white/70 text-xs mt-1">Fusion Gabon × Maroc · 32 pièces</p>
         </div>
       </a>
-      <a href="shop.html?col=epices" class="relative rounded-lg overflow-hidden min-h-[240px] group card-hover cursor-pointer block">
+      <a href="boutique.html?col=epices" class="relative rounded-lg overflow-hidden min-h-[240px] group card-hover cursor-pointer block border border-transparent">
         <img class="w-full h-full object-cover absolute inset-0 transition-transform duration-700 group-hover:scale-105" src="https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&q=80&fit=crop" alt="Épices du Maroc" loading="lazy" width="400" height="240"/>
-        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-secondary/85 via-transparent to-transparent"></div>
         <div class="absolute bottom-6 left-6">
-          <span class="text-[9px] font-bold uppercase tracking-widest text-white/60 block mb-1">Épicerie fine</span>
+          <span class="text-[9px] font-bold uppercase tracking-widest text-primary block mb-1">Épicerie fine</span>
           <h4 class="font-serif italic text-white text-2xl font-bold">Épices de Souks</h4>
           <p class="text-white/70 text-xs mt-1">Ras el Hanout · Curcuma · Safran</p>
         </div>
@@ -309,92 +390,83 @@
   <!-- ══ TRUST BADGES ══ -->
   <section class="px-4 py-8 section-enter" aria-label="Garanties">
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div class="trust-item bg-surface-container-lowest rounded-lg p-5 text-center">
+      <div class="trust-item bg-surface-container-lowest rounded-lg p-5 text-center border border-outline-variant/20 hover:border-primary transition-colors">
         <span class="material-symbols-outlined text-primary mb-3 block" style="font-size:28px;" aria-hidden="true">verified_user</span>
-        <p class="text-xs font-bold uppercase tracking-wider text-on-surface mb-1">Paiement sécurisé</p>
+        <p class="text-xs font-bold uppercase tracking-wider text-secondary mb-1">Paiement sécurisé</p>
         <p class="text-[10px] text-on-surface-variant">SSL · 3D Secure · Crypté</p>
       </div>
-      <div class="trust-item bg-surface-container-lowest rounded-lg p-5 text-center">
+      <div class="trust-item bg-surface-container-lowest rounded-lg p-5 text-center border border-outline-variant/20 hover:border-primary transition-colors">
         <span class="material-symbols-outlined text-secondary mb-3 block" style="font-size:28px;" aria-hidden="true">local_shipping</span>
-        <p class="text-xs font-bold uppercase tracking-wider text-on-surface mb-1">Livraison Express</p>
+        <p class="text-xs font-bold uppercase tracking-wider text-secondary mb-1">Livraison Express</p>
         <p class="text-[10px] text-on-surface-variant">4–7 jours ouvrés</p>
       </div>
-      <div class="trust-item bg-surface-container-lowest rounded-lg p-5 text-center">
-        <span class="material-symbols-outlined text-tertiary mb-3 block" style="font-size:28px;" aria-hidden="true">eco</span>
-        <p class="text-xs font-bold uppercase tracking-wider text-on-surface mb-1">100% Authentique</p>
+      <div class="trust-item bg-surface-container-lowest rounded-lg p-5 text-center border border-outline-variant/20 hover:border-primary transition-colors">
+        <span class="material-symbols-outlined text-primary mb-3 block" style="font-size:28px;" aria-hidden="true">eco</span>
+        <p class="text-xs font-bold uppercase tracking-wider text-secondary mb-1">100% Authentique</p>
         <p class="text-[10px] text-on-surface-variant">Sourcé & vérifié</p>
       </div>
-      <div class="trust-item bg-surface-container-lowest rounded-lg p-5 text-center">
+      <div class="trust-item bg-surface-container-lowest rounded-lg p-5 text-center border border-outline-variant/20 hover:border-primary transition-colors">
         <span class="material-symbols-outlined text-primary mb-3 block" style="font-size:28px;" aria-hidden="true">autorenew</span>
-        <p class="text-xs font-bold uppercase tracking-wider text-on-surface mb-1">Retours Gratuits</p>
+        <p class="text-xs font-bold uppercase tracking-wider text-secondary mb-1">Retours Gratuits</p>
         <p class="text-[10px] text-on-surface-variant">30 jours sans conditions</p>
       </div>
     </div>
   </section>
 
   <!-- ══ AVIS CLIENTS ══ -->
-  <section class="px-4 py-8 bg-surface-container-low mx-4 rounded-lg section-enter" aria-labelledby="reviews-title">
+  <section class="px-4 py-8 bg-secondary mx-4 rounded-lg section-enter" aria-labelledby="reviews-title">
     <div class="flex justify-between items-end mb-6">
       <div>
-        <p class="text-[10px] uppercase tracking-[.2em] text-tertiary font-bold mb-1">Communauté</p>
-        <h2 id="reviews-title" class="font-serif italic text-3xl font-bold">Ce qu'ils disent</h2>
+        <p class="text-[10px] uppercase tracking-[.2em] text-primary font-bold mb-1">Communauté</p>
+        <h2 id="reviews-title" class="font-serif italic text-3xl font-bold text-white">Ce qu'ils disent</h2>
       </div>
       <div class="flex items-center gap-1" aria-label="Note moyenne 4.9 sur 5">
-        <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:16px;" aria-hidden="true">star</span>
-        <span class="font-bold text-sm">4.9</span>
-        <span class="text-xs text-on-surface-variant">/ 5 (1 247)</span>
+        <span class="material-symbols-outlined text-primary star-fill" style="font-size:16px;" aria-hidden="true">star</span>
+        <span class="font-bold text-sm text-white">4.9</span>
+        <span class="text-xs text-white/50">/ 5 (1 247)</span>
       </div>
     </div>
     <div id="reviews-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="bg-surface-container-lowest rounded-lg p-6">
-        <div class="flex gap-0.5 mb-3" aria-label="5 étoiles">
-          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;" aria-hidden="true">star</span>
-          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;" aria-hidden="true">star</span>
-          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;" aria-hidden="true">star</span>
-          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;" aria-hidden="true">star</span>
-          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;" aria-hidden="true">star</span>
+      <div class="bg-white/8 rounded-lg p-6 border border-white/10">
+        <div class="flex gap-0.5 mb-3">
+          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
+          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
+          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
+          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
+          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
         </div>
-        <p class="text-sm text-on-surface-variant leading-relaxed mb-4 font-serif italic">"L'huile d'argan est incroyable, exactement comme promise. Livraison rapide depuis le Maroc!"</p>
+        <p class="text-sm text-white/70 leading-relaxed mb-4 font-serif italic">"L'huile d'argan est incroyable, exactement comme promise. Livraison rapide depuis le Maroc!"</p>
         <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm" aria-hidden="true">A</div>
-          <div>
-            <p class="text-xs font-bold">Amina B.</p>
-            <p class="text-[10px] text-on-surface-variant">Libreville · Client vérifié</p>
-          </div>
+          <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">A</div>
+          <div><p class="text-xs font-bold text-white">Amina B.</p><p class="text-[10px] text-white/40">Libreville · Client vérifié</p></div>
         </div>
       </div>
-      <div class="bg-surface-container-lowest rounded-lg p-6">
-        <div class="flex gap-0.5 mb-3" aria-label="5 étoiles">
-          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;" aria-hidden="true">star</span>
-          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;" aria-hidden="true">star</span>
-          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;" aria-hidden="true">star</span>
-          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;" aria-hidden="true">star</span>
-          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;" aria-hidden="true">star</span>
+      <div class="bg-white/8 rounded-lg p-6 border border-white/10">
+        <div class="flex gap-0.5 mb-3">
+          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
+          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
+          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
+          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
+          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
         </div>
-        <p class="text-sm text-on-surface-variant leading-relaxed mb-4 font-serif italic">"Le masque Punu est une pièce d'art. Merci WennaShop pour cette passerelle culturelle unique."</p>
+        <p class="text-sm text-white/70 leading-relaxed mb-4 font-serif italic">"Le masque Punu est une pièce d'art. Merci WennaShop pour cette passerelle culturelle unique."</p>
         <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center text-secondary font-bold text-sm" aria-hidden="true">K</div>
-          <div>
-            <p class="text-xs font-bold">Kofi M.</p>
-            <p class="text-[10px] text-on-surface-variant">Casablanca · Client vérifié</p>
-          </div>
+          <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">K</div>
+          <div><p class="text-xs font-bold text-white">Kofi M.</p><p class="text-[10px] text-white/40">Casablanca · Client vérifié</p></div>
         </div>
       </div>
-      <div class="bg-surface-container-lowest rounded-lg p-6">
-        <div class="flex gap-0.5 mb-3" aria-label="5 étoiles">
-          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;" aria-hidden="true">star</span>
-          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;" aria-hidden="true">star</span>
-          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;" aria-hidden="true">star</span>
-          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;" aria-hidden="true">star</span>
-          <span class="material-symbols-outlined text-tertiary star-fill" style="font-size:14px;" aria-hidden="true">star</span>
+      <div class="bg-white/8 rounded-lg p-6 border border-white/10">
+        <div class="flex gap-0.5 mb-3">
+          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
+          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
+          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
+          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
+          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
         </div>
-        <p class="text-sm text-on-surface-variant leading-relaxed mb-4 font-serif italic">"Un service client exceptionnel. Le savon beldi est de qualité supérieure, je recommande vivement!"</p>
+        <p class="text-sm text-white/70 leading-relaxed mb-4 font-serif italic">"Service client exceptionnel. Le savon beldi est de qualité supérieure, je recommande vivement!"</p>
         <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-full bg-tertiary/10 flex items-center justify-center text-tertiary font-bold text-sm" aria-hidden="true">S</div>
-          <div>
-            <p class="text-xs font-bold">Sara El H.</p>
-            <p class="text-[10px] text-on-surface-variant">Rabat · Client vérifié</p>
-          </div>
+          <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">S</div>
+          <div><p class="text-xs font-bold text-white">Sara El H.</p><p class="text-[10px] text-white/40">Rabat · Client vérifié</p></div>
         </div>
       </div>
     </div>
@@ -402,28 +474,28 @@
 
   <!-- ══ NEWSLETTER ══ -->
   <section class="px-4 py-12 section-enter" aria-labelledby="newsletter-title">
-    <div class="relative rounded-lg overflow-hidden bg-gradient-to-br from-primary to-primary-container p-10 md:p-16 text-center">
+    <div class="relative rounded-lg overflow-hidden bg-gradient-to-br from-secondary via-secondary to-primary/40 p-10 md:p-16 text-center">
       <div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none overflow-hidden" aria-hidden="true">
         <span class="font-serif text-[200px] font-black italic text-white select-none">W</span>
       </div>
       <div class="relative z-10">
-        <span class="inline-block px-4 py-1.5 rounded-full bg-white/20 text-white text-[10px] font-bold uppercase tracking-widest mb-6">Rejoignez le cercle</span>
+        <span class="inline-block px-4 py-1.5 rounded-full bg-primary/20 border border-primary/30 text-primary text-[10px] font-bold uppercase tracking-widest mb-6">Rejoignez le cercle</span>
         <h3 id="newsletter-title" class="font-serif italic text-4xl md:text-5xl text-white font-bold mb-4">Le Wenna Circle</h3>
-        <p class="text-white/75 mb-8 max-w-lg mx-auto leading-relaxed">Histoires d'artisans, accès anticipé aux drops saisonniers, offres exclusives. Rejoignez 8 400 curateurs passionnés.</p>
+        <p class="text-white/65 mb-8 max-w-lg mx-auto leading-relaxed">Histoires d'artisans, accès anticipé aux drops saisonniers, offres exclusives. Rejoignez 8 400 curateurs passionnés.</p>
         <div class="flex flex-col sm:flex-row gap-4 items-center justify-center max-w-md mx-auto">
           <input
             id="newsletter-email"
-            class="w-full sm:flex-1 bg-white/20 border border-white/30 text-white placeholder:text-white/50 px-6 py-4 rounded-xl focus:ring-0 focus:border-white outline-none backdrop-blur"
+            class="w-full sm:flex-1 bg-white/10 border border-white/20 text-white placeholder:text-white/40 px-6 py-4 rounded-xl focus:ring-0 focus:border-primary outline-none"
             placeholder="votre@email.com"
             type="email"
             autocomplete="email"
             aria-label="Adresse email pour la newsletter"
           />
-          <button onclick="subscribeNewsletter()" class="w-full sm:w-auto bg-white text-primary px-8 py-4 rounded-xl font-bold text-sm uppercase tracking-widest hover:bg-surface-container-lowest transition-all whitespace-nowrap shadow-xl">
+          <button onclick="subscribeNewsletter()" class="w-full sm:w-auto bg-primary text-white px-8 py-4 rounded-xl font-bold text-sm uppercase tracking-widest hover:bg-primary-hover transition-all whitespace-nowrap shadow-xl" style="box-shadow:0 6px 24px rgba(255,107,43,.4)">
             S'abonner
           </button>
         </div>
-        <p class="text-white/40 text-[10px] mt-4 uppercase tracking-widest">Aucun spam · Désinscription à tout moment</p>
+        <p class="text-white/30 text-[10px] mt-4 uppercase tracking-widest">Aucun spam · Désinscription à tout moment</p>
       </div>
     </div>
   </section>
@@ -431,61 +503,50 @@
 </main>
 
 <!-- ══ SEARCH OVERLAY ══ -->
-<div id="search-overlay" class="hidden fixed inset-0 z-[200] flex items-start justify-center pt-28 px-4" style="background:rgba(23,29,23,.45);backdrop-filter:blur(6px);" role="dialog" aria-modal="true" aria-label="Recherche">
-  <div class="search-box bg-surface-container-lowest rounded-lg w-full max-w-lg shadow-2xl overflow-hidden border border-outline-variant/20">
+<div id="search-overlay" class="hidden fixed inset-0 z-[200] flex items-start justify-center pt-28 px-4" style="background:rgba(13,43,85,.65);backdrop-filter:blur(6px);" role="dialog" aria-modal="true" aria-label="Recherche">
+  <div class="search-box bg-surface-container-lowest rounded-lg w-full max-w-lg shadow-2xl overflow-hidden border border-primary/20">
     <div class="flex items-center gap-3 px-5 py-4 border-b border-outline-variant/15">
-      <span class="material-symbols-outlined text-outline flex-shrink-0" style="font-size:20px;" aria-hidden="true">search</span>
-      <input
-        id="search-input"
-        type="search"
-        autocomplete="off"
-        placeholder="Rechercher des trésors..."
+      <span class="material-symbols-outlined text-outline flex-shrink-0" style="font-size:20px;">search</span>
+      <input id="search-input" type="search" autocomplete="off" placeholder="Rechercher des trésors..."
         class="flex-1 bg-transparent outline-none text-base text-on-surface placeholder:text-outline"
-        onkeydown="handleSearchKey(event)"
-        aria-label="Champ de recherche"
-      />
-      <button onclick="closeSearch()" aria-label="Fermer la recherche" class="text-outline hover:text-on-surface transition-colors flex-shrink-0">
+        onkeydown="handleSearchKey(event)" aria-label="Champ de recherche"/>
+      <button onclick="closeSearch()" aria-label="Fermer" class="text-outline hover:text-primary transition-colors flex-shrink-0">
         <span class="material-symbols-outlined" style="font-size:20px;">close</span>
       </button>
     </div>
     <div class="p-4">
       <p class="text-[10px] uppercase tracking-widest text-outline font-bold mb-3">Recherches populaires</p>
       <div class="flex flex-wrap gap-2">
-        <button onclick="submitSearch('Huile d\'Argan')" class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-medium hover:bg-primary hover:text-on-primary transition-all border border-outline-variant/20">Huile d'Argan</button>
-        <button onclick="submitSearch('Masque Punu')" class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-medium hover:bg-primary hover:text-on-primary transition-all border border-outline-variant/20">Masque Punu</button>
-        <button onclick="submitSearch('Cacao Gabon')" class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-medium hover:bg-primary hover:text-on-primary transition-all border border-outline-variant/20">Cacao Gabon</button>
-        <button onclick="submitSearch('Zellige')" class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-medium hover:bg-primary hover:text-on-primary transition-all border border-outline-variant/20">Zellige</button>
-        <button onclick="submitSearch('Savon Beldi')" class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-medium hover:bg-primary hover:text-on-primary transition-all border border-outline-variant/20">Savon Beldi</button>
-        <button onclick="submitSearch('Épices')" class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-medium hover:bg-primary hover:text-on-primary transition-all border border-outline-variant/20">Épices</button>
+        <button onclick="submitSearch('Huile d\'Argan')" class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-medium hover:bg-primary hover:text-white transition-all border border-outline-variant/20">Huile d'Argan</button>
+        <button onclick="submitSearch('Masque Punu')" class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-medium hover:bg-primary hover:text-white transition-all border border-outline-variant/20">Masque Punu</button>
+        <button onclick="submitSearch('Cacao Gabon')" class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-medium hover:bg-primary hover:text-white transition-all border border-outline-variant/20">Cacao Gabon</button>
+        <button onclick="submitSearch('Zellige')" class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-medium hover:bg-primary hover:text-white transition-all border border-outline-variant/20">Zellige</button>
+        <button onclick="submitSearch('Savon Beldi')" class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-medium hover:bg-primary hover:text-white transition-all border border-outline-variant/20">Savon Beldi</button>
       </div>
-    </div>
-    <div class="px-5 pb-4 flex items-center gap-2">
-      <span class="material-symbols-outlined text-outline" style="font-size:14px;" aria-hidden="true">keyboard_return</span>
-      <span class="text-[10px] text-outline">Appuyez sur Entrée pour lancer la recherche</span>
     </div>
   </div>
 </div>
 
 <!-- ══ TOAST ══ -->
-<div id="toast" class="fixed bottom-28 left-1/2 -translate-x-1/2 z-[300] px-5 py-3 rounded-xl bg-inverse-surface text-inverse-on-surface text-sm font-medium shadow-2xl opacity-0 pointer-events-none" role="status" aria-live="polite"></div>
+<div id="toast" class="fixed bottom-28 left-1/2 -translate-x-1/2 z-[300] px-5 py-3 rounded-xl bg-secondary text-white text-sm font-medium shadow-2xl border border-primary/20 opacity-0 pointer-events-none" role="status" aria-live="polite"></div>
 
 <!-- ══ BOTTOM NAV ══ -->
-<nav class="bg-surface/80 backdrop-blur-xl fixed bottom-0 w-full z-50 rounded-t-[2rem] shadow-[0_-8px_40px_rgba(0,0,0,0.06)] md:hidden border-t border-outline-variant/10" aria-label="Navigation mobile">
+<nav class="bg-secondary fixed bottom-0 w-full z-50 rounded-t-[2rem] shadow-[0_-4px_20px_rgba(13,43,85,.3)] md:hidden border-t-2 border-primary" aria-label="Navigation mobile">
   <div class="flex justify-around items-center w-full px-4 pb-6 pt-3">
     <a class="flex flex-col items-center justify-center text-primary" href="/" aria-current="page" aria-label="Accueil">
-      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;" aria-hidden="true">home</span>
+      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">home</span>
       <span class="text-[10px] font-bold uppercase tracking-widest mt-0.5">Home</span>
     </a>
-    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="shop.html" aria-label="Shop">
-      <span class="material-symbols-outlined" aria-hidden="true">storefront</span>
+    <a class="flex flex-col items-center justify-center text-white/50 hover:text-primary transition-colors" href="boutique.html" aria-label="Shop">
+      <span class="material-symbols-outlined">storefront</span>
       <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Shop</span>
     </a>
-    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="sell.html" aria-label="Vendre">
-      <span class="material-symbols-outlined" aria-hidden="true">add_circle</span>
+    <a class="flex flex-col items-center justify-center text-white/50 hover:text-primary transition-colors" href="sell.html" aria-label="Vendre">
+      <span class="material-symbols-outlined">add_circle</span>
       <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Sell</span>
     </a>
-    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="compte.html" aria-label="Mon profil">
-      <span class="material-symbols-outlined" aria-hidden="true">person</span>
+    <a class="flex flex-col items-center justify-center text-white/50 hover:text-primary transition-colors" href="compte.html" aria-label="Mon profil">
+      <span class="material-symbols-outlined">person</span>
       <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Profile</span>
     </a>
   </div>
@@ -495,202 +556,117 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 <script src="js/config.js" defer></script>
 <script defer>
-// ── Utilitaires ──────────────────────────────────────────────────────────────
-function showToast(msg, duration = 3000) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.style.opacity = '1';
-  el.style.pointerEvents = 'auto';
-  setTimeout(() => { el.style.opacity = '0'; el.style.pointerEvents = 'none'; }, duration);
+function showToast(msg, duration=3000){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.style.opacity='1';el.style.pointerEvents='auto';
+  setTimeout(()=>{el.style.opacity='0';el.style.pointerEvents='none';},duration);
 }
-
-// ── Panier (localStorage) ────────────────────────────────────────────────────
-function updateCartBadge() {
-  try {
-    const cart = JSON.parse(localStorage.getItem('wenna_cart') || '[]');
-    const badge = document.getElementById('cart-badge');
-    const total = cart.reduce((acc, i) => acc + (i.qty || 1), 0);
-    if (total > 0) {
-      badge.textContent = total > 99 ? '99+' : total;
-      badge.classList.remove('hidden');
-      badge.classList.add('flex');
-    } else {
-      badge.classList.add('hidden');
-      badge.classList.remove('flex');
-    }
-  } catch {}
+function updateCartBadge(){
+  try{
+    const cart=JSON.parse(localStorage.getItem('wenna_cart')||'[]');
+    const badge=document.getElementById('cart-badge');
+    const total=cart.reduce((acc,i)=>acc+(i.qty||1),0);
+    if(total>0){badge.textContent=total>99?'99+':total;badge.classList.remove('hidden');badge.classList.add('flex');}
+    else{badge.classList.add('hidden');badge.classList.remove('flex');}
+  }catch{}
 }
-
-function addToCart(product) {
-  try {
-    const cart = JSON.parse(localStorage.getItem('wenna_cart') || '[]');
-    const idx = cart.findIndex(i => i.id === product.id);
-    if (idx > -1) { cart[idx].qty = (cart[idx].qty || 1) + 1; }
-    else { cart.push({ ...product, qty: 1 }); }
-    localStorage.setItem('wenna_cart', JSON.stringify(cart));
-    updateCartBadge();
-    showToast('Produit ajouté au panier ✓');
-  } catch {}
+function addToCart(product){
+  try{
+    const cart=JSON.parse(localStorage.getItem('wenna_cart')||'[]');
+    const idx=cart.findIndex(i=>i.id===product.id);
+    if(idx>-1){cart[idx].qty=(cart[idx].qty||1)+1;}else{cart.push({...product,qty:1});}
+    localStorage.setItem('wenna_cart',JSON.stringify(cart));
+    updateCartBadge();showToast('Produit ajouté au panier ✓');
+  }catch{}
 }
-
-// ── Recherche ────────────────────────────────────────────────────────────────
-function openSearch() {
-  document.getElementById('search-overlay').classList.remove('hidden');
-  document.body.style.overflow = 'hidden';
-  setTimeout(() => document.getElementById('search-input').focus(), 50);
-}
-function closeSearch() {
-  document.getElementById('search-overlay').classList.add('hidden');
-  document.body.style.overflow = '';
-  document.getElementById('search-input').value = '';
-}
-function submitSearch(term) {
-  const q = term || document.getElementById('search-input').value.trim();
-  if (q) window.location.href = 'recherche.html?q=' + encodeURIComponent(q);
-}
-function handleSearchKey(e) {
-  if (e.key === 'Enter') submitSearch();
-  if (e.key === 'Escape') closeSearch();
-}
-document.getElementById('search-overlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeSearch(); });
-document.addEventListener('keydown', e => {
-  if ((e.key === '/' || (e.ctrlKey && e.key === 'k')) && document.activeElement.tagName !== 'INPUT') {
-    e.preventDefault(); openSearch();
-  }
-});
-
-// ── Catégories ───────────────────────────────────────────────────────────────
-document.querySelectorAll('.category-chip').forEach(chip => {
-  chip.addEventListener('click', () => {
-    document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+function openSearch(){document.getElementById('search-overlay').classList.remove('hidden');document.body.style.overflow='hidden';setTimeout(()=>document.getElementById('search-input').focus(),50);}
+function closeSearch(){document.getElementById('search-overlay').classList.add('hidden');document.body.style.overflow='';document.getElementById('search-input').value='';}
+function submitSearch(term){const q=term||document.getElementById('search-input').value.trim();if(q)window.location.href='recherche.html?q='+encodeURIComponent(q);}
+function handleSearchKey(e){if(e.key==='Enter')submitSearch();if(e.key==='Escape')closeSearch();}
+document.getElementById('search-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeSearch();});
+document.addEventListener('keydown',e=>{if((e.key==='/'||(e.ctrlKey&&e.key==='k'))&&document.activeElement.tagName!=='INPUT'){e.preventDefault();openSearch();}});
+document.querySelectorAll('.category-chip').forEach(chip=>{
+  chip.addEventListener('click',()=>{
+    document.querySelectorAll('.category-chip').forEach(c=>c.classList.remove('active'));
     chip.classList.add('active');
-    const cat = chip.dataset.cat;
-    if (cat !== 'all') {
-      window.location.href = 'shop.html?cat=' + cat;
-    } else {
-      window.location.href = 'shop.html';
-    }
+    const cat=chip.dataset.cat;
+    window.location.href=cat!=='all'?'boutique.html?cat='+cat:'boutique.html';
   });
 });
-
-// ── Newsletter ───────────────────────────────────────────────────────────────
-async function subscribeNewsletter() {
-  const emailEl = document.getElementById('newsletter-email');
-  const email = emailEl.value.trim();
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    showToast('Veuillez entrer une adresse email valide.');
-    return;
-  }
-  try {
-    const { error } = await db.from('newsletter').insert({ email });
-    if (error && error.code === '23505') {
-      showToast('Vous êtes déjà abonné(e) !');
-    } else if (error) {
-      throw error;
-    } else {
-      emailEl.value = '';
-      showToast('Bienvenue dans le Wenna Circle ! 🎉');
-    }
-  } catch {
-    showToast('Une erreur est survenue, réessayez.');
-  }
+async function subscribeNewsletter(){
+  const emailEl=document.getElementById('newsletter-email');
+  const email=emailEl.value.trim();
+  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showToast('Adresse email invalide.');return;}
+  try{
+    const{error}=await db.from('newsletter').insert({email});
+    if(error&&error.code==='23505'){showToast('Vous êtes déjà abonné(e) !');}
+    else if(error){throw error;}
+    else{emailEl.value='';showToast('Bienvenue dans le Wenna Circle ! 🎉');}
+  }catch{showToast('Erreur, réessayez.');}
 }
+const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.1});
+document.querySelectorAll('.section-enter').forEach(el=>observer.observe(el));
 
-// ── Scroll animations ────────────────────────────────────────────────────────
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.1 });
-document.querySelectorAll('.section-enter').forEach(el => observer.observe(el));
-
-// ── Données Supabase ─────────────────────────────────────────────────────────
-async function loadStats() {
-  try {
-    const [{ count: artisans }, { count: orders }, { data: rev }] = await Promise.all([
-      db.from('vendor_profiles').select('*', { count: 'exact', head: true }),
-      db.from('orders').select('*', { count: 'exact', head: true }).eq('status', 'delivered'),
+async function loadStats(){
+  try{
+    const[{count:artisans},{count:orders},{data:rev}]=await Promise.all([
+      db.from('vendor_profiles').select('*',{count:'exact',head:true}),
+      db.from('orders').select('*',{count:'exact',head:true}).eq('status','delivered'),
       db.from('reviews').select('rating')
     ]);
-    document.getElementById('stat-artisans').textContent = artisans ?? '—';
-    document.getElementById('stat-orders').textContent = orders ? (orders > 999 ? Math.round(orders / 1000) + 'K+' : orders) : '—';
-    if (rev && rev.length) {
-      const avg = (rev.reduce((a, r) => a + r.rating, 0) / rev.length * 100 / 5).toFixed(0);
-      document.getElementById('stat-satisfaction').textContent = avg + '%';
-    }
-  } catch {}
+    document.getElementById('stat-artisans').textContent=artisans??'—';
+    document.getElementById('stat-orders').textContent=orders?(orders>999?Math.round(orders/1000)+'K+':orders):'—';
+    if(rev&&rev.length){const avg=(rev.reduce((a,r)=>a+r.rating,0)/rev.length*100/5).toFixed(0);document.getElementById('stat-satisfaction').textContent=avg+'%';}
+  }catch{}
 }
-
-async function loadProductCounts() {
-  try {
-    const [{ count: ga }, { count: ma }] = await Promise.all([
-      db.from('products').select('*', { count: 'exact', head: true }).eq('pays', 'gabon').eq('active', true),
-      db.from('products').select('*', { count: 'exact', head: true }).eq('pays', 'maroc').eq('active', true)
+async function loadProductCounts(){
+  try{
+    const[{count:ga},{count:ma}]=await Promise.all([
+      db.from('products').select('*',{count:'exact',head:true}).eq('pays','gabon').eq('active',true),
+      db.from('products').select('*',{count:'exact',head:true}).eq('pays','maroc').eq('active',true)
     ]);
-    if (ga != null) document.getElementById('count-gabon').textContent = ga + ' produits';
-    if (ma != null) document.getElementById('count-maroc').textContent = ma + ' produits';
-  } catch {}
+    if(ga!=null)document.getElementById('count-gabon').textContent=ga+' produits';
+    if(ma!=null)document.getElementById('count-maroc').textContent=ma+' produits';
+  }catch{}
 }
-
-async function loadFeaturedProducts() {
-  try {
-    const { data, error } = await db
-      .from('products')
-      .select('id, name, price, category, city, pays, rating, stock, images')
-      .eq('active', true)
-      .order('created_at', { ascending: false })
-      .limit(4);
-
-    if (error || !data || !data.length) return;
-
-    const grid = document.getElementById('products-grid');
-    grid.innerHTML = data.map(p => {
-      const img = (p.images && p.images[0]) ? p.images[0] : 'https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=400&q=80&fit=crop';
-      const badge = p.pays === 'maroc' ? 'MA' : 'GA';
-      const badgeColor = p.pays === 'maroc' ? 'bg-secondary text-on-secondary' : 'bg-primary text-on-primary';
-      const isLow = p.stock !== null && p.stock <= 5;
-      return `
-        <article class="bg-surface-container-lowest rounded-lg p-3 card-hover group cursor-pointer" onclick="window.location.href='detail_produit.html?id=${p.id}'">
-          <div class="relative rounded-md overflow-hidden aspect-square mb-4">
-            <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="${img}" alt="${p.name}" loading="lazy" width="300" height="300"/>
-            <span class="absolute top-3 left-3 ${badgeColor} text-[9px] font-bold px-2 py-0.5 rounded-full">${badge}</span>
-            ${isLow ? `<span class="absolute top-3 right-3 bg-error text-white text-[9px] font-bold px-2 py-0.5 rounded-full">Rare</span>` : ''}
-            <button
-              aria-label="Ajouter ${p.name} au panier"
-              onclick="event.stopPropagation();addToCart({id:'${p.id}',name:'${p.name}',price:${p.price}})"
-              class="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center text-primary opacity-0 group-hover:opacity-100 transition-all shadow-lg hover:bg-primary hover:text-white"
-            >
-              <span class="material-symbols-outlined text-base" aria-hidden="true">add</span>
-            </button>
-          </div>
-          <p class="text-[9px] uppercase tracking-widest text-outline mb-1">${p.category ?? ''} · ${p.city ?? ''}</p>
-          <h5 class="font-serif text-sm leading-tight font-bold">${p.name}</h5>
-          <div class="flex justify-between items-center mt-2">
-            <p class="font-bold text-primary text-sm">${Number(p.price).toFixed(2)} €</p>
-            ${p.rating ? `<div class="flex items-center gap-1"><span class="material-symbols-outlined text-tertiary star-fill" style="font-size:12px;" aria-hidden="true">star</span><span class="text-[10px] text-on-surface-variant">${Number(p.rating).toFixed(1)}</span></div>` : ''}
-          </div>
-        </article>`;
+async function loadFeaturedProducts(){
+  try{
+    const{data,error}=await db.from('products').select('id,name,price,category,city,pays,rating,stock,images').eq('active',true).order('created_at',{ascending:false}).limit(4);
+    if(error||!data||!data.length)return;
+    const grid=document.getElementById('products-grid');
+    grid.innerHTML=data.map(p=>{
+      const img=(p.images&&p.images[0])?p.images[0]:'https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=400&q=80&fit=crop';
+      const badge=p.pays==='maroc'?'MA':'GA';
+      const isLow=p.stock!==null&&p.stock<=5;
+      return `<article class="bg-surface-container-lowest rounded-lg p-3 card-hover group cursor-pointer border border-outline-variant/20" onclick="window.location.href='detail_produit.html?id=${p.id}'">
+        <div class="relative rounded-md overflow-hidden aspect-square mb-4">
+          <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="${img}" alt="${p.name}" loading="lazy" width="300" height="300"/>
+          <span class="absolute top-3 left-3 bg-secondary text-white text-[9px] font-bold px-2 py-0.5 rounded-full">${badge}</span>
+          ${isLow?`<span class="absolute top-3 right-3 bg-error text-white text-[9px] font-bold px-2 py-0.5 rounded-full">Rare</span>`:''}
+          <button aria-label="Ajouter ${p.name} au panier" onclick="event.stopPropagation();addToCart({id:'${p.id}',name:'${p.name}',price:${p.price}})"
+            class="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-primary flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all shadow-lg hover:bg-primary-hover">
+            <span class="material-symbols-outlined text-base">add</span>
+          </button>
+        </div>
+        <p class="text-[9px] uppercase tracking-widest text-outline mb-1">${p.category??''} · ${p.city??''}</p>
+        <h5 class="font-serif text-sm leading-tight font-bold text-secondary">${p.name}</h5>
+        <div class="flex justify-between items-center mt-2">
+          <p class="font-bold text-primary text-sm">${Number(p.price).toFixed(2)} €</p>
+          ${p.rating?`<div class="flex items-center gap-1"><span class="material-symbols-outlined text-primary star-fill" style="font-size:12px;">star</span><span class="text-[10px] text-on-surface-variant">${Number(p.rating).toFixed(1)}</span></div>`:''}
+        </div>
+      </article>`;
     }).join('');
-  } catch {}
+  }catch{}
 }
-
-async function loadActiveCount() {
-  try {
-    const { count } = await db
-      .from('profiles')
-      .select('*', { count: 'exact', head: true })
-      .gte('last_seen', new Date(Date.now() - 15 * 60 * 1000).toISOString());
-    if (count != null) document.getElementById('active-count').textContent = count + ' acheteurs actifs';
-  } catch {}
+async function loadActiveCount(){
+  try{
+    const{count}=await db.from('profiles').select('*',{count:'exact',head:true}).gte('last_seen',new Date(Date.now()-15*60*1000).toISOString());
+    if(count!=null)document.getElementById('active-count').textContent=count+' acheteurs actifs';
+  }catch{}
 }
-
-// ── Init ─────────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded',()=>{
   updateCartBadge();
-  if (typeof db !== 'undefined') {
-    loadStats();
-    loadProductCounts();
-    loadFeaturedProducts();
-    loadActiveCount();
-  }
+  if(typeof db!=='undefined'){loadStats();loadProductCounts();loadFeaturedProducts();loadActiveCount();}
 });
 </script>
 </body>
