@@ -6,6 +6,8 @@
 <title>WennaShop – Mon Compte</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- CinetPay SDK Seamless PRODUCTION -->
+<script src="https://cdn.cinetpay.com/seamless/main.js" type="text/javascript"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
@@ -34,6 +36,8 @@ tailwind.config = {
   .listing-row{transition:all 0.2s;border-radius:1rem}.listing-row:hover{background:#eff5eb}
   .btn-primary{background:linear-gradient(135deg,#006b2a 0%,#0f8739 100%);transition:all 0.2s}
   .btn-primary:hover{opacity:0.9;transform:scale(0.99)}.btn-primary:active{transform:scale(0.97)}
+  .btn-secondary{background:linear-gradient(135deg,#1a5fa8 0%,#1e75d8 100%);transition:all 0.2s}
+  .btn-secondary:hover{opacity:0.9;transform:scale(0.99)}
   .avatar-ring{box-shadow:0 0 0 3px #fff,0 0 0 5px #006b2a}
   .chip{display:inline-flex;align-items:center;padding:0.2rem 0.75rem;border-radius:999px;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em}
   .chip-green{background:#dcfce7;color:#166534}.chip-amber{background:#fef9c3;color:#854d0e}
@@ -62,13 +66,25 @@ tailwind.config = {
   #toast.success{background:#006b2a}#toast.error{background:#ba1a1a}
   #loading-overlay{position:fixed;inset:0;background:#f5fbf1;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem}
   #loading-overlay.hidden{display:none}
-  /* Progress bar avatar */
   #avatar-progress-wrap{height:3px;background:#e4eae0;border-radius:999px;overflow:hidden;margin-top:8px;display:none}
   #avatar-progress-bar{height:3px;background:#4ade80;border-radius:999px;transition:width 0.3s;width:0%}
-  /* Label caméra */
   .cam-label{cursor:pointer;position:absolute;bottom:0;right:0;width:28px;height:28px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.15);transition:background 0.2s}
   .cam-label:hover{background:#006b2a}
   .cam-label:hover span{color:#fff}
+
+  /* ── MODAL PAIEMENT ───────────────────────────────── */
+  #payment-modal{position:fixed;inset:0;z-index:8000;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,0);pointer-events:none;transition:background 0.3s}
+  #payment-modal.open{background:rgba(0,0,0,0.45);pointer-events:all}
+  #payment-modal-sheet{background:#fff;border-radius:2rem 2rem 0 0;width:100%;max-width:480px;padding:2rem 1.5rem 3rem;transform:translateY(100%);transition:transform 0.4s cubic-bezier(0.22,1,0.36,1);box-shadow:0 -16px 60px rgba(0,0,0,0.15)}
+  #payment-modal.open #payment-modal-sheet{transform:translateY(0)}
+  .amount-chip{border:2px solid #becaba;border-radius:999px;padding:0.4rem 1.1rem;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.2s;color:#3f4a3e}
+  .amount-chip.selected,.amount-chip:hover{border-color:#006b2a;background:#eff5eb;color:#006b2a}
+
+  /* ── MODAL RETRAIT ────────────────────────────────── */
+  #withdraw-modal{position:fixed;inset:0;z-index:8000;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,0);pointer-events:none;transition:background 0.3s}
+  #withdraw-modal.open{background:rgba(0,0,0,0.45);pointer-events:all}
+  #withdraw-modal-sheet{background:#fff;border-radius:2rem 2rem 0 0;width:100%;max-width:480px;padding:2rem 1.5rem 3rem;transform:translateY(100%);transition:transform 0.4s cubic-bezier(0.22,1,0.36,1);box-shadow:0 -16px 60px rgba(0,0,0,0.15)}
+  #withdraw-modal.open #withdraw-modal-sheet{transform:translateY(0)}
 </style>
 </head>
 <body class="bg-background text-on-surface min-h-screen pb-32">
@@ -78,6 +94,116 @@ tailwind.config = {
   <div class="spinner" style="width:32px;height:32px;border-width:3px;"></div>
 </div>
 <div id="toast"></div>
+
+<!-- ══════════════════════════════════════════════════
+     MODAL PAIEMENT CINETPAY (commande OU recharge)
+══════════════════════════════════════════════════ -->
+<div id="payment-modal">
+  <div id="payment-modal-sheet">
+    <!-- Barre de drag -->
+    <div class="w-10 h-1 bg-outline-variant rounded-full mx-auto mb-5"></div>
+    <div id="pm-header" class="mb-5">
+      <h3 class="font-serif italic text-xl font-bold" id="pm-title">Paiement sécurisé</h3>
+      <p class="text-xs text-on-surface-variant mt-1" id="pm-subtitle">Via CinetPay — Mobile Money & Carte bancaire</p>
+    </div>
+
+    <!-- Montant récap (commande) -->
+    <div id="pm-order-recap" class="hidden mb-5 p-4 bg-surface-container-low rounded-xl">
+      <div class="flex justify-between items-center">
+        <span class="text-sm text-on-surface-variant">Commande</span>
+        <span class="font-bold text-primary" id="pm-order-amount">—</span>
+      </div>
+      <div class="flex justify-between items-center mt-2">
+        <span class="text-sm text-on-surface-variant">Référence</span>
+        <span class="font-mono text-xs text-on-surface-variant" id="pm-order-ref">—</span>
+      </div>
+    </div>
+
+    <!-- Sélecteur montant (recharge wallet) -->
+    <div id="pm-topup-section" class="hidden mb-5">
+      <p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-3">Montant à recharger</p>
+      <div class="flex flex-wrap gap-2 mb-3">
+        <button class="amount-chip" onclick="selectAmount(100)">100 MAD</button>
+        <button class="amount-chip" onclick="selectAmount(200)">200 MAD</button>
+        <button class="amount-chip" onclick="selectAmount(500)">500 MAD</button>
+        <button class="amount-chip" onclick="selectAmount(1000)">1000 MAD</button>
+      </div>
+      <div class="relative">
+        <input id="pm-custom-amount" class="edit-field pr-16" type="number" placeholder="Montant personnalisé" min="50" oninput="customAmount(this.value)"/>
+        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-on-surface-variant">MAD</span>
+      </div>
+    </div>
+
+    <!-- Moyens de paiement -->
+    <p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-3">Moyen de paiement</p>
+    <div class="grid grid-cols-2 gap-3 mb-6">
+      <button id="pm-btn-mobile" onclick="selectChannel('MOBILE_MONEY')" class="p-3 border-2 border-outline-variant/40 rounded-xl flex flex-col items-center gap-1.5 transition-all hover:border-primary/60 selected-channel-mobile">
+        <span class="material-symbols-outlined text-secondary">smartphone</span>
+        <span class="text-xs font-bold">Mobile Money</span>
+        <span class="text-[10px] text-on-surface-variant">Airtel · Moov</span>
+      </button>
+      <button id="pm-btn-card" onclick="selectChannel('CREDIT_CARD')" class="p-3 border-2 border-outline-variant/40 rounded-xl flex flex-col items-center gap-1.5 transition-all hover:border-primary/60">
+        <span class="material-symbols-outlined text-primary">credit_card</span>
+        <span class="text-xs font-bold">Carte bancaire</span>
+        <span class="text-[10px] text-on-surface-variant">Visa · Mastercard</span>
+      </button>
+    </div>
+
+    <!-- Résumé montant sélectionné -->
+    <div class="flex justify-between items-center mb-5 p-3 bg-surface-container rounded-xl">
+      <span class="text-sm font-bold">Total à payer</span>
+      <span class="text-lg font-bold text-primary font-serif" id="pm-total-display">—</span>
+    </div>
+
+    <!-- Actions -->
+    <button id="pm-pay-btn" onclick="launchCinetPay()" class="btn-primary text-on-primary w-full py-4 rounded-xl font-bold text-sm tracking-wide flex items-center justify-center gap-2">
+      <span class="material-symbols-outlined" style="font-size:18px;">lock</span>
+      Payer maintenant
+    </button>
+    <button onclick="closePaymentModal()" class="w-full py-3 mt-2 text-sm font-bold text-on-surface-variant hover:text-on-surface transition-colors">
+      Annuler
+    </button>
+    <p class="text-center text-[10px] text-on-surface-variant mt-3">🔒 Paiement sécurisé · Certifié PCI-DSS · Propulsé par CinetPay</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     MODAL RETRAIT VENDEUR
+══════════════════════════════════════════════════ -->
+<div id="withdraw-modal">
+  <div id="withdraw-modal-sheet">
+    <div class="w-10 h-1 bg-outline-variant rounded-full mx-auto mb-5"></div>
+    <h3 class="font-serif italic text-xl font-bold mb-1">Retirer mes fonds</h3>
+    <p class="text-xs text-on-surface-variant mb-5">Transfert vers ton compte Mobile Money ou bancaire</p>
+    <div class="p-4 bg-surface-container-low rounded-xl mb-5 flex justify-between items-center">
+      <span class="text-sm text-on-surface-variant">Solde disponible</span>
+      <span class="font-bold text-primary font-serif text-lg" id="withdraw-balance-display">—</span>
+    </div>
+    <div class="space-y-4 mb-5">
+      <div>
+        <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Montant à retirer (MAD)</label>
+        <input id="withdraw-amount" class="edit-field" type="number" placeholder="Ex: 500" min="100"/>
+      </div>
+      <div>
+        <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Mode de retrait</label>
+        <select id="withdraw-method" class="edit-field">
+          <option value="mobile_money">📱 Mobile Money</option>
+          <option value="bank_transfer">🏦 Virement bancaire</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Numéro / IBAN</label>
+        <input id="withdraw-account" class="edit-field" placeholder="Ex: +212 6XX XXX XXX ou IBAN"/>
+      </div>
+    </div>
+    <button onclick="submitWithdrawal()" class="btn-primary text-on-primary w-full py-4 rounded-xl font-bold text-sm tracking-wide flex items-center justify-center gap-2">
+      <span class="material-symbols-outlined" style="font-size:18px;">send_money</span>
+      Demander le retrait
+    </button>
+    <button onclick="closeWithdrawModal()" class="w-full py-3 mt-2 text-sm font-bold text-on-surface-variant hover:text-on-surface transition-colors">Annuler</button>
+    <p class="text-center text-[10px] text-on-surface-variant mt-3">Les retraits sont traités sous 24-48h ouvrables.</p>
+  </div>
+</div>
 
 <!-- Header -->
 <header class="bg-surface/80 backdrop-blur-xl fixed top-0 w-full z-50 border-b border-outline-variant/10">
@@ -105,7 +231,6 @@ tailwind.config = {
         <span class="font-serif italic font-black text-white" style="font-size:120px;">W</span>
       </div>
       <div class="relative z-10 p-6 flex items-center gap-5">
-        <!-- Avatar avec bouton upload -->
         <div class="relative flex-shrink-0">
           <div class="w-20 h-20 rounded-full overflow-hidden avatar-ring bg-surface-container">
             <img id="profile-avatar" src="" alt="Avatar" class="w-full h-full object-cover hidden"/>
@@ -113,18 +238,15 @@ tailwind.config = {
               <span class="material-symbols-outlined text-white" style="font-size:36px;">person</span>
             </div>
           </div>
-          <!-- Bouton caméra — CORRECTION: label lié à avatar-input -->
           <label for="avatar-input" class="cam-label" title="Changer la photo de profil">
             <span class="material-symbols-outlined text-primary" style="font-size:14px;">photo_camera</span>
           </label>
-          <!-- Input file caché — accept uniquement les formats supportés par le bucket -->
           <input type="file" id="avatar-input" accept="image/jpeg,image/png,image/webp" class="hidden"/>
         </div>
         <div class="flex-1 text-white">
           <p id="profile-country" class="text-white/60 text-[10px] uppercase tracking-widest font-bold mb-0.5">—</p>
           <h1 id="profile-name" class="font-serif italic text-2xl font-bold mb-1">Chargement…</h1>
           <p id="profile-email" class="text-white/70 text-xs">—</p>
-          <!-- Barre de progression upload -->
           <div id="avatar-progress-wrap"><div id="avatar-progress-bar"></div></div>
           <div class="flex items-center gap-2 mt-2">
             <span id="profile-since" class="chip" style="background:rgba(255,255,255,0.2);color:#fff;">—</span>
@@ -181,7 +303,6 @@ tailwind.config = {
               <div><label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Nom</label><input id="input-lastname" class="edit-field" placeholder="Nom"/></div>
             </div>
             <div><label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Email</label><input id="input-email" class="edit-field" type="email" disabled style="opacity:0.6;cursor:not-allowed;"/></div>
-            <div id="save-feedback" class="text-xs text-primary font-bold hidden">✓ Modifications sauvegardées</div>
             <button onclick="saveProfile()" class="btn-primary text-on-primary px-8 py-3 rounded-xl text-sm font-bold tracking-wide">Sauvegarder les modifications</button>
           </div>
         </div>
@@ -258,17 +379,46 @@ tailwind.config = {
       <div id="vendeur-ventes" class="tab-panel">
         <div class="section-card"><h2 class="font-serif italic text-xl mb-5">Historique des ventes</h2><div id="sales-list" class="space-y-1"><div class="flex justify-center py-8"><div class="spinner"></div></div></div></div>
       </div>
+
+      <!-- ── ONGLET PAIEMENTS ── -->
       <div id="vendeur-paiements" class="tab-panel">
         <div class="space-y-4">
+
+          <!-- Solde card -->
           <div class="section-card" style="background:linear-gradient(135deg,#006b2a,#0f8739);color:#fff;">
             <p class="text-white/70 text-[10px] uppercase tracking-widest font-bold mb-1">Solde disponible</p>
             <p id="solde-vendeur" class="text-4xl font-bold font-serif mb-4">—</p>
-            <div class="flex gap-4"><button class="flex-1 py-3 bg-white/20 hover:bg-white/30 transition-colors rounded-xl text-sm font-bold backdrop-blur">Retirer les fonds</button><button class="flex-1 py-3 bg-white/20 hover:bg-white/30 transition-colors rounded-xl text-sm font-bold backdrop-blur">Voir le détail</button></div>
+            <div class="flex gap-3">
+              <button onclick="openWithdrawModal()" class="flex-1 py-3 bg-white/20 hover:bg-white/30 transition-colors rounded-xl text-sm font-bold backdrop-blur flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined" style="font-size:16px;">send_money</span>Retirer
+              </button>
+              <button onclick="openTopupModal()" class="flex-1 py-3 bg-white/20 hover:bg-white/30 transition-colors rounded-xl text-sm font-bold backdrop-blur flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined" style="font-size:16px;">add_circle</span>Recharger
+              </button>
+            </div>
           </div>
-          <div class="section-card"><h3 class="font-serif italic text-lg mb-4">Mode de versement</h3><div class="p-4 border border-outline-variant/30 rounded-xl flex items-center gap-4"><span class="material-symbols-outlined text-secondary">account_balance</span><div class="flex-1"><p class="font-bold text-sm">Compte bancaire</p><p class="text-xs text-on-surface-variant">Non configuré</p></div><button class="text-xs font-bold text-secondary hover:underline">Configurer</button></div></div>
-          <div class="section-card"><h3 class="font-serif italic text-lg mb-4">Historique des paiements</h3><div id="payments-list" class="space-y-3"><div class="flex justify-center py-6"><div class="spinner"></div></div></div></div>
+
+          <!-- Mode de versement -->
+          <div class="section-card">
+            <h3 class="font-serif italic text-lg mb-4">Mode de versement</h3>
+            <div id="payout-method-display" class="p-4 border border-outline-variant/30 rounded-xl flex items-center gap-4">
+              <span class="material-symbols-outlined text-secondary">account_balance</span>
+              <div class="flex-1"><p class="font-bold text-sm">Compte bancaire</p><p class="text-xs text-on-surface-variant" id="payout-account-text">Non configuré</p></div>
+              <button onclick="openWithdrawModal()" class="text-xs font-bold text-secondary hover:underline">Configurer</button>
+            </div>
+          </div>
+
+          <!-- Historique paiements -->
+          <div class="section-card">
+            <h3 class="font-serif italic text-lg mb-4">Historique des paiements</h3>
+            <div id="payments-list" class="space-y-3">
+              <div class="flex justify-center py-6"><div class="spinner"></div></div>
+            </div>
+          </div>
+
         </div>
       </div>
+
       <div id="vendeur-boutique" class="tab-panel">
         <div class="section-card">
           <h2 class="font-serif italic text-xl mb-5">Ma Boutique</h2>
@@ -276,7 +426,6 @@ tailwind.config = {
             <div><label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Nom de la boutique</label><input id="shop-name" class="edit-field" placeholder="Nom de votre boutique"/></div>
             <div><label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Spécialité</label><input id="shop-specialty" class="edit-field" placeholder="Ex: Huiles naturelles, Artisanat…"/></div>
             <div><label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Pays d'origine</label><select id="shop-country" class="edit-field"><option value="Maroc">🇲🇦 Maroc</option><option value="Gabon">🇬🇦 Gabon</option></select></div>
-            <div id="shop-save-feedback" class="text-xs text-primary font-bold hidden">✓ Boutique mise à jour</div>
             <button onclick="saveShop()" class="btn-primary text-on-primary px-8 py-3.5 rounded-xl text-sm font-bold tracking-wide w-full">Mettre à jour la boutique</button>
           </div>
         </div>
@@ -297,108 +446,150 @@ tailwind.config = {
 </nav>
 
 <script>
+// ════════════════════════════════════════════════════════════
+// CONFIG SUPABASE
+// ════════════════════════════════════════════════════════════
 const SUPABASE_URL = 'https://aakxoydznmybstfozjte.supabase.co'
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
+// ════════════════════════════════════════════════════════════
+// CONFIG CINETPAY PRODUCTION
+// ⚠️ Remplace par tes vraies clés après activation compte CinetPay
+// ════════════════════════════════════════════════════════════
+const CINETPAY_CONFIG = {
+  apikey: 'VOTRE_APIKEY_CINETPAY',     // ← Remplacer
+  site_id: 'VOTRE_SITE_ID_CINETPAY',   // ← Remplacer
+  notify_url: 'https://aakxoydznmybstfozjte.supabase.co/functions/v1/cinetpay-webhook',
+  return_url: window.location.origin + '/compte.html',
+  mode: 'PRODUCTION'
+}
+
+// ════════════════════════════════════════════════════════════
+// ÉTAT GLOBAL
+// ════════════════════════════════════════════════════════════
 let currentUser = null, currentProfile = null, currentMode = 'client', isVendeur = false
+let pmContext = { type: null, orderId: null, amount: 0, currency: 'MAD', channel: 'MOBILE_MONEY' }
+let currentWalletBalance = 0
 
-function showToast(msg, type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='show '+type;setTimeout(()=>{t.className=''},3000)}
+// ════════════════════════════════════════════════════════════
+// UTILITAIRES
+// ════════════════════════════════════════════════════════════
+function showToast(msg, type='') {
+  const t = document.getElementById('toast')
+  t.textContent = msg; t.className = 'show ' + type
+  setTimeout(() => { t.className = '' }, 3500)
+}
+function generateTxId() {
+  return 'WS-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase()
+}
+const statusChip = {
+  delivered:'<span class="chip chip-green">Livré</span>',
+  shipped:'<span class="chip chip-blue">En transit</span>',
+  processing:'<span class="chip chip-amber">En préparation</span>',
+  pending:'<span class="chip chip-amber">En attente</span>',
+  cancelled:'<span class="chip chip-gray">Annulée</span>',
+  returned:'<span class="chip chip-red">Retourné</span>',
+  active:'<span class="chip chip-green">En ligne</span>',
+  inactive:'<span class="chip chip-gray">Inactif</span>',
+  paid:'<span class="chip chip-green">Payé</span>',
+  failed:'<span class="chip chip-red">Échoué</span>',
+  refunded:'<span class="chip chip-blue">Remboursé</span>'
+}
+function fmt(amount, currency='MAD') {
+  return new Intl.NumberFormat('fr-MA', { style:'currency', currency, maximumFractionDigits:2 }).format(amount)
+}
+function fmtDate(iso) {
+  return new Date(iso).toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' })
+}
+function countryFlag(c) {
+  if (!c) return '🌍'
+  if (c.toLowerCase().includes('maroc')) return '🇲🇦'
+  if (c.toLowerCase().includes('gabon')) return '🇬🇦'
+  return '🌍'
+}
 
-const statusChip={delivered:'<span class="chip chip-green">Livré</span>',shipped:'<span class="chip chip-blue">En transit</span>',processing:'<span class="chip chip-amber">En préparation</span>',pending:'<span class="chip chip-amber">En attente</span>',cancelled:'<span class="chip chip-gray">Annulée</span>',returned:'<span class="chip chip-red">Retourné</span>',active:'<span class="chip chip-green">En ligne</span>',inactive:'<span class="chip chip-gray">Inactif</span>',paid:'<span class="chip chip-green">Payé</span>',failed:'<span class="chip chip-red">Échoué</span>',refunded:'<span class="chip chip-blue">Remboursé</span>'}
-
-function fmt(amount,currency='MAD'){return new Intl.NumberFormat('fr-MA',{style:'currency',currency,maximumFractionDigits:2}).format(amount)}
-function fmtDate(iso){return new Date(iso).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})}
-function countryFlag(c){if(!c)return'🌍';if(c.toLowerCase().includes('maroc'))return'🇲🇦';if(c.toLowerCase().includes('gabon'))return'🇬🇦';return'🌍'}
-
-// ─── UPLOAD AVATAR ──────────────────────────────────────────────────────────
-// CORRECTIONS apportées :
-// 1. Chemin : `{auth_uid}/{auth_uid}.ext` pour correspondre à la policy storage
-// 2. Validation taille (2MB) et type MIME avant upload
-// 3. Barre de progression visuelle
-// 4. Gestion erreur avec message précis
-// 5. Cache-busting sur l'URL publique via ?t=timestamp
-// 6. Reset de l'input après upload pour permettre re-sélection du même fichier
+// ════════════════════════════════════════════════════════════
+// UPLOAD AVATAR
+// ════════════════════════════════════════════════════════════
 document.getElementById('avatar-input').addEventListener('change', async (e) => {
   const file = e.target.files[0]
   if (!file || !currentUser) return
-
-  // Validation taille max 2MB
-  if (file.size > 2 * 1024 * 1024) {
-    showToast('Image trop lourde — max 2 Mo', 'error')
-    e.target.value = ''
-    return
-  }
-
-  // Validation type MIME
-  if (!['image/jpeg','image/png','image/webp'].includes(file.type)) {
-    showToast('Format non supporté — JPG, PNG ou WEBP uniquement', 'error')
-    e.target.value = ''
-    return
-  }
-
+  if (file.size > 2 * 1024 * 1024) { showToast('Image trop lourde — max 2 Mo', 'error'); e.target.value = ''; return }
+  if (!['image/jpeg','image/png','image/webp'].includes(file.type)) { showToast('Format non supporté — JPG, PNG ou WEBP', 'error'); e.target.value = ''; return }
   const ext = file.name.split('.').pop().toLowerCase().replace('jpg','jpeg')
-  // ✅ CHEMIN CORRIGÉ : auth.uid() comme dossier racine (requis par la policy)
   const filePath = `${currentUser.id}/${currentUser.id}.${ext}`
-
-  // Afficher barre de progression
   const pw = document.getElementById('avatar-progress-wrap')
   const pb = document.getElementById('avatar-progress-bar')
-  pw.style.display = 'block'
-  pb.style.width = '20%'
-
+  pw.style.display = 'block'; pb.style.width = '20%'
   try {
-    // Upload dans le bucket avatars (upsert = remplace si existe)
-    const { error: uploadError } = await db.storage
-      .from('avatars')
-      .upload(filePath, file, { upsert: true, contentType: file.type })
-
+    const { error: uploadError } = await db.storage.from('avatars').upload(filePath, file, { upsert: true, contentType: file.type })
     if (uploadError) throw uploadError
     pb.style.width = '65%'
-
-    // Récupérer l'URL publique
     const { data: urlData } = db.storage.from('avatars').getPublicUrl(filePath)
     const publicUrl = urlData.publicUrl
-
-    // Sauvegarder dans la table users
-    const { error: dbError } = await db
-      .from('users')
-      .update({ avatar_url: publicUrl, updated_at: new Date().toISOString() })
-      .eq('id', currentProfile.id)
-
+    const { error: dbError } = await db.from('users').update({ avatar_url: publicUrl, updated_at: new Date().toISOString() }).eq('id', currentProfile.id)
     if (dbError) throw dbError
     pb.style.width = '100%'
-
-    // Mettre à jour l'image dans le DOM (+ cache-busting)
     const img = document.getElementById('profile-avatar')
     img.src = publicUrl + '?t=' + Date.now()
     img.classList.remove('hidden')
     document.getElementById('profile-avatar-placeholder').style.display = 'none'
     currentProfile.avatar_url = publicUrl
-
     showToast('✓ Photo de profil mise à jour', 'success')
   } catch (err) {
-    console.error('Upload avatar:', err)
     showToast('Erreur upload : ' + (err.message || 'réessaie'), 'error')
   } finally {
     setTimeout(() => { pw.style.display = 'none'; pb.style.width = '0%' }, 1200)
-    e.target.value = '' // Reset pour permettre re-sélection du même fichier
+    e.target.value = ''
   }
 })
 
-// ─── AUTH & INIT ─────────────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+// AUTH & INIT
+// ════════════════════════════════════════════════════════════
 async function init() {
   const { data: { session } } = await db.auth.getSession()
   if (!session) { window.location.href = 'login.html'; return }
   currentUser = session.user
   const urlParams = new URLSearchParams(window.location.search)
+
+  // Gérer le retour après paiement CinetPay
+  const txStatus = urlParams.get('tx_status')
+  const txId = urlParams.get('tx_id')
+  if (txStatus === 'success' && txId) {
+    showToast('✓ Paiement reçu — en cours de traitement', 'success')
+    await pollPaymentStatus(txId)
+  } else if (txStatus === 'failed') {
+    showToast('Paiement échoué ou annulé', 'error')
+  }
+
   await loadProfile()
   hideOverlay()
   if (urlParams.get('mode') === 'vendeur') switchMode('vendeur')
+  // Cible l'onglet paiements si retour depuis un paiement
+  if (txStatus && currentMode === 'vendeur') switchVendeurTab('paiements', document.querySelector('#vendeur-dashboard-section .nav-tab:nth-child(3)'))
 }
 
 function hideOverlay() { document.getElementById('loading-overlay').classList.add('hidden') }
 
+// ════════════════════════════════════════════════════════════
+// POLLING STATUT PAIEMENT (retour après redirection)
+// ════════════════════════════════════════════════════════════
+async function pollPaymentStatus(transactionId, retries = 6) {
+  for (let i = 0; i < retries; i++) {
+    await new Promise(r => setTimeout(r, 2000))
+    const { data } = await db.from('payments').select('status').eq('transaction_id', transactionId).single()
+    if (data?.status === 'paid') {
+      showToast('✅ Paiement confirmé !', 'success')
+      return
+    }
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// LOAD PROFILE
+// ════════════════════════════════════════════════════════════
 async function loadProfile() {
   const { data, error } = await db.from('users').select('*').eq('auth_id', currentUser.id).single()
   if (error || !data) {
@@ -418,19 +609,15 @@ async function loadProfile() {
   document.getElementById('profile-country').textContent = `${countryFlag(data.country)} ${data.country || '—'}`
   const roleLabels = { buyer: 'Client', artisan: 'Vendeur', admin: 'Admin' }
   document.getElementById('badge-role').textContent = roleLabels[data.role] || data.role || '—'
-
-  // Affichage avatar avec gestion erreur et cache-busting
   if (data.avatar_url) {
     const img = document.getElementById('profile-avatar')
     img.onload = () => { img.classList.remove('hidden'); document.getElementById('profile-avatar-placeholder').style.display = 'none' }
     img.onerror = () => { img.classList.add('hidden'); document.getElementById('profile-avatar-placeholder').style.display = 'flex' }
     img.src = data.avatar_url + '?t=' + Date.now()
   }
-
   document.getElementById('input-firstname').value = data.first_name || ''
   document.getElementById('input-lastname').value = data.last_name || ''
   document.getElementById('input-email').value = data.email || currentUser.email
-
   if (isVendeur) {
     document.getElementById('vendeur-upgrade-section').classList.add('hidden')
     document.getElementById('vendeur-dashboard-section').classList.remove('hidden')
@@ -446,17 +633,381 @@ async function loadProfile() {
   loadClientStats(data.id); loadOrders(data.id)
 }
 
+// ════════════════════════════════════════════════════════════
+// CINETPAY — MODAL PAIEMENT COMMANDE
+// ════════════════════════════════════════════════════════════
+function openOrderPaymentModal(orderId, amount, currency = 'MAD') {
+  pmContext = { type: 'order_payment', orderId, amount, currency, channel: 'MOBILE_MONEY' }
+  document.getElementById('pm-title').textContent = 'Paiement de commande'
+  document.getElementById('pm-subtitle').textContent = 'Via CinetPay — Mobile Money & Carte bancaire'
+  document.getElementById('pm-order-recap').classList.remove('hidden')
+  document.getElementById('pm-topup-section').classList.add('hidden')
+  document.getElementById('pm-order-amount').textContent = fmt(amount, currency)
+  document.getElementById('pm-order-ref').textContent = 'WS-' + orderId.slice(0, 8).toUpperCase()
+  document.getElementById('pm-total-display').textContent = fmt(amount, currency)
+  selectChannel('MOBILE_MONEY')
+  document.getElementById('payment-modal').classList.add('open')
+}
+
+// ════════════════════════════════════════════════════════════
+// CINETPAY — MODAL RECHARGE WALLET VENDEUR
+// ════════════════════════════════════════════════════════════
+function openTopupModal() {
+  pmContext = { type: 'wallet_topup', orderId: null, amount: 0, currency: 'MAD', channel: 'MOBILE_MONEY' }
+  document.getElementById('pm-title').textContent = 'Recharger mon solde'
+  document.getElementById('pm-subtitle').textContent = 'Ajoute des fonds à ton compte vendeur'
+  document.getElementById('pm-order-recap').classList.add('hidden')
+  document.getElementById('pm-topup-section').classList.remove('hidden')
+  document.getElementById('pm-total-display').textContent = '— MAD'
+  // Reset
+  document.querySelectorAll('.amount-chip').forEach(c => c.classList.remove('selected'))
+  document.getElementById('pm-custom-amount').value = ''
+  selectChannel('MOBILE_MONEY')
+  document.getElementById('payment-modal').classList.add('open')
+}
+
+function closePaymentModal() {
+  document.getElementById('payment-modal').classList.remove('open')
+}
+
+function selectChannel(channel) {
+  pmContext.channel = channel
+  document.getElementById('pm-btn-mobile').style.borderColor = channel === 'MOBILE_MONEY' ? '#006b2a' : ''
+  document.getElementById('pm-btn-mobile').style.background = channel === 'MOBILE_MONEY' ? '#eff5eb' : ''
+  document.getElementById('pm-btn-card').style.borderColor = channel === 'CREDIT_CARD' ? '#006b2a' : ''
+  document.getElementById('pm-btn-card').style.background = channel === 'CREDIT_CARD' ? '#eff5eb' : ''
+}
+
+function selectAmount(amount) {
+  pmContext.amount = amount
+  document.querySelectorAll('.amount-chip').forEach(c => c.classList.remove('selected'))
+  event.target.closest('.amount-chip').classList.add('selected')
+  document.getElementById('pm-custom-amount').value = ''
+  document.getElementById('pm-total-display').textContent = fmt(amount, pmContext.currency)
+}
+
+function customAmount(val) {
+  const amount = parseFloat(val) || 0
+  pmContext.amount = amount
+  document.querySelectorAll('.amount-chip').forEach(c => c.classList.remove('selected'))
+  document.getElementById('pm-total-display').textContent = amount > 0 ? fmt(amount, pmContext.currency) : '— MAD'
+}
+
+// ── LANCER LE PAIEMENT CINETPAY ──────────────────────────────
+async function launchCinetPay() {
+  if (!currentProfile) { showToast('Profil non chargé, réessaie', 'error'); return }
+  if (pmContext.amount < 50) { showToast('Montant minimum : 50 MAD', 'error'); return }
+
+  const btn = document.getElementById('pm-pay-btn')
+  btn.disabled = true
+  btn.innerHTML = '<div class="spinner" style="border-color:#fff3;border-top-color:#fff;width:18px;height:18px;"></div> Initialisation…'
+
+  const transactionId = generateTxId()
+
+  try {
+    // 1. Créer le paiement en Supabase AVANT d'ouvrir CinetPay (sécurité)
+    const paymentInsert = {
+      amount: pmContext.amount,
+      currency: pmContext.currency,
+      method: pmContext.channel === 'MOBILE_MONEY' ? 'Mobile Money' : 'Carte bancaire',
+      status: 'pending',
+      transaction_id: transactionId,
+      provider: 'cinetpay',
+      type: pmContext.type,
+      user_id: currentProfile.id,
+      order_id: pmContext.orderId || null,
+      created_at: new Date().toISOString()
+    }
+    const { error: insertErr } = await db.from('payments').insert(paymentInsert)
+    if (insertErr) throw insertErr
+
+    // 2. Configurer CinetPay
+    CinetPay.setConfig({
+      apikey: CINETPAY_CONFIG.apikey,
+      site_id: CINETPAY_CONFIG.site_id,
+      notify_url: CINETPAY_CONFIG.notify_url,
+      return_url: CINETPAY_CONFIG.return_url + '?tx_status=success&tx_id=' + transactionId,
+      mode: CINETPAY_CONFIG.mode
+    })
+
+    // 3. Lancer le checkout
+    CinetPay.getCheckout({
+      transaction_id: transactionId,
+      amount: pmContext.amount,
+      currency: pmContext.currency,
+      channels: pmContext.channel,
+      description: pmContext.type === 'wallet_topup'
+        ? 'Recharge solde WennaShop'
+        : 'Commande WennaShop #' + (pmContext.orderId || '').slice(0, 8),
+      customer_name: currentProfile.last_name || 'Client',
+      customer_surname: currentProfile.first_name || 'WennaShop',
+      customer_email: currentProfile.email || currentUser.email,
+      customer_phone_number: currentProfile.phone || '',
+      customer_address: '',
+      customer_city: currentProfile.country || '',
+      customer_country: currentProfile.country?.toLowerCase().includes('maroc') ? 'MA' : 'GA',
+      customer_state: '',
+      customer_zip_code: ''
+    })
+
+    // 4. Callbacks CinetPay
+    CinetPay.waitResponse(function(data) {
+      closePaymentModal()
+      if (data.status === 'ACCEPTED') {
+        showToast('✅ Paiement accepté !', 'success')
+        // Rafraîchir les données après confirmation
+        setTimeout(() => {
+          if (pmContext.type === 'wallet_topup') loadWalletBalance()
+          else loadOrders(currentProfile.id)
+        }, 2000)
+      } else {
+        showToast('Paiement non abouti — ' + (data.message || 'réessaie'), 'error')
+      }
+      resetPayBtn()
+    })
+
+    CinetPay.onError(function(data) {
+      closePaymentModal()
+      showToast('Erreur paiement : ' + (data.message || 'réessaie'), 'error')
+      resetPayBtn()
+    })
+
+  } catch (err) {
+    console.error('CinetPay launch error:', err)
+    showToast('Erreur de lancement : ' + (err.message || 'réessaie'), 'error')
+    resetPayBtn()
+  }
+}
+
+function resetPayBtn() {
+  const btn = document.getElementById('pm-pay-btn')
+  btn.disabled = false
+  btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">lock</span> Payer maintenant'
+}
+
+// ════════════════════════════════════════════════════════════
+// MODAL RETRAIT VENDEUR
+// ════════════════════════════════════════════════════════════
+function openWithdrawModal() {
+  document.getElementById('withdraw-balance-display').textContent = fmt(currentWalletBalance)
+  document.getElementById('withdraw-modal').classList.add('open')
+}
+function closeWithdrawModal() {
+  document.getElementById('withdraw-modal').classList.remove('open')
+}
+
+async function submitWithdrawal() {
+  const amount = parseFloat(document.getElementById('withdraw-amount').value)
+  const method = document.getElementById('withdraw-method').value
+  const account = document.getElementById('withdraw-account').value.trim()
+  if (!amount || amount < 100) { showToast('Montant minimum de retrait : 100 MAD', 'error'); return }
+  if (amount > currentWalletBalance) { showToast('Solde insuffisant', 'error'); return }
+  if (!account) { showToast('Renseigne ton numéro ou IBAN', 'error'); return }
+
+  // Insérer une demande de retrait dans wallet_transactions
+  const { error } = await db.from('wallet_transactions').insert({
+    user_id: currentProfile.id,
+    type: 'debit',
+    amount: amount,
+    currency: 'MAD',
+    description: `Demande de retrait — ${method === 'mobile_money' ? 'Mobile Money' : 'Virement bancaire'} vers ${account}`,
+    reference: generateTxId(),
+    status: 'pending'
+  })
+
+  if (!error) {
+    showToast('✓ Demande de retrait envoyée — traitement sous 48h', 'success')
+    document.getElementById('payout-account-text').textContent = account
+    closeWithdrawModal()
+  } else {
+    showToast('Erreur lors de la demande', 'error')
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// WALLET BALANCE
+// ════════════════════════════════════════════════════════════
+async function loadWalletBalance() {
+  if (!currentProfile) return
+  const { data } = await db.from('vendor_wallets').select('balance, currency').eq('user_id', currentProfile.id).single()
+  currentWalletBalance = data?.balance || 0
+  document.getElementById('solde-vendeur').textContent = fmt(currentWalletBalance, data?.currency || 'MAD')
+}
+
+// ════════════════════════════════════════════════════════════
+// CLIENT STATS & COMMANDES
+// ════════════════════════════════════════════════════════════
+async function loadClientStats(userId) {
+  if (!userId) {
+    ['stat-orders','stat-favoris','stat-reviews'].forEach(id => document.getElementById(id).textContent = '0')
+    return
+  }
+  const [o, r] = await Promise.all([
+    db.from('orders').select('id', { count:'exact', head:true }).eq('user_id', userId),
+    db.from('reviews').select('id', { count:'exact', head:true }).eq('user_id', userId)
+  ])
+  document.getElementById('stat-orders').textContent = o.count ?? 0
+  document.getElementById('stat-favoris').textContent = '0'
+  document.getElementById('stat-reviews').textContent = r.count ?? 0
+}
+
+async function loadOrders(userId) {
+  const container = document.getElementById('orders-list')
+  if (!userId) {
+    container.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-6">Aucune commande.</p>'
+    return
+  }
+  const { data, error } = await db.from('orders')
+    .select('id, status, total_amount, currency, created_at, order_items(quantity, unit_price, products(name, image_url))')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(10)
+  if (error || !data || data.length === 0) {
+    container.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-6">Aucune commande pour l\'instant.</p>'
+    return
+  }
+  container.innerHTML = data.map(order => {
+    const p = order.order_items?.[0]?.products
+    const imgHtml = p?.image_url
+      ? `<img src="${p.image_url}" alt="${p.name}" class="product-thumb"/>`
+      : `<div class="product-thumb flex items-center justify-center bg-surface-container-low"><span class="material-symbols-outlined text-on-surface-variant">inventory_2</span></div>`
+    // Bouton payer si commande en attente de paiement
+    const payBtn = order.status === 'pending'
+      ? `<button onclick="openOrderPaymentModal('${order.id}',${order.total_amount},'${order.currency||'MAD'}')" class="ml-2 btn-primary text-on-primary text-[10px] px-3 py-1.5 rounded-lg font-bold flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:14px;">credit_card</span>Payer</button>`
+      : ''
+    return `<div class="order-row p-4 flex items-center gap-4 cursor-pointer">${imgHtml}<div class="flex-1"><div class="flex items-center gap-2 mb-1 flex-wrap"><p class="font-bold text-sm">${p?.name||'Commande #'+order.id.slice(0,8).toUpperCase()}</p>${statusChip[order.status]||'<span class="chip chip-gray">'+order.status+'</span>'}${payBtn}</div><p class="text-[11px] text-on-surface-variant">Commande #WS-${order.id.slice(0,8).toUpperCase()} · ${fmtDate(order.created_at)}</p><p class="text-xs font-bold text-primary mt-1">${fmt(order.total_amount, order.currency||'MAD')}</p></div><span class="material-symbols-outlined text-on-surface-variant">chevron_right</span></div>`
+  }).join('')
+}
+
+// ════════════════════════════════════════════════════════════
+// VENDEUR DATA
+// ════════════════════════════════════════════════════════════
+async function loadVendeurData() {
+  if (!currentProfile) return
+  const sellerId = currentProfile.id
+  const { data: products } = await db.from('products')
+    .select('id,name,price,currency,status,origin_city,country,image_url,created_at')
+    .eq('seller_id', sellerId)
+    .order('created_at', { ascending: false })
+  renderListings(products || [])
+  const { data: sales } = await db.from('order_items')
+    .select('id,quantity,unit_price,created_at,products!inner(name,seller_id),orders(status,currency)')
+    .eq('products.seller_id', sellerId)
+    .order('created_at', { ascending: false })
+    .limit(20)
+  renderSales(sales || [])
+  const now = new Date()
+  const revenueMonth = (sales || [])
+    .filter(i => new Date(i.created_at).getMonth() === now.getMonth())
+    .reduce((s, i) => s + (parseFloat(i.unit_price) * i.quantity), 0)
+  document.getElementById('stat-revenue-month').textContent = fmt(revenueMonth)
+  document.getElementById('stat-total-sales').textContent = (sales || []).length
+  document.getElementById('stat-listings').textContent = (products || []).length
+  const productIds = (products || []).map(p => p.id)
+  if (productIds.length > 0) {
+    const { data: reviews } = await db.from('reviews').select('rating').in('product_id', productIds).eq('status', 'approved')
+    document.getElementById('stat-rating').textContent = (reviews && reviews.length > 0)
+      ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1) : '—'
+  }
+  await loadWalletBalance()
+  loadPaymentsHistory()
+}
+
+async function loadPaymentsHistory() {
+  const container = document.getElementById('payments-list')
+  if (!currentProfile) return
+  const { data: payments } = await db.from('payments')
+    .select('id,amount,currency,status,created_at,method,type,transaction_id')
+    .eq('user_id', currentProfile.id)
+    .order('created_at', { ascending: false })
+    .limit(15)
+  if (!payments || !payments.length) {
+    container.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-4">Aucun paiement pour l\'instant.</p>'
+    return
+  }
+  const typeLabels = { order_payment: 'Commande', wallet_topup: 'Recharge solde', vendor_payout: 'Retrait' }
+  container.innerHTML = payments.map(p => `
+    <div class="flex justify-between items-center py-3 border-b border-outline-variant/10 last:border-0">
+      <div>
+        <p class="text-sm font-bold">${typeLabels[p.type] || 'Paiement'} · ${fmtDate(p.created_at)}</p>
+        <p class="text-[11px] text-on-surface-variant font-mono">${p.transaction_id || p.id.slice(0,12)}</p>
+        <p class="text-[11px] text-on-surface-variant">${p.method || 'En ligne'}</p>
+      </div>
+      <div class="text-right">
+        <p class="font-bold ${p.type === 'vendor_payout' ? 'text-error' : 'text-primary'}">${p.type === 'vendor_payout' ? '-' : '+'}${fmt(p.amount, p.currency || 'MAD')}</p>
+        ${statusChip[p.status] || '<span class="chip chip-gray">' + p.status + '</span>'}
+      </div>
+    </div>`).join('')
+}
+
+function renderListings(products) {
+  const c = document.getElementById('listings-list')
+  if (!products.length) {
+    c.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-6">Aucune annonce. <a href="dashboard-vendeur.html" class="text-primary font-bold">Créer une annonce</a></p>'
+    return
+  }
+  c.innerHTML = products.map(p => {
+    const imgHtml = p.image_url
+      ? `<img src="${p.image_url}" alt="${p.name}" class="product-thumb"/>`
+      : `<div class="product-thumb flex items-center justify-center bg-surface-container-low"><span class="material-symbols-outlined text-on-surface-variant">image</span></div>`
+    return `<div class="listing-row p-4 flex items-center gap-4">${imgHtml}<div class="flex-1"><div class="flex items-center gap-2 mb-1"><p class="font-bold text-sm">${p.name}</p>${statusChip[p.status] || '<span class="chip chip-gray">'+p.status+'</span>'}</div><p class="text-[11px] text-on-surface-variant">${p.country||''} ${p.origin_city ? '· '+p.origin_city : ''}</p><p class="text-xs font-bold text-primary mt-1">${fmt(p.price, p.currency||'MAD')}</p></div><a href="dashboard-vendeur.html?edit=${p.id}" class="text-on-surface-variant hover:text-primary transition-colors p-2"><span class="material-symbols-outlined" style="font-size:18px;">edit</span></a></div>`
+  }).join('')
+}
+
+function renderSales(sales) {
+  const c = document.getElementById('sales-list')
+  if (!sales.length) {
+    c.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-6">Aucune vente pour l\'instant.</p>'
+    return
+  }
+  c.innerHTML = sales.map(s => {
+    const st = s.orders?.status || 'pending'
+    const done = ['delivered','shipped'].includes(st)
+    return `<div class="order-row p-4 flex items-center gap-4"><div class="w-10 h-10 rounded-full ${done ? 'bg-green-100' : 'bg-blue-100'} flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined ${done ? 'text-primary' : 'text-secondary'}" style="font-size:18px;">${done ? 'arrow_downward' : 'schedule'}</span></div><div class="flex-1"><p class="font-bold text-sm">${s.products?.name||'—'} × ${s.quantity}</p><p class="text-[11px] text-on-surface-variant">${fmtDate(s.created_at)}</p></div><div class="text-right"><p class="font-bold text-primary text-sm">+${fmt(parseFloat(s.unit_price)*s.quantity)}</p>${statusChip[st] || '<span class="chip chip-gray">'+st+'</span>'}</div></div>`
+  }).join('')
+}
+
+// ════════════════════════════════════════════════════════════
+// PROFILE & SHOP SAVE
+// ════════════════════════════════════════════════════════════
+async function saveProfile() {
+  if (!currentProfile) return
+  const first = document.getElementById('input-firstname').value.trim()
+  const last = document.getElementById('input-lastname').value.trim()
+  const { error } = await db.from('users').update({
+    first_name: first, last_name: last,
+    full_name: [first, last].filter(Boolean).join(' '),
+    updated_at: new Date().toISOString()
+  }).eq('id', currentProfile.id)
+  if (!error) {
+    document.getElementById('profile-name').textContent = [first, last].filter(Boolean).join(' ')
+    showToast('✓ Profil sauvegardé', 'success')
+  } else showToast('Erreur lors de la sauvegarde', 'error')
+}
+
+async function saveShop() {
+  if (!currentProfile) return
+  const { error } = await db.from('users').update({
+    specialty: document.getElementById('shop-specialty').value.trim(),
+    country: document.getElementById('shop-country').value,
+    updated_at: new Date().toISOString()
+  }).eq('id', currentProfile.id)
+  if (!error) showToast('✓ Boutique mise à jour', 'success')
+  else showToast('Erreur lors de la mise à jour', 'error')
+}
+
 async function upgradeToVendeur() {
   const shopName = document.getElementById('upgrade-shop-name').value.trim()
   const specialty = document.getElementById('upgrade-specialty').value.trim()
   const country = document.getElementById('upgrade-country').value
-  const bio = document.getElementById('upgrade-bio').value.trim()
   if (!shopName || !specialty || !country) { showToast('Remplis tous les champs obligatoires (*)', 'error'); return }
   const btn = document.getElementById('upgrade-btn')
   btn.disabled = true
   btn.innerHTML = '<div class="spinner" style="border-color:#fff3;border-top-color:#fff;"></div> Création en cours…'
   try {
-    const { error } = await db.from('users').update({ role:'artisan', specialty, country, updated_at: new Date().toISOString() }).eq('auth_id', currentUser.id)
+    const { error } = await db.from('users').update({
+      role: 'artisan', specialty, country, updated_at: new Date().toISOString()
+    }).eq('auth_id', currentUser.id)
     if (error) throw error
     document.getElementById('badge-role').textContent = 'Vendeur'
     isVendeur = true
@@ -470,127 +1021,53 @@ async function upgradeToVendeur() {
     loadVendeurData()
     showToast('🎉 Bienvenue parmi les vendeurs WennaShop !', 'success')
   } catch (err) {
-    console.error(err); showToast('Erreur lors de la création. Réessaie.', 'error')
+    showToast('Erreur lors de la création. Réessaie.', 'error')
     btn.disabled = false
     btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">store</span> Devenir vendeur — c\'est gratuit'
   }
 }
 
-async function loadClientStats(userId) {
-  if (!userId) { ['stat-orders','stat-favoris','stat-reviews'].forEach(id => document.getElementById(id).textContent = '0'); return }
-  const [o, r] = await Promise.all([db.from('orders').select('id',{count:'exact',head:true}).eq('user_id',userId), db.from('reviews').select('id',{count:'exact',head:true}).eq('user_id',userId)])
-  document.getElementById('stat-orders').textContent = o.count ?? 0
-  document.getElementById('stat-favoris').textContent = '0'
-  document.getElementById('stat-reviews').textContent = r.count ?? 0
+async function handleLogout() { await db.auth.signOut(); window.location.href = 'index.html' }
+
+// ════════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════════
+function switchMode(mode) {
+  currentMode = mode
+  document.querySelectorAll('.mode-panel').forEach(p => p.classList.remove('active'))
+  document.getElementById('mode-' + mode).classList.add('active')
+  document.getElementById('btn-client').classList.toggle('active', mode === 'client')
+  document.getElementById('btn-vendeur').classList.toggle('active', mode === 'vendeur')
+  if (mode === 'client') switchClientTab('commandes', document.querySelector('#mode-client .nav-tab'))
+}
+function switchClientTab(tab, btn) {
+  document.querySelectorAll('#mode-client .tab-panel').forEach(p => p.classList.remove('active'))
+  document.querySelectorAll('#mode-client .nav-tab').forEach(t => t.classList.remove('active'))
+  document.getElementById('client-' + tab).classList.add('active')
+  if (btn) btn.classList.add('active')
+}
+function switchVendeurTab(tab, btn) {
+  document.querySelectorAll('#vendeur-dashboard-section .tab-panel').forEach(p => p.classList.remove('active'))
+  document.querySelectorAll('#vendeur-dashboard-section .nav-tab').forEach(t => t.classList.remove('active'))
+  document.getElementById('vendeur-' + tab).classList.add('active')
+  if (btn) btn.classList.add('active')
 }
 
-async function loadOrders(userId) {
-  const container = document.getElementById('orders-list')
-  if (!userId) { container.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-6">Aucune commande.</p>'; return }
-  const { data, error } = await db.from('orders').select('id, status, total_amount, currency, created_at, order_items(quantity, unit_price, products(name, image_url))').eq('user_id', userId).order('created_at',{ascending:false}).limit(10)
-  if (error || !data || data.length === 0) { container.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-6">Aucune commande pour l\'instant.</p>'; return }
-  container.innerHTML = data.map(order => {
-    const p = order.order_items?.[0]?.products
-    const imgHtml = p?.image_url ? `<img src="${p.image_url}" alt="${p.name}" class="product-thumb"/>` : `<div class="product-thumb flex items-center justify-center bg-surface-container-low"><span class="material-symbols-outlined text-on-surface-variant">inventory_2</span></div>`
-    return `<div class="order-row p-4 flex items-center gap-4 cursor-pointer">${imgHtml}<div class="flex-1"><div class="flex items-center gap-2 mb-1"><p class="font-bold text-sm">${p?.name||'Commande #'+order.id.slice(0,8).toUpperCase()}</p>${statusChip[order.status]||'<span class="chip chip-gray">'+order.status+'</span>'}</div><p class="text-[11px] text-on-surface-variant">Commande #WS-${order.id.slice(0,8).toUpperCase()} · ${fmtDate(order.created_at)}</p><p class="text-xs font-bold text-primary mt-1">${fmt(order.total_amount, order.currency||'MAD')}</p></div><span class="material-symbols-outlined text-on-surface-variant">chevron_right</span></div>`
-  }).join('')
-}
+// Fermer les modals en cliquant sur le fond
+document.getElementById('payment-modal').addEventListener('click', function(e) {
+  if (e.target === this) closePaymentModal()
+})
+document.getElementById('withdraw-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeWithdrawModal()
+})
 
-async function loadVendeurData() {
-  if (!currentProfile) return
-  const sellerId = currentProfile.id
-  const { data: products } = await db.from('products').select('id,name,price,currency,status,origin_city,country,image_url,created_at').eq('seller_id',sellerId).order('created_at',{ascending:false})
-  renderListings(products||[])
-  const { data: sales } = await db.from('order_items').select('id,quantity,unit_price,created_at,products!inner(name,seller_id),orders(status,currency)').eq('products.seller_id',sellerId).order('created_at',{ascending:false}).limit(20)
-  renderSales(sales||[])
-  const now = new Date()
-  const revenueMonth = (sales||[]).filter(i=>new Date(i.created_at).getMonth()===now.getMonth()).reduce((s,i)=>s+(parseFloat(i.unit_price)*i.quantity),0)
-  document.getElementById('stat-revenue-month').textContent = fmt(revenueMonth)
-  document.getElementById('stat-total-sales').textContent = (sales||[]).length
-  document.getElementById('stat-listings').textContent = (products||[]).length
-  const productIds = (products||[]).map(p=>p.id)
-  if (productIds.length > 0) {
-    const { data: reviews } = await db.from('reviews').select('rating').in('product_id',productIds).eq('status','approved')
-    document.getElementById('stat-rating').textContent = (reviews&&reviews.length>0) ? (reviews.reduce((s,r)=>s+r.rating,0)/reviews.length).toFixed(1) : '—'
-  }
-  loadSoldeVendeur(sales||[]); loadPaymentsHistory(sales||[])
-}
-
-async function loadSoldeVendeur(sales) {
-  const orderIds=[...new Set((sales).map(s=>s.orders?.id).filter(Boolean))]
-  if(!orderIds.length){document.getElementById('solde-vendeur').textContent=fmt(0);return}
-  const{data:payments}=await db.from('payments').select('amount,status').in('order_id',orderIds).eq('status','paid')
-  document.getElementById('solde-vendeur').textContent=fmt((payments||[]).reduce((s,p)=>s+parseFloat(p.amount),0))
-}
-
-async function loadPaymentsHistory(sales) {
-  const container=document.getElementById('payments-list')
-  const orderIds=[...new Set((sales).map(s=>s.orders?.id).filter(Boolean))]
-  if(!orderIds.length){container.innerHTML='<p class="text-sm text-on-surface-variant text-center py-4">Aucun paiement.</p>';return}
-  const{data:payments}=await db.from('payments').select('id,amount,currency,status,created_at,method').in('order_id',orderIds).order('created_at',{ascending:false}).limit(10)
-  if(!payments||!payments.length){container.innerHTML='<p class="text-sm text-on-surface-variant text-center py-4">Aucun paiement.</p>';return}
-  container.innerHTML=payments.map(p=>`<div class="flex justify-between items-center py-3 border-b border-outline-variant/10 last:border-0"><div><p class="text-sm font-bold">Paiement du ${fmtDate(p.created_at)}</p><p class="text-[11px] text-on-surface-variant">${p.method||'En ligne'}</p></div><div class="text-right"><p class="font-bold text-primary">${fmt(p.amount,p.currency||'MAD')}</p>${statusChip[p.status]||'<span class="chip chip-gray">'+p.status+'</span>'}</div></div>`).join('')
-}
-
-function renderListings(products) {
-  const c=document.getElementById('listings-list')
-  if(!products.length){c.innerHTML='<p class="text-sm text-on-surface-variant text-center py-6">Aucune annonce. <a href="dashboard-vendeur.html" class="text-primary font-bold">Créer une annonce</a></p>';return}
-  c.innerHTML=products.map(p=>{
-    const imgHtml=p.image_url?`<img src="${p.image_url}" alt="${p.name}" class="product-thumb"/>`:`<div class="product-thumb flex items-center justify-center bg-surface-container-low"><span class="material-symbols-outlined text-on-surface-variant">image</span></div>`
-    return`<div class="listing-row p-4 flex items-center gap-4">${imgHtml}<div class="flex-1"><div class="flex items-center gap-2 mb-1"><p class="font-bold text-sm">${p.name}</p>${statusChip[p.status]||'<span class="chip chip-gray">'+p.status+'</span>'}</div><p class="text-[11px] text-on-surface-variant">${p.country||''} ${p.origin_city?'· '+p.origin_city:''}</p><p class="text-xs font-bold text-primary mt-1">${fmt(p.price,p.currency||'MAD')}</p></div><a href="dashboard-vendeur.html?edit=${p.id}" class="text-on-surface-variant hover:text-primary transition-colors p-2"><span class="material-symbols-outlined" style="font-size:18px;">edit</span></a></div>`
-  }).join('')
-}
-
-function renderSales(sales) {
-  const c=document.getElementById('sales-list')
-  if(!sales.length){c.innerHTML='<p class="text-sm text-on-surface-variant text-center py-6">Aucune vente pour l\'instant.</p>';return}
-  c.innerHTML=sales.map(s=>{
-    const st=s.orders?.status||'pending';const done=['delivered','shipped'].includes(st)
-    return`<div class="order-row p-4 flex items-center gap-4"><div class="w-10 h-10 rounded-full ${done?'bg-green-100':'bg-blue-100'} flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined ${done?'text-primary':'text-secondary'}" style="font-size:18px;">${done?'arrow_downward':'schedule'}</span></div><div class="flex-1"><p class="font-bold text-sm">${s.products?.name||'—'} × ${s.quantity}</p><p class="text-[11px] text-on-surface-variant">${fmtDate(s.created_at)}</p></div><div class="text-right"><p class="font-bold text-primary text-sm">+${fmt(parseFloat(s.unit_price)*s.quantity)}</p>${statusChip[st]||'<span class="chip chip-gray">'+st+'</span>'}</div></div>`
-  }).join('')
-}
-
-async function saveProfile() {
-  if(!currentProfile)return
-  const first=document.getElementById('input-firstname').value.trim()
-  const last=document.getElementById('input-lastname').value.trim()
-  const{error}=await db.from('users').update({first_name:first,last_name:last,full_name:[first,last].filter(Boolean).join(' '),updated_at:new Date().toISOString()}).eq('id',currentProfile.id)
-  if(!error){document.getElementById('profile-name').textContent=[first,last].filter(Boolean).join(' ');showToast('✓ Profil sauvegardé','success')}
-  else showToast('Erreur lors de la sauvegarde','error')
-}
-
-async function saveShop() {
-  if(!currentProfile)return
-  const{error}=await db.from('users').update({specialty:document.getElementById('shop-specialty').value.trim(),country:document.getElementById('shop-country').value,updated_at:new Date().toISOString()}).eq('id',currentProfile.id)
-  if(!error)showToast('✓ Boutique mise à jour','success')
-  else showToast('Erreur lors de la mise à jour','error')
-}
-
-async function handleLogout(){await db.auth.signOut();window.location.href='index.html'}
-
-function switchMode(mode){
-  currentMode=mode
-  document.querySelectorAll('.mode-panel').forEach(p=>p.classList.remove('active'))
-  document.getElementById('mode-'+mode).classList.add('active')
-  document.getElementById('btn-client').classList.toggle('active',mode==='client')
-  document.getElementById('btn-vendeur').classList.toggle('active',mode==='vendeur')
-  if(mode==='client')switchClientTab('commandes',document.querySelector('#mode-client .nav-tab'))
-}
-function switchClientTab(tab,btn){
-  document.querySelectorAll('#mode-client .tab-panel').forEach(p=>p.classList.remove('active'))
-  document.querySelectorAll('#mode-client .nav-tab').forEach(t=>t.classList.remove('active'))
-  document.getElementById('client-'+tab).classList.add('active')
-  if(btn)btn.classList.add('active')
-}
-function switchVendeurTab(tab,btn){
-  document.querySelectorAll('#vendeur-dashboard-section .tab-panel').forEach(p=>p.classList.remove('active'))
-  document.querySelectorAll('#vendeur-dashboard-section .nav-tab').forEach(t=>t.classList.remove('active'))
-  document.getElementById('vendeur-'+tab).classList.add('active')
-  if(btn)btn.classList.add('active')
-}
-
-const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.style.animationPlayState='running'})},{threshold:0.05})
-document.querySelectorAll('.anim-up,.anim-in').forEach(el=>{el.style.animationPlayState='paused';observer.observe(el)})
+// Animations scroll
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.style.animationPlayState = 'running' })
+}, { threshold: 0.05 })
+document.querySelectorAll('.anim-up,.anim-in').forEach(el => {
+  el.style.animationPlayState = 'paused'; observer.observe(el)
+})
 
 init()
 </script>
