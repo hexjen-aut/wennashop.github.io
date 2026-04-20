@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="cart.js"></script> 
 <script id="tailwind-config">
   tailwind.config = {
     darkMode: "class",
@@ -220,27 +221,34 @@
   }
 
   // ── Panier ──────────────────────────────────
-  function getCart() { return JSON.parse(localStorage.getItem('wenna_cart') || '[]') }
-  function saveCart(c) { localStorage.setItem('wenna_cart', JSON.stringify(c)); updateBadge() }
-  function updateBadge() {
-    const n = getCart().reduce((s, i) => s + i.qty, 0)
-    const b = $('cart-badge')
-    b.textContent = n
-    n > 0 ? b.classList.remove('hidden') : b.classList.add('hidden')
-  }
+  function getCart() { return [] } // plus utilisé
+function saveCart() {}           // plus utilisé
 
-  function addToCart() {
-    if (!currentProduct) return
-    const cart = getCart()
-    const idx  = cart.findIndex(i => i.id === currentProduct.id)
-    const imgs = Array.isArray(currentProduct.images) && currentProduct.images.length
-      ? currentProduct.images : [currentProduct.image_url || '']
-    if (idx >= 0) cart[idx].qty++
-    else cart.push({ id: currentProduct.id, name: currentProduct.name, price: currentProduct.price, image: imgs[0], qty: 1 })
-    saveCart(cart)
-    showToast(`« ${currentProduct.name} » ajouté au panier`)
-  }
+async function updateBadge() {
+  if (typeof Cart === 'undefined') return
+  await Cart.updateBadge('cart-badge')
+}
 
+async function addToCart() {
+  if (!currentProduct) return
+  if (typeof Cart === 'undefined') {
+    showToast('Erreur : panier non disponible'); return
+  }
+  const result = await Cart.add(
+    currentProduct.id,
+    currentProduct.name,
+    currentProduct.price,
+    currentProduct.image_url || '',
+    currentProduct.currency || 'MAD'
+  )
+  if (!result.success && result.error === 'not_logged_in') {
+    showToast('Connecte-toi pour ajouter au panier')
+    setTimeout(() => window.location.href = 'compte.html', 1500)
+    return
+  }
+  showToast(result.success ? `« ${currentProduct.name} » ajouté au panier` : result.message)
+  if (result.success) updateBadge()
+}
   // ── Supabase fetch ───────────────────────────
   async function loadProduct(id) {
     const { data } = await sb.from('products').select('*').eq('id', id).single()
