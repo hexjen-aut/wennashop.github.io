@@ -333,6 +333,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.config.js"></script>
+<script src="cart.js"></script>
 <script>
 /* ─── CURSEUR ─────────────────────────────────────── */
 const cur = document.getElementById('cur'), crng = document.getElementById('curRing');
@@ -357,25 +358,18 @@ function showToast(msg, d = 3000) {
 }
 
 /* ─── PANIER ─────────────────────────────────────── */
-function updateCartBadge() {
-  try {
-    const c = JSON.parse(localStorage.getItem('wenna_cart') || '[]');
-    const b = document.getElementById('cart-badge');
-    const n = c.reduce((a, i) => a + (i.qty || 1), 0);
-    if (n > 0) { b.textContent = n > 99 ? '99+' : n; b.style.display = 'flex'; }
-    else b.style.display = 'none';
-  } catch {}
+async function updateCartBadge() {
+  await Cart.updateBadge('cart-badge')
 }
-function addToCart(p) {
-  try {
-    const c = JSON.parse(localStorage.getItem('wenna_cart') || '[]');
-    const i = c.findIndex(x => x.id === p.id);
-    if (i > -1) c[i].qty = (c[i].qty || 1) + 1;
-    else c.push({ ...p, qty: 1 });
-    localStorage.setItem('wenna_cart', JSON.stringify(c));
-    updateCartBadge();
-    showToast('Ajouté au panier ✓');
-  } catch {}
+async function addToCart(p) {
+  const result = await Cart.add(p.id, p.name, p.price, null, p.currency || 'MAD')
+  if (!result.success && result.error === 'not_logged_in') {
+    showToast('Connecte-toi pour ajouter au panier')
+    setTimeout(() => window.location.href = 'compte.html', 1500)
+    return
+  }
+  showToast(result.success ? 'Ajouté au panier ✓' : result.message)
+  if (result.success) Cart.updateBadge('cart-badge')
 }
 
 /* ─── SEARCH ─────────────────────────────────────── */
