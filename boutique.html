@@ -312,9 +312,9 @@
 <!-- BOTTOM NAV -->
 <nav class="bnav">
   <div class="bnav-inner">
-    <a href="index.html" class="bnav-item"><span class="material-symbols-outlined">home</span><span>Home</span></a>
+    <a href="hero.html" class="bnav-item"><span class="material-symbols-outlined">home</span><span>Home</span></a>
     <a href="boutique.html" class="bnav-item active"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">storefront</span><span>Shop</span></a>
-    <a href="sell.html" class="bnav-item"><span class="material-symbols-outlined">add_circle</span><span>Sell</span></a>
+    <a href="dasboard-vendeur.html" class="bnav-item"><span class="material-symbols-outlined">add_circle</span><span>Sell</span></a>
     <a href="compte.html" class="bnav-item"><span class="material-symbols-outlined">person</span><span>Profil</span></a>
   </div>
 </nav>
@@ -563,14 +563,14 @@ async function loadProducts() {
   try {
     // Colonnes à récupérer — compatibles avec le schéma connu
     let q = db.from('products')
-      .select('id, name, price, category, pays, city, rating, stock, images, active', { count: 'exact' })
-      .eq('active', true)
+      .select('id, name, price, currency, country, origin_city, stock, images, image_url, category_id, categories(name)', { count: 'exact' })
+      .eq('status', 'active')
       .gte('price', state.priceMin)
       .lte('price', state.priceMax)
       .range(offset, offset + PAGE_SIZE - 1)
       .order(col, { ascending: dir === 'asc' });
 
-    if (state.pays) q = q.ilike('pays', state.pays);
+    if (state.pays) q = q.ilike('country', state.pays);
     if (state.catId) q = q.eq('category_id', state.catId);
     if (state.stockOnly) q = q.gt('stock', 0);
     if (state.search) q = q.ilike('name', `%${state.search}%`);
@@ -605,10 +605,12 @@ async function loadProducts() {
 function renderProducts(products) {
   const grid = document.getElementById('prod-grid');
   grid.innerHTML = products.map(p => {
-    const img = Array.isArray(p.images) && p.images.length ? p.images[0] : 'https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=400&q=80';
+    const img = Array.isArray(p.images) && p.images.length ? p.images[0] : (p.image_url || 'https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=400&q=80');
     const low = p.stock != null && p.stock > 0 && p.stock <= 5;
-    const paysLabel = (p.pays || '').toLowerCase().includes('maroc') ? 'MA' : 'GA';
+    const paysLabel = (p.country || '').toLowerCase().includes('maroc') ? 'MA' : 'GA';
+    const catName = p.categories?.name || '';
     const safeName = (p.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    const cur = p.currency || 'MAD';
     return `
       <div class="prod-card" onclick="location.href='detail_produit.html?id=${p.id}'">
         <div class="prod-img">
@@ -620,11 +622,10 @@ function renderProducts(products) {
           </button>
         </div>
         <div class="prod-info">
-          <div class="prod-cat">${p.category || ''} · ${p.city || ''}</div>
+          <div class="prod-cat">${catName} · ${p.origin_city || ''}</div>
           <div class="prod-name">${p.name}</div>
           <div class="prod-ft">
-            <div class="prod-price">${fmtPrice(p.price)}</div>
-            ${p.rating ? `<div class="prod-rating"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;font-size:13px;color:var(--fire);">star</span>${Number(p.rating).toFixed(1)}</div>` : ''}
+            <div class="prod-price">${fmtPrice(p.price, cur)}</div>
           </div>
         </div>
       </div>`;
