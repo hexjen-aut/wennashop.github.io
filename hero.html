@@ -1,673 +1,509 @@
 <!DOCTYPE html>
-<html class="light" lang="fr">
+<html lang="fr">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="WennaShop — Artisanat authentique du Gabon et du Maroc. Livraison express entre Casablanca et Libreville."/>
+  <meta name="description" content="WennaShop — Artisanat authentique du Gabon et du Maroc."/>
   <meta name="theme-color" content="#FF6B2B"/>
-  <meta property="og:title" content="WennaShop – Gabon × Maroc"/>
-  <meta property="og:description" content="Artisanat authentique. Produits sourcés à la source. Une passerelle entre deux cultures vibrantes."/>
-  <meta property="og:type" content="website"/>
   <title>WennaShop – Gabon × Maroc</title>
   <link rel="canonical" href="https://wennassshop.netlify.app/"/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            /* ── PALETTE CONVERSION : Orange + Navy + Blanc ── */
-            "primary":                    "#FF6B2B",   /* Orange CTA */
-            "primary-hover":              "#E85A1A",
-            "primary-fixed":              "#FF6B2B",
-            "primary-fixed-dim":          "#FFB38A",   /* Orange clair sur fond sombre */
-            "on-primary":                 "#ffffff",
-            "on-primary-fixed":           "#ffffff",
-            "on-primary-fixed-variant":   "#7A2800",
-            "primary-container":          "#FFE0D0",
-            "on-primary-container":       "#3D1100",
-            "inverse-primary":            "#FFB38A",
-
-            "secondary":                  "#0D2B55",   /* Navy confiance */
-            "secondary-fixed":            "#D4E3FF",
-            "secondary-fixed-dim":        "#A8C4F0",   /* Navy clair sur fond sombre */
-            "on-secondary":               "#ffffff",
-            "on-secondary-fixed":         "#001C3A",
-            "on-secondary-fixed-variant": "#004786",
-            "on-secondary-container":     "#001C3A",
-            "secondary-container":        "#1A4080",
-
-            "tertiary":                   "#C45200",   /* Orange brûlé — étoiles, accents */
-            "tertiary-fixed":             "#FFD9C4",
-            "tertiary-fixed-dim":         "#FFB38A",
-            "on-tertiary":                "#ffffff",
-            "on-tertiary-fixed":          "#3D1100",
-            "on-tertiary-fixed-variant":  "#7A2800",
-            "tertiary-container":         "#FF8C55",
-            "on-tertiary-container":      "#3D1100",
-
-            "surface-tint":               "#FF6B2B",
-            "on-surface":                 "#1A1A2E",
-            "on-surface-variant":         "#4A5568",
-            "on-background":              "#1A1A2E",
-            "background":                 "#F8F9FB",
-            "surface":                    "#F8F9FB",
-            "surface-bright":             "#FFFFFF",
-            "surface-dim":                "#DDE3EC",
-            "surface-variant":            "#EDF0F7",
-            "surface-container-lowest":   "#FFFFFF",
-            "surface-container-low":      "#F1F4F8",
-            "surface-container":          "#E8EFF8",
-            "surface-container-high":     "#DDE3EC",
-            "surface-container-highest":  "#D0D8E8",
-
-            "outline":                    "#8A96A8",
-            "outline-variant":            "#C5CFD8",
-            "inverse-surface":            "#0D2B55",
-            "inverse-on-surface":         "#F1F4F8",
-
-            "error":                      "#E53935",
-            "on-error":                   "#ffffff",
-            "error-container":            "#FFDAD6",
-            "on-error-container":         "#93000A",
-          },
-          borderRadius: { "DEFAULT":"1rem","lg":"2rem","xl":"3rem","full":"9999px" },
-          fontFamily: { "headline":["Noto Serif"],"body":["Inter"],"label":["Inter"] }
-        }
-      }
-    }
-  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
   <style>
-    .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24;font-size:24px}
-    body{font-family:'Inter',sans-serif;min-height:max(884px,100dvh)}
-    .font-serif{font-family:'Noto Serif',serif}
-    .no-scrollbar::-webkit-scrollbar{display:none}
-
-    @keyframes fadeUp{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-    @keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-    @keyframes pulse-dot{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.7}}
-    @keyframes overlayFadeIn{from{opacity:0}to{opacity:1}}
-    @keyframes overlaySlideDown{from{opacity:0;transform:translateY(-12px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
-
-    .anim-fade-up{animation:fadeUp .7s cubic-bezier(.22,1,.36,1) forwards;opacity:0}
-    .anim-fade-in{animation:fadeIn .8s ease forwards;opacity:0}
-    .d-100{animation-delay:.1s}.d-200{animation-delay:.2s}.d-300{animation-delay:.3s}
-    .d-400{animation-delay:.4s}.d-500{animation-delay:.5s}.d-600{animation-delay:.6s}
-
-    .ticker-track{display:flex;width:max-content;animation:ticker 28s linear infinite}
-    .ticker-track:hover{animation-play-state:paused}
-
-    .hero-img{transition:transform 8s ease}
-    .hero-img:hover{transform:scale(1.04)}
-
-    /* ── Hero overlay : Navy → Orange, contraste maximal conversion ── */
-    .hero-overlay{
-      background:linear-gradient(
-        160deg,
-        rgba(13,43,85,.72) 0%,
-        rgba(13,43,85,.35) 40%,
-        rgba(255,107,43,.25) 100%
-      )
+    :root {
+      --fire: #FF6B2B;
+      --ember: #E85A1A;
+      --ash: #FFE0D0;
+      --ink: #080808;
+      --coal: #111111;
+      --slate: #1A1A1A;
+      --smoke: #242424;
+      --fog: #888;
+      --mist: #ccc;
+      --snow: #f0ece6;
     }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--snow); overflow-x: hidden; cursor: none; }
 
-    .card-hover{transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s ease,border-color .25s}
-    .card-hover:hover{transform:translateY(-6px);box-shadow:0 20px 60px rgba(255,107,43,.15)}
+    /* CURSEUR */
+    .cur { position: fixed; width: 10px; height: 10px; background: var(--fire); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: width .2s, height .2s; }
+    .cur-ring { position: fixed; width: 36px; height: 36px; border: 1px solid rgba(255,107,43,.45); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: width .3s, height .3s, opacity .3s; }
 
-    /* ── CTA primaire : Orange pur, shadow dopamine ── */
-    .btn-primary{
-      background:linear-gradient(135deg,#FF6B2B 0%,#E85A1A 100%);
-      box-shadow:0 6px 24px rgba(255,107,43,.38);
-      transition:all .2s
+    .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24; font-size: 22px; line-height: 1; }
+
+    /* HEADER */
+    .hd { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 20px 48px; display: flex; align-items: center; justify-content: space-between; transition: background .4s, padding .4s; }
+    .hd.scr { background: rgba(8,8,8,.92); backdrop-filter: blur(20px); padding: 14px 48px; border-bottom: 1px solid rgba(255,107,43,.15); }
+    .logo { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 700; font-style: italic; color: var(--snow); text-decoration: none; letter-spacing: -.5px; }
+    .logo b { color: var(--fire); font-weight: 700; }
+    .nav { display: flex; gap: 36px; }
+    .nav a { font-size: 11px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--fog); text-decoration: none; transition: color .2s; cursor: none; }
+    .nav a:hover { color: var(--fire); }
+    .hd-acts { display: flex; align-items: center; gap: 22px; }
+    .hd-acts button, .hd-acts a { background: none; border: none; color: var(--fog); cursor: none; text-decoration: none; transition: color .2s; position: relative; }
+    .hd-acts button:hover, .hd-acts a:hover { color: var(--fire); }
+    .cbadge { position: absolute; top: -6px; right: -6px; width: 16px; height: 16px; background: var(--fire); color: #fff; font-size: 9px; font-weight: 700; border-radius: 50%; display: none; align-items: center; justify-content: center; }
+
+    /* TICKER */
+    .ticker { position: fixed; top: 64px; left: 0; right: 0; z-index: 99; background: var(--fire); overflow: hidden; padding: 6px 0; }
+    .ticker-t { display: flex; width: max-content; animation: tick 32s linear infinite; font-size: 10px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; color: #fff; }
+    .ticker-t:hover { animation-play-state: paused; }
+    .ticker-t span { padding: 0 32px; }
+    .ticker-t span.sep { opacity: .4; padding: 0 8px; }
+    @keyframes tick { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    /* HERO */
+    .hero { position: relative; min-height: 100vh; display: flex; align-items: flex-end; padding: 0 48px 80px; overflow: hidden; padding-top: 120px; }
+    .hero-bg { position: absolute; inset: 0; }
+    .hero-bg img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.06); transition: transform 12s ease; }
+    .hero:hover .hero-bg img { transform: scale(1); }
+    .hero-ov { position: absolute; inset: 0; background: linear-gradient(to top, rgba(8,8,8,.97) 0%, rgba(8,8,8,.6) 38%, rgba(8,8,8,.15) 70%, transparent 100%); }
+    .hero-ov2 { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(8,8,8,.72) 0%, transparent 65%); }
+    .hero-content { position: relative; z-index: 2; max-width: 700px; }
+    .eyebrow { font-size: 10px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; color: var(--fire); margin-bottom: 20px; display: flex; align-items: center; gap: 14px; }
+    .eyebrow::before { content:''; display:block; width:28px; height:1px; background:var(--fire); }
+    .hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(52px,8vw,94px); font-weight: 700; font-style: italic; line-height: .92; letter-spacing: -2px; margin-bottom: 28px; }
+    .hero-title em { color: var(--fire); font-style: italic; }
+    .hero-sub { font-size: 15px; color: rgba(240,236,230,.5); line-height: 1.75; max-width: 420px; margin-bottom: 44px; }
+    .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; }
+
+    /* BTNS */
+    .btn-fire { display: inline-flex; align-items: center; gap: 10px; background: var(--fire); color: #fff; padding: 16px 32px; font-size: 11px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; border: none; cursor: none; clip-path: polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px)); transition: background .2s, transform .2s; }
+    .btn-fire:hover { background: var(--ember); transform: translateY(-2px); }
+    .btn-ghost { display: inline-flex; align-items: center; gap: 10px; border: 1px solid rgba(255,255,255,.18); color: rgba(240,236,230,.65); padding: 15px 32px; font-size: 11px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; cursor: none; transition: border-color .2s, color .2s, transform .2s; }
+    .btn-ghost:hover { border-color: var(--fire); color: var(--fire); transform: translateY(-2px); }
+
+    /* BADGES HERO */
+    .hero-badge { position: absolute; top: 42%; right: 48px; z-index: 2; background: rgba(255,107,43,.1); border: 1px solid rgba(255,107,43,.28); backdrop-filter: blur(12px); padding: 22px 30px; text-align: center; animation: floatY 5s ease-in-out infinite; }
+    @keyframes floatY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+    .hero-badge-n { font-family:'Cormorant Garamond',serif; font-size:38px; font-weight:700; color:var(--fire); line-height:1; }
+    .hero-badge-l { font-size:9px; letter-spacing:3px; text-transform:uppercase; color:rgba(240,236,230,.45); margin-top:6px; }
+    .live-badge { position:absolute; top:36px; left:48px; z-index:2; display:flex; align-items:center; gap:10px; background:rgba(8,8,8,.55); border:1px solid rgba(255,255,255,.1); backdrop-filter:blur(12px); padding:10px 18px; }
+    .live-dot { width:7px; height:7px; background:var(--fire); border-radius:50%; animation:pdot 1.5s ease-in-out infinite; }
+    @keyframes pdot { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.6);opacity:.5} }
+    .live-lbl { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:rgba(240,236,230,.55); }
+
+    /* STATS BAR */
+    .stats-bar { display:grid; grid-template-columns:1fr 1fr 1fr; border-top:1px solid rgba(255,255,255,.05); border-bottom:1px solid rgba(255,255,255,.05); }
+    .stat-item { padding:44px 48px; border-right:1px solid rgba(255,255,255,.05); transition:background .3s; }
+    .stat-item:last-child { border-right:none; }
+    .stat-item:hover { background:rgba(255,107,43,.04); }
+    .stat-num { font-family:'Cormorant Garamond',serif; font-size:58px; font-weight:700; font-style:italic; color:var(--fire); line-height:1; margin-bottom:8px; }
+    .stat-lbl { font-size:10px; letter-spacing:3px; text-transform:uppercase; color:#555; }
+
+    /* SECTION */
+    .sec { padding:80px 48px; }
+    .sec-sm { padding:44px 48px; }
+    .sec-hd { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:44px; }
+    .sec-title { font-family:'Cormorant Garamond',serif; font-size:clamp(34px,4vw,50px); font-weight:700; font-style:italic; line-height:1.05; letter-spacing:-1px; }
+    .link-fire { font-size:11px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:var(--fire); text-decoration:none; border-bottom:1px solid rgba(255,107,43,.3); padding-bottom:3px; transition:border-color .2s; cursor:none; }
+    .link-fire:hover { border-color:var(--fire); }
+
+    /* CATS */
+    .cats { display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; }
+    .cats::-webkit-scrollbar { display:none; }
+    .cat-btn { flex-shrink:0; padding:9px 22px; font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppercase; border:1px solid rgba(255,255,255,.1); background:transparent; color:var(--fog); cursor:none; transition:all .2s; white-space:nowrap; font-family:'DM Sans',sans-serif; }
+    .cat-btn:hover, .cat-btn.active { background:var(--fire); border-color:var(--fire); color:#fff; }
+
+    /* PAYS */
+    .pays-grid { display:grid; grid-template-columns:1fr 1fr; gap:2px; }
+    .pays-card { position:relative; overflow:hidden; min-height:300px; display:block; text-decoration:none; cursor:none; }
+    .pays-card img { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; transition:transform .8s cubic-bezier(.22,1,.36,1); }
+    .pays-card:hover img { transform:scale(1.07); }
+    .pays-ov { position:absolute; inset:0; background:linear-gradient(to top, rgba(8,8,8,.92) 0%, transparent 60%); }
+    .pays-cnt { position:absolute; top:20px; right:20px; border:1px solid rgba(255,107,43,.4); background:rgba(8,8,8,.5); backdrop-filter:blur(8px); padding:6px 14px; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--fire); }
+    .pays-info { position:absolute; bottom:0; left:0; right:0; padding:28px 32px; }
+    .pays-sub { font-size:9px; letter-spacing:3px; text-transform:uppercase; color:var(--fire); margin-bottom:6px; }
+    .pays-name { font-family:'Cormorant Garamond',serif; font-size:38px; font-weight:700; font-style:italic; color:var(--snow); line-height:1; }
+    .pays-desc { font-size:11px; color:rgba(240,236,230,.4); margin-top:6px; }
+
+    /* PRODUCTS */
+    .prod-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:2px; }
+    .prod-card { background:var(--slate); cursor:none; position:relative; overflow:hidden; transition:transform .4s cubic-bezier(.22,1,.36,1); }
+    .prod-card:hover { transform:translateY(-4px); z-index:2; }
+    .prod-img { aspect-ratio:3/4; overflow:hidden; position:relative; }
+    .prod-img img { width:100%; height:100%; object-fit:cover; transition:transform .7s cubic-bezier(.22,1,.36,1); }
+    .prod-card:hover .prod-img img { transform:scale(1.08); }
+    .prod-add { position:absolute; bottom:12px; right:12px; width:40px; height:40px; background:var(--fire); display:flex; align-items:center; justify-content:center; opacity:0; transform:scale(.8); transition:opacity .25s, transform .25s; border:none; cursor:none; color:#fff; }
+    .prod-card:hover .prod-add { opacity:1; transform:scale(1); }
+    .prod-badge { position:absolute; top:12px; left:12px; background:rgba(8,8,8,.72); border:1px solid rgba(255,255,255,.1); backdrop-filter:blur(8px); padding:4px 10px; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:#aaa; }
+    .prod-rare { position:absolute; top:12px; right:12px; background:var(--fire); padding:4px 10px; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:#fff; }
+    .prod-info { padding:16px 18px 20px; }
+    .prod-cat { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:#444; margin-bottom:6px; }
+    .prod-name { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:600; color:var(--snow); line-height:1.2; margin-bottom:10px; }
+    .prod-ft { display:flex; align-items:center; justify-content:space-between; }
+    .prod-price { font-size:16px; font-weight:500; color:var(--fire); }
+    .prod-rating { display:flex; align-items:center; gap:5px; font-size:11px; color:#555; }
+
+    /* ARTISAN */
+    .artisan { position:relative; overflow:hidden; min-height:420px; display:flex; align-items:center; margin:2px 0; }
+    .artisan img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+    .artisan-ov { position:absolute; inset:0; background:linear-gradient(90deg, rgba(8,8,8,.96) 40%, rgba(8,8,8,.25) 100%); }
+    .artisan-c { position:relative; z-index:2; padding:0 80px; max-width:600px; }
+    .artisan-q { font-family:'Cormorant Garamond',serif; font-size:clamp(26px,3vw,40px); font-style:italic; font-weight:600; line-height:1.2; color:var(--snow); margin:16px 0 20px; }
+    .artisan-n { font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--fire); margin-bottom:28px; }
+
+    /* COLLECTION */
+    .coll-grid { display:grid; grid-template-columns:2fr 1fr; gap:2px; }
+    .coll-card { position:relative; overflow:hidden; min-height:300px; display:block; text-decoration:none; cursor:none; }
+    .coll-card img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:transform .8s cubic-bezier(.22,1,.36,1); }
+    .coll-card:hover img { transform:scale(1.06); }
+    .coll-ov { position:absolute; inset:0; background:linear-gradient(to top, rgba(8,8,8,.9) 0%, transparent 55%); }
+    .coll-info { position:absolute; bottom:0; left:0; right:0; padding:28px 32px; }
+    .coll-lbl { font-size:9px; letter-spacing:3px; text-transform:uppercase; color:var(--fire); margin-bottom:8px; }
+    .coll-title { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:700; font-style:italic; color:var(--snow); }
+    .coll-sub { font-size:11px; color:rgba(240,236,230,.4); margin-top:4px; }
+
+    /* TRUST */
+    .trust-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:rgba(255,255,255,.04); }
+    .trust-item { background:var(--coal); padding:36px 28px; text-align:center; transition:background .3s; }
+    .trust-item:hover { background:var(--slate); }
+    .trust-icon { color:var(--fire); margin-bottom:14px; display:block; }
+    .trust-name { font-size:12px; font-weight:500; margin-bottom:6px; }
+    .trust-desc { font-size:11px; color:#555; }
+
+    /* REVIEWS */
+    .rev-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; }
+    .rev-card { background:var(--slate); padding:32px 28px; transition:background .3s; }
+    .rev-card:hover { background:var(--smoke); }
+    .rev-stars { display:flex; gap:3px; margin-bottom:18px; }
+    .rev-star { color:var(--fire); font-size:13px; }
+    .rev-text { font-family:'Cormorant Garamond',serif; font-size:17px; font-style:italic; color:rgba(240,236,230,.7); line-height:1.6; margin-bottom:20px; }
+    .rev-auth { display:flex; align-items:center; gap:12px; }
+    .rev-av { width:36px; height:36px; border-radius:50%; background:rgba(255,107,43,.12); border:1px solid rgba(255,107,43,.3); display:flex; align-items:center; justify-content:center; font-weight:600; font-size:13px; color:var(--fire); flex-shrink:0; }
+    .rev-name { font-size:12px; font-weight:500; }
+    .rev-loc { font-size:10px; color:#555; margin-top:2px; }
+
+    /* NEWSLETTER */
+    .nl { margin:2px 0; background:var(--slate); position:relative; overflow:hidden; padding:80px; display:flex; gap:80px; align-items:center; }
+    .nl::before { content:'W'; position:absolute; right:-40px; top:-40px; font-family:'Cormorant Garamond',serif; font-size:340px; font-weight:700; font-style:italic; color:rgba(255,107,43,.04); line-height:1; pointer-events:none; user-select:none; }
+    .nl-left { flex:1; position:relative; z-index:1; }
+    .nl-title { font-family:'Cormorant Garamond',serif; font-size:clamp(38px,5vw,58px); font-weight:700; font-style:italic; line-height:1; margin:14px 0 16px; }
+    .nl-sub { font-size:14px; color:#666; line-height:1.75; }
+    .nl-right { flex:1; position:relative; z-index:1; }
+    .nl-form { display:flex; }
+    .nl-inp { flex:1; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-right:none; color:var(--snow); padding:16px 20px; font-size:13px; font-family:'DM Sans',sans-serif; outline:none; transition:border-color .2s; }
+    .nl-inp::placeholder { color:#333; }
+    .nl-inp:focus { border-color:rgba(255,107,43,.4); }
+    .nl-btn { background:var(--fire); color:#fff; border:none; cursor:none; padding:16px 28px; font-size:11px; font-weight:500; letter-spacing:2px; text-transform:uppercase; transition:background .2s; white-space:nowrap; font-family:'DM Sans',sans-serif; }
+    .nl-btn:hover { background:var(--ember); }
+
+    /* BOTTOM NAV */
+    .bnav { display:none; position:fixed; bottom:0; left:0; right:0; z-index:100; background:rgba(8,8,8,.95); backdrop-filter:blur(20px); border-top:1px solid rgba(255,107,43,.2); padding:10px 0 22px; }
+    .bnav-inner { display:flex; justify-content:space-around; }
+    .bnav-item { display:flex; flex-direction:column; align-items:center; gap:4px; color:#555; text-decoration:none; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; transition:color .2s; cursor:none; }
+    .bnav-item.active,.bnav-item:hover { color:var(--fire); }
+
+    /* SEARCH */
+    .srch-ov { position:fixed; inset:0; z-index:200; background:rgba(8,8,8,.93); backdrop-filter:blur(20px); display:flex; align-items:flex-start; justify-content:center; padding-top:120px; opacity:0; pointer-events:none; transition:opacity .25s; }
+    .srch-ov.open { opacity:1; pointer-events:all; }
+    .srch-box { width:100%; max-width:640px; border-bottom:2px solid var(--fire); display:flex; align-items:center; gap:16px; padding-bottom:16px; transform:translateY(-20px); transition:transform .3s; }
+    .srch-ov.open .srch-box { transform:translateY(0); }
+    .srch-inp { flex:1; background:none; border:none; outline:none; font-family:'Cormorant Garamond',serif; font-size:32px; font-style:italic; color:var(--snow); }
+    .srch-inp::placeholder { color:#2a2a2a; }
+
+    /* TOAST */
+    #toast { position:fixed; bottom:32px; left:50%; transform:translateX(-50%) translateY(8px); z-index:300; background:var(--slate); border:1px solid rgba(255,107,43,.3); color:var(--snow); padding:14px 24px; font-size:13px; opacity:0; pointer-events:none; transition:opacity .3s, transform .3s; white-space:nowrap; }
+    #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+    /* REVEAL */
+    .reveal { opacity:0; transform:translateY(36px); transition:opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); }
+    .reveal.vis { opacity:1; transform:translateY(0); }
+
+    /* SKELETON */
+    .skel { background:linear-gradient(90deg,#1a1a1a 25%,#222 50%,#1a1a1a 75%); background-size:200% 100%; animation:shim 1.5s infinite; }
+    @keyframes shim { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+    @media(max-width:768px){
+      body { cursor:auto; }
+      .cur,.cur-ring { display:none; }
+      .hd { padding:16px 24px; }
+      .hd.scr { padding:12px 24px; }
+      .nav { display:none; }
+      .hero { padding:0 24px 80px; padding-top:120px; }
+      .hero-badge { display:none; }
+      .live-badge { left:24px; top:28px; }
+      .hero-title { font-size:46px; }
+      .stats-bar { grid-template-columns:1fr; }
+      .stat-item { padding:28px 24px; border-right:none; border-bottom:1px solid rgba(255,255,255,.05); }
+      .sec { padding:56px 24px; }
+      .sec-sm { padding:36px 24px; }
+      .pays-grid { grid-template-columns:1fr; }
+      .prod-grid { grid-template-columns:repeat(2,1fr); }
+      .coll-grid { grid-template-columns:1fr; }
+      .trust-grid { grid-template-columns:repeat(2,1fr); }
+      .rev-grid { grid-template-columns:1fr; }
+      .nl { flex-direction:column; padding:48px 24px; gap:40px; }
+      .artisan-c { padding:0 32px; }
+      .bnav { display:block; }
+      body { padding-bottom:80px; }
     }
-    .btn-primary:hover{opacity:.92;transform:scale(.98);box-shadow:0 8px 30px rgba(255,107,43,.48)}
-    .btn-primary:active{transform:scale(.96)}
-
-    .floating-badge{animation:float 4s ease-in-out infinite}
-    .live-dot{animation:pulse-dot 1.5s ease-in-out infinite}
-
-    .category-chip{transition:all .2s ease}
-    .category-chip:hover{background:#FF6B2B;color:#fff;transform:translateY(-2px)}
-    .category-chip.active{background:#FF6B2B;color:#fff}
-
-    .trust-item{transition:transform .3s ease}
-    .trust-item:hover{transform:translateY(-4px)}
-
-    .section-enter{opacity:0;transform:translateY(40px);transition:all .7s cubic-bezier(.22,1,.36,1)}
-    .section-enter.visible{opacity:1;transform:translateY(0)}
-
-    .glass{background:rgba(255,255,255,.18);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.25)}
-    .star-fill{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24}
-
-    #search-overlay{animation:overlayFadeIn .2s ease forwards}
-    #search-overlay .search-box{animation:overlaySlideDown .25s cubic-bezier(.22,1,.36,1) forwards}
-    #search-overlay.hidden{display:none!important}
-
-    #toast{transition:all .3s ease}
-
-    /* ── Produit card — prix orange, hover border ── */
-    .product-price{color:#FF6B2B;font-weight:700}
-    .card-hover:hover{border-color:#FF6B2B !important}
-
-    /* ── Scrollbar ── */
-    ::-webkit-scrollbar{width:5px}
-    ::-webkit-scrollbar-thumb{background:#FF6B2B;border-radius:3px}
-    ::selection{background:#FFE0D0;color:#E85A1A}
   </style>
 </head>
-<body class="bg-background text-on-surface min-h-screen overflow-x-hidden">
+<body>
 
-<!-- ══ HEADER ══ -->
-<header class="bg-secondary backdrop-blur-xl fixed top-0 w-full z-50 border-b-2 border-primary">
-  <div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto w-full">
-    <div class="flex items-center gap-4">
-      <button aria-label="Menu" class="text-white hover:text-primary transition-colors anim-fade-in">
-        <span class="material-symbols-outlined">menu</span>
-      </button>
-      <a href="/" aria-label="WennaShop accueil">
-        <h1 class="font-serif italic text-2xl tracking-tighter text-white anim-fade-in d-100">
-          Wenna<span class="text-primary">Shop</span>
-        </h1>
-      </a>
-    </div>
-    <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-white/75" aria-label="Navigation principale">
-      <a href="boutique.html" class="hover:text-primary transition-colors">Shop</a>
-    </nav>
-    <div class="flex items-center gap-4 anim-fade-in d-200">
-      <button onclick="openSearch()" aria-label="Rechercher" class="text-white hover:text-primary transition-colors">
-        <span class="material-symbols-outlined">search</span>
-      </button>
-      <a href="panier.html" aria-label="Panier" class="text-white hover:text-primary transition-colors relative">
-        <span class="material-symbols-outlined">shopping_bag</span>
-        <span id="cart-badge" class="absolute -top-1 -right-1 bg-primary text-white text-[9px] font-bold w-4 h-4 rounded-full items-center justify-center hidden">0</span>
-      </a>
-      <a href="compte.html" aria-label="Mon compte" class="text-white hover:text-primary transition-colors hidden md:block">
-        <span class="material-symbols-outlined">person</span>
-      </a>
-    </div>
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="curRing"></div>
+
+<!-- HEADER -->
+<header class="hd" id="hd">
+  <a href="/" class="logo">Wenna<b>Shop</b></a>
+  <nav class="nav">
+    <a href="boutique.html">Collection</a>
+    <a href="boutique.html?pays=gabon">Gabon</a>
+    <a href="boutique.html?pays=maroc">Maroc</a>
+  </nav>
+  <div class="hd-acts">
+    <button onclick="openSearch()" aria-label="Rechercher"><span class="material-symbols-outlined">search</span></button>
+    <a href="panier.html" style="position:relative;" aria-label="Panier">
+      <span class="material-symbols-outlined">shopping_bag</span>
+      <span class="cbadge" id="cart-badge">0</span>
+    </a>
+    <a href="compte.html" aria-label="Compte"><span class="material-symbols-outlined">person</span></a>
   </div>
 </header>
 
-<!-- ══ TICKER ══ -->
-<div class="fixed top-[68px] w-full z-40 bg-primary text-white text-[10px] font-bold uppercase tracking-[.2em] overflow-hidden py-1.5" aria-hidden="true">
-  <div class="ticker-track gap-16 flex">
-    <span class="whitespace-nowrap px-8">✦ Livraison express Casablanca → Libreville</span>
-    <span class="whitespace-nowrap px-8">✦ Nouveaux artisans rejoignent la communauté</span>
-    <span class="whitespace-nowrap px-8">✦ -15% sur votre première commande avec WENNA15</span>
-    <span class="whitespace-nowrap px-8">✦ Paiements sécurisés · Retours gratuits 30 jours</span>
-    <span class="whitespace-nowrap px-8">✦ Livraison express Casablanca → Libreville</span>
-    <span class="whitespace-nowrap px-8">✦ Nouveaux artisans rejoignent la communauté</span>
-    <span class="whitespace-nowrap px-8">✦ -15% sur votre première commande avec WENNA15</span>
-    <span class="whitespace-nowrap px-8">✦ Paiements sécurisés · Retours gratuits 30 jours</span>
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-t">
+    <span>Livraison express Casablanca → Libreville</span><span class="sep">✦</span>
+    <span>Nouveaux artisans rejoignent la communauté</span><span class="sep">✦</span>
+    <span>−15% première commande · Code WENNA15</span><span class="sep">✦</span>
+    <span>Paiements sécurisés · Retours 30 jours</span><span class="sep">✦</span>
+    <span>Livraison express Casablanca → Libreville</span><span class="sep">✦</span>
+    <span>Nouveaux artisans rejoignent la communauté</span><span class="sep">✦</span>
+    <span>−15% première commande · Code WENNA15</span><span class="sep">✦</span>
+    <span>Paiements sécurisés · Retours 30 jours</span><span class="sep">✦</span>
   </div>
 </div>
 
-<main class="pt-24 pb-32">
+<main>
 
-  <!-- ══ HERO ══ -->
-  <section class="px-4 pt-6 pb-4">
-    <div class="relative overflow-hidden rounded-lg min-h-[520px] md:min-h-[600px] flex items-end p-8 group">
-      <div class="absolute inset-0 z-0">
-        <img
-          class="w-full h-full object-cover hero-img"
-          src="https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1400&q=85&fit=crop"
-          alt="Paysage africain luxuriant"
-          width="1400" height="600"
-          fetchpriority="high"
-        />
-      </div>
-      <div class="absolute inset-0 hero-overlay z-10"></div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg">
+    <img src="https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1600&q=90&fit=crop" alt="Paysage africain" fetchpriority="high"/>
+  </div>
+  <div class="hero-ov"></div>
+  <div class="hero-ov2"></div>
+  <div class="live-badge">
+    <div class="live-dot"></div>
+    <span class="live-lbl" id="active-count">— acheteurs actifs</span>
+  </div>
+  <div class="hero-badge">
+    <div class="hero-badge-n" id="hero-rating">4.9★</div>
+    <div class="hero-badge-l" id="hero-reviews">1 200+ avis</div>
+  </div>
+  <div class="hero-content">
+    <div class="eyebrow">L'union culturelle · Saison 2025</div>
+    <h1 class="hero-title">Du cœur de<br/><em>Casablanca</em><br/>à l'âme de<br/>Libreville.</h1>
+    <p class="hero-sub">Artisanat authentique. Produits sourcés à la source. Une passerelle entre deux cultures vibrantes.</p>
+    <div class="hero-ctas">
+      <a href="boutique.html" class="btn-fire">Explorer la collection <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span></a>
+      <a href="boutique.html?type=artisans" class="btn-ghost">Nos artisans</a>
+    </div>
+  </div>
+</section>
 
-      <!-- Badge flottant -->
-      <div class="absolute top-8 right-8 z-20 floating-badge">
-        <div class="glass rounded-lg px-5 py-4 text-center">
-          <p class="text-2xl font-serif font-bold text-primary" id="hero-rating">4.9★</p>
-          <p class="text-[10px] uppercase tracking-widest text-white/80 font-bold mt-1" id="hero-reviews">1 200+ avis</p>
-        </div>
-      </div>
+<!-- STATS -->
+<div class="stats-bar reveal">
+  <div class="stat-item"><div class="stat-num" id="stat-artisans">—</div><div class="stat-lbl">Artisans actifs</div></div>
+  <div class="stat-item"><div class="stat-num" id="stat-orders">—</div><div class="stat-lbl">Commandes livrées</div></div>
+  <div class="stat-item"><div class="stat-num" id="stat-satisfaction">—</div><div class="stat-lbl">Satisfaction client</div></div>
+</div>
 
-      <!-- Badge actifs -->
-      <div class="absolute top-8 left-8 z-20 flex items-center gap-2 glass rounded-full px-4 py-2">
-        <span class="w-2 h-2 rounded-full bg-primary live-dot"></span>
-        <span class="text-[10px] font-bold uppercase tracking-widest text-white" id="active-count">— acheteurs actifs</span>
-      </div>
+<!-- CATS -->
+<div class="sec-sm reveal">
+  <div class="cats">
+    <button class="cat-btn active" data-cat="all">Tout</button>
+    <button class="cat-btn" data-cat="beaute">Beauté</button>
+    <button class="cat-btn" data-cat="artisanat">Artisanat</button>
+    <button class="cat-btn" data-cat="epicerie">Épicerie</button>
+    <button class="cat-btn" data-cat="mode">Mode</button>
+    <button class="cat-btn" data-cat="maison">Maison</button>
+  </div>
+</div>
 
-      <!-- Contenu hero -->
-      <div class="relative z-20 max-w-2xl">
-        <span class="inline-block px-4 py-1.5 rounded-full bg-primary/90 text-white text-[10px] font-bold uppercase tracking-widest mb-5 anim-fade-in">
-          L'Union Culturelle ✦ Nouveau
-        </span>
-        <h2 class="text-5xl md:text-7xl font-serif italic text-white leading-[1.05] mb-6 anim-fade-up d-200">
-          Du cœur de<br/>
-          <span class="text-primary">Casablanca</span><br/>
-          à l'âme de<br/>
-          <span class="text-secondary-fixed-dim">Libreville.</span>
-        </h2>
-        <p class="text-white/80 text-base mb-8 max-w-md anim-fade-up d-400 leading-relaxed">
-          Artisanat authentique. Produits sourcés à la source. Une passerelle entre deux cultures vibrantes.
-        </p>
-        <div class="flex flex-wrap gap-4 anim-fade-up d-500">
-          <a href="boutique.html" class="btn-primary text-white px-8 py-4 rounded-xl font-bold text-sm tracking-widest uppercase flex items-center gap-3">
-            Explorer la Collection
-            <span class="material-symbols-outlined text-lg">arrow_forward</span>
-          </a>
-          <a href="artisans.html" class="glass text-white px-8 py-4 rounded-xl font-bold text-sm tracking-widest uppercase hover:bg-white/30 transition-all">
-            Nos Artisans
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
+<!-- PRODUITS -->
+<div class="sec" style="padding-top:0;">
+  <div class="sec-hd reveal">
+    <div><div class="eyebrow">Sélection du moment</div><h2 class="sec-title">À la Une</h2></div>
+    <a href="boutique.html" class="link-fire">Tout voir</a>
+  </div>
+  <div class="prod-grid" id="products-grid">
+    <div class="prod-card"><div class="prod-img skel" style="aspect-ratio:3/4;"></div><div class="prod-info"><div class="skel" style="height:9px;width:55%;margin-bottom:8px;border-radius:2px;"></div><div class="skel" style="height:17px;width:80%;margin-bottom:10px;border-radius:2px;"></div><div class="skel" style="height:14px;width:38%;border-radius:2px;"></div></div></div>
+    <div class="prod-card"><div class="prod-img skel" style="aspect-ratio:3/4;"></div><div class="prod-info"><div class="skel" style="height:9px;width:55%;margin-bottom:8px;border-radius:2px;"></div><div class="skel" style="height:17px;width:80%;margin-bottom:10px;border-radius:2px;"></div><div class="skel" style="height:14px;width:38%;border-radius:2px;"></div></div></div>
+    <div class="prod-card"><div class="prod-img skel" style="aspect-ratio:3/4;"></div><div class="prod-info"><div class="skel" style="height:9px;width:55%;margin-bottom:8px;border-radius:2px;"></div><div class="skel" style="height:17px;width:80%;margin-bottom:10px;border-radius:2px;"></div><div class="skel" style="height:14px;width:38%;border-radius:2px;"></div></div></div>
+    <div class="prod-card"><div class="prod-img skel" style="aspect-ratio:3/4;"></div><div class="prod-info"><div class="skel" style="height:9px;width:55%;margin-bottom:8px;border-radius:2px;"></div><div class="skel" style="height:17px;width:80%;margin-bottom:10px;border-radius:2px;"></div><div class="skel" style="height:14px;width:38%;border-radius:2px;"></div></div></div>
+  </div>
+</div>
 
-  <!-- ══ CATÉGORIES ══ -->
-  <section class="px-4 py-8 section-enter" aria-label="Filtrer par catégorie">
-    <div class="flex gap-3 overflow-x-auto pb-2 no-scrollbar" role="list">
-      <button role="listitem" data-cat="all" class="category-chip active flex-shrink-0 px-5 py-2.5 rounded-full bg-primary text-white text-xs font-bold uppercase tracking-widest border border-primary/30">Tout</button>
-      <button role="listitem" data-cat="beaute" class="category-chip flex-shrink-0 px-5 py-2.5 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-bold uppercase tracking-widest border border-outline-variant/20">Beauté</button>
-      <button role="listitem" data-cat="artisanat" class="category-chip flex-shrink-0 px-5 py-2.5 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-bold uppercase tracking-widest border border-outline-variant/20">Artisanat</button>
-      <button role="listitem" data-cat="epicerie" class="category-chip flex-shrink-0 px-5 py-2.5 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-bold uppercase tracking-widest border border-outline-variant/20">Épicerie</button>
-      <button role="listitem" data-cat="mode" class="category-chip flex-shrink-0 px-5 py-2.5 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-bold uppercase tracking-widest border border-outline-variant/20">Mode</button>
-      <button role="listitem" data-cat="maison" class="category-chip flex-shrink-0 px-5 py-2.5 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-bold uppercase tracking-widest border border-outline-variant/20">Maison</button>
-    </div>
-  </section>
+<!-- PAYS -->
+<div class="pays-grid reveal">
+  <a href="boutique.html?pays=gabon" class="pays-card">
+    <img src="https://images.unsplash.com/photo-1523805009345-7448845a9e53?w=800&q=80&fit=crop" alt="Gabon" loading="lazy"/>
+    <div class="pays-ov"></div>
+    <div class="pays-cnt" id="count-gabon">— produits</div>
+    <div class="pays-info"><div class="pays-sub">Afrique Centrale</div><div class="pays-name">Gabon</div><div class="pays-desc">Forêt · Cacao · Artisanat Punu</div></div>
+  </a>
+  <a href="boutique.html?pays=maroc" class="pays-card">
+    <img src="https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=800&q=80&fit=crop" alt="Maroc" loading="lazy"/>
+    <div class="pays-ov"></div>
+    <div class="pays-cnt" id="count-maroc">— produits</div>
+    <div class="pays-info"><div class="pays-sub">Afrique du Nord</div><div class="pays-name">Maroc</div><div class="pays-desc">Argan · Zellige · Soie de Fès</div></div>
+  </a>
+</div>
 
-  <!-- ══ BRIDGE 2 PAYS ══ -->
-  <section class="px-4 py-4 section-enter" aria-label="Explorer par pays">
-    <div class="grid grid-cols-2 gap-4">
-      <a href="boutique.html?pays=gabon" class="relative rounded-lg overflow-hidden min-h-[220px] group card-hover cursor-pointer block border border-transparent">
-        <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://images.unsplash.com/photo-1523805009345-7448845a9e53?w=600&q=80&fit=crop" alt="Gabon forêt équatoriale" loading="lazy" width="600" height="440"/>
-        <div class="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/20 to-transparent"></div>
-        <div class="absolute bottom-5 left-5 right-5 z-10">
-          <span class="text-[9px] font-bold uppercase tracking-[.25em] text-primary block mb-1">Afrique Centrale</span>
-          <h3 class="font-serif italic text-white text-xl font-bold leading-tight">Gabon</h3>
-          <p class="text-white/70 text-xs mt-1">Forêt · Cacao · Artisanat Punu</p>
-        </div>
-        <div class="absolute top-4 right-4 z-10 bg-secondary/80 backdrop-blur px-2 py-1 rounded-full">
-          <span class="text-[9px] font-bold text-white uppercase tracking-wider" id="count-gabon">— produits</span>
-        </div>
-      </a>
-      <a href="boutique.html?pays=maroc" class="relative rounded-lg overflow-hidden min-h-[220px] group card-hover cursor-pointer block border border-transparent">
-        <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=600&q=80&fit=crop" alt="Maroc médina" loading="lazy" width="600" height="440"/>
-        <div class="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/20 to-transparent"></div>
-        <div class="absolute bottom-5 left-5 right-5 z-10">
-          <span class="text-[9px] font-bold uppercase tracking-[.25em] text-secondary-fixed-dim block mb-1">Afrique du Nord</span>
-          <h3 class="font-serif italic text-white text-xl font-bold leading-tight">Maroc</h3>
-          <p class="text-white/70 text-xs mt-1">Argan · Zellige · Soie de Fès</p>
-        </div>
-        <div class="absolute top-4 right-4 z-10 bg-primary/80 backdrop-blur px-2 py-1 rounded-full">
-          <span class="text-[9px] font-bold text-white uppercase tracking-wider" id="count-maroc">— produits</span>
-        </div>
-      </a>
-    </div>
-  </section>
+<!-- ARTISAN -->
+<div class="artisan reveal">
+  <img src="https://images.unsplash.com/photo-1534361960057-19f4434a0b78?w=1400&q=80&fit=crop" alt="Artisan" loading="lazy"/>
+  <div class="artisan-ov"></div>
+  <div class="artisan-c">
+    <div class="eyebrow">Portrait d'artisan</div>
+    <div class="artisan-q">« Chaque pièce porte l'âme de son auteur. »</div>
+    <div class="artisan-n">Fatima Benali · Essaouira depuis 1987</div>
+    <a href="boutique.html?type=artisans" class="btn-fire">Lire son histoire</a>
+  </div>
+</div>
 
-  <!-- ══ STATS ══ -->
-  <section class="px-4 py-10 section-enter" aria-label="Chiffres clés">
-    <div class="bg-secondary rounded-lg p-8">
-      <div class="grid grid-cols-3 gap-6 text-center">
-        <div class="trust-item">
-          <p class="text-4xl font-serif font-bold text-primary mb-1" id="stat-artisans">—</p>
-          <p class="text-[10px] uppercase tracking-widest text-white/60 font-bold">Artisans actifs</p>
-        </div>
-        <div class="trust-item border-x border-white/10">
-          <p class="text-4xl font-serif font-bold text-white mb-1" id="stat-orders">—</p>
-          <p class="text-[10px] uppercase tracking-widest text-white/60 font-bold">Commandes livrées</p>
-        </div>
-        <div class="trust-item">
-          <p class="text-4xl font-serif font-bold text-primary mb-1" id="stat-satisfaction">—</p>
-          <p class="text-[10px] uppercase tracking-widest text-white/60 font-bold">Satisfaction</p>
-        </div>
-      </div>
-    </div>
-  </section>
+<!-- COLLECTION -->
+<div class="sec reveal">
+  <div class="sec-hd">
+    <div><div class="eyebrow">Été 2025</div><h2 class="sec-title">Collection Saison</h2></div>
+    <a href="boutique.html" class="link-fire">Voir tout</a>
+  </div>
+  <div class="coll-grid">
+    <a href="boutique.html?col=wax-soie" class="coll-card">
+      <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=900&q=80&fit=crop" alt="Wax & Soie" loading="lazy"/>
+      <div class="coll-ov"></div>
+      <div class="coll-info"><div class="coll-lbl">Mode · Textile</div><div class="coll-title">Wax & Soie</div><div class="coll-sub">Fusion Gabon × Maroc · 32 pièces</div></div>
+    </a>
+    <a href="boutique.html?col=epices" class="coll-card">
+      <img src="https://images.unsplash.com/photo-1556228720-195a672e8a03?w=500&q=80&fit=crop" alt="Épices" loading="lazy"/>
+      <div class="coll-ov"></div>
+      <div class="coll-info"><div class="coll-lbl">Épicerie fine</div><div class="coll-title">Épices de Souks</div><div class="coll-sub">Ras el Hanout · Curcuma · Safran</div></div>
+    </a>
+  </div>
+</div>
 
-  <!-- ══ FEATURED PRODUCTS ══ -->
-  <section class="px-4 py-6 section-enter" aria-labelledby="featured-title">
-    <div class="flex justify-between items-end mb-6">
-      <div>
-        <p class="text-[10px] uppercase tracking-[.2em] text-primary font-bold mb-1">Sélection du moment</p>
-        <h2 id="featured-title" class="font-serif italic text-3xl font-bold text-secondary">À la Une</h2>
-      </div>
-      <a href="boutique.html" class="text-xs font-bold uppercase tracking-widest text-primary border-b border-primary/30 pb-1 hover:border-primary transition-colors">Tout voir</a>
-    </div>
-    <div id="products-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div class="bg-surface-container-lowest rounded-lg p-3 animate-pulse border border-outline-variant/20"><div class="aspect-square rounded-md bg-surface-container-high mb-4"></div><div class="h-2 bg-surface-container-high rounded mb-2 w-2/3"></div><div class="h-3 bg-surface-container-high rounded mb-2"></div><div class="h-3 bg-surface-container-high rounded w-1/3"></div></div>
-      <div class="bg-surface-container-lowest rounded-lg p-3 animate-pulse border border-outline-variant/20"><div class="aspect-square rounded-md bg-surface-container-high mb-4"></div><div class="h-2 bg-surface-container-high rounded mb-2 w-2/3"></div><div class="h-3 bg-surface-container-high rounded mb-2"></div><div class="h-3 bg-surface-container-high rounded w-1/3"></div></div>
-      <div class="bg-surface-container-lowest rounded-lg p-3 animate-pulse hidden md:block border border-outline-variant/20"><div class="aspect-square rounded-md bg-surface-container-high mb-4"></div><div class="h-2 bg-surface-container-high rounded mb-2 w-2/3"></div><div class="h-3 bg-surface-container-high rounded mb-2"></div><div class="h-3 bg-surface-container-high rounded w-1/3"></div></div>
-      <div class="bg-surface-container-lowest rounded-lg p-3 animate-pulse hidden md:block border border-outline-variant/20"><div class="aspect-square rounded-md bg-surface-container-high mb-4"></div><div class="h-2 bg-surface-container-high rounded mb-2 w-2/3"></div><div class="h-3 bg-surface-container-high rounded mb-2"></div><div class="h-3 bg-surface-container-high rounded w-1/3"></div></div>
-    </div>
-  </section>
+<!-- TRUST -->
+<div class="trust-grid reveal">
+  <div class="trust-item"><span class="material-symbols-outlined trust-icon">verified_user</span><div class="trust-name">Paiement sécurisé</div><div class="trust-desc">SSL · 3D Secure · Crypté</div></div>
+  <div class="trust-item"><span class="material-symbols-outlined trust-icon">local_shipping</span><div class="trust-name">Livraison Express</div><div class="trust-desc">4–7 jours ouvrés</div></div>
+  <div class="trust-item"><span class="material-symbols-outlined trust-icon">eco</span><div class="trust-name">100% Authentique</div><div class="trust-desc">Sourcé & vérifié</div></div>
+  <div class="trust-item"><span class="material-symbols-outlined trust-icon">autorenew</span><div class="trust-name">Retours Gratuits</div><div class="trust-desc">30 jours sans conditions</div></div>
+</div>
 
-  <!-- ══ PORTRAIT ARTISAN ══ -->
-  <section class="px-4 py-8 section-enter">
-    <div class="relative rounded-lg overflow-hidden min-h-[300px] md:min-h-[360px]">
-      <img class="absolute inset-0 w-full h-full object-cover" src="https://images.unsplash.com/photo-1534361960057-19f4434a0b78?w=1200&q=80&fit=crop" alt="Artisan au travail" loading="lazy" width="1200" height="360"/>
-      <div class="absolute inset-0 bg-gradient-to-r from-secondary/92 via-secondary/60 to-transparent"></div>
-      <div class="relative z-10 p-8 md:p-12 max-w-lg">
-        <span class="text-[10px] uppercase tracking-[.25em] text-primary font-bold block mb-4">Portrait d'Artisan</span>
-        <h3 class="font-serif italic text-3xl md:text-4xl text-white font-bold leading-tight mb-4">« Chaque pièce porte<br/>l'âme de son auteur. »</h3>
-        <p class="text-white/70 text-sm leading-relaxed mb-6">Fatima Benali, coopérative d'Essaouira depuis 1987. Elle presse l'argan à la main, comme sa mère l'a fait avant elle.</p>
-        <a href="artisans.html" class="inline-block bg-primary text-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-primary-hover transition-all shadow-lg">Lire son histoire</a>
-      </div>
+<!-- REVIEWS -->
+<div class="sec reveal">
+  <div class="sec-hd">
+    <div><div class="eyebrow">Communauté</div><h2 class="sec-title">Ce qu'ils disent</h2></div>
+    <div style="font-size:13px;color:#555;"><span style="color:var(--fire);font-weight:500;">4.9</span> / 5 · 1 247 avis</div>
+  </div>
+  <div class="rev-grid">
+    <div class="rev-card">
+      <div class="rev-stars"><span class="material-symbols-outlined rev-star" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">star</span><span class="material-symbols-outlined rev-star" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">star</span><span class="material-symbols-outlined rev-star" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">star</span><span class="material-symbols-outlined rev-star" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">star</span><span class="material-symbols-outlined rev-star" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">star</span></div>
+      <div class="rev-text">"L'huile d'argan est incroyable, exactement comme promise. Livraison rapide depuis le Maroc!"</div>
+      <div class="rev-auth"><div class="rev-av">A</div><div><div class="rev-name">Amina B.</div><div class="rev-loc">Libreville · Client vérifié</div></div></div>
     </div>
-  </section>
+    <div class="rev-card">
+      <div class="rev-stars"><span class="material-symbols-outlined rev-star" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">star</span><span class="material-symbols-outlined rev-star" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">star</span><span class="material-symbols-outlined rev-star" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">star</span><span class="material-symbols-outlined rev-star" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">star</span><span class="material-symbols-outlined rev-star" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">star</span></div>
+      <div class="rev-text">"Le masque Punu est une pièce d'art. Merci WennaShop pour cette passerelle culturelle unique."</div>
+      <div class="rev-auth"><div class="rev-av">K</div><div><div class="rev-name">Kofi M.</div><div class="rev-loc">Casablanca · Client vérifié</div></div></div>
+    </div>
+    <div class="rev-card">
+      <div class="rev-stars"><span class="material-symbols-outlined rev-star" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">star</span><span class="material-symbols-outlined rev-star" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">star</span><span class="material-symbols-outlined rev-star" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">star</span><span class="material-symbols-outlined rev-star" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">star</span><span class="material-symbols-outlined rev-star" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">star</span></div>
+      <div class="rev-text">"Service client exceptionnel. Le savon beldi est de qualité supérieure, je recommande!"</div>
+      <div class="rev-auth"><div class="rev-av">S</div><div><div class="rev-name">Sara El H.</div><div class="rev-loc">Rabat · Client vérifié</div></div></div>
+    </div>
+  </div>
+</div>
 
-  <!-- ══ COLLECTION SAISON ══ -->
-  <section class="px-4 py-8 section-enter" aria-labelledby="season-title">
-    <div class="flex justify-between items-end mb-6">
-      <div>
-        <p class="text-[10px] uppercase tracking-[.2em] text-primary font-bold mb-1">Été 2025</p>
-        <h2 id="season-title" class="font-serif italic text-3xl font-bold text-secondary">Collection Saison</h2>
-      </div>
-      <a href="boutique.html" class="text-xs font-bold uppercase tracking-widest text-primary border-b border-primary/30 pb-1">Voir tout</a>
+<!-- NEWSLETTER -->
+<div class="nl reveal">
+  <div class="nl-left">
+    <div class="eyebrow">Rejoignez le cercle</div>
+    <h2 class="nl-title">Le Wenna<br/>Circle</h2>
+    <p class="nl-sub">Histoires d'artisans, accès anticipé aux drops saisonniers et offres exclusives. Rejoignez 8 400 curateurs passionnés.</p>
+  </div>
+  <div class="nl-right">
+    <div class="nl-form">
+      <input class="nl-inp" id="newsletter-email" type="email" placeholder="votre@email.com" autocomplete="email"/>
+      <button class="nl-btn" onclick="subscribeNewsletter()">S'abonner</button>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <a href="boutique.html?col=wax-soie" class="md:col-span-2 relative rounded-lg overflow-hidden min-h-[240px] group card-hover cursor-pointer block border border-transparent">
-        <img class="w-full h-full object-cover absolute inset-0 transition-transform duration-700 group-hover:scale-105" src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&q=80&fit=crop" alt="Mode africaine Wax et Soie" loading="lazy" width="800" height="240"/>
-        <div class="absolute inset-0 bg-gradient-to-t from-secondary/85 via-transparent to-transparent"></div>
-        <div class="absolute bottom-6 left-6">
-          <span class="text-[9px] font-bold uppercase tracking-widest text-primary block mb-1">Mode · Textile</span>
-          <h4 class="font-serif italic text-white text-2xl font-bold">Wax & Soie</h4>
-          <p class="text-white/70 text-xs mt-1">Fusion Gabon × Maroc · 32 pièces</p>
-        </div>
-      </a>
-      <a href="boutique.html?col=epices" class="relative rounded-lg overflow-hidden min-h-[240px] group card-hover cursor-pointer block border border-transparent">
-        <img class="w-full h-full object-cover absolute inset-0 transition-transform duration-700 group-hover:scale-105" src="https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&q=80&fit=crop" alt="Épices du Maroc" loading="lazy" width="400" height="240"/>
-        <div class="absolute inset-0 bg-gradient-to-t from-secondary/85 via-transparent to-transparent"></div>
-        <div class="absolute bottom-6 left-6">
-          <span class="text-[9px] font-bold uppercase tracking-widest text-primary block mb-1">Épicerie fine</span>
-          <h4 class="font-serif italic text-white text-2xl font-bold">Épices de Souks</h4>
-          <p class="text-white/70 text-xs mt-1">Ras el Hanout · Curcuma · Safran</p>
-        </div>
-      </a>
-    </div>
-  </section>
-
-  <!-- ══ TRUST BADGES ══ -->
-  <section class="px-4 py-8 section-enter" aria-label="Garanties">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div class="trust-item bg-surface-container-lowest rounded-lg p-5 text-center border border-outline-variant/20 hover:border-primary transition-colors">
-        <span class="material-symbols-outlined text-primary mb-3 block" style="font-size:28px;" aria-hidden="true">verified_user</span>
-        <p class="text-xs font-bold uppercase tracking-wider text-secondary mb-1">Paiement sécurisé</p>
-        <p class="text-[10px] text-on-surface-variant">SSL · 3D Secure · Crypté</p>
-      </div>
-      <div class="trust-item bg-surface-container-lowest rounded-lg p-5 text-center border border-outline-variant/20 hover:border-primary transition-colors">
-        <span class="material-symbols-outlined text-secondary mb-3 block" style="font-size:28px;" aria-hidden="true">local_shipping</span>
-        <p class="text-xs font-bold uppercase tracking-wider text-secondary mb-1">Livraison Express</p>
-        <p class="text-[10px] text-on-surface-variant">4–7 jours ouvrés</p>
-      </div>
-      <div class="trust-item bg-surface-container-lowest rounded-lg p-5 text-center border border-outline-variant/20 hover:border-primary transition-colors">
-        <span class="material-symbols-outlined text-primary mb-3 block" style="font-size:28px;" aria-hidden="true">eco</span>
-        <p class="text-xs font-bold uppercase tracking-wider text-secondary mb-1">100% Authentique</p>
-        <p class="text-[10px] text-on-surface-variant">Sourcé & vérifié</p>
-      </div>
-      <div class="trust-item bg-surface-container-lowest rounded-lg p-5 text-center border border-outline-variant/20 hover:border-primary transition-colors">
-        <span class="material-symbols-outlined text-primary mb-3 block" style="font-size:28px;" aria-hidden="true">autorenew</span>
-        <p class="text-xs font-bold uppercase tracking-wider text-secondary mb-1">Retours Gratuits</p>
-        <p class="text-[10px] text-on-surface-variant">30 jours sans conditions</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══ AVIS CLIENTS ══ -->
-  <section class="px-4 py-8 bg-secondary mx-4 rounded-lg section-enter" aria-labelledby="reviews-title">
-    <div class="flex justify-between items-end mb-6">
-      <div>
-        <p class="text-[10px] uppercase tracking-[.2em] text-primary font-bold mb-1">Communauté</p>
-        <h2 id="reviews-title" class="font-serif italic text-3xl font-bold text-white">Ce qu'ils disent</h2>
-      </div>
-      <div class="flex items-center gap-1" aria-label="Note moyenne 4.9 sur 5">
-        <span class="material-symbols-outlined text-primary star-fill" style="font-size:16px;" aria-hidden="true">star</span>
-        <span class="font-bold text-sm text-white">4.9</span>
-        <span class="text-xs text-white/50">/ 5 (1 247)</span>
-      </div>
-    </div>
-    <div id="reviews-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="bg-white/8 rounded-lg p-6 border border-white/10">
-        <div class="flex gap-0.5 mb-3">
-          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
-          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
-          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
-          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
-          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
-        </div>
-        <p class="text-sm text-white/70 leading-relaxed mb-4 font-serif italic">"L'huile d'argan est incroyable, exactement comme promise. Livraison rapide depuis le Maroc!"</p>
-        <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">A</div>
-          <div><p class="text-xs font-bold text-white">Amina B.</p><p class="text-[10px] text-white/40">Libreville · Client vérifié</p></div>
-        </div>
-      </div>
-      <div class="bg-white/8 rounded-lg p-6 border border-white/10">
-        <div class="flex gap-0.5 mb-3">
-          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
-          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
-          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
-          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
-          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
-        </div>
-        <p class="text-sm text-white/70 leading-relaxed mb-4 font-serif italic">"Le masque Punu est une pièce d'art. Merci WennaShop pour cette passerelle culturelle unique."</p>
-        <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">K</div>
-          <div><p class="text-xs font-bold text-white">Kofi M.</p><p class="text-[10px] text-white/40">Casablanca · Client vérifié</p></div>
-        </div>
-      </div>
-      <div class="bg-white/8 rounded-lg p-6 border border-white/10">
-        <div class="flex gap-0.5 mb-3">
-          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
-          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
-          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
-          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
-          <span class="material-symbols-outlined text-primary star-fill" style="font-size:14px;">star</span>
-        </div>
-        <p class="text-sm text-white/70 leading-relaxed mb-4 font-serif italic">"Service client exceptionnel. Le savon beldi est de qualité supérieure, je recommande vivement!"</p>
-        <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">S</div>
-          <div><p class="text-xs font-bold text-white">Sara El H.</p><p class="text-[10px] text-white/40">Rabat · Client vérifié</p></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══ NEWSLETTER ══ -->
-  <section class="px-4 py-12 section-enter" aria-labelledby="newsletter-title">
-    <div class="relative rounded-lg overflow-hidden bg-gradient-to-br from-secondary via-secondary to-primary/40 p-10 md:p-16 text-center">
-      <div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none overflow-hidden" aria-hidden="true">
-        <span class="font-serif text-[200px] font-black italic text-white select-none">W</span>
-      </div>
-      <div class="relative z-10">
-        <span class="inline-block px-4 py-1.5 rounded-full bg-primary/20 border border-primary/30 text-primary text-[10px] font-bold uppercase tracking-widest mb-6">Rejoignez le cercle</span>
-        <h3 id="newsletter-title" class="font-serif italic text-4xl md:text-5xl text-white font-bold mb-4">Le Wenna Circle</h3>
-        <p class="text-white/65 mb-8 max-w-lg mx-auto leading-relaxed">Histoires d'artisans, accès anticipé aux drops saisonniers, offres exclusives. Rejoignez 8 400 curateurs passionnés.</p>
-        <div class="flex flex-col sm:flex-row gap-4 items-center justify-center max-w-md mx-auto">
-          <input
-            id="newsletter-email"
-            class="w-full sm:flex-1 bg-white/10 border border-white/20 text-white placeholder:text-white/40 px-6 py-4 rounded-xl focus:ring-0 focus:border-primary outline-none"
-            placeholder="votre@email.com"
-            type="email"
-            autocomplete="email"
-            aria-label="Adresse email pour la newsletter"
-          />
-          <button onclick="subscribeNewsletter()" class="w-full sm:w-auto bg-primary text-white px-8 py-4 rounded-xl font-bold text-sm uppercase tracking-widest hover:bg-primary-hover transition-all whitespace-nowrap shadow-xl" style="box-shadow:0 6px 24px rgba(255,107,43,.4)">
-            S'abonner
-          </button>
-        </div>
-        <p class="text-white/30 text-[10px] mt-4 uppercase tracking-widest">Aucun spam · Désinscription à tout moment</p>
-      </div>
-    </div>
-  </section>
+    <p style="font-size:10px;color:#333;margin-top:12px;letter-spacing:1.5px;text-transform:uppercase;">Aucun spam · Désinscription à tout moment</p>
+  </div>
+</div>
 
 </main>
 
-<!-- ══ SEARCH OVERLAY ══ -->
-<div id="search-overlay" class="hidden fixed inset-0 z-[200] flex items-start justify-center pt-28 px-4" style="background:rgba(13,43,85,.65);backdrop-filter:blur(6px);" role="dialog" aria-modal="true" aria-label="Recherche">
-  <div class="search-box bg-surface-container-lowest rounded-lg w-full max-w-lg shadow-2xl overflow-hidden border border-primary/20">
-    <div class="flex items-center gap-3 px-5 py-4 border-b border-outline-variant/15">
-      <span class="material-symbols-outlined text-outline flex-shrink-0" style="font-size:20px;">search</span>
-      <input id="search-input" type="search" autocomplete="off" placeholder="Rechercher des trésors..."
-        class="flex-1 bg-transparent outline-none text-base text-on-surface placeholder:text-outline"
-        onkeydown="handleSearchKey(event)" aria-label="Champ de recherche"/>
-      <button onclick="closeSearch()" aria-label="Fermer" class="text-outline hover:text-primary transition-colors flex-shrink-0">
-        <span class="material-symbols-outlined" style="font-size:20px;">close</span>
-      </button>
-    </div>
-    <div class="p-4">
-      <p class="text-[10px] uppercase tracking-widest text-outline font-bold mb-3">Recherches populaires</p>
-      <div class="flex flex-wrap gap-2">
-        <button onclick="submitSearch('Huile d\'Argan')" class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-medium hover:bg-primary hover:text-white transition-all border border-outline-variant/20">Huile d'Argan</button>
-        <button onclick="submitSearch('Masque Punu')" class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-medium hover:bg-primary hover:text-white transition-all border border-outline-variant/20">Masque Punu</button>
-        <button onclick="submitSearch('Cacao Gabon')" class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-medium hover:bg-primary hover:text-white transition-all border border-outline-variant/20">Cacao Gabon</button>
-        <button onclick="submitSearch('Zellige')" class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-medium hover:bg-primary hover:text-white transition-all border border-outline-variant/20">Zellige</button>
-        <button onclick="submitSearch('Savon Beldi')" class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-medium hover:bg-primary hover:text-white transition-all border border-outline-variant/20">Savon Beldi</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ TOAST ══ -->
-<div id="toast" class="fixed bottom-28 left-1/2 -translate-x-1/2 z-[300] px-5 py-3 rounded-xl bg-secondary text-white text-sm font-medium shadow-2xl border border-primary/20 opacity-0 pointer-events-none" role="status" aria-live="polite"></div>
-
-<!-- ══ BOTTOM NAV ══ -->
-<nav class="bg-secondary fixed bottom-0 w-full z-50 rounded-t-[2rem] shadow-[0_-4px_20px_rgba(13,43,85,.3)] md:hidden border-t-2 border-primary" aria-label="Navigation mobile">
-  <div class="flex justify-around items-center w-full px-4 pb-6 pt-3">
-    <a class="flex flex-col items-center justify-center text-primary" href="/" aria-current="page" aria-label="Accueil">
-      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">home</span>
-      <span class="text-[10px] font-bold uppercase tracking-widest mt-0.5">Home</span>
-    </a>
-    <a class="flex flex-col items-center justify-center text-white/50 hover:text-primary transition-colors" href="boutique.html" aria-label="Shop">
-      <span class="material-symbols-outlined">storefront</span>
-      <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Shop</span>
-    </a>
-    <a class="flex flex-col items-center justify-center text-white/50 hover:text-primary transition-colors" href="sell.html" aria-label="Vendre">
-      <span class="material-symbols-outlined">add_circle</span>
-      <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Sell</span>
-    </a>
-    <a class="flex flex-col items-center justify-center text-white/50 hover:text-primary transition-colors" href="compte.html" aria-label="Mon profil">
-      <span class="material-symbols-outlined">person</span>
-      <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Profile</span>
-    </a>
+<!-- BOTTOM NAV -->
+<nav class="bnav">
+  <div class="bnav-inner">
+    <a href="/" class="bnav-item active"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">home</span><span>Home</span></a>
+    <a href="boutique.html" class="bnav-item"><span class="material-symbols-outlined">storefront</span><span>Shop</span></a>
+    <a href="sell.html" class="bnav-item"><span class="material-symbols-outlined">add_circle</span><span>Sell</span></a>
+    <a href="compte.html" class="bnav-item"><span class="material-symbols-outlined">person</span><span>Profil</span></a>
   </div>
 </nav>
 
-<!-- ══ SUPABASE ══ -->
+<!-- SEARCH -->
+<div class="srch-ov" id="srchOv">
+  <div class="srch-box">
+    <span class="material-symbols-outlined" style="color:#333;font-size:28px;">search</span>
+    <input class="srch-inp" id="search-input" type="search" placeholder="Rechercher…" onkeydown="handleSearchKey(event)"/>
+    <button onclick="closeSearch()" style="background:none;border:none;color:#444;cursor:none;"><span class="material-symbols-outlined" style="font-size:22px;">close</span></button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 <script src="js/config.js" defer></script>
 <script defer>
-function showToast(msg, duration=3000){
-  const el=document.getElementById('toast');
-  el.textContent=msg;el.style.opacity='1';el.style.pointerEvents='auto';
-  setTimeout(()=>{el.style.opacity='0';el.style.pointerEvents='none';},duration);
-}
-function updateCartBadge(){
-  try{
-    const cart=JSON.parse(localStorage.getItem('wenna_cart')||'[]');
-    const badge=document.getElementById('cart-badge');
-    const total=cart.reduce((acc,i)=>acc+(i.qty||1),0);
-    if(total>0){badge.textContent=total>99?'99+':total;badge.classList.remove('hidden');badge.classList.add('flex');}
-    else{badge.classList.add('hidden');badge.classList.remove('flex');}
-  }catch{}
-}
-function addToCart(product){
-  try{
-    const cart=JSON.parse(localStorage.getItem('wenna_cart')||'[]');
-    const idx=cart.findIndex(i=>i.id===product.id);
-    if(idx>-1){cart[idx].qty=(cart[idx].qty||1)+1;}else{cart.push({...product,qty:1});}
-    localStorage.setItem('wenna_cart',JSON.stringify(cart));
-    updateCartBadge();showToast('Produit ajouté au panier ✓');
-  }catch{}
-}
-function openSearch(){document.getElementById('search-overlay').classList.remove('hidden');document.body.style.overflow='hidden';setTimeout(()=>document.getElementById('search-input').focus(),50);}
-function closeSearch(){document.getElementById('search-overlay').classList.add('hidden');document.body.style.overflow='';document.getElementById('search-input').value='';}
-function submitSearch(term){const q=term||document.getElementById('search-input').value.trim();if(q)window.location.href='recherche.html?q='+encodeURIComponent(q);}
-function handleSearchKey(e){if(e.key==='Enter')submitSearch();if(e.key==='Escape')closeSearch();}
-document.getElementById('search-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeSearch();});
-document.addEventListener('keydown',e=>{if((e.key==='/'||(e.ctrlKey&&e.key==='k'))&&document.activeElement.tagName!=='INPUT'){e.preventDefault();openSearch();}});
-document.querySelectorAll('.category-chip').forEach(chip=>{
-  chip.addEventListener('click',()=>{
-    document.querySelectorAll('.category-chip').forEach(c=>c.classList.remove('active'));
-    chip.classList.add('active');
-    const cat=chip.dataset.cat;
-    window.location.href=cat!=='all'?'boutique.html?cat='+cat:'boutique.html';
-  });
-});
-async function subscribeNewsletter(){
-  const emailEl=document.getElementById('newsletter-email');
-  const email=emailEl.value.trim();
-  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showToast('Adresse email invalide.');return;}
-  try{
-    const{error}=await db.from('newsletter').insert({email});
-    if(error&&error.code==='23505'){showToast('Vous êtes déjà abonné(e) !');}
-    else if(error){throw error;}
-    else{emailEl.value='';showToast('Bienvenue dans le Wenna Circle ! 🎉');}
-  }catch{showToast('Erreur, réessayez.');}
-}
-const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.1});
-document.querySelectorAll('.section-enter').forEach(el=>observer.observe(el));
+/* CURSEUR */
+const cur=document.getElementById('cur'),crng=document.getElementById('curRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+(function anim(){if(cur){cur.style.left=mx+'px';cur.style.top=my+'px';}rx+=(mx-rx)*.12;ry+=(my-ry)*.12;if(crng){crng.style.left=rx+'px';crng.style.top=ry+'px';}requestAnimationFrame(anim);})();
 
-async function loadStats(){
-  try{
-    const[{count:artisans},{count:orders},{data:rev}]=await Promise.all([
-      db.from('vendor_profiles').select('*',{count:'exact',head:true}),
-      db.from('orders').select('*',{count:'exact',head:true}).eq('status','delivered'),
-      db.from('reviews').select('rating')
-    ]);
-    document.getElementById('stat-artisans').textContent=artisans??'—';
-    document.getElementById('stat-orders').textContent=orders?(orders>999?Math.round(orders/1000)+'K+':orders):'—';
-    if(rev&&rev.length){const avg=(rev.reduce((a,r)=>a+r.rating,0)/rev.length*100/5).toFixed(0);document.getElementById('stat-satisfaction').textContent=avg+'%';}
-  }catch{}
-}
-async function loadProductCounts(){
-  try{
-    const[{count:ga},{count:ma}]=await Promise.all([
-      db.from('products').select('*',{count:'exact',head:true}).eq('pays','gabon').eq('active',true),
-      db.from('products').select('*',{count:'exact',head:true}).eq('pays','maroc').eq('active',true)
-    ]);
-    if(ga!=null)document.getElementById('count-gabon').textContent=ga+' produits';
-    if(ma!=null)document.getElementById('count-maroc').textContent=ma+' produits';
-  }catch{}
-}
-async function loadFeaturedProducts(){
-  try{
-    const{data,error}=await db.from('products').select('id,name,price,category,city,pays,rating,stock,images').eq('active',true).order('created_at',{ascending:false}).limit(4);
-    if(error||!data||!data.length)return;
-    const grid=document.getElementById('products-grid');
-    grid.innerHTML=data.map(p=>{
-      const img=(p.images&&p.images[0])?p.images[0]:'https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=400&q=80&fit=crop';
-      const badge=p.pays==='maroc'?'MA':'GA';
-      const isLow=p.stock!==null&&p.stock<=5;
-      return `<article class="bg-surface-container-lowest rounded-lg p-3 card-hover group cursor-pointer border border-outline-variant/20" onclick="window.location.href='detail_produit.html?id=${p.id}'">
-        <div class="relative rounded-md overflow-hidden aspect-square mb-4">
-          <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="${img}" alt="${p.name}" loading="lazy" width="300" height="300"/>
-          <span class="absolute top-3 left-3 bg-secondary text-white text-[9px] font-bold px-2 py-0.5 rounded-full">${badge}</span>
-          ${isLow?`<span class="absolute top-3 right-3 bg-error text-white text-[9px] font-bold px-2 py-0.5 rounded-full">Rare</span>`:''}
-          <button aria-label="Ajouter ${p.name} au panier" onclick="event.stopPropagation();addToCart({id:'${p.id}',name:'${p.name}',price:${p.price}})"
-            class="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-primary flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all shadow-lg hover:bg-primary-hover">
-            <span class="material-symbols-outlined text-base">add</span>
-          </button>
-        </div>
-        <p class="text-[9px] uppercase tracking-widest text-outline mb-1">${p.category??''} · ${p.city??''}</p>
-        <h5 class="font-serif text-sm leading-tight font-bold text-secondary">${p.name}</h5>
-        <div class="flex justify-between items-center mt-2">
-          <p class="font-bold text-primary text-sm">${Number(p.price).toFixed(2)} €</p>
-          ${p.rating?`<div class="flex items-center gap-1"><span class="material-symbols-outlined text-primary star-fill" style="font-size:12px;">star</span><span class="text-[10px] text-on-surface-variant">${Number(p.rating).toFixed(1)}</span></div>`:''}
-        </div>
-      </article>`;
-    }).join('');
-  }catch{}
-}
-async function loadActiveCount(){
-  try{
-    const{count}=await db.from('profiles').select('*',{count:'exact',head:true}).gte('last_seen',new Date(Date.now()-15*60*1000).toISOString());
-    if(count!=null)document.getElementById('active-count').textContent=count+' acheteurs actifs';
-  }catch{}
-}
-document.addEventListener('DOMContentLoaded',()=>{
-  updateCartBadge();
-  if(typeof db!=='undefined'){loadStats();loadProductCounts();loadFeaturedProducts();loadActiveCount();}
-});
+/* HEADER SCROLL */
+const hd=document.getElementById('hd');
+window.addEventListener('scroll',()=>hd.classList.toggle('scr',scrollY>60),{passive:true});
+
+/* TOAST */
+function showToast(msg,d=3000){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),d);}
+
+/* PANIER */
+function updateCartBadge(){try{const c=JSON.parse(localStorage.getItem('wenna_cart')||'[]'),b=document.getElementById('cart-badge'),n=c.reduce((a,i)=>a+(i.qty||1),0);if(n>0){b.textContent=n>99?'99+':n;b.style.display='flex';}else b.style.display='none';}catch{}}
+function addToCart(p){try{const c=JSON.parse(localStorage.getItem('wenna_cart')||'[]'),i=c.findIndex(x=>x.id===p.id);if(i>-1)c[i].qty=(c[i].qty||1)+1;else c.push({...p,qty:1});localStorage.setItem('wenna_cart',JSON.stringify(c));updateCartBadge();showToast('Ajouté au panier ✓');}catch{}}
+
+/* RECHERCHE */
+function openSearch(){document.getElementById('srchOv').classList.add('open');document.body.style.overflow='hidden';setTimeout(()=>document.getElementById('search-input').focus(),80);}
+function closeSearch(){document.getElementById('srchOv').classList.remove('open');document.body.style.overflow='';}
+function submitSearch(q){if(!q)q=document.getElementById('search-input').value.trim();if(q)location.href='recherche.html?q='+encodeURIComponent(q);}
+function handleSearchKey(e){if(e.key==='Enter')submitSearch();if(e.key==='Escape')closeSearch();}
+document.getElementById('srchOv').addEventListener('click',e=>{if(e.target===e.currentTarget)closeSearch();});
+document.addEventListener('keydown',e=>{if((e.key==='/'||(e.ctrlKey&&e.key==='k'))&&document.activeElement.tagName!=='INPUT'){e.preventDefault();openSearch();}});
+
+/* CATÉGORIES */
+document.querySelectorAll('.cat-btn').forEach(b=>{b.addEventListener('click',()=>{document.querySelectorAll('.cat-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');const c=b.dataset.cat;location.href=c!=='all'?'boutique.html?cat='+c:'boutique.html';});});
+
+/* NEWSLETTER */
+async function subscribeNewsletter(){const el=document.getElementById('newsletter-email'),email=el.value.trim();if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showToast('Email invalide.');return;}try{const{error}=await db.from('newsletter').insert({email});if(error?.code==='23505')showToast('Déjà abonné(e) !');else if(error)throw error;else{el.value='';showToast('Bienvenue dans le Wenna Circle 🎉');}}catch{showToast('Erreur, réessayez.');}}
+
+/* REVEAL SCROLL */
+const rObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');});},{threshold:.07});
+document.querySelectorAll('.reveal').forEach(el=>rObs.observe(el));
+
+/* SUPABASE DATA */
+async function loadStats(){try{const[{count:a},{count:o},{data:r}]=await Promise.all([db.from('vendor_profiles').select('*',{count:'exact',head:true}),db.from('orders').select('*',{count:'exact',head:true}).eq('status','delivered'),db.from('reviews').select('rating')]);document.getElementById('stat-artisans').textContent=a??'—';document.getElementById('stat-orders').textContent=o?(o>999?Math.round(o/1000)+'K+':o):'—';if(r?.length){const avg=(r.reduce((s,x)=>s+x.rating,0)/r.length*20).toFixed(0);document.getElementById('stat-satisfaction').textContent=avg+'%';}}catch{}}
+async function loadProductCounts(){try{const[{count:g},{count:m}]=await Promise.all([db.from('products').select('*',{count:'exact',head:true}).eq('pays','gabon').eq('active',true),db.from('products').select('*',{count:'exact',head:true}).eq('pays','maroc').eq('active',true)]);if(g!=null)document.getElementById('count-gabon').textContent=g+' produits';if(m!=null)document.getElementById('count-maroc').textContent=m+' produits';}catch{}}
+async function loadFeaturedProducts(){try{const{data,error}=await db.from('products').select('id,name,price,category,city,pays,rating,stock,images').eq('active',true).order('created_at',{ascending:false}).limit(4);if(error||!data?.length)return;document.getElementById('products-grid').innerHTML=data.map(p=>{const img=p.images?.[0]||'https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=400&q=80';const low=p.stock!=null&&p.stock<=5;return`<div class="prod-card" onclick="location.href='detail_produit.html?id=${p.id}'"><div class="prod-img"><img src="${img}" alt="${p.name}" loading="lazy"/><span class="prod-badge">${p.pays==='maroc'?'MA':'GA'}</span>${low?'<span class="prod-rare">Rare</span>':''}<button class="prod-add" onclick="event.stopPropagation();addToCart({id:'${p.id}',name:'${p.name}',price:${p.price}})"><span class="material-symbols-outlined" style="font-size:18px;">add</span></button></div><div class="prod-info"><div class="prod-cat">${p.category??''} · ${p.city??''}</div><div class="prod-name">${p.name}</div><div class="prod-ft"><div class="prod-price">${Number(p.price).toFixed(2)} €</div>${p.rating?`<div class="prod-rating"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;font-size:13px;color:var(--fire);">star</span>${Number(p.rating).toFixed(1)}</div>`:''}</div></div></div>`;}).join('');}catch{}}
+async function loadActiveCount(){try{const{count}=await db.from('profiles').select('*',{count:'exact',head:true}).gte('last_seen',new Date(Date.now()-15*60*1000).toISOString());if(count!=null)document.getElementById('active-count').textContent=count+' acheteurs actifs';}catch{}}
+
+document.addEventListener('DOMContentLoaded',()=>{updateCartBadge();if(typeof db!=='undefined'){loadStats();loadProductCounts();loadFeaturedProducts();loadActiveCount();}});
 </script>
 </body>
 </html>
