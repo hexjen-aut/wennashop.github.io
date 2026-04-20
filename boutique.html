@@ -1,532 +1,683 @@
 <!DOCTYPE html>
-<html class="light" lang="fr">
+<html lang="fr">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<meta name="description" content="WennaShop — Artisanat authentique du Gabon et du Maroc"/>
-<title>WennaShop | Boutique</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="WennaShop — Boutique artisanale du Gabon et du Maroc."/>
+  <meta name="theme-color" content="#FF6B2B"/>
+  <title>WennaShop – Boutique</title>
+  <link rel="canonical" href="https://wennashop.netlify.app/boutique.html"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --fire: #FF6B2B;
+      --ember: #E85A1A;
+      --ash: #FFE0D0;
+      --ink: #080808;
+      --coal: #111111;
+      --slate: #1A1A1A;
+      --smoke: #242424;
+      --fog: #888;
+      --mist: #ccc;
+      --snow: #f0ece6;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--snow); overflow-x: hidden; cursor: none; }
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    /* CURSEUR */
+    .cur { position: fixed; width: 10px; height: 10px; background: var(--fire); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: width .2s, height .2s; }
+    .cur-ring { position: fixed; width: 36px; height: 36px; border: 1px solid rgba(255,107,43,.45); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: width .3s, height .3s, opacity .3s; }
+    .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24; font-size: 22px; line-height: 1; }
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/cart.js"></script>
+    /* HEADER */
+    .hd { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 20px 48px; display: flex; align-items: center; justify-content: space-between; transition: background .4s, padding .4s; }
+    .hd.scr { background: rgba(8,8,8,.92); backdrop-filter: blur(20px); padding: 14px 48px; border-bottom: 1px solid rgba(255,107,43,.15); }
+    .logo { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 700; font-style: italic; color: var(--snow); text-decoration: none; letter-spacing: -.5px; }
+    .logo b { color: var(--fire); font-weight: 700; }
+    .nav { display: flex; gap: 36px; }
+    .nav a { font-size: 11px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--fog); text-decoration: none; transition: color .2s; cursor: none; }
+    .nav a:hover, .nav a.active { color: var(--fire); }
+    .hd-acts { display: flex; align-items: center; gap: 22px; }
+    .hd-acts button, .hd-acts a { background: none; border: none; color: var(--fog); cursor: none; text-decoration: none; transition: color .2s; position: relative; }
+    .hd-acts button:hover, .hd-acts a:hover { color: var(--fire); }
+    .cbadge { position: absolute; top: -6px; right: -6px; width: 16px; height: 16px; background: var(--fire); color: #fff; font-size: 9px; font-weight: 700; border-radius: 50%; display: none; align-items: center; justify-content: center; }
 
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script>
-tailwind.config = {
-  darkMode:"class",
-  theme:{extend:{
-    colors:{
-      "surface-container":"#eaf0e5","surface-container-low":"#eff5eb","surface-container-high":"#e4eae0",
-      "surface-container-highest":"#dee4da","surface-container-lowest":"#ffffff",
-      "surface":"#f5fbf1","background":"#f5fbf1","on-surface":"#171d17","on-surface-variant":"#3f4a3e",
-      "primary":"#006b2a","primary-container":"#0f8739","on-primary":"#ffffff","primary-fixed":"#8ff99d","primary-fixed-dim":"#73dc84",
-      "secondary":"#1a5fa8","secondary-container":"#78b0fe","on-secondary":"#ffffff","on-secondary-container":"#00427d",
-      "tertiary":"#745b00","on-tertiary":"#ffffff","tertiary-container":"#d0a600",
-      "outline":"#6f7a6d","outline-variant":"#becaba",
-      "error":"#ba1a1a","on-error":"#ffffff",
-      "inverse-surface":"#2c322b","inverse-on-surface":"#edf3e8","inverse-primary":"#73dc84"
-    },
-    borderRadius:{"DEFAULT":"1rem","lg":"2rem","xl":"3rem","full":"9999px"},
-    fontFamily:{"headline":["Noto Serif"],"body":["Inter"],"label":["Inter"]}
-  }}
-}
-</script>
+    /* TICKER */
+    .ticker { position: fixed; top: 64px; left: 0; right: 0; z-index: 99; background: var(--fire); overflow: hidden; padding: 6px 0; }
+    .ticker-t { display: flex; width: max-content; animation: tick 32s linear infinite; font-size: 10px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; color: #fff; }
+    .ticker-t span { padding: 0 32px; }
+    .ticker-t span.sep { opacity: .4; padding: 0 8px; }
+    @keyframes tick { from{transform:translateX(0)} to{transform:translateX(-50%)} }
 
-<style>
-  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24;}
-  body{font-family:'Inter',sans-serif;min-height:max(884px,100dvh);}
-  h1,h2,h3{font-family:'Noto Serif',serif;}
-  .hide-scrollbar::-webkit-scrollbar{display:none;}
-  .hide-scrollbar{-ms-overflow-style:none;scrollbar-width:none;}
-  @keyframes shimmer{0%{background-position:-600px 0;}100%{background-position:600px 0;}}
-  .skeleton{background:linear-gradient(90deg,#dde8d8 25%,#cdd8c8 50%,#dde8d8 75%);background-size:600px 100%;animation:shimmer 1.4s infinite linear;border-radius:.75rem;}
-  #toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(10px);opacity:0;background:#006b2a;color:#fff;padding:10px 22px;border-radius:9999px;font-size:.8rem;font-weight:600;transition:all .3s ease;z-index:9999;white-space:nowrap;pointer-events:none;}
-  #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-  .filter-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:9999px;font-size:.75rem;font-weight:600;background:#eaf0e5;border:1px solid #becaba;color:#3f4a3e;cursor:pointer;transition:all .2s;}
-  .filter-pill:hover{background:#dee4da;}
-  .filter-pill.active{background:#006b2a;color:#fff;border-color:#006b2a;}
-  .product-card{transition:transform .3s ease;}
-  .product-card:hover{transform:translateY(-4px);}
-  .view-btn{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;border:1px solid #becaba;background:#fff;}
-  .view-btn.active{background:#006b2a;border-color:#006b2a;color:#fff;}
-  .view-btn:not(.active){color:#6f7a6d;}
-  .view-btn:not(.active):hover{background:#eaf0e5;}
-  #products-grid.list-view{grid-template-columns:1fr !important;}
-  #products-grid.list-view .product-card{display:flex;flex-direction:row;gap:20px;aspect-ratio:auto !important;}
-  #products-grid.list-view .card-img-wrap{width:140px;flex-shrink:0;aspect-ratio:1/1 !important;}
-  #products-grid.list-view .card-body{flex:1;display:flex;flex-direction:column;justify-content:space-between;padding:4px 0;}
-  .sort-select{appearance:none;background:#eff5eb url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236f7a6d' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 10px center;border:1px solid #becaba;border-radius:8px;padding:8px 32px 8px 12px;font-size:.8rem;color:#171d17;cursor:pointer;outline:none;font-family:'Inter',sans-serif;}
-  .page-btn{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:600;cursor:pointer;border:1px solid #becaba;background:#fff;color:#3f4a3e;transition:all .15s;}
-  .page-btn:hover{background:#eaf0e5;}
-  .page-btn.active{background:#006b2a;border-color:#006b2a;color:#fff;}
-  .page-btn:disabled{opacity:.4;cursor:not-allowed;}
-  @media(min-width:1024px){.filters-sidebar{position:sticky;top:88px;max-height:calc(100vh - 100px);overflow-y:auto;}}
-</style>
-<link rel="stylesheet" href="/css/wenna-palette-conversion.css">
+    /* PAGE HERO */
+    .page-hero { padding: 120px 48px 56px; border-bottom: 1px solid rgba(255,255,255,.05); }
+    .eyebrow { font-size: 10px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; color: var(--fire); margin-bottom: 16px; display: flex; align-items: center; gap: 14px; }
+    .eyebrow::before { content:''; display:block; width:28px; height:1px; background:var(--fire); }
+    .page-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(42px,6vw,78px); font-weight: 700; font-style: italic; line-height: .92; letter-spacing: -2px; margin-bottom: 20px; }
+    .page-sub { font-size: 14px; color: rgba(240,236,230,.4); max-width: 460px; line-height: 1.7; }
+
+    /* TOOLBAR */
+    .toolbar { display: flex; align-items: center; justify-content: space-between; padding: 18px 48px; border-bottom: 1px solid rgba(255,255,255,.05); gap: 16px; flex-wrap: wrap; }
+    .cats-scroll { display: flex; gap: 6px; overflow-x: auto; flex: 1; }
+    .cats-scroll::-webkit-scrollbar { display: none; }
+    .cat-btn { flex-shrink: 0; padding: 8px 20px; font-size: 10px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; border: 1px solid rgba(255,255,255,.1); background: transparent; color: var(--fog); cursor: none; transition: all .2s; white-space: nowrap; font-family: 'DM Sans', sans-serif; }
+    .cat-btn:hover, .cat-btn.active { background: var(--fire); border-color: var(--fire); color: #fff; }
+    .toolbar-right { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+    .sort-select { appearance: none; background: rgba(255,255,255,.04) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 10px center; border: 1px solid rgba(255,255,255,.1); color: var(--snow); padding: 8px 30px 8px 14px; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; font-family: 'DM Sans', sans-serif; cursor: pointer; outline: none; transition: border-color .2s; }
+    .sort-select:focus { border-color: rgba(255,107,43,.4); }
+    .sort-select option { background: var(--slate); }
+    .results-count { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #555; white-space: nowrap; }
+    .view-btns { display: flex; gap: 4px; }
+    .view-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,.1); background: transparent; color: var(--fog); cursor: none; transition: all .15s; }
+    .view-btn.active { background: var(--fire); border-color: var(--fire); color: #fff; }
+
+    /* LAYOUT */
+    .shop-layout { display: flex; gap: 0; }
+
+    /* SIDEBAR */
+    .sidebar { width: 260px; flex-shrink: 0; border-right: 1px solid rgba(255,255,255,.05); padding: 32px 28px; position: sticky; top: 130px; align-self: flex-start; max-height: calc(100vh - 140px); overflow-y: auto; }
+    .sidebar::-webkit-scrollbar { width: 3px; }
+    .sidebar::-webkit-scrollbar-thumb { background: rgba(255,107,43,.2); }
+    .filter-section { margin-bottom: 32px; }
+    .filter-title { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: #444; margin-bottom: 14px; }
+    .filter-search { width: 100%; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); color: var(--snow); padding: 10px 14px; font-size: 12px; font-family: 'DM Sans', sans-serif; outline: none; transition: border-color .2s; }
+    .filter-search:focus { border-color: rgba(255,107,43,.35); }
+    .filter-search::placeholder { color: #333; }
+    .check-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; cursor: none; }
+    .check-row input[type=checkbox] { width: 14px; height: 14px; accent-color: var(--fire); cursor: none; }
+    .check-row label { font-size: 12px; color: #999; cursor: none; transition: color .2s; }
+    .check-row:hover label { color: var(--snow); }
+    .price-range { display: flex; flex-direction: column; gap: 8px; }
+    .price-range input[type=range] { width: 100%; accent-color: var(--fire); }
+    .price-display { font-size: 11px; color: var(--fire); }
+    .btn-reset { width: 100%; padding: 10px; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; background: transparent; border: 1px solid rgba(255,255,255,.1); color: var(--fog); cursor: none; transition: all .2s; font-family: 'DM Sans', sans-serif; margin-top: 8px; }
+    .btn-reset:hover { border-color: var(--fire); color: var(--fire); }
+
+    /* PRODUCTS AREA */
+    .products-area { flex: 1; padding: 32px 32px; }
+    .prod-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+    .prod-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+    .prod-grid.list-view { grid-template-columns: 1fr; gap: 1px; }
+    .prod-card { background: var(--slate); cursor: none; position: relative; overflow: hidden; transition: transform .4s cubic-bezier(.22,1,.36,1); }
+    .prod-card:hover { transform: translateY(-4px); z-index: 2; }
+    .prod-img { aspect-ratio: 3/4; overflow: hidden; position: relative; }
+    .prod-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .7s cubic-bezier(.22,1,.36,1); }
+    .prod-card:hover .prod-img img { transform: scale(1.08); }
+    .prod-add { position: absolute; bottom: 12px; right: 12px; width: 40px; height: 40px; background: var(--fire); display: flex; align-items: center; justify-content: center; opacity: 0; transform: scale(.8); transition: opacity .25s, transform .25s; border: none; cursor: none; color: #fff; }
+    .prod-card:hover .prod-add { opacity: 1; transform: scale(1); }
+    .prod-badge { position: absolute; top: 12px; left: 12px; background: rgba(8,8,8,.72); border: 1px solid rgba(255,255,255,.1); backdrop-filter: blur(8px); padding: 4px 10px; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #aaa; }
+    .prod-rare { position: absolute; top: 12px; right: 12px; background: var(--fire); padding: 4px 10px; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #fff; }
+    .prod-info { padding: 16px 18px 20px; }
+    .prod-cat { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #444; margin-bottom: 6px; }
+    .prod-name { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: var(--snow); line-height: 1.2; margin-bottom: 10px; }
+    .prod-ft { display: flex; align-items: center; justify-content: space-between; }
+    .prod-price { font-size: 15px; font-weight: 500; color: var(--fire); }
+    .prod-rating { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #555; }
+
+    /* LIST VIEW card override */
+    .prod-grid.list-view .prod-card { display: flex; flex-direction: row; }
+    .prod-grid.list-view .prod-img { aspect-ratio: 1/1; width: 160px; flex-shrink: 0; }
+    .prod-grid.list-view .prod-info { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 20px 24px; }
+    .prod-grid.list-view .prod-add { position: static; opacity: 1; transform: none; width: 36px; height: 36px; margin-top: 12px; align-self: flex-start; }
+
+    /* NO RESULTS */
+    .no-results { padding: 80px 40px; text-align: center; }
+    .no-results-title { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-style: italic; color: #444; margin-bottom: 12px; }
+    .no-results-sub { font-size: 12px; color: #333; }
+
+    /* PAGINATION */
+    .pagination { display: flex; justify-content: center; gap: 6px; padding: 40px 0 20px; }
+    .page-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; border: 1px solid rgba(255,255,255,.1); background: transparent; color: var(--fog); cursor: none; transition: all .15s; }
+    .page-btn:hover { border-color: var(--fire); color: var(--fire); }
+    .page-btn.active { background: var(--fire); border-color: var(--fire); color: #fff; }
+    .page-btn:disabled { opacity: .3; pointer-events: none; }
+
+    /* SKELETON */
+    .skel { background: linear-gradient(90deg,#1a1a1a 25%,#222 50%,#1a1a1a 75%); background-size: 200% 100%; animation: shim 1.5s infinite; }
+    @keyframes shim { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+    /* SEARCH OVERLAY */
+    .srch-ov { position: fixed; inset: 0; z-index: 200; background: rgba(8,8,8,.93); backdrop-filter: blur(20px); display: flex; align-items: flex-start; justify-content: center; padding-top: 120px; opacity: 0; pointer-events: none; transition: opacity .25s; }
+    .srch-ov.open { opacity: 1; pointer-events: all; }
+    .srch-box { width: 100%; max-width: 640px; border-bottom: 2px solid var(--fire); display: flex; align-items: center; gap: 16px; padding-bottom: 16px; transform: translateY(-20px); transition: transform .3s; }
+    .srch-ov.open .srch-box { transform: translateY(0); }
+    .srch-inp { flex: 1; background: none; border: none; outline: none; font-family: 'Cormorant Garamond', serif; font-size: 32px; font-style: italic; color: var(--snow); }
+    .srch-inp::placeholder { color: #2a2a2a; }
+
+    /* TOAST */
+    #toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(8px); z-index: 300; background: var(--slate); border: 1px solid rgba(255,107,43,.3); color: var(--snow); padding: 14px 24px; font-size: 13px; opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; white-space: nowrap; }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* BOTTOM NAV */
+    .bnav { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; background: rgba(8,8,8,.95); backdrop-filter: blur(20px); border-top: 1px solid rgba(255,107,43,.2); padding: 10px 0 22px; }
+    .bnav-inner { display: flex; justify-content: space-around; }
+    .bnav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #555; text-decoration: none; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; transition: color .2s; cursor: none; }
+    .bnav-item.active, .bnav-item:hover { color: var(--fire); }
+
+    /* ACTIVE FILTERS */
+    .active-filters { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 48px 16px; }
+    .filter-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; border: 1px solid rgba(255,107,43,.35); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--fire); background: rgba(255,107,43,.08); cursor: none; transition: all .2s; }
+    .filter-pill:hover { background: rgba(255,107,43,.15); }
+
+    /* REVEAL */
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s cubic-bezier(.22,1,.36,1), transform .6s cubic-bezier(.22,1,.36,1); }
+    .reveal.vis { opacity: 1; transform: translateY(0); }
+
+    @media(max-width:1024px) {
+      .sidebar { display: none; }
+    }
+    @media(max-width:768px) {
+      body { cursor: auto; }
+      .cur, .cur-ring { display: none; }
+      .hd { padding: 16px 24px; }
+      .hd.scr { padding: 12px 24px; }
+      .nav { display: none; }
+      .page-hero { padding: 110px 24px 40px; }
+      .toolbar { padding: 14px 24px; }
+      .products-area { padding: 20px 16px; }
+      .prod-grid { grid-template-columns: repeat(2, 1fr); }
+      .bnav { display: block; }
+      body { padding-bottom: 80px; }
+    }
+  </style>
 </head>
-<body class="bg-background text-on-surface antialiased">
+<body>
 
-<div id="toast"></div>
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="curRing"></div>
 
-<header class="fixed top-0 w-full z-50 bg-[#f5fbf1]/90 backdrop-blur-xl border-b border-outline-variant/20">
-  <div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
-    <div class="flex items-center gap-4">
-      <button class="text-on-surface scale-95 active:scale-90 transition-transform">
-        <span class="material-symbols-outlined">menu</span>
-      </button>
-      <a href="index.html" class="font-['Noto_Serif'] font-black italic text-primary text-2xl tracking-tight">WennaShop</a>
-    </div>
-    <div class="hidden md:flex items-center gap-6 text-sm font-medium">
-      <a href="hero.html" class="text-on-surface-variant hover:text-primary transition-colors">Accueil</a>
-      <a href="boutique.html" class="text-primary font-semibold border-b-2 border-primary pb-0.5">Boutique</a>
-      <a href="recherche.html" class="text-on-surface-variant hover:text-primary transition-colors">Explorer</a>
-      <a href="dashboard-vendeur.html" class="text-on-surface-variant hover:text-primary transition-colors">Vendre</a>
-    </div>
-    <div class="flex items-center gap-3">
-      <a href="recherche.html" class="text-on-surface-variant hover:text-primary transition-colors">
-        <span class="material-symbols-outlined">search</span>
-      </a>
-      <a href="panier.html" class="relative text-on-surface-variant hover:text-primary transition-colors">
-        <span class="material-symbols-outlined">shopping_bag</span>
-        <span id="cart-badge" class="absolute -top-1 -right-1 bg-primary text-white text-[9px] font-bold w-4 h-4 rounded-full items-center justify-center hidden flex">0</span>
-      </a>
-      <a href="compte.html" class="text-on-surface-variant hover:text-primary transition-colors">
-        <span class="material-symbols-outlined">person</span>
-      </a>
-    </div>
+<!-- HEADER -->
+<header class="hd" id="hd">
+  <a href="index.html" class="logo">Wenna<b>Shop</b></a>
+  <nav class="nav">
+    <a href="index.html">Accueil</a>
+    <a href="boutique.html" class="active">Collection</a>
+    <a href="boutique.html?pays=gabon">Gabon</a>
+    <a href="boutique.html?pays=maroc">Maroc</a>
+  </nav>
+  <div class="hd-acts">
+    <button onclick="openSearch()" aria-label="Rechercher"><span class="material-symbols-outlined">search</span></button>
+    <a href="panier.html" style="position:relative;" aria-label="Panier">
+      <span class="material-symbols-outlined">shopping_bag</span>
+      <span class="cbadge" id="cart-badge">0</span>
+    </a>
+    <a href="compte.html" aria-label="Compte"><span class="material-symbols-outlined">person</span></a>
   </div>
 </header>
 
-<section class="pt-24 pb-10 px-6 max-w-7xl mx-auto">
-  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-    <div>
-      <p class="text-[10px] font-bold uppercase tracking-[.2em] text-tertiary mb-2">Collection complète</p>
-      <h1 class="font-headline text-5xl font-bold text-on-surface leading-tight">Boutique</h1>
-      <p class="text-on-surface-variant mt-2 max-w-md">Artisanat authentique du Gabon et du Maroc — sélectionné par nos curateurs.</p>
-    </div>
-    <div class="flex items-center gap-3 flex-shrink-0">
-      <span id="results-label" class="text-sm text-on-surface-variant"></span>
-      <select id="sort-select" class="sort-select" onchange="applySort()">
-        <option value="created_at:desc">Plus récents</option>
-        <option value="price:asc">Prix croissant</option>
-        <option value="price:desc">Prix décroissant</option>
-        <option value="name:asc">A → Z</option>
-      </select>
-      <div class="flex gap-1">
-        <button id="btn-grid" class="view-btn active" onclick="setView('grid')" title="Vue grille">
-          <span class="material-symbols-outlined" style="font-size:16px">grid_view</span>
-        </button>
-        <button id="btn-list" class="view-btn" onclick="setView('list')" title="Vue liste">
-          <span class="material-symbols-outlined" style="font-size:16px">view_list</span>
-        </button>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="px-6 pb-32 max-w-7xl mx-auto flex gap-8">
-
-  <aside class="hidden lg:block w-60 flex-shrink-0 filters-sidebar">
-    <div class="mb-6">
-      <label class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant block mb-2">Recherche</label>
-      <div class="relative">
-        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" style="font-size:16px">search</span>
-        <input id="search-desktop" type="text" placeholder="Nom du produit..."
-          class="w-full pl-9 pr-3 py-2.5 bg-surface-container-low border border-outline-variant/30 rounded-lg text-sm focus:outline-none focus:border-primary transition-colors"
-          oninput="onSearchInput(this.value)" />
-      </div>
-    </div>
-    <div class="mb-6">
-      <label class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant block mb-3">Catégories</label>
-      <div id="cat-filter" class="flex flex-col gap-1">
-        <button data-id="" onclick="selectCat(this)" class="cat-btn text-left px-3 py-2 rounded-lg text-sm font-medium bg-primary text-white">Toutes les catégories</button>
-      </div>
-    </div>
-    <div class="mb-6">
-      <label class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant block mb-3">Origine</label>
-      <div class="flex flex-col gap-2">
-        <label class="flex items-center gap-2 cursor-pointer group">
-          <input type="checkbox" id="f-gabon" class="w-4 h-4 accent-primary" onchange="applyFilters()"/>
-          <span class="text-sm font-medium group-hover:text-primary transition-colors">🇬🇦 Gabon</span>
-        </label>
-        <label class="flex items-center gap-2 cursor-pointer group">
-          <input type="checkbox" id="f-maroc" class="w-4 h-4 accent-primary" onchange="applyFilters()"/>
-          <span class="text-sm font-medium group-hover:text-primary transition-colors">🇲🇦 Maroc</span>
-        </label>
-      </div>
-    </div>
-    <div class="mb-6">
-      <label class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant block mb-3">
-        Prix — <span id="price-display" class="text-primary">0 – 50 000 MAD</span>
-      </label>
-      <div class="space-y-2">
-        <input type="range" id="price-min" min="0" max="50000" value="0" step="100" class="w-full accent-primary" oninput="updatePriceDisplay()" onchange="applyFilters()"/>
-        <input type="range" id="price-max" min="0" max="50000" value="50000" step="100" class="w-full accent-primary" oninput="updatePriceDisplay()" onchange="applyFilters()"/>
-      </div>
-    </div>
-    <div class="mb-6">
-      <label class="flex items-center gap-2 cursor-pointer">
-        <input type="checkbox" id="f-stock" class="w-4 h-4 accent-primary" onchange="applyFilters()"/>
-        <span class="text-sm font-medium">En stock uniquement</span>
-      </label>
-    </div>
-    <button onclick="resetFilters()" class="w-full py-2 text-sm font-semibold text-on-surface-variant border border-outline-variant/40 rounded-lg hover:bg-surface-container-low transition-colors">Réinitialiser les filtres</button>
-  </aside>
-
-  <div class="flex-1 min-w-0">
-    <div id="active-filters" class="flex flex-wrap gap-2 mb-4 hidden"></div>
-
-    <div class="lg:hidden mb-5 flex gap-2 overflow-x-auto hide-scrollbar pb-1">
-      <input id="search-mobile" type="text" placeholder="Rechercher..."
-        class="flex-1 min-w-[160px] px-4 py-2 bg-surface-container-high border border-outline-variant/20 rounded-full text-sm focus:outline-none focus:border-primary"
-        oninput="onSearchInput(this.value)"/>
-      <button onclick="toggleMobileFilters()" class="flex-shrink-0 px-4 py-2 bg-surface-container-high border border-outline-variant/20 rounded-full text-sm font-medium flex items-center gap-1">
-        <span class="material-symbols-outlined" style="font-size:16px">tune</span> Filtres
-      </button>
-    </div>
-
-    <div id="mobile-filters" class="hidden lg:hidden mb-5 p-4 bg-surface-container-low rounded-xl border border-outline-variant/20">
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Origine</p>
-          <label class="flex items-center gap-2 mb-1"><input type="checkbox" id="fm-gabon" class="accent-primary" onchange="syncMobileFilters()"/><span class="text-sm">🇬🇦 Gabon</span></label>
-          <label class="flex items-center gap-2"><input type="checkbox" id="fm-maroc" class="accent-primary" onchange="syncMobileFilters()"/><span class="text-sm">🇲🇦 Maroc</span></label>
-        </div>
-        <div>
-          <p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Prix max</p>
-          <input type="range" id="fm-price" min="0" max="50000" value="50000" step="500" class="w-full accent-primary" oninput="syncMobileFilters()"/>
-          <span id="fm-price-label" class="text-xs text-on-surface-variant">50 000 MAD</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="lg:hidden flex gap-2 overflow-x-auto hide-scrollbar pb-3 mb-5">
-      <button data-id="" onclick="selectCat(this)" class="cat-btn flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium bg-primary text-white">Tout</button>
-    </div>
-
-    <div id="products-grid" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8">
-      <div class="skeleton aspect-[3/4]"></div>
-      <div class="skeleton aspect-[3/4]"></div>
-      <div class="skeleton aspect-[3/4]"></div>
-      <div class="skeleton aspect-[3/4]"></div>
-    </div>
-
-    <div id="no-results" class="hidden flex flex-col items-center justify-center py-24 text-center gap-4">
-      <span class="material-symbols-outlined text-5xl text-outline">search_off</span>
-      <p class="font-headline text-xl font-bold">Aucun produit trouvé</p>
-      <p class="text-on-surface-variant text-sm">Essayez d'autres filtres ou revenez plus tard.</p>
-      <button onclick="resetFilters()" class="mt-2 px-6 py-2.5 bg-primary text-white rounded-full text-sm font-semibold hover:opacity-90 transition-opacity">Voir tous les produits</button>
-    </div>
-
-    <div id="pagination" class="hidden flex justify-center items-center gap-2 mt-12"></div>
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-t">
+    <span>Livraison express Casablanca → Libreville</span><span class="sep">✦</span>
+    <span>Nouveaux artisans rejoignent la communauté</span><span class="sep">✦</span>
+    <span>−15% première commande · Code WENNA15</span><span class="sep">✦</span>
+    <span>Paiements sécurisés · Retours 30 jours</span><span class="sep">✦</span>
+    <span>Livraison express Casablanca → Libreville</span><span class="sep">✦</span>
+    <span>Nouveaux artisans rejoignent la communauté</span><span class="sep">✦</span>
+    <span>−15% première commande · Code WENNA15</span><span class="sep">✦</span>
+    <span>Paiements sécurisés · Retours 30 jours</span><span class="sep">✦</span>
   </div>
 </div>
 
-<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-[#f5fbf1]/90 backdrop-blur-xl rounded-t-[2rem] z-50 shadow-[0_-8px_40px_rgba(23,29,23,0.06)] md:hidden">
-  <a href="index.html" class="flex flex-col items-center text-on-surface/60 hover:text-primary transition-colors">
-    <span class="material-symbols-outlined">home</span>
-    <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Accueil</span>
-  </a>
-  <a href="boutique.html" class="flex flex-col items-center text-primary font-bold">
-    <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">storefront</span>
-    <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Boutique</span>
-  </a>
-  <a href="dashboard-vendeur.html" class="flex flex-col items-center text-on-surface/60 hover:text-primary transition-colors">
-    <span class="material-symbols-outlined">add_circle</span>
-    <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Vendre</span>
-  </a>
-  <a href="compte.html" class="flex flex-col items-center text-on-surface/60 hover:text-primary transition-colors">
-    <span class="material-symbols-outlined">person</span>
-    <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Profil</span>
-  </a>
+<!-- PAGE HERO -->
+<div class="page-hero reveal">
+  <div class="eyebrow">Artisanat authentique</div>
+  <h1 class="page-title">La Boutique</h1>
+  <p class="page-sub">Sélection curatée d'artisans du Gabon et du Maroc. <span id="total-label" style="color:var(--fire);"></span></p>
+</div>
+
+<!-- ACTIVE FILTERS -->
+<div class="active-filters" id="active-filters"></div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <div class="cats-scroll" id="cats-scroll">
+    <button class="cat-btn active" data-id="">Tout</button>
+  </div>
+  <div class="toolbar-right">
+    <span class="results-count" id="results-count"></span>
+    <select class="sort-select" id="sort-select" onchange="applySort()">
+      <option value="created_at:desc">Plus récents</option>
+      <option value="price:asc">Prix ↑</option>
+      <option value="price:desc">Prix ↓</option>
+      <option value="name:asc">A → Z</option>
+    </select>
+    <div class="view-btns">
+      <button class="view-btn active" id="btn-grid3" onclick="setView('grid3')" title="3 colonnes">
+        <span class="material-symbols-outlined" style="font-size:16px;">grid_view</span>
+      </button>
+      <button class="view-btn" id="btn-grid4" onclick="setView('grid4')" title="4 colonnes">
+        <span class="material-symbols-outlined" style="font-size:16px;">apps</span>
+      </button>
+      <button class="view-btn" id="btn-list" onclick="setView('list')" title="Liste">
+        <span class="material-symbols-outlined" style="font-size:16px;">view_list</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- SHOP LAYOUT -->
+<div class="shop-layout">
+
+  <!-- SIDEBAR FILTRES -->
+  <aside class="sidebar">
+    <div class="filter-section">
+      <div class="filter-title">Recherche</div>
+      <input class="filter-search" type="search" id="search-inp" placeholder="Nom, description…" oninput="onSearchInput(this.value)"/>
+    </div>
+    <div class="filter-section">
+      <div class="filter-title">Origine</div>
+      <div class="check-row">
+        <input type="checkbox" id="f-gabon" onchange="applyFilters()"/>
+        <label for="f-gabon">Gabon</label>
+      </div>
+      <div class="check-row">
+        <input type="checkbox" id="f-maroc" onchange="applyFilters()"/>
+        <label for="f-maroc">Maroc</label>
+      </div>
+    </div>
+    <div class="filter-section">
+      <div class="filter-title">Prix — <span class="price-display" id="price-display">0 – 100 000 MAD</span></div>
+      <div class="price-range">
+        <input type="range" id="price-min" min="0" max="100000" value="0" step="500" oninput="updatePriceDisplay()" onchange="applyFilters()"/>
+        <input type="range" id="price-max" min="0" max="100000" value="100000" step="500" oninput="updatePriceDisplay()" onchange="applyFilters()"/>
+      </div>
+    </div>
+    <div class="filter-section">
+      <div class="check-row">
+        <input type="checkbox" id="f-stock" onchange="applyFilters()"/>
+        <label for="f-stock">En stock uniquement</label>
+      </div>
+    </div>
+    <button class="btn-reset" onclick="resetFilters()">Réinitialiser</button>
+  </aside>
+
+  <!-- PRODUITS -->
+  <div class="products-area">
+    <div class="prod-grid" id="prod-grid">
+      <!-- Skeletons -->
+      <div class="prod-card"><div class="prod-img skel"></div><div class="prod-info"><div class="skel" style="height:9px;width:55%;margin-bottom:8px;"></div><div class="skel" style="height:17px;width:80%;margin-bottom:10px;"></div><div class="skel" style="height:14px;width:40%;"></div></div></div>
+      <div class="prod-card"><div class="prod-img skel"></div><div class="prod-info"><div class="skel" style="height:9px;width:55%;margin-bottom:8px;"></div><div class="skel" style="height:17px;width:80%;margin-bottom:10px;"></div><div class="skel" style="height:14px;width:40%;"></div></div></div>
+      <div class="prod-card"><div class="prod-img skel"></div><div class="prod-info"><div class="skel" style="height:9px;width:55%;margin-bottom:8px;"></div><div class="skel" style="height:17px;width:80%;margin-bottom:10px;"></div><div class="skel" style="height:14px;width:40%;"></div></div></div>
+    </div>
+    <div id="no-results" style="display:none;" class="no-results">
+      <div class="no-results-title">Aucun produit trouvé</div>
+      <div class="no-results-sub">Essayez d'autres filtres ou revenez plus tard.</div>
+    </div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bnav">
+  <div class="bnav-inner">
+    <a href="hero.html" class="bnav-item"><span class="material-symbols-outlined">home</span><span>Home</span></a>
+    <a href="boutique.html" class="bnav-item active"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">storefront</span><span>Shop</span></a>
+    <a href="dashboard-vendeur.html" class="bnav-item"><span class="material-symbols-outlined">add_circle</span><span>Sell</span></a>
+    <a href="compte.html" class="bnav-item"><span class="material-symbols-outlined">person</span><span>Profil</span></a>
+  </div>
 </nav>
 
-<script>
-const SUPABASE_URL  = 'https://aakxoydznmybstfozjte.supabase.co'
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
-// Réutiliser l'instance Cart si déjà créée
-const sb = window._wennaSb || (window._wennaSb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON))
+<!-- SEARCH OVERLAY -->
+<div class="srch-ov" id="srchOv">
+  <div class="srch-box">
+    <span class="material-symbols-outlined" style="color:#333;font-size:28px;">search</span>
+    <input class="srch-inp" id="search-input" type="search" placeholder="Rechercher…" oninput="onSearchInput(this.value)" onkeydown="handleSearchKey(event)"/>
+    <button onclick="closeSearch()" style="background:none;border:none;color:#444;cursor:none;"><span class="material-symbols-outlined" style="font-size:22px;">close</span></button>
+  </div>
+</div>
 
-const PAGE_SIZE = 12
+<!-- TOAST -->
+<div id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+<script src="js/config.js" defer></script>
+<script defer>
+/* ─── CURSEUR ─────────────────────────────────────── */
+const cur = document.getElementById('cur'), crng = document.getElementById('curRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+(function anim() {
+  if (cur) { cur.style.left = mx + 'px'; cur.style.top = my + 'px'; }
+  rx += (mx - rx) * .12; ry += (my - ry) * .12;
+  if (crng) { crng.style.left = rx + 'px'; crng.style.top = ry + 'px'; }
+  requestAnimationFrame(anim);
+})();
+
+/* ─── HEADER SCROLL ──────────────────────────────── */
+const hd = document.getElementById('hd');
+window.addEventListener('scroll', () => hd.classList.toggle('scr', scrollY > 60), { passive: true });
+
+/* ─── TOAST ──────────────────────────────────────── */
+function showToast(msg, d = 3000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), d);
+}
+
+/* ─── PANIER ─────────────────────────────────────── */
+function updateCartBadge() {
+  try {
+    const c = JSON.parse(localStorage.getItem('wenna_cart') || '[]');
+    const b = document.getElementById('cart-badge');
+    const n = c.reduce((a, i) => a + (i.qty || 1), 0);
+    if (n > 0) { b.textContent = n > 99 ? '99+' : n; b.style.display = 'flex'; }
+    else b.style.display = 'none';
+  } catch {}
+}
+function addToCart(p) {
+  try {
+    const c = JSON.parse(localStorage.getItem('wenna_cart') || '[]');
+    const i = c.findIndex(x => x.id === p.id);
+    if (i > -1) c[i].qty = (c[i].qty || 1) + 1;
+    else c.push({ ...p, qty: 1 });
+    localStorage.setItem('wenna_cart', JSON.stringify(c));
+    updateCartBadge();
+    showToast('Ajouté au panier ✓');
+  } catch {}
+}
+
+/* ─── SEARCH ─────────────────────────────────────── */
+function openSearch() {
+  document.getElementById('srchOv').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('search-input').focus(), 80);
+}
+function closeSearch() {
+  document.getElementById('srchOv').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function handleSearchKey(e) {
+  if (e.key === 'Escape') closeSearch();
+}
+document.getElementById('srchOv').addEventListener('click', e => { if (e.target === e.currentTarget) closeSearch(); });
+document.addEventListener('keydown', e => {
+  if ((e.key === '/' || (e.ctrlKey && e.key === 'k')) && document.activeElement.tagName !== 'INPUT') {
+    e.preventDefault(); openSearch();
+  }
+});
+
+/* ─── REVEAL ─────────────────────────────────────── */
+const rObs = new IntersectionObserver(es => {
+  es.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
+}, { threshold: .07 });
+document.querySelectorAll('.reveal').forEach(el => rObs.observe(el));
+
+/* ─────────────────────────────────────────────────── */
+/* ─── STATE & CONSTANTES ─────────────────────────── */
+const PAGE_SIZE = 12;
 let state = {
-  page:1, total:0, search:'', catId:'', country:null,
-  priceMin:0, priceMax:50000, stockOnly:false,
-  sort:'created_at:desc', view:'grid', debounce:null
+  page: 1, total: 0,
+  search: '', catId: '', pays: null,
+  priceMin: 0, priceMax: 100000, stockOnly: false,
+  sort: 'created_at:desc', view: 'grid3',
+  debounce: null
+};
+
+/* ─── FORMAT PRIX ────────────────────────────────── */
+function fmtPrice(n, cur = 'MAD') {
+  try { return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: cur, minimumFractionDigits: 0 }).format(n); }
+  catch { return Number(n).toFixed(0) + ' ' + cur; }
 }
 
-const $ = id => document.getElementById(id)
-const fmt = (n, c='MAD') => {
-  try { return new Intl.NumberFormat('fr-FR',{style:'currency',currency:c}).format(n) }
-  catch { return `${Number(n).toFixed(2)} ${c}` }
+/* ─── LECTURE PARAMS URL ─────────────────────────── */
+function readURLParams() {
+  const p = new URLSearchParams(location.search);
+  if (p.get('pays')) state.pays = p.get('pays') === 'gabon' ? 'Gabon' : p.get('pays') === 'maroc' ? 'Maroc' : null;
+  if (p.get('cat')) state.catId = p.get('cat');
+  if (p.get('q')) { state.search = p.get('q'); const si = document.getElementById('search-inp'); if (si) si.value = state.search; }
 }
 
-function toast(msg) {
-  const t = $('toast'); t.textContent = msg; t.classList.add('show')
-  setTimeout(() => t.classList.remove('show'), 2800)
-}
-
-// ─── PANIER SUPABASE ──────────────────────────────────
-async function addToCart(id, name, price, image, currency) {
-  const result = await Cart.add(id, name, price, image, currency)
-  if (!result.success && result.error === 'not_logged_in') {
-    toast('Connecte-toi pour ajouter au panier')
-    setTimeout(() => { window.location.href = 'compte.html?redirect=boutique.html' }, 1200)
-    return
-  }
-  if (!result.success) { toast('Erreur : ' + result.message); return }
-  toast(result.message)
-  await Cart.updateBadge('cart-badge')
-}
-
-// ─── CATÉGORIES ───────────────────────────────────────
+/* ─── CATÉGORIES ─────────────────────────────────── */
 async function loadCategories() {
-  const { data } = await sb.from('categories').select('id, name, icon').order('name')
-  if (!data) return
-
-  const addBtns = (containerId, mobile=false) => {
-    const container = $(containerId)
-    if (!container) return
-    data.forEach(cat => {
-      const btn = document.createElement('button')
-      btn.dataset.id = cat.id
-      btn.textContent = (cat.icon ? cat.icon+' ' : '') + cat.name
-      btn.className = mobile
-        ? 'cat-btn flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium bg-surface-container-highest text-on-surface-variant hover:bg-secondary-container/30 transition-colors'
-        : 'cat-btn text-left px-3 py-2 rounded-lg text-sm font-medium text-on-surface-variant hover:bg-surface-container-low transition-colors'
-      btn.onclick = () => selectCat(btn)
-      container.appendChild(btn)
-    })
-  }
-
-  addBtns('cat-filter', false)
-  const mobileRow = document.querySelector('.lg\\:hidden .flex.gap-2.overflow-x-auto')
-  if (mobileRow) {
-    data.forEach(cat => {
-      const btn = document.createElement('button')
-      btn.dataset.id = cat.id
-      btn.textContent = (cat.icon ? cat.icon+' ' : '') + cat.name
-      btn.className = 'cat-btn flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium bg-surface-container-highest text-on-surface-variant'
-      btn.onclick = () => selectCat(btn)
-      mobileRow.appendChild(btn)
-    })
+  // UTILISE db depuis js/config.js — jamais de nouveau client
+  if (typeof db === 'undefined') return;
+  const { data, error } = await db.from('categories').select('id, name').order('name');
+  if (error || !data) return;
+  const container = document.getElementById('cats-scroll');
+  data.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-btn';
+    btn.dataset.id = cat.id;
+    btn.textContent = cat.name;
+    if (state.catId === String(cat.id)) btn.classList.add('active');
+    btn.addEventListener('click', () => selectCat(btn));
+    container.appendChild(btn);
+  });
+  if (state.pays) {
+    const allBtn = container.querySelector('[data-id=""]');
+    if (allBtn) allBtn.classList.remove('active');
   }
 }
 
 function selectCat(btn) {
-  document.querySelectorAll('.cat-btn').forEach(b => {
-    const isMobile = b.closest('.lg\\:hidden') !== null
-    b.className = isMobile
-      ? 'cat-btn flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium bg-surface-container-highest text-on-surface-variant'
-      : 'cat-btn text-left px-3 py-2 rounded-lg text-sm font-medium text-on-surface-variant hover:bg-surface-container-low transition-colors'
-  })
-  document.querySelectorAll(`.cat-btn[data-id="${btn.dataset.id}"]`).forEach(b => {
-    const isMobile = b.closest('.lg\\:hidden') !== null
-    b.className = isMobile
-      ? 'cat-btn flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium bg-primary text-white'
-      : 'cat-btn text-left px-3 py-2 rounded-lg text-sm font-medium bg-primary text-white'
-  })
-  state.catId = btn.dataset.id || ''
-  state.page  = 1
-  loadProducts()
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  state.catId = btn.dataset.id || '';
+  state.page = 1;
+  renderActiveFilters();
+  loadProducts();
 }
 
+/* ─── FILTRES ────────────────────────────────────── */
 function updatePriceDisplay() {
-  const mn = parseInt($('price-min').value), mx = parseInt($('price-max').value)
-  $('price-display').textContent = `${mn.toLocaleString('fr-FR')} – ${mx.toLocaleString('fr-FR')} MAD`
+  const mn = parseInt(document.getElementById('price-min').value);
+  const mx = parseInt(document.getElementById('price-max').value);
+  document.getElementById('price-display').textContent = `${mn.toLocaleString('fr-FR')} – ${mx.toLocaleString('fr-FR')} MAD`;
 }
 
 function applyFilters() {
-  const gabon = $('f-gabon')?.checked, maroc = $('f-maroc')?.checked
-  state.country   = (gabon && maroc) || (!gabon && !maroc) ? null : gabon ? 'Gabon' : 'Maroc'
-  state.priceMin  = parseInt($('price-min')?.value || 0)
-  state.priceMax  = parseInt($('price-max')?.value || 50000)
-  state.stockOnly = $('f-stock')?.checked || false
-  state.page      = 1
-  updatePriceDisplay(); renderActiveFilters(); loadProducts()
+  const g = document.getElementById('f-gabon')?.checked;
+  const m = document.getElementById('f-maroc')?.checked;
+  state.pays = (g && m) || (!g && !m) ? null : g ? 'Gabon' : 'Maroc';
+  state.priceMin = parseInt(document.getElementById('price-min').value || 0);
+  state.priceMax = parseInt(document.getElementById('price-max').value || 100000);
+  state.stockOnly = document.getElementById('f-stock')?.checked || false;
+  state.page = 1;
+  updatePriceDisplay();
+  renderActiveFilters();
+  loadProducts();
 }
-
-function syncMobileFilters() {
-  const g = $('fm-gabon')?.checked, m = $('fm-maroc')?.checked
-  if ($('f-gabon')) $('f-gabon').checked = g
-  if ($('f-maroc')) $('f-maroc').checked = m
-  const pmax = parseInt($('fm-price')?.value || 50000)
-  if ($('price-max')) $('price-max').value = pmax
-  $('fm-price-label').textContent = pmax.toLocaleString('fr-FR') + ' MAD'
-  applyFilters()
-}
-
-function applySort() { state.sort = $('sort-select').value; state.page = 1; loadProducts() }
 
 function onSearchInput(val) {
-  state.search = val.trim()
-  clearTimeout(state.debounce)
-  state.debounce = setTimeout(() => { state.page = 1; loadProducts() }, 350)
+  state.search = val.trim();
+  // Sync les deux inputs (sidebar + overlay)
+  const si = document.getElementById('search-inp');
+  const sio = document.getElementById('search-input');
+  if (si && si !== document.activeElement) si.value = val;
+  if (sio && sio !== document.activeElement) sio.value = val;
+  clearTimeout(state.debounce);
+  state.debounce = setTimeout(() => { state.page = 1; renderActiveFilters(); loadProducts(); }, 350);
+}
+
+function applySort() {
+  state.sort = document.getElementById('sort-select').value;
+  state.page = 1;
+  loadProducts();
 }
 
 function resetFilters() {
-  state.search=''; state.catId=''; state.country=null
-  state.priceMin=0; state.priceMax=50000; state.stockOnly=false; state.page=1
-  $('search-desktop')&&($('search-desktop').value='')
-  $('search-mobile')&&($('search-mobile').value='')
-  $('f-gabon')&&($('f-gabon').checked=false)
-  $('f-maroc')&&($('f-maroc').checked=false)
-  $('f-stock')&&($('f-stock').checked=false)
-  $('price-min')&&($('price-min').value=0)
-  $('price-max')&&($('price-max').value=50000)
-  updatePriceDisplay()
-  document.querySelectorAll('.cat-btn[data-id=""]').forEach(b => {
-    const isMobile = b.closest('.lg\\:hidden') !== null
-    b.className = isMobile ? 'cat-btn flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium bg-primary text-white' : 'cat-btn text-left px-3 py-2 rounded-lg text-sm font-medium bg-primary text-white'
-  })
-  document.querySelectorAll('.cat-btn:not([data-id=""])').forEach(b => {
-    const isMobile = b.closest('.lg\\:hidden') !== null
-    b.className = isMobile ? 'cat-btn flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium bg-surface-container-highest text-on-surface-variant' : 'cat-btn text-left px-3 py-2 rounded-lg text-sm font-medium text-on-surface-variant hover:bg-surface-container-low transition-colors'
-  })
-  renderActiveFilters(); loadProducts()
+  state.search = ''; state.catId = ''; state.pays = null;
+  state.priceMin = 0; state.priceMax = 100000; state.stockOnly = false; state.page = 1;
+  const si = document.getElementById('search-inp'); if (si) si.value = '';
+  const sio = document.getElementById('search-input'); if (sio) sio.value = '';
+  document.getElementById('f-gabon').checked = false;
+  document.getElementById('f-maroc').checked = false;
+  document.getElementById('f-stock').checked = false;
+  document.getElementById('price-min').value = 0;
+  document.getElementById('price-max').value = 100000;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.cat-btn[data-id=""]')?.classList.add('active');
+  updatePriceDisplay();
+  renderActiveFilters();
+  loadProducts();
 }
 
 function renderActiveFilters() {
-  const container = $('active-filters')
-  const chips = []
-  if (state.country) chips.push({label:state.country==='Gabon'?'🇬🇦 Gabon':'🇲🇦 Maroc',clear:()=>{$('f-gabon').checked=false;$('f-maroc').checked=false;applyFilters()}})
-  if (state.priceMax<50000) chips.push({label:`≤ ${state.priceMax.toLocaleString('fr-FR')} MAD`,clear:()=>{$('price-max').value=50000;applyFilters()}})
-  if (state.stockOnly) chips.push({label:'En stock',clear:()=>{$('f-stock').checked=false;applyFilters()}})
-  if (state.search) chips.push({label:`"${state.search}"`,clear:()=>{state.search='';$('search-desktop')&&($('search-desktop').value='');$('search-mobile')&&($('search-mobile').value='');state.page=1;renderActiveFilters();loadProducts()}})
-  if (!chips.length) { container.classList.add('hidden'); return }
-  container.classList.remove('hidden')
-  container.innerHTML = chips.map((c,i) => `<button class="filter-pill active" onclick="window._clearFilter(${i})">${c.label} <span class="material-symbols-outlined" style="font-size:13px">close</span></button>`).join('')
-  chips.forEach((c,i) => { window._clearFilter = (idx) => chips[idx].clear() })
+  const container = document.getElementById('active-filters');
+  const chips = [];
+  if (state.pays) chips.push({ label: state.pays === 'Gabon' ? 'Gabon' : 'Maroc', clear: () => { document.getElementById('f-gabon').checked = false; document.getElementById('f-maroc').checked = false; applyFilters(); } });
+  if (state.priceMax < 100000) chips.push({ label: `≤ ${state.priceMax.toLocaleString('fr-FR')} MAD`, clear: () => { document.getElementById('price-max').value = 100000; applyFilters(); } });
+  if (state.stockOnly) chips.push({ label: 'En stock', clear: () => { document.getElementById('f-stock').checked = false; applyFilters(); } });
+  if (state.search) chips.push({ label: `"${state.search}"`, clear: () => { state.search = ''; document.getElementById('search-inp').value = ''; state.page = 1; renderActiveFilters(); loadProducts(); } });
+  container.innerHTML = chips.map((c, i) => `<button class="filter-pill" onclick="window.__clearF(${i})">${c.label} ×</button>`).join('');
+  window.__clearF = idx => chips[idx].clear();
 }
 
-function toggleMobileFilters() { $('mobile-filters').classList.toggle('hidden') }
-
+/* ─── VUE ────────────────────────────────────────── */
 function setView(v) {
-  state.view = v
-  const grid = $('products-grid')
-  if (v==='list') { grid.classList.add('list-view'); grid.classList.remove('grid-cols-2','md:grid-cols-3','xl:grid-cols-4'); $('btn-grid').classList.remove('active'); $('btn-list').classList.add('active') }
-  else { grid.classList.remove('list-view'); grid.classList.add('grid-cols-2','md:grid-cols-3','xl:grid-cols-4'); $('btn-list').classList.remove('active'); $('btn-grid').classList.add('active') }
+  state.view = v;
+  const grid = document.getElementById('prod-grid');
+  grid.className = 'prod-grid';
+  ['btn-grid3', 'btn-grid4', 'btn-list'].forEach(id => document.getElementById(id)?.classList.remove('active'));
+  if (v === 'grid4') { grid.classList.add('cols-4'); document.getElementById('btn-grid4')?.classList.add('active'); }
+  else if (v === 'list') { grid.classList.add('list-view'); document.getElementById('btn-list')?.classList.add('active'); }
+  else { document.getElementById('btn-grid3')?.classList.add('active'); }
 }
 
+/* ─── CHARGEMENT PRODUITS — UTILISE db (config.js) ── */
 async function loadProducts() {
-  const grid = $('products-grid')
-  grid.innerHTML = Array(8).fill(0).map(()=>`<div class="skeleton aspect-[3/4] rounded-xl"></div>`).join('')
-  $('no-results').classList.add('hidden')
-  $('pagination').classList.add('hidden')
-
-  const [col,dir] = state.sort.split(':')
-  const asc = dir==='asc'
-  const offset = (state.page-1)*PAGE_SIZE
-
-  let products=[], total=0
-
-  if (state.search) {
-    const { data, error } = await sb.rpc('search_products',{term:state.search,country_filter:state.country,category_filter:state.catId||null,price_min:state.priceMin,price_max:state.priceMax})
-    if (!error && data) {
-      let res = data
-      if (state.stockOnly) res = res.filter(p=>(p.stock||0)>0)
-      total=res.length; products=res.slice(offset,offset+PAGE_SIZE)
-    } else { await fallbackLoad(); return }
-  } else {
-    let q = sb.from('products')
-      .select('id,name,description,price,currency,country,origin_city,image_url,images,category_id,stock,status',{count:'exact'})
-      .eq('status','active').gte('price',state.priceMin).lte('price',state.priceMax)
-      .range(offset,offset+PAGE_SIZE-1).order(col,{ascending:asc})
-    if (state.country)   q=q.eq('country',state.country)
-    if (state.catId)     q=q.eq('category_id',state.catId)
-    if (state.stockOnly) q=q.gt('stock',0)
-    const {data,count,error}=await q
-    if (error) { grid.innerHTML='<p class="text-center col-span-full text-sm text-error py-8">Erreur de chargement. Réessayez.</p>'; return }
-    products=data||[]; total=count||0
+  if (typeof db === 'undefined') {
+    // db pas encore dispo, réessayer après 200ms
+    setTimeout(loadProducts, 200);
+    return;
   }
-  state.total=total
-  renderProducts(products,total)
+  const grid = document.getElementById('prod-grid');
+  // Afficher skeletons
+  grid.innerHTML = Array(PAGE_SIZE).fill(0).map(() => `
+    <div class="prod-card">
+      <div class="prod-img skel"></div>
+      <div class="prod-info">
+        <div class="skel" style="height:9px;width:55%;margin-bottom:8px;"></div>
+        <div class="skel" style="height:17px;width:80%;margin-bottom:10px;"></div>
+        <div class="skel" style="height:14px;width:40%;"></div>
+      </div>
+    </div>`).join('');
+  document.getElementById('no-results').style.display = 'none';
+  document.getElementById('pagination').innerHTML = '';
+
+  const [col, dir] = state.sort.split(':');
+  const offset = (state.page - 1) * PAGE_SIZE;
+
+  try {
+    // Colonnes à récupérer — compatibles avec le schéma connu
+    let q = db.from('products')
+      .select('id, name, price, category, pays, city, rating, stock, images, active', { count: 'exact' })
+      .eq('active', true)
+      .gte('price', state.priceMin)
+      .lte('price', state.priceMax)
+      .range(offset, offset + PAGE_SIZE - 1)
+      .order(col, { ascending: dir === 'asc' });
+
+    if (state.pays) q = q.ilike('pays', state.pays);
+    if (state.catId) q = q.eq('category_id', state.catId);
+    if (state.stockOnly) q = q.gt('stock', 0);
+    if (state.search) q = q.ilike('name', `%${state.search}%`);
+
+    const { data, count, error } = await q;
+
+    if (error) {
+      console.error('[WennaShop] Supabase error:', error);
+      grid.innerHTML = `<div style="padding:40px;text-align:center;color:#555;grid-column:1/-1;font-size:12px;letter-spacing:2px;text-transform:uppercase;">Erreur de chargement — ${error.message}</div>`;
+      return;
+    }
+
+    state.total = count || 0;
+    const label = count ? `${count} produit${count > 1 ? 's' : ''}` : '';
+    document.getElementById('total-label').textContent = label;
+    document.getElementById('results-count').textContent = label;
+
+    if (!data || !data.length) {
+      grid.innerHTML = '';
+      document.getElementById('no-results').style.display = 'block';
+      return;
+    }
+
+    renderProducts(data);
+    renderPagination(state.total);
+  } catch (err) {
+    console.error('[WennaShop] Erreur critique:', err);
+    grid.innerHTML = `<div style="padding:40px;text-align:center;color:#555;grid-column:1/-1;">Impossible de charger les produits.</div>`;
+  }
 }
 
-async function fallbackLoad() {
-  const [col,dir]=state.sort.split(':')
-  const offset=(state.page-1)*PAGE_SIZE
-  let q=sb.from('products').select('id,name,description,price,currency,country,origin_city,image_url,images,category_id,stock,status',{count:'exact'})
-    .eq('status','active').gte('price',state.priceMin).lte('price',state.priceMax)
-    .ilike('name',`%${state.search}%`).range(offset,offset+PAGE_SIZE-1).order(col,{ascending:dir==='asc'})
-  if (state.country)   q=q.eq('country',state.country)
-  if (state.catId)     q=q.eq('category_id',state.catId)
-  if (state.stockOnly) q=q.gt('stock',0)
-  const {data,count}=await q
-  state.total=count||0
-  renderProducts(data||[],count||0)
-}
-
-function renderProducts(products,total) {
-  const grid=$('products-grid')
-  $('results-label').textContent=total?`${total} produit${total>1?'s':''}`  :''
-  if (!products.length) { grid.innerHTML=''; $('no-results').classList.remove('hidden'); return }
-  $('no-results').classList.add('hidden')
+function renderProducts(products) {
+  const grid = document.getElementById('prod-grid');
   grid.innerHTML = products.map(p => {
-    const imgs=Array.isArray(p.images)&&p.images.length?p.images:[p.image_url||'']
-    const img=imgs[0]||''
-    const cur=p.currency||'MAD'
-    const safeName=p.name.replace(/'/g,"\\'").replace(/"/g,'&quot;')
-    const badge=p.country==='Maroc'
-      ?`<span class="px-2 py-0.5 bg-secondary text-on-secondary text-[9px] font-bold uppercase tracking-widest rounded-full">Maroc</span>`
-      :`<span class="px-2 py-0.5 bg-primary text-on-primary text-[9px] font-bold uppercase tracking-widest rounded-full">Gabon</span>`
-    const outOfStock=(p.stock||0)===0
-      ?`<span class="absolute top-2 right-2 px-2 py-0.5 bg-surface-container-lowest/90 text-on-surface-variant text-[9px] font-bold uppercase tracking-widest rounded-full">Rupture</span>`:''
+    const img = Array.isArray(p.images) && p.images.length ? p.images[0] : 'https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=400&q=80';
+    const low = p.stock != null && p.stock > 0 && p.stock <= 5;
+    const paysLabel = (p.pays || '').toLowerCase().includes('maroc') ? 'MA' : 'GA';
+    const safeName = (p.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
     return `
-      <article class="product-card group">
-        <a href="detail_produit.html?id=${p.id}" class="block">
-          <div class="card-img-wrap relative aspect-[3/4] overflow-hidden rounded-xl bg-surface-container-low mb-3">
-            ${img?`<img src="${img}" alt="${p.name}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onerror="this.parentElement.innerHTML='<div class=\'w-full h-full flex items-center justify-center\'><span class=\'material-symbols-outlined text-4xl text-outline\'>image</span></div>'"  />`:`<div class="w-full h-full flex items-center justify-center"><span class="material-symbols-outlined text-4xl text-outline">image</span></div>`}
-            <div class="absolute top-2 left-2">${badge}</div>
-            ${outOfStock}
+      <div class="prod-card" onclick="location.href='detail_produit.html?id=${p.id}'">
+        <div class="prod-img">
+          <img src="${img}" alt="${safeName}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=400&q=80'"/>
+          <span class="prod-badge">${paysLabel}</span>
+          ${low ? '<span class="prod-rare">Rare</span>' : ''}
+          <button class="prod-add" onclick="event.stopPropagation();addToCart({id:'${p.id}',name:'${safeName}',price:${p.price}})">
+            <span class="material-symbols-outlined" style="font-size:18px;">add</span>
+          </button>
+        </div>
+        <div class="prod-info">
+          <div class="prod-cat">${p.category || ''} · ${p.city || ''}</div>
+          <div class="prod-name">${p.name}</div>
+          <div class="prod-ft">
+            <div class="prod-price">${fmtPrice(p.price)}</div>
+            ${p.rating ? `<div class="prod-rating"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;font-size:13px;color:var(--fire);">star</span>${Number(p.rating).toFixed(1)}</div>` : ''}
           </div>
-          <div class="card-body">
-            <div>
-              <p class="text-[10px] font-medium uppercase tracking-widest text-on-surface-variant mb-0.5">${p.origin_city||''}</p>
-              <h3 class="font-headline font-bold text-sm leading-snug group-hover:text-primary transition-colors line-clamp-2 mb-1">${p.name}</h3>
-            </div>
-            <div class="flex items-center justify-between mt-2">
-              <span class="text-sm font-bold text-primary">${fmt(p.price,cur)}</span>
-              <button
-                onclick="event.preventDefault(); addToCart('${p.id}','${safeName}',${p.price},'${img}','${cur}')"
-                ${outOfStock?'disabled':''}
-                class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center hover:bg-primary-container transition-colors active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed">
-                <span class="material-symbols-outlined" style="font-size:15px">add</span>
-              </button>
-            </div>
-          </div>
-        </a>
-      </article>`
-  }).join('')
-  renderPagination(total)
+        </div>
+      </div>`;
+  }).join('');
 }
 
 function renderPagination(total) {
-  const totalPages=Math.ceil(total/PAGE_SIZE)
-  if (totalPages<=1) { $('pagination').classList.add('hidden'); return }
-  $('pagination').classList.remove('hidden')
-  const p=state.page; let html=''
-  html+=`<button class="page-btn" onclick="goPage(${p-1})" ${p===1?'disabled':''}><span class="material-symbols-outlined" style="font-size:16px">chevron_left</span></button>`
-  for(let i=1;i<=totalPages;i++) {
-    if(i===1||i===totalPages||(i>=p-1&&i<=p+1)) html+=`<button class="page-btn ${i===p?'active':''}" onclick="goPage(${i})">${i}</button>`
-    else if(i===p-2||i===p+2) html+=`<span style="display:flex;align-items:center;color:#6f7a6d;font-size:.8rem">…</span>`
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+  if (totalPages <= 1) return;
+  const p = state.page;
+  let html = `<button class="page-btn" onclick="goPage(${p - 1})" ${p === 1 ? 'disabled' : ''}><span class="material-symbols-outlined" style="font-size:16px;">chevron_left</span></button>`;
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === 1 || i === totalPages || (i >= p - 1 && i <= p + 1)) {
+      html += `<button class="page-btn ${i === p ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
+    } else if (i === p - 2 || i === p + 2) {
+      html += `<span style="display:flex;align-items:center;color:#555;font-size:.8rem;">…</span>`;
+    }
   }
-  html+=`<button class="page-btn" onclick="goPage(${p+1})" ${p===totalPages?'disabled':''}><span class="material-symbols-outlined" style="font-size:16px">chevron_right</span></button>`
-  $('pagination').innerHTML=html
+  html += `<button class="page-btn" onclick="goPage(${p + 1})" ${p === totalPages ? 'disabled' : ''}><span class="material-symbols-outlined" style="font-size:16px;">chevron_right</span></button>`;
+  document.getElementById('pagination').innerHTML = html;
 }
 
-function goPage(p) { state.page=p; loadProducts(); window.scrollTo({top:80,behavior:'smooth'}) }
-
-async function init() {
-  await Cart.updateBadge('cart-badge')
-  updatePriceDisplay()
-  await loadCategories()
-  await loadProducts()
+function goPage(p) {
+  state.page = p;
+  loadProducts();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-document.addEventListener('DOMContentLoaded', init)
+/* ─── INIT ───────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  updateCartBadge();
+  updatePriceDisplay();
+  readURLParams();
+
+  // Sync checkbox pays si URL param
+  if (state.pays === 'Gabon') document.getElementById('f-gabon').checked = true;
+  if (state.pays === 'Maroc') document.getElementById('f-maroc').checked = true;
+
+  // Attendre que db soit disponible (chargé par config.js)
+  function waitForDb(attempts = 0) {
+    if (typeof db !== 'undefined') {
+      loadCategories();
+      loadProducts();
+      renderActiveFilters();
+    } else if (attempts < 20) {
+      setTimeout(() => waitForDb(attempts + 1), 100);
+    } else {
+      console.error('[WennaShop] db non défini après attente — vérifier js/config.js');
+      document.getElementById('prod-grid').innerHTML = `<div style="padding:40px;text-align:center;color:#555;grid-column:1/-1;font-size:12px;letter-spacing:2px;text-transform:uppercase;">Configuration Supabase manquante.</div>`;
+    }
+  }
+  waitForDb();
+});
 </script>
 </body>
 </html>
