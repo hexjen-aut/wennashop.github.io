@@ -1,504 +1,661 @@
 <!DOCTYPE html>
-<html class="light" lang="fr">
+<html lang="fr">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>WennaShop – Mon Compte</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>WennaShop — Mon Compte</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<!-- CinetPay SDK Seamless PRODUCTION -->
 <script src="https://cdn.cinetpay.com/seamless/main.js" type="text/javascript"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-tailwind.config = {
-  darkMode:"class",
-  theme:{extend:{colors:{"on-surface":"#171d17","on-secondary-fixed":"#001c3a","inverse-surface":"#2c322b","on-tertiary":"#ffffff","error":"#ba1a1a","tertiary-fixed-dim":"#f0c110","secondary-fixed-dim":"#a6c8ff","primary-fixed-dim":"#73dc84","on-tertiary-fixed":"#241a00","surface-container-low":"#eff5eb","tertiary-container":"#d0a600","on-primary-fixed-variant":"#00531f","on-secondary":"#ffffff","on-background":"#171d17","primary-container":"#0f8739","surface-dim":"#d6dcd2","tertiary":"#745b00","surface-tint":"#006e2b","error-container":"#ffdad6","on-primary-container":"#f7fff2","background":"#f5fbf1","surface-container-lowest":"#ffffff","outline-variant":"#becaba","primary":"#006b2a","surface-container":"#eaf0e5","secondary-container":"#78b0fe","surface-bright":"#f5fbf1","secondary-fixed":"#d4e3ff","on-error":"#ffffff","on-tertiary-container":"#4f3d00","on-secondary-container":"#00427d","surface-container-highest":"#dee4da","tertiary-fixed":"#ffe08b","surface-variant":"#dee4da","surface-container-high":"#e4eae0","on-primary":"#ffffff","on-error-container":"#93000a","inverse-on-surface":"#edf3e8","on-surface-variant":"#3f4a3e","on-secondary-fixed-variant":"#004786","surface":"#f5fbf1","on-primary-fixed":"#002108","outline":"#6f7a6d","on-tertiary-fixed-variant":"#584400","primary-fixed":"#8ff99d","secondary":"#1a5fa8","inverse-primary":"#73dc84"},borderRadius:{"DEFAULT":"1rem","lg":"2rem","xl":"3rem","full":"9999px"},fontFamily:{"headline":["Noto Serif"],"body":["Inter"],"label":["Inter"]}}}
-}
-</script>
 <style>
-  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24;vertical-align:middle}
-  body{font-family:'Inter',sans-serif;min-height:max(884px,100dvh)}
-  h1,h2,h3{font-family:'Noto Serif',serif}
-  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-  @keyframes scaleIn{from{opacity:0;transform:scale(0.96)}to{opacity:1;transform:scale(1)}}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .anim-up{animation:fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) forwards;opacity:0}
-  .anim-in{animation:scaleIn 0.4s cubic-bezier(0.22,1,0.36,1) forwards;opacity:0}
-  .d-50{animation-delay:.05s}.d-100{animation-delay:.1s}.d-150{animation-delay:.15s}
-  .d-200{animation-delay:.2s}.d-250{animation-delay:.25s}.d-300{animation-delay:.3s}
-  .tab-panel{display:none}.tab-panel.active{display:block;animation:fadeIn 0.3s ease}
-  .mode-panel{display:none}.mode-panel.active{display:block;animation:fadeIn 0.3s ease}
-  .section-card{background:#fff;border-radius:1.25rem;padding:1.5rem;box-shadow:0 2px 16px rgba(0,107,42,0.06)}
-  .stat-card{background:linear-gradient(135deg,#eff5eb 0%,#e4eae0 100%);border-radius:1.25rem;padding:1.25rem}
-  .order-row{transition:all 0.2s;border-radius:1rem}.order-row:hover{background:#eff5eb}
-  .listing-row{transition:all 0.2s;border-radius:1rem}.listing-row:hover{background:#eff5eb}
-  .btn-primary{background:linear-gradient(135deg,#006b2a 0%,#0f8739 100%);transition:all 0.2s}
-  .btn-primary:hover{opacity:0.9;transform:scale(0.99)}.btn-primary:active{transform:scale(0.97)}
-  .btn-secondary{background:linear-gradient(135deg,#1a5fa8 0%,#1e75d8 100%);transition:all 0.2s}
-  .btn-secondary:hover{opacity:0.9;transform:scale(0.99)}
-  .avatar-ring{box-shadow:0 0 0 3px #fff,0 0 0 5px #006b2a}
-  .chip{display:inline-flex;align-items:center;padding:0.2rem 0.75rem;border-radius:999px;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em}
-  .chip-green{background:#dcfce7;color:#166534}.chip-amber{background:#fef9c3;color:#854d0e}
-  .chip-blue{background:#dbeafe;color:#1e40af}.chip-red{background:#fee2e2;color:#991b1b}
-  .chip-gray{background:#f1f5f9;color:#475569}
-  .mode-toggle-btn{transition:all 0.25s;border-radius:999px;padding:0.5rem 1.5rem;font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase}
-  .mode-toggle-btn.active{background:linear-gradient(135deg,#006b2a,#0f8739);color:#fff;box-shadow:0 4px 14px rgba(0,107,42,0.25)}
-  .mode-toggle-btn:not(.active){color:#3f4a3e;background:transparent}
-  .mode-toggle-btn:not(.active):hover{background:#e4eae0}
-  .nav-tab{transition:all 0.2s;border-bottom:2px solid transparent;padding-bottom:0.5rem;font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#6f7a6d}
-  .nav-tab.active{color:#006b2a;border-color:#006b2a}
-  .nav-tab:not(.active):hover{color:#171d17}
-  .edit-field{background:#eff5eb;border:none;border-bottom:2px solid #becaba;border-radius:0.5rem 0.5rem 0 0;padding:0.75rem 1rem;width:100%;font-family:'Inter',sans-serif;font-size:0.875rem;outline:none;transition:border-color 0.2s}
-  .edit-field:focus{border-color:#006b2a}
-  .product-thumb{width:56px;height:56px;border-radius:0.75rem;object-fit:cover;background:#eaf0e5;flex-shrink:0}
-  .toggle-track{width:44px;height:24px;border-radius:999px;background:#becaba;transition:background 0.2s;cursor:pointer;position:relative}
-  .toggle-track.on{background:#006b2a}
-  .toggle-thumb{width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;top:3px;left:3px;transition:left 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.2)}
-  .toggle-track.on .toggle-thumb{left:23px}
-  .notification-dot{width:8px;height:8px;background:#ba1a1a;border-radius:50%;position:absolute;top:2px;right:2px;border:1.5px solid #fff}
-  .spinner{width:20px;height:20px;border:2px solid #e4eae0;border-top-color:#006b2a;border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block}
-  .feature-item{display:flex;align-items:flex-start;gap:0.75rem;padding:0.75rem 0;border-bottom:1px solid #eaf0e5}
-  .feature-item:last-child{border-bottom:none}
-  #toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:#171d17;color:#fff;padding:0.75rem 1.5rem;border-radius:999px;font-size:0.8rem;font-weight:600;z-index:9999;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap}
-  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-  #toast.success{background:#006b2a}#toast.error{background:#ba1a1a}
-  #loading-overlay{position:fixed;inset:0;background:#f5fbf1;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem}
-  #loading-overlay.hidden{display:none}
-  #avatar-progress-wrap{height:3px;background:#e4eae0;border-radius:999px;overflow:hidden;margin-top:8px;display:none}
-  #avatar-progress-bar{height:3px;background:#4ade80;border-radius:999px;transition:width 0.3s;width:0%}
-  .cam-label{cursor:pointer;position:absolute;bottom:0;right:0;width:28px;height:28px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.15);transition:background 0.2s}
-  .cam-label:hover{background:#006b2a}
-  .cam-label:hover span{color:#fff}
+:root {
+  --fire: #FF6B2B;
+  --ember: #E85A1A;
+  --ash: #FFE0D0;
+  --ink: #080808;
+  --coal: #111111;
+  --slate: #1A1A1A;
+  --smoke: #242424;
+  --fog: #888;
+  --mist: #ccc;
+  --snow: #f0ece6;
+  --snow-dim: rgba(240,236,230,0.5);
+  --snow-faint: rgba(240,236,230,0.08);
+  --fire-dim: rgba(255,107,43,0.15);
+  --fire-border: rgba(255,107,43,0.25);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--snow); min-height: 100vh; overflow-x: hidden; cursor: none; padding-bottom: 100px; }
 
-  /* ── MODAL PAIEMENT ───────────────────────────────── */
-  #payment-modal{position:fixed;inset:0;z-index:8000;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,0);pointer-events:none;transition:background 0.3s}
-  #payment-modal.open{background:rgba(0,0,0,0.45);pointer-events:all}
-  #payment-modal-sheet{background:#fff;border-radius:2rem 2rem 0 0;width:100%;max-width:480px;padding:2rem 1.5rem 3rem;transform:translateY(100%);transition:transform 0.4s cubic-bezier(0.22,1,0.36,1);box-shadow:0 -16px 60px rgba(0,0,0,0.15)}
-  #payment-modal.open #payment-modal-sheet{transform:translateY(0)}
-  .amount-chip{border:2px solid #becaba;border-radius:999px;padding:0.4rem 1.1rem;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.2s;color:#3f4a3e}
-  .amount-chip.selected,.amount-chip:hover{border-color:#006b2a;background:#eff5eb;color:#006b2a}
+/* CURSEUR */
+.cur { position: fixed; width: 10px; height: 10px; background: var(--fire); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: width .2s, height .2s; }
+.cur-ring { position: fixed; width: 36px; height: 36px; border: 1px solid rgba(255,107,43,.45); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: width .3s, height .3s; }
 
-  /* ── MODAL RETRAIT ────────────────────────────────── */
-  #withdraw-modal{position:fixed;inset:0;z-index:8000;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,0);pointer-events:none;transition:background 0.3s}
-  #withdraw-modal.open{background:rgba(0,0,0,0.45);pointer-events:all}
-  #withdraw-modal-sheet{background:#fff;border-radius:2rem 2rem 0 0;width:100%;max-width:480px;padding:2rem 1.5rem 3rem;transform:translateY(100%);transition:transform 0.4s cubic-bezier(0.22,1,0.36,1);box-shadow:0 -16px 60px rgba(0,0,0,0.15)}
-  #withdraw-modal.open #withdraw-modal-sheet{transform:translateY(0)}
+/* ICONS */
+.material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24; font-size: 22px; line-height: 1; vertical-align: middle; }
+
+/* LOADING OVERLAY */
+#loading-overlay { position:fixed; inset:0; background:var(--ink); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; transition: opacity .4s; }
+#loading-overlay.hidden { opacity:0; pointer-events:none; }
+.load-logo { font-family:'Cormorant Garamond',serif; font-size:42px; font-weight:700; font-style:italic; color:var(--snow); letter-spacing:-1px; }
+.load-logo b { color:var(--fire); }
+.load-bar { width:120px; height:1px; background:rgba(255,255,255,.08); position:relative; overflow:hidden; }
+.load-bar::after { content:''; position:absolute; left:-100%; top:0; width:100%; height:100%; background:var(--fire); animation: loadprog 1.2s ease-in-out infinite; }
+@keyframes loadprog { to { left: 100%; } }
+
+/* HEADER */
+.hd { position:fixed; top:0; left:0; right:0; z-index:100; padding:18px 48px; display:flex; align-items:center; justify-content:space-between; background:rgba(8,8,8,.92); backdrop-filter:blur(20px); border-bottom:1px solid rgba(255,107,43,.12); }
+.logo { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:700; font-style:italic; color:var(--snow); text-decoration:none; letter-spacing:-.5px; }
+.logo b { color:var(--fire); }
+.hd-acts { display:flex; align-items:center; gap:20px; }
+.hd-acts a, .hd-acts button { background:none; border:none; color:var(--fog); cursor:none; text-decoration:none; transition:color .2s; position:relative; display:flex; align-items:center; }
+.hd-acts a:hover, .hd-acts button:hover { color:var(--fire); }
+.cbadge { position:absolute; top:-6px; right:-6px; width:16px; height:16px; background:var(--fire); color:#fff; font-size:9px; font-weight:700; border-radius:50%; display:none; align-items:center; justify-content:center; }
+
+/* HERO PROFILE */
+.profile-hero { margin-top:64px; position:relative; overflow:hidden; min-height:260px; display:flex; align-items:flex-end; }
+.profile-hero-bg { position:absolute; inset:0; background:linear-gradient(135deg,#0a1a0a 0%,var(--slate) 50%,#1a0a00 100%); }
+.profile-hero-bg::after { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 60% 80% at 80% 50%, rgba(255,107,43,.08) 0%, transparent 70%); }
+.profile-hero-deco { position:absolute; right:-20px; top:-20px; font-family:'Cormorant Garamond',serif; font-size:320px; font-weight:700; font-style:italic; color:rgba(255,107,43,.04); line-height:1; pointer-events:none; user-select:none; }
+.profile-hero-content { position:relative; z-index:2; width:100%; padding:40px 48px 36px; display:flex; align-items:flex-end; gap:28px; }
+.avatar-wrap { position:relative; flex-shrink:0; }
+.avatar-ring { width:88px; height:88px; border-radius:50%; overflow:hidden; border:2px solid rgba(255,107,43,.4); background:var(--smoke); position:relative; }
+.avatar-ring img { width:100%; height:100%; object-fit:cover; display:none; }
+.avatar-placeholder { width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
+.cam-btn { position:absolute; bottom:0; right:0; width:26px; height:26px; background:var(--fire); border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:transform .2s; }
+.cam-btn:hover { transform:scale(1.1); }
+.cam-btn .material-symbols-outlined { font-size:13px; color:#fff; }
+.profile-info { flex:1; }
+.profile-eyebrow { font-size:9px; letter-spacing:3px; text-transform:uppercase; color:var(--fire); margin-bottom:6px; display:flex; align-items:center; gap:10px; }
+.profile-eyebrow::before { content:''; display:block; width:20px; height:1px; background:var(--fire); }
+.profile-name { font-family:'Cormorant Garamond',serif; font-size:clamp(28px,4vw,44px); font-weight:700; font-style:italic; line-height:1; margin-bottom:8px; letter-spacing:-1px; }
+.profile-email { font-size:12px; color:var(--fog); }
+.profile-chips { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+.chip { display:inline-flex; align-items:center; gap:5px; padding:4px 12px; border:1px solid; border-radius:2px; font-size:9px; font-weight:500; letter-spacing:2px; text-transform:uppercase; }
+.chip-fire { border-color:var(--fire-border); color:var(--fire); background:var(--fire-dim); }
+.chip-snow { border-color:rgba(255,255,255,.15); color:var(--fog); background:rgba(255,255,255,.05); }
+.chip-green { border-color:rgba(74,222,128,.3); color:#4ade80; background:rgba(74,222,128,.08); }
+.chip-amber { border-color:rgba(251,191,36,.3); color:#fbbf24; background:rgba(251,191,36,.08); }
+.chip-blue { border-color:rgba(96,165,250,.3); color:#60a5fa; background:rgba(96,165,250,.08); }
+.chip-red { border-color:rgba(248,113,113,.3); color:#f87171; background:rgba(248,113,113,.08); }
+.chip-gray { border-color:rgba(255,255,255,.1); color:var(--fog); background:rgba(255,255,255,.05); }
+
+/* MODE SWITCHER */
+.mode-switcher { display:flex; justify-content:center; padding:28px 48px 0; }
+.mode-toggle { display:inline-flex; background:var(--slate); border:1px solid rgba(255,255,255,.06); padding:3px; gap:2px; }
+.mode-btn { padding:10px 32px; font-size:10px; font-weight:500; letter-spacing:2.5px; text-transform:uppercase; background:transparent; border:none; color:var(--fog); cursor:none; transition:all .25s; font-family:'DM Sans',sans-serif; position:relative; }
+.mode-btn.active { background:var(--fire); color:#fff; }
+.mode-btn .new-tag { position:absolute; top:-6px; right:6px; background:var(--amber,#fbbf24); color:#000; font-size:7px; font-weight:700; letter-spacing:1px; padding:1px 5px; border-radius:1px; text-transform:uppercase; }
+
+/* CONTENT */
+.content { max-width:960px; margin:0 auto; padding:36px 48px; }
+
+/* STATS ROW */
+.stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:rgba(255,255,255,.04); margin-bottom:36px; }
+.stat-box { background:var(--coal); padding:28px 24px; text-align:center; transition:background .2s; }
+.stat-box:hover { background:var(--slate); }
+.stat-num { font-family:'Cormorant Garamond',serif; font-size:40px; font-weight:700; font-style:italic; line-height:1; margin-bottom:4px; }
+.stat-lbl { font-size:9px; letter-spacing:2.5px; text-transform:uppercase; color:#555; }
+
+/* TABS */
+.tabs-bar { display:flex; gap:0; border-bottom:1px solid rgba(255,255,255,.06); margin-bottom:28px; overflow-x:auto; }
+.tabs-bar::-webkit-scrollbar { display:none; }
+.tab-btn { padding:14px 24px; font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppercase; background:transparent; border:none; border-bottom:2px solid transparent; color:var(--fog); cursor:none; transition:all .2s; white-space:nowrap; font-family:'DM Sans',sans-serif; margin-bottom:-1px; }
+.tab-btn.active { color:var(--fire); border-bottom-color:var(--fire); }
+.tab-btn:hover:not(.active) { color:var(--snow); }
+.tab-panel { display:none; }
+.tab-panel.active { display:block; animation: fadeIn .3s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* MODE PANELS */
+.mode-panel { display:none; }
+.mode-panel.active { display:block; }
+
+/* CARDS */
+.card { background:var(--slate); border:1px solid rgba(255,255,255,.05); padding:28px; margin-bottom:16px; }
+.card-title { font-family:'Cormorant Garamond',serif; font-size:22px; font-style:italic; font-weight:700; margin-bottom:20px; color:var(--snow); }
+
+/* ORDER ROW */
+.order-row { display:flex; align-items:center; gap:16px; padding:16px; border-bottom:1px solid rgba(255,255,255,.04); transition:background .2s; cursor:pointer; }
+.order-row:last-child { border-bottom:none; }
+.order-row:hover { background:rgba(255,255,255,.03); }
+.order-thumb { width:52px; height:52px; object-fit:cover; background:var(--smoke); flex-shrink:0; }
+.order-info { flex:1; }
+.order-name { font-size:14px; font-weight:500; margin-bottom:4px; }
+.order-meta { font-size:11px; color:var(--fog); }
+.order-price { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:600; color:var(--fire); white-space:nowrap; }
+
+/* LISTING ROW */
+.listing-row { display:flex; align-items:center; gap:16px; padding:16px; border-bottom:1px solid rgba(255,255,255,.04); transition:background .2s; }
+.listing-row:last-child { border-bottom:none; }
+.listing-row:hover { background:rgba(255,255,255,.03); }
+.listing-thumb { width:52px; height:52px; object-fit:cover; background:var(--smoke); flex-shrink:0; }
+
+/* FORM FIELDS */
+.field-label { font-size:9px; letter-spacing:2.5px; text-transform:uppercase; color:var(--fire); display:block; margin-bottom:6px; margin-left:2px; }
+.field-input { width:100%; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-bottom:2px solid rgba(255,107,43,.3); color:var(--snow); padding:12px 16px; font-size:13px; font-family:'DM Sans',sans-serif; outline:none; transition:border-color .2s; }
+.field-input:focus { border-bottom-color:var(--fire); background:rgba(255,255,255,.06); }
+.field-input:disabled { opacity:.4; cursor:not-allowed; }
+.field-group { margin-bottom:18px; }
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+
+/* BUTTONS */
+.btn-fire { display:inline-flex; align-items:center; gap:8px; background:var(--fire); color:#fff; padding:12px 28px; font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppercase; border:none; cursor:none; clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px)); transition:background .2s, transform .15s; font-family:'DM Sans',sans-serif; }
+.btn-fire:hover { background:var(--ember); transform:translateY(-1px); }
+.btn-fire:active { transform:scale(.98); }
+.btn-ghost { display:inline-flex; align-items:center; gap:8px; background:transparent; color:var(--fog); padding:11px 28px; font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppercase; border:1px solid rgba(255,255,255,.12); cursor:none; transition:all .2s; font-family:'DM Sans',sans-serif; }
+.btn-ghost:hover { border-color:var(--fire); color:var(--fire); }
+.btn-danger { display:inline-flex; align-items:center; gap:8px; background:transparent; color:#f87171; padding:11px 28px; font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppercase; border:1px solid rgba(248,113,113,.2); cursor:none; transition:all .2s; font-family:'DM Sans',sans-serif; }
+.btn-danger:hover { background:rgba(248,113,113,.08); border-color:#f87171; }
+
+/* TOGGLE */
+.toggle-wrap { display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid rgba(255,255,255,.04); }
+.toggle-wrap:last-child { border-bottom:none; }
+.toggle-info p:first-child { font-size:13px; font-weight:500; }
+.toggle-info p:last-child { font-size:11px; color:var(--fog); margin-top:2px; }
+.toggle-track { width:42px; height:22px; border-radius:999px; background:rgba(255,255,255,.1); transition:background .2s; cursor:pointer; position:relative; flex-shrink:0; }
+.toggle-track.on { background:var(--fire); }
+.toggle-thumb { width:16px; height:16px; background:#fff; border-radius:50%; position:absolute; top:3px; left:3px; transition:left .2s; box-shadow:0 1px 4px rgba(0,0,0,.3); }
+.toggle-track.on .toggle-thumb { left:23px; }
+
+/* VENDEUR PROMO */
+.vendeur-promo { position:relative; overflow:hidden; padding:40px; margin-bottom:24px; background:linear-gradient(135deg,#1a1000 0%,var(--slate) 60%,#1a0800 100%); border:1px solid rgba(255,107,43,.2); }
+.vendeur-promo-deco { position:absolute; right:-10px; top:-10px; font-size:180px; opacity:.06; line-height:1; pointer-events:none; }
+.vendeur-promo h2 { font-family:'Cormorant Garamond',serif; font-size:32px; font-weight:700; font-style:italic; margin-bottom:8px; }
+.vendeur-promo p { font-size:13px; color:var(--fog); max-width:400px; line-height:1.7; margin-bottom:24px; }
+
+/* FEATURE LIST */
+.feature-list { display:flex; flex-direction:column; gap:0; border-top:1px solid rgba(255,255,255,.05); }
+.feature-item { display:flex; align-items:flex-start; gap:14px; padding:16px 0; border-bottom:1px solid rgba(255,255,255,.05); }
+.feature-icon { width:36px; height:36px; background:var(--fire-dim); border:1px solid var(--fire-border); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.feature-icon .material-symbols-outlined { color:var(--fire); font-size:18px; }
+.feature-text p:first-child { font-size:13px; font-weight:500; margin-bottom:2px; }
+.feature-text p:last-child { font-size:11px; color:var(--fog); }
+
+/* UPGRADE FORM */
+.upgrade-form { display:flex; flex-direction:column; gap:16px; }
+
+/* SOLDE CARD */
+.solde-card { position:relative; overflow:hidden; padding:32px; background:linear-gradient(135deg,#0f2010 0%,#1a3020 60%,#0a1a10 100%); border:1px solid rgba(74,222,128,.15); margin-bottom:16px; }
+.solde-card::after { content:''; position:absolute; right:-30px; top:-30px; width:200px; height:200px; background:radial-gradient(circle, rgba(74,222,128,.06) 0%, transparent 70%); }
+.solde-label { font-size:9px; letter-spacing:3px; text-transform:uppercase; color:rgba(74,222,128,.6); margin-bottom:8px; }
+.solde-amount { font-family:'Cormorant Garamond',serif; font-size:52px; font-weight:700; font-style:italic; color:#4ade80; line-height:1; margin-bottom:20px; }
+.solde-actions { display:flex; gap:10px; }
+.btn-green { display:inline-flex; align-items:center; gap:6px; background:rgba(74,222,128,.12); color:#4ade80; padding:10px 20px; font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppercase; border:1px solid rgba(74,222,128,.2); cursor:none; transition:all .2s; font-family:'DM Sans',sans-serif; }
+.btn-green:hover { background:rgba(74,222,128,.2); }
+
+/* DASHBOARD STATS */
+.dash-stats { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:rgba(255,255,255,.04); margin-bottom:16px; }
+.dash-stat { background:var(--coal); padding:22px; }
+.dash-stat-num { font-family:'Cormorant Garamond',serif; font-size:30px; font-weight:700; font-style:italic; margin-bottom:2px; }
+.dash-stat-lbl { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:#555; }
+
+/* PAYMENT MODAL */
+#payment-modal { position:fixed; inset:0; z-index:8000; display:flex; align-items:flex-end; justify-content:center; background:rgba(0,0,0,0); pointer-events:none; transition:background .3s; }
+#payment-modal.open { background:rgba(0,0,0,.7); pointer-events:all; }
+#payment-modal-sheet { background:var(--coal); border:1px solid rgba(255,107,43,.15); border-bottom:none; width:100%; max-width:480px; padding:28px 28px 48px; transform:translateY(100%); transition:transform .4s cubic-bezier(.22,1,.36,1); }
+#payment-modal.open #payment-modal-sheet { transform:translateY(0); }
+.drag-bar { width:40px; height:3px; background:rgba(255,255,255,.12); margin:0 auto 24px; }
+.pm-method-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:20px; }
+.pm-method-btn { padding:14px; border:1px solid rgba(255,255,255,.1); background:transparent; cursor:none; transition:all .2s; display:flex; flex-direction:column; align-items:center; gap:6px; }
+.pm-method-btn:hover, .pm-method-btn.selected { border-color:var(--fire); background:var(--fire-dim); }
+.pm-method-btn span:last-child { font-size:11px; color:var(--fog); }
+.amount-chips { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+.amount-chip { padding:6px 16px; border:1px solid rgba(255,255,255,.1); background:transparent; color:var(--fog); font-size:11px; cursor:none; transition:all .2s; font-family:'DM Sans',sans-serif; }
+.amount-chip:hover, .amount-chip.selected { border-color:var(--fire); color:var(--fire); background:var(--fire-dim); }
+.pm-total-row { display:flex; justify-content:space-between; align-items:center; padding:14px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06); margin-bottom:16px; }
+
+/* WITHDRAW MODAL */
+#withdraw-modal { position:fixed; inset:0; z-index:8000; display:flex; align-items:flex-end; justify-content:center; background:rgba(0,0,0,0); pointer-events:none; transition:background .3s; }
+#withdraw-modal.open { background:rgba(0,0,0,.7); pointer-events:all; }
+#withdraw-modal-sheet { background:var(--coal); border:1px solid rgba(74,222,128,.1); border-bottom:none; width:100%; max-width:480px; padding:28px 28px 48px; transform:translateY(100%); transition:transform .4s cubic-bezier(.22,1,.36,1); }
+#withdraw-modal.open #withdraw-modal-sheet { transform:translateY(0); }
+
+/* AVATAR PROGRESS */
+#avatar-progress-wrap { height:2px; background:rgba(255,255,255,.08); overflow:hidden; margin-top:8px; display:none; }
+#avatar-progress-bar { height:2px; background:var(--fire); transition:width .3s; width:0%; }
+
+/* SPINNER */
+.spinner { width:18px; height:18px; border:2px solid rgba(255,255,255,.1); border-top-color:var(--fire); border-radius:50%; animation:spin .7s linear infinite; display:inline-block; }
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* TOAST */
+#toast { position:fixed; bottom:32px; left:50%; transform:translateX(-50%) translateY(8px); z-index:9000; background:var(--slate); border:1px solid rgba(255,107,43,.3); color:var(--snow); padding:14px 24px; font-size:12px; opacity:0; pointer-events:none; transition:all .3s; white-space:nowrap; letter-spacing:.5px; }
+#toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+#toast.success { border-color:rgba(74,222,128,.3); background:#0f1f10; }
+#toast.error { border-color:rgba(248,113,113,.3); background:#1f0f10; }
+
+/* BOTTOM NAV */
+.bnav { display:none; position:fixed; bottom:0; left:0; right:0; z-index:100; background:rgba(8,8,8,.95); backdrop-filter:blur(20px); border-top:1px solid rgba(255,107,43,.15); padding:10px 0 22px; }
+.bnav-inner { display:flex; justify-content:space-around; }
+.bnav-item { display:flex; flex-direction:column; align-items:center; gap:4px; color:#555; text-decoration:none; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; transition:color .2s; cursor:none; }
+.bnav-item.active, .bnav-item:hover { color:var(--fire); }
+
+/* PAYMENTS LIST */
+.payment-row { display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid rgba(255,255,255,.04); }
+.payment-row:last-child { border-bottom:none; }
+
+/* EMPTY STATE */
+.empty-state { text-align:center; padding:48px 24px; }
+.empty-state .material-symbols-outlined { font-size:40px; color:#333; display:block; margin-bottom:12px; }
+.empty-state p { font-size:13px; color:var(--fog); }
+
+/* REVEAL */
+.reveal { opacity:0; transform:translateY(20px); transition:opacity .5s cubic-bezier(.22,1,.36,1), transform .5s cubic-bezier(.22,1,.36,1); }
+.reveal.vis { opacity:1; transform:translateY(0); }
+
+@media(max-width:768px){
+  body { cursor:auto; }
+  .cur, .cur-ring { display:none; }
+  .hd { padding:14px 20px; }
+  .profile-hero-content { padding:28px 20px 24px; }
+  .profile-hero-deco { display:none; }
+  .content { padding:24px 20px; }
+  .mode-switcher { padding:20px 20px 0; }
+  .stats-row { grid-template-columns:repeat(3,1fr); }
+  .grid-2 { grid-template-columns:1fr; }
+  .dash-stats { grid-template-columns:1fr 1fr; }
+  .bnav { display:block; }
+}
 </style>
-<link rel="stylesheet" href="/css/wenna-palette-conversion.css">
 </head>
-<body class="bg-background text-on-surface min-h-screen pb-32">
+<body>
 
-<div id="loading-overlay">
-  <span class="font-serif italic text-3xl text-primary tracking-tighter">WennaShop</span>
-  <div class="spinner" style="width:32px;height:32px;border-width:3px;"></div>
-</div>
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="curRing"></div>
 <div id="toast"></div>
 
-<!-- ══════════════════════════════════════════════════
-     MODAL PAIEMENT CINETPAY (commande OU recharge)
-══════════════════════════════════════════════════ -->
+<!-- LOADING -->
+<div id="loading-overlay">
+  <div class="load-logo">Wenna<b>Shop</b></div>
+  <div class="load-bar"></div>
+</div>
+
+<!-- PAYMENT MODAL -->
 <div id="payment-modal">
   <div id="payment-modal-sheet">
-    <!-- Barre de drag -->
-    <div class="w-10 h-1 bg-outline-variant rounded-full mx-auto mb-5"></div>
-    <div id="pm-header" class="mb-5">
-      <h3 class="font-serif italic text-xl font-bold" id="pm-title">Paiement sécurisé</h3>
-      <p class="text-xs text-on-surface-variant mt-1" id="pm-subtitle">Via CinetPay — Mobile Money & Carte bancaire</p>
+    <div class="drag-bar"></div>
+    <div style="margin-bottom:20px;">
+      <p style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--fire);margin-bottom:4px;" id="pm-subtitle">Paiement sécurisé</p>
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-style:italic;font-weight:700;" id="pm-title">Finaliser le paiement</h3>
     </div>
-
-    <!-- Montant récap (commande) -->
-    <div id="pm-order-recap" class="hidden mb-5 p-4 bg-surface-container-low rounded-xl">
-      <div class="flex justify-between items-center">
-        <span class="text-sm text-on-surface-variant">Commande</span>
-        <span class="font-bold text-primary" id="pm-order-amount">—</span>
-      </div>
-      <div class="flex justify-between items-center mt-2">
-        <span class="text-sm text-on-surface-variant">Référence</span>
-        <span class="font-mono text-xs text-on-surface-variant" id="pm-order-ref">—</span>
-      </div>
+    <div id="pm-order-recap" class="hidden" style="padding:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:12px;color:var(--fog);">Commande</span><span style="font-weight:600;color:var(--fire);" id="pm-order-amount">—</span></div>
+      <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;color:var(--fog);">Référence</span><span style="font-size:11px;font-family:monospace;color:var(--fog);" id="pm-order-ref">—</span></div>
     </div>
-
-    <!-- Sélecteur montant (recharge wallet) -->
-    <div id="pm-topup-section" class="hidden mb-5">
-      <p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-3">Montant à recharger</p>
-      <div class="flex flex-wrap gap-2 mb-3">
+    <div id="pm-topup-section" class="hidden" style="margin-bottom:16px;">
+      <p style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--fog);margin-bottom:10px;">Montant à recharger</p>
+      <div class="amount-chips">
         <button class="amount-chip" onclick="selectAmount(100)">100 MAD</button>
         <button class="amount-chip" onclick="selectAmount(200)">200 MAD</button>
         <button class="amount-chip" onclick="selectAmount(500)">500 MAD</button>
         <button class="amount-chip" onclick="selectAmount(1000)">1000 MAD</button>
       </div>
-      <div class="relative">
-        <input id="pm-custom-amount" class="edit-field pr-16" type="number" placeholder="Montant personnalisé" min="50" oninput="customAmount(this.value)"/>
-        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-on-surface-variant">MAD</span>
+      <div style="position:relative;">
+        <input id="pm-custom-amount" class="field-input" type="number" placeholder="Montant personnalisé" min="50" oninput="customAmount(this.value)" style="padding-right:52px;"/>
+        <span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--fog);font-weight:500;">MAD</span>
       </div>
     </div>
-
-    <!-- Moyens de paiement -->
-    <p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-3">Moyen de paiement</p>
-    <div class="grid grid-cols-2 gap-3 mb-6">
-      <button id="pm-btn-mobile" onclick="selectChannel('MOBILE_MONEY')" class="p-3 border-2 border-outline-variant/40 rounded-xl flex flex-col items-center gap-1.5 transition-all hover:border-primary/60 selected-channel-mobile">
-        <span class="material-symbols-outlined text-secondary">smartphone</span>
-        <span class="text-xs font-bold">Mobile Money</span>
-        <span class="text-[10px] text-on-surface-variant">Airtel · Moov</span>
+    <p style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--fog);margin-bottom:10px;">Moyen de paiement</p>
+    <div class="pm-method-grid">
+      <button id="pm-btn-mobile" onclick="selectChannel('MOBILE_MONEY')" class="pm-method-btn">
+        <span class="material-symbols-outlined" style="color:var(--fire);">smartphone</span>
+        <span style="font-size:11px;font-weight:500;">Mobile Money</span>
+        <span>Airtel · Moov</span>
       </button>
-      <button id="pm-btn-card" onclick="selectChannel('CREDIT_CARD')" class="p-3 border-2 border-outline-variant/40 rounded-xl flex flex-col items-center gap-1.5 transition-all hover:border-primary/60">
-        <span class="material-symbols-outlined text-primary">credit_card</span>
-        <span class="text-xs font-bold">Carte bancaire</span>
-        <span class="text-[10px] text-on-surface-variant">Visa · Mastercard</span>
+      <button id="pm-btn-card" onclick="selectChannel('CREDIT_CARD')" class="pm-method-btn">
+        <span class="material-symbols-outlined" style="color:var(--fog);">credit_card</span>
+        <span style="font-size:11px;font-weight:500;">Carte bancaire</span>
+        <span>Visa · Mastercard</span>
       </button>
     </div>
-
-    <!-- Résumé montant sélectionné -->
-    <div class="flex justify-between items-center mb-5 p-3 bg-surface-container rounded-xl">
-      <span class="text-sm font-bold">Total à payer</span>
-      <span class="text-lg font-bold text-primary font-serif" id="pm-total-display">—</span>
+    <div class="pm-total-row">
+      <span style="font-size:12px;font-weight:500;">Total à payer</span>
+      <span style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--fire);" id="pm-total-display">—</span>
     </div>
-
-    <!-- Actions -->
-    <button id="pm-pay-btn" onclick="launchCinetPay()" class="btn-primary text-on-primary w-full py-4 rounded-xl font-bold text-sm tracking-wide flex items-center justify-center gap-2">
-      <span class="material-symbols-outlined" style="font-size:18px;">lock</span>
+    <button id="pm-pay-btn" onclick="launchCinetPay()" class="btn-fire" style="width:100%;justify-content:center;padding:16px;">
+      <span class="material-symbols-outlined" style="font-size:16px;">lock</span>
       Payer maintenant
     </button>
-    <button onclick="closePaymentModal()" class="w-full py-3 mt-2 text-sm font-bold text-on-surface-variant hover:text-on-surface transition-colors">
-      Annuler
-    </button>
-    <p class="text-center text-[10px] text-on-surface-variant mt-3">🔒 Paiement sécurisé · Certifié PCI-DSS · Propulsé par CinetPay</p>
+    <button onclick="closePaymentModal()" class="btn-ghost" style="width:100%;justify-content:center;margin-top:8px;">Annuler</button>
+    <p style="text-align:center;font-size:10px;color:#333;margin-top:12px;letter-spacing:1px;">🔒 Certifié PCI-DSS · Propulsé par CinetPay</p>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════
-     MODAL RETRAIT VENDEUR
-══════════════════════════════════════════════════ -->
+<!-- WITHDRAW MODAL -->
 <div id="withdraw-modal">
   <div id="withdraw-modal-sheet">
-    <div class="w-10 h-1 bg-outline-variant rounded-full mx-auto mb-5"></div>
-    <h3 class="font-serif italic text-xl font-bold mb-1">Retirer mes fonds</h3>
-    <p class="text-xs text-on-surface-variant mb-5">Transfert vers ton compte Mobile Money ou bancaire</p>
-    <div class="p-4 bg-surface-container-low rounded-xl mb-5 flex justify-between items-center">
-      <span class="text-sm text-on-surface-variant">Solde disponible</span>
-      <span class="font-bold text-primary font-serif text-lg" id="withdraw-balance-display">—</span>
+    <div class="drag-bar"></div>
+    <h3 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-style:italic;font-weight:700;margin-bottom:4px;">Retirer mes fonds</h3>
+    <p style="font-size:12px;color:var(--fog);margin-bottom:20px;">Vers Mobile Money ou compte bancaire</p>
+    <div style="padding:14px;background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.15);margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:12px;color:var(--fog);">Solde disponible</span>
+      <span style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:#4ade80;" id="withdraw-balance-display">—</span>
     </div>
-    <div class="space-y-4 mb-5">
-      <div>
-        <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Montant à retirer (MAD)</label>
-        <input id="withdraw-amount" class="edit-field" type="number" placeholder="Ex: 500" min="100"/>
-      </div>
-      <div>
-        <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Mode de retrait</label>
-        <select id="withdraw-method" class="edit-field">
-          <option value="mobile_money">📱 Mobile Money</option>
-          <option value="bank_transfer">🏦 Virement bancaire</option>
-        </select>
-      </div>
-      <div>
-        <label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Numéro / IBAN</label>
-        <input id="withdraw-account" class="edit-field" placeholder="Ex: +212 6XX XXX XXX ou IBAN"/>
-      </div>
-    </div>
-    <button onclick="submitWithdrawal()" class="btn-primary text-on-primary w-full py-4 rounded-xl font-bold text-sm tracking-wide flex items-center justify-center gap-2">
-      <span class="material-symbols-outlined" style="font-size:18px;">send_money</span>
+    <div class="field-group"><label class="field-label">Montant (MAD)</label><input id="withdraw-amount" class="field-input" type="number" placeholder="Ex: 500" min="100"/></div>
+    <div class="field-group"><label class="field-label">Mode de retrait</label><select id="withdraw-method" class="field-input"><option value="mobile_money">📱 Mobile Money</option><option value="bank_transfer">🏦 Virement bancaire</option></select></div>
+    <div class="field-group"><label class="field-label">Numéro / IBAN</label><input id="withdraw-account" class="field-input" placeholder="+212 6XX XXX XXX ou IBAN"/></div>
+    <button onclick="submitWithdrawal()" class="btn-green" style="width:100%;justify-content:center;padding:14px;font-size:11px;">
+      <span class="material-symbols-outlined" style="font-size:16px;">send_money</span>
       Demander le retrait
     </button>
-    <button onclick="closeWithdrawModal()" class="w-full py-3 mt-2 text-sm font-bold text-on-surface-variant hover:text-on-surface transition-colors">Annuler</button>
-    <p class="text-center text-[10px] text-on-surface-variant mt-3">Les retraits sont traités sous 24-48h ouvrables.</p>
+    <button onclick="closeWithdrawModal()" class="btn-ghost" style="width:100%;justify-content:center;margin-top:8px;">Annuler</button>
+    <p style="text-align:center;font-size:10px;color:#444;margin-top:10px;letter-spacing:1px;">Traitement sous 24-48h ouvrables.</p>
   </div>
 </div>
 
-<!-- Header -->
-<header class="bg-surface/80 backdrop-blur-xl fixed top-0 w-full z-50 border-b border-outline-variant/10">
-  <div class="flex justify-between items-center px-6 py-4 max-w-4xl mx-auto">
-    <div class="flex items-center gap-3">
-      <a href="hero.html" class="text-on-surface hover:opacity-70 transition-opacity"><span class="material-symbols-outlined">arrow_back</span></a>
-      <span class="font-serif italic text-xl tracking-tighter text-primary">WennaShop</span>
-    </div>
-    <div class="flex items-center gap-3">
-      <button class="relative text-on-surface hover:opacity-70 transition-opacity"><span class="material-symbols-outlined">notifications</span><span class="notification-dot"></span></button>
-      <a href="panier.html" class="relative text-on-surface hover:opacity-70 transition-opacity">
-        <span class="material-symbols-outlined">shopping_bag</span>
-        <span class="absolute -top-1 -right-1 bg-primary text-on-primary text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center" id="cart-count">0</span>
-      </a>
-    </div>
+<!-- HEADER -->
+<header class="hd">
+  <a href="hero.html" class="logo">Wenna<b>Shop</b></a>
+  <div class="hd-acts">
+    <button style="color:var(--fog);" title="Notifications"><span class="material-symbols-outlined">notifications</span></button>
+    <a href="panier.html" style="position:relative;">
+      <span class="material-symbols-outlined">shopping_bag</span>
+      <span class="cbadge" id="cart-badge">0</span>
+    </a>
+    <a href="boutique.html" style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--fog);">Shop</a>
   </div>
 </header>
 
-<main class="pt-20 px-4 max-w-4xl mx-auto">
-
-  <!-- PROFIL HERO -->
-  <section class="anim-up d-50 mb-8">
-    <div class="relative rounded-lg overflow-hidden" style="background:linear-gradient(135deg,#006b2a 0%,#0f8739 60%,#745b00 100%);">
-      <div class="absolute right-4 top-1/2 -translate-y-1/2 opacity-10 pointer-events-none select-none">
-        <span class="font-serif italic font-black text-white" style="font-size:120px;">W</span>
-      </div>
-      <div class="relative z-10 p-6 flex items-center gap-5">
-        <div class="relative flex-shrink-0">
-          <div class="w-20 h-20 rounded-full overflow-hidden avatar-ring bg-surface-container">
-            <img id="profile-avatar" src="" alt="Avatar" class="w-full h-full object-cover hidden"/>
-            <div id="profile-avatar-placeholder" class="w-full h-full flex items-center justify-center bg-primary/20">
-              <span class="material-symbols-outlined text-white" style="font-size:36px;">person</span>
-            </div>
-          </div>
-          <label for="avatar-input" class="cam-label" title="Changer la photo de profil">
-            <span class="material-symbols-outlined text-primary" style="font-size:14px;">photo_camera</span>
-          </label>
-          <input type="file" id="avatar-input" accept="image/jpeg,image/png,image/webp" class="hidden"/>
-        </div>
-        <div class="flex-1 text-white">
-          <p id="profile-country" class="text-white/60 text-[10px] uppercase tracking-widest font-bold mb-0.5">—</p>
-          <h1 id="profile-name" class="font-serif italic text-2xl font-bold mb-1">Chargement…</h1>
-          <p id="profile-email" class="text-white/70 text-xs">—</p>
-          <div id="avatar-progress-wrap"><div id="avatar-progress-bar"></div></div>
-          <div class="flex items-center gap-2 mt-2">
-            <span id="profile-since" class="chip" style="background:rgba(255,255,255,0.2);color:#fff;">—</span>
-            <span id="badge-role" class="chip" style="background:rgba(255,224,139,0.3);color:#ffe08b;">—</span>
-          </div>
+<!-- PROFILE HERO -->
+<div class="profile-hero">
+  <div class="profile-hero-bg"></div>
+  <div class="profile-hero-deco">W</div>
+  <div class="profile-hero-content">
+    <div class="avatar-wrap">
+      <div class="avatar-ring">
+        <img id="profile-avatar" src="" alt="Avatar"/>
+        <div id="avatar-placeholder" class="avatar-placeholder">
+          <span class="material-symbols-outlined" style="font-size:36px;color:var(--fog);">person</span>
         </div>
       </div>
+      <label for="avatar-input" class="cam-btn" title="Changer la photo">
+        <span class="material-symbols-outlined">photo_camera</span>
+      </label>
+      <input type="file" id="avatar-input" accept="image/jpeg,image/png,image/webp" class="hidden" style="display:none;"/>
+      <div id="avatar-progress-wrap"><div id="avatar-progress-bar"></div></div>
     </div>
-  </section>
+    <div class="profile-info">
+      <div class="profile-eyebrow" id="profile-country">—</div>
+      <h1 class="profile-name" id="profile-name">Chargement…</h1>
+      <p class="profile-email" id="profile-email">—</p>
+      <div class="profile-chips">
+        <span class="chip chip-fire" id="profile-since">—</span>
+        <span class="chip chip-snow" id="badge-role">—</span>
+      </div>
+    </div>
+  </div>
+</div>
 
-  <!-- MODE SWITCHER -->
-  <section class="anim-up d-100 mb-6">
-    <div class="flex justify-center p-1.5 bg-surface-container-high rounded-full w-fit mx-auto gap-1">
-      <button id="btn-client" onclick="switchMode('client')" class="mode-toggle-btn active">Espace Client</button>
-      <button id="btn-vendeur" onclick="switchMode('vendeur')" class="mode-toggle-btn">
-        Espace Vendeur
-        <span id="new-badge" class="hidden ml-1.5 bg-tertiary-fixed text-on-tertiary-fixed text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider">NEW</span>
-      </button>
-    </div>
-  </section>
+<!-- MODE SWITCHER -->
+<div class="mode-switcher reveal">
+  <div class="mode-toggle">
+    <button id="btn-client" onclick="switchMode('client')" class="mode-btn active">Espace Client</button>
+    <button id="btn-vendeur" onclick="switchMode('vendeur')" class="mode-btn">
+      Espace Vendeur
+      <span id="new-tag" class="new-tag hidden">NEW</span>
+    </button>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
 
   <!-- MODE CLIENT -->
   <div id="mode-client" class="mode-panel active">
-    <div class="grid grid-cols-3 gap-3 mb-6 anim-up d-150">
-      <div class="stat-card text-center"><p id="stat-orders" class="text-2xl font-bold text-primary font-serif">—</p><p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Commandes</p></div>
-      <div class="stat-card text-center"><p id="stat-favoris" class="text-2xl font-bold text-secondary font-serif">—</p><p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Favoris</p></div>
-      <div class="stat-card text-center"><p id="stat-reviews" class="text-2xl font-bold text-tertiary font-serif">—</p><p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Avis donnés</p></div>
+    <div class="stats-row reveal" style="margin-top:24px;">
+      <div class="stat-box"><div class="stat-num" style="color:var(--fire);" id="stat-orders">—</div><div class="stat-lbl">Commandes</div></div>
+      <div class="stat-box"><div class="stat-num" style="color:#60a5fa;" id="stat-favoris">—</div><div class="stat-lbl">Favoris</div></div>
+      <div class="stat-box"><div class="stat-num" style="color:#fbbf24;" id="stat-reviews">—</div><div class="stat-lbl">Avis donnés</div></div>
     </div>
-    <div class="flex gap-6 border-b border-outline-variant/20 mb-6 anim-up d-200 overflow-x-auto">
-      <button class="nav-tab active" onclick="switchClientTab('commandes', this)">Commandes</button>
-      <button class="nav-tab" onclick="switchClientTab('adresses', this)">Adresses</button>
-      <button class="nav-tab" onclick="switchClientTab('parametres', this)">Paramètres</button>
+
+    <div class="tabs-bar reveal">
+      <button class="tab-btn active" onclick="switchClientTab('commandes',this)">Commandes</button>
+      <button class="tab-btn" onclick="switchClientTab('adresses',this)">Adresses</button>
+      <button class="tab-btn" onclick="switchClientTab('parametres',this)">Paramètres</button>
     </div>
-    <div id="client-commandes" class="tab-panel active anim-up d-250">
-      <div class="section-card"><h2 class="font-serif italic text-xl mb-5">Mes Commandes</h2><div id="orders-list" class="space-y-1"><div class="flex justify-center py-8"><div class="spinner"></div></div></div></div>
-    </div>
-    <div id="client-adresses" class="tab-panel">
-      <div class="section-card">
-        <h2 class="font-serif italic text-xl mb-5">Mes Adresses</h2>
-        <div class="space-y-4">
-          <div class="p-4 border border-outline-variant/30 rounded-xl"><div class="flex items-start gap-3"><span class="material-symbols-outlined text-on-surface-variant mt-0.5">home</span><div id="address-display" class="flex-1"><p class="text-xs text-on-surface-variant">Aucune adresse enregistrée.</p></div></div></div>
-          <button class="w-full py-4 border-2 border-dashed border-outline-variant/40 rounded-xl flex items-center justify-center gap-2 text-sm font-bold text-on-surface-variant hover:border-primary hover:text-primary transition-colors"><span class="material-symbols-outlined" style="font-size:18px;">add</span>Ajouter une adresse</button>
+
+    <!-- TAB COMMANDES -->
+    <div id="client-commandes" class="tab-panel active reveal">
+      <div class="card">
+        <h2 class="card-title">Mes Commandes</h2>
+        <div id="orders-list">
+          <div style="display:flex;justify-content:center;padding:40px;"><div class="spinner"></div></div>
         </div>
       </div>
     </div>
-    <div id="client-parametres" class="tab-panel">
-      <div class="section-card">
-        <h2 class="font-serif italic text-xl mb-5">Paramètres du compte</h2>
-        <div class="mb-8">
-          <p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Informations personnelles</p>
-          <div class="space-y-4">
-            <div class="grid grid-cols-2 gap-4">
-              <div><label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Prénom</label><input id="input-firstname" class="edit-field" placeholder="Prénom"/></div>
-              <div><label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Nom</label><input id="input-lastname" class="edit-field" placeholder="Nom"/></div>
-            </div>
-            <div><label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Email</label><input id="input-email" class="edit-field" type="email" disabled style="opacity:0.6;cursor:not-allowed;"/></div>
-            <button onclick="saveProfile()" class="btn-primary text-on-primary px-8 py-3 rounded-xl text-sm font-bold tracking-wide">Sauvegarder les modifications</button>
+
+    <!-- TAB ADRESSES -->
+    <div id="client-adresses" class="tab-panel reveal">
+      <div class="card">
+        <h2 class="card-title">Mes Adresses</h2>
+        <div style="padding:16px;border:1px solid rgba(255,255,255,.06);margin-bottom:12px;">
+          <div style="display:flex;align-items:flex-start;gap:12px;">
+            <span class="material-symbols-outlined" style="color:var(--fog);margin-top:2px;">home</span>
+            <div id="address-display"><p style="font-size:12px;color:var(--fog);">Aucune adresse enregistrée.</p></div>
           </div>
         </div>
-        <div class="mb-8">
-          <p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Notifications</p>
-          <div class="space-y-4">
-            <div class="flex items-center justify-between py-2"><div><p class="text-sm font-bold">Suivi de commande</p><p class="text-xs text-on-surface-variant">Mises à jour de livraison en temps réel</p></div><div class="toggle-track on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div></div>
-            <div class="flex items-center justify-between py-2 border-t border-outline-variant/10"><div><p class="text-sm font-bold">Nouvelles collections</p><p class="text-xs text-on-surface-variant">Alertes drops & exclusivités</p></div><div class="toggle-track on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div></div>
-            <div class="flex items-center justify-between py-2 border-t border-outline-variant/10"><div><p class="text-sm font-bold">Offres promotionnelles</p><p class="text-xs text-on-surface-variant">Codes promo et réductions exclusives</p></div><div class="toggle-track" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div></div>
-          </div>
+        <button class="btn-ghost" style="width:100%;justify-content:center;">
+          <span class="material-symbols-outlined" style="font-size:16px;">add</span>
+          Ajouter une adresse
+        </button>
+      </div>
+    </div>
+
+    <!-- TAB PARAMETRES -->
+    <div id="client-parametres" class="tab-panel reveal">
+      <div class="card">
+        <h2 class="card-title">Paramètres du compte</h2>
+
+        <p style="font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--fog);margin-bottom:16px;">Informations personnelles</p>
+        <div class="grid-2" style="margin-bottom:16px;">
+          <div class="field-group"><label class="field-label">Prénom</label><input id="input-firstname" class="field-input" placeholder="Prénom"/></div>
+          <div class="field-group"><label class="field-label">Nom</label><input id="input-lastname" class="field-input" placeholder="Nom"/></div>
         </div>
-        <div>
-          <p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Sécurité</p>
-          <div class="space-y-3">
-            <button class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-surface-container-low transition-colors"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-on-surface-variant">lock</span><span class="text-sm font-bold">Changer le mot de passe</span></div><span class="material-symbols-outlined text-on-surface-variant">chevron_right</span></button>
-            <button onclick="handleLogout()" class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-error/5 transition-colors text-error"><div class="flex items-center gap-3"><span class="material-symbols-outlined">logout</span><span class="text-sm font-bold">Se déconnecter</span></div><span class="material-symbols-outlined">chevron_right</span></button>
-          </div>
-        </div>
+        <div class="field-group" style="margin-bottom:24px;"><label class="field-label">Email</label><input id="input-email" class="field-input" type="email" disabled/></div>
+        <button onclick="saveProfile()" class="btn-fire">Sauvegarder</button>
+
+        <div style="border-top:1px solid rgba(255,255,255,.05);margin:28px 0;"></div>
+
+        <p style="font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--fog);margin-bottom:16px;">Notifications</p>
+        <div class="toggle-wrap"><div class="toggle-info"><p>Suivi de commande</p><p>Mises à jour en temps réel</p></div><div class="toggle-track on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div></div>
+        <div class="toggle-wrap"><div class="toggle-info"><p>Nouvelles collections</p><p>Alertes drops & exclusivités</p></div><div class="toggle-track on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div></div>
+        <div class="toggle-wrap"><div class="toggle-info"><p>Offres promotionnelles</p><p>Codes promo & réductions</p></div><div class="toggle-track" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div></div>
+
+        <div style="border-top:1px solid rgba(255,255,255,.05);margin:28px 0;"></div>
+
+        <p style="font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--fog);margin-bottom:12px;">Sécurité</p>
+        <button class="btn-ghost" style="width:100%;justify-content:space-between;margin-bottom:8px;">
+          <span style="display:flex;align-items:center;gap:8px;"><span class="material-symbols-outlined" style="font-size:16px;">lock</span>Changer le mot de passe</span>
+          <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span>
+        </button>
+        <button onclick="handleLogout()" class="btn-danger" style="width:100%;justify-content:space-between;">
+          <span style="display:flex;align-items:center;gap:8px;"><span class="material-symbols-outlined" style="font-size:16px;">logout</span>Se déconnecter</span>
+          <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span>
+        </button>
       </div>
     </div>
   </div>
 
   <!-- MODE VENDEUR -->
   <div id="mode-vendeur" class="mode-panel">
+
+    <!-- UPGRADE SECTION -->
     <div id="vendeur-upgrade-section">
-      <div class="anim-up d-150">
-        <div class="relative rounded-xl overflow-hidden mb-6" style="background:linear-gradient(135deg,#745b00 0%,#ffe08b 100%);">
-          <div class="absolute right-4 top-1/2 -translate-y-1/2 opacity-10 text-8xl font-black select-none pointer-events-none">🛍️</div>
-          <div class="relative z-10 p-6"><p class="text-[10px] uppercase tracking-widest font-black text-amber-900/70 mb-1">Rejoins les vendeurs</p><h2 class="font-serif italic text-2xl font-bold text-amber-900 mb-2">Vends sur WennaShop</h2><p class="text-sm text-amber-800/80 max-w-xs">Gabon ↔ Maroc · Rejoins des milliers d'artisans et commerçants qui vendent leurs produits sans frontières.</p></div>
+      <div class="vendeur-promo reveal" style="margin-top:24px;">
+        <div class="vendeur-promo-deco">🛍️</div>
+        <p style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--fire);margin-bottom:8px;">Rejoins les vendeurs</p>
+        <h2>Vends sur WennaShop</h2>
+        <p>Gabon ↔ Maroc · Des milliers d'artisans vendent leurs produits sans frontières.</p>
+        <button onclick="document.getElementById('upgrade-form-card').scrollIntoView({behavior:'smooth'})" class="btn-fire">
+          Créer ma boutique — gratuit
+        </button>
+      </div>
+
+      <div class="card reveal">
+        <div class="feature-list">
+          <div class="feature-item"><div class="feature-icon"><span class="material-symbols-outlined">storefront</span></div><div class="feature-text"><p>Boutique personnalisée</p><p>Ta page avec tes produits, ton nom, ta description.</p></div></div>
+          <div class="feature-item"><div class="feature-icon"><span class="material-symbols-outlined">payments</span></div><div class="feature-text"><p>Paiements sécurisés</p><p>Encaisse en MAD ou XAF, reçois sur ton compte.</p></div></div>
+          <div class="feature-item"><div class="feature-icon"><span class="material-symbols-outlined">analytics</span></div><div class="feature-text"><p>Dashboard & statistiques</p><p>Suis tes ventes et revenus en temps réel.</p></div></div>
+          <div class="feature-item"><div class="feature-icon"><span class="material-symbols-outlined">public</span></div><div class="feature-text"><p>Marché international</p><p>Acheteurs au Maroc, au Gabon et partout en Afrique.</p></div></div>
         </div>
-        <div class="section-card mb-6">
-          <p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Ce que tu obtiens</p>
-          <div class="feature-item"><div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-primary" style="font-size:18px;">storefront</span></div><div><p class="text-sm font-bold">Boutique personnalisée</p><p class="text-xs text-on-surface-variant">Ta page vendeur avec tes produits, ton nom, ta description.</p></div></div>
-          <div class="feature-item"><div class="w-9 h-9 rounded-xl bg-secondary/10 flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-secondary" style="font-size:18px;">payments</span></div><div><p class="text-sm font-bold">Paiements sécurisés</p><p class="text-xs text-on-surface-variant">Encaisse en MAD ou XAF, reçois directement sur ton compte.</p></div></div>
-          <div class="feature-item"><div class="w-9 h-9 rounded-xl bg-tertiary/10 flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-tertiary" style="font-size:18px;">analytics</span></div><div><p class="text-sm font-bold">Dashboard & statistiques</p><p class="text-xs text-on-surface-variant">Suis tes ventes, revenus et avis clients en temps réel.</p></div></div>
-          <div class="feature-item"><div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-primary" style="font-size:18px;">public</span></div><div><p class="text-sm font-bold">Marché international</p><p class="text-xs text-on-surface-variant">Accès à des acheteurs au Maroc, au Gabon et partout en Afrique.</p></div></div>
-        </div>
-        <div class="section-card">
-          <h3 class="font-serif italic text-xl mb-1">Créer ma boutique</h3>
-          <p class="text-xs text-on-surface-variant mb-6">Quelques infos et tu es prêt à vendre.</p>
-          <div class="space-y-4">
-            <div><label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Nom de la boutique *</label><input id="upgrade-shop-name" class="edit-field" placeholder="Ex: Artisanat Marrakech, Épices du Gabon…"/></div>
-            <div><label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Spécialité *</label><input id="upgrade-specialty" class="edit-field" placeholder="Ex: Huiles naturelles, Bijoux artisanaux…"/></div>
-            <div><label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Pays d'origine *</label><select id="upgrade-country" class="edit-field"><option value="">Sélectionner…</option><option value="Maroc">🇲🇦 Maroc</option><option value="Gabon">🇬🇦 Gabon</option></select></div>
-            <div><label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Description courte</label><textarea id="upgrade-bio" class="edit-field" rows="3" placeholder="Présente ta boutique en quelques mots…" style="resize:none;height:auto;"></textarea></div>
-            <button onclick="upgradeToVendeur()" id="upgrade-btn" class="btn-primary text-on-primary px-8 py-4 rounded-xl text-sm font-bold tracking-wide w-full flex items-center justify-center gap-2">
-              <span class="material-symbols-outlined" style="font-size:18px;">store</span>Devenir vendeur — c'est gratuit
-            </button>
-            <p class="text-[10px] text-center text-on-surface-variant">En continuant, tu acceptes les conditions vendeurs de WennaShop.</p>
-          </div>
+      </div>
+
+      <div id="upgrade-form-card" class="card reveal">
+        <h2 class="card-title">Créer ma boutique</h2>
+        <div class="upgrade-form">
+          <div class="field-group"><label class="field-label">Nom de la boutique *</label><input id="upgrade-shop-name" class="field-input" placeholder="Ex: Artisanat Marrakech…"/></div>
+          <div class="field-group"><label class="field-label">Spécialité *</label><input id="upgrade-specialty" class="field-input" placeholder="Ex: Huiles naturelles, Bijoux…"/></div>
+          <div class="field-group"><label class="field-label">Pays d'origine *</label><select id="upgrade-country" class="field-input"><option value="">Sélectionner…</option><option value="Maroc">🇲🇦 Maroc</option><option value="Gabon">🇬🇦 Gabon</option></select></div>
+          <div class="field-group"><label class="field-label">Description courte</label><textarea id="upgrade-bio" class="field-input" rows="3" placeholder="Présente ta boutique en quelques mots…" style="resize:none;height:auto;"></textarea></div>
+          <button onclick="upgradeToVendeur()" id="upgrade-btn" class="btn-fire" style="width:100%;justify-content:center;padding:16px;">
+            <span class="material-symbols-outlined" style="font-size:16px;">store</span>
+            Devenir vendeur — c'est gratuit
+          </button>
+          <p style="text-align:center;font-size:10px;color:#444;letter-spacing:1px;">En continuant, tu acceptes les conditions vendeurs.</p>
         </div>
       </div>
     </div>
 
+    <!-- DASHBOARD VENDEUR -->
     <div id="vendeur-dashboard-section" class="hidden">
-      <div class="grid grid-cols-2 gap-3 mb-4 anim-up d-150">
-        <div class="section-card flex items-center gap-4"><div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-primary">payments</span></div><div><p id="stat-revenue-month" class="text-xl font-bold text-primary font-serif">—</p><p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Revenus ce mois</p></div></div>
-        <div class="section-card flex items-center gap-4"><div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-secondary">shopping_cart</span></div><div><p id="stat-total-sales" class="text-xl font-bold text-secondary font-serif">—</p><p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Ventes totales</p></div></div>
-      </div>
-      <div class="grid grid-cols-3 gap-3 mb-6">
-        <div class="stat-card text-center"><p id="stat-listings" class="text-xl font-bold text-on-surface font-serif">—</p><p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Annonces</p></div>
-        <div class="stat-card text-center"><p id="stat-rating" class="text-xl font-bold text-on-surface font-serif">—</p><p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Note moy.</p></div>
-        <div class="stat-card text-center"><p class="text-xl font-bold text-on-surface font-serif">—</p><p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mt-1">Vues / mois</p></div>
-      </div>
-      <div class="flex gap-6 border-b border-outline-variant/20 mb-6 overflow-x-auto">
-        <button class="nav-tab active" onclick="switchVendeurTab('annonces', this)">Mes Annonces</button>
-        <button class="nav-tab" onclick="switchVendeurTab('ventes', this)">Ventes</button>
-        <button class="nav-tab" onclick="switchVendeurTab('paiements', this)">Paiements</button>
-        <button class="nav-tab" onclick="switchVendeurTab('boutique', this)">Ma Boutique</button>
-      </div>
-      <div id="vendeur-annonces" class="tab-panel active">
-        <div class="section-card"><div class="flex items-center justify-between mb-5"><h2 class="font-serif italic text-xl">Mes Annonces</h2><a href="dashboard-vendeur.html" class="btn-primary text-on-primary px-4 py-2.5 rounded-xl text-xs font-bold tracking-wide flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:16px;">add</span>Nouvelle</a></div><div id="listings-list" class="space-y-1"><div class="flex justify-center py-8"><div class="spinner"></div></div></div></div>
-      </div>
-      <div id="vendeur-ventes" class="tab-panel">
-        <div class="section-card"><h2 class="font-serif italic text-xl mb-5">Historique des ventes</h2><div id="sales-list" class="space-y-1"><div class="flex justify-center py-8"><div class="spinner"></div></div></div></div>
-      </div>
-
-      <!-- ── ONGLET PAIEMENTS ── -->
-      <div id="vendeur-paiements" class="tab-panel">
-        <div class="space-y-4">
-
-          <!-- Solde card -->
-          <div class="section-card" style="background:linear-gradient(135deg,#006b2a,#0f8739);color:#fff;">
-            <p class="text-white/70 text-[10px] uppercase tracking-widest font-bold mb-1">Solde disponible</p>
-            <p id="solde-vendeur" class="text-4xl font-bold font-serif mb-4">—</p>
-            <div class="flex gap-3">
-              <button onclick="openWithdrawModal()" class="flex-1 py-3 bg-white/20 hover:bg-white/30 transition-colors rounded-xl text-sm font-bold backdrop-blur flex items-center justify-center gap-2">
-                <span class="material-symbols-outlined" style="font-size:16px;">send_money</span>Retirer
-              </button>
-              <button onclick="openTopupModal()" class="flex-1 py-3 bg-white/20 hover:bg-white/30 transition-colors rounded-xl text-sm font-bold backdrop-blur flex items-center justify-center gap-2">
-                <span class="material-symbols-outlined" style="font-size:16px;">add_circle</span>Recharger
-              </button>
-            </div>
-          </div>
-
-          <!-- Mode de versement -->
-          <div class="section-card">
-            <h3 class="font-serif italic text-lg mb-4">Mode de versement</h3>
-            <div id="payout-method-display" class="p-4 border border-outline-variant/30 rounded-xl flex items-center gap-4">
-              <span class="material-symbols-outlined text-secondary">account_balance</span>
-              <div class="flex-1"><p class="font-bold text-sm">Compte bancaire</p><p class="text-xs text-on-surface-variant" id="payout-account-text">Non configuré</p></div>
-              <button onclick="openWithdrawModal()" class="text-xs font-bold text-secondary hover:underline">Configurer</button>
-            </div>
-          </div>
-
-          <!-- Historique paiements -->
-          <div class="section-card">
-            <h3 class="font-serif italic text-lg mb-4">Historique des paiements</h3>
-            <div id="payments-list" class="space-y-3">
-              <div class="flex justify-center py-6"><div class="spinner"></div></div>
-            </div>
-          </div>
-
+      <div style="margin-top:24px;">
+        <div class="dash-stats reveal">
+          <div class="dash-stat"><div class="dash-stat-num" style="color:var(--fire);" id="stat-revenue-month">—</div><div class="dash-stat-lbl">Revenus ce mois</div></div>
+          <div class="dash-stat"><div class="dash-stat-num" style="color:#60a5fa;" id="stat-total-sales">—</div><div class="dash-stat-lbl">Ventes totales</div></div>
         </div>
-      </div>
+        <div class="stats-row reveal" style="margin-bottom:24px;">
+          <div class="stat-box"><div class="stat-num" id="stat-listings">—</div><div class="stat-lbl">Annonces</div></div>
+          <div class="stat-box"><div class="stat-num" id="stat-rating">—</div><div class="stat-lbl">Note moy.</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-lbl">Vues / mois</div></div>
+        </div>
 
-      <div id="vendeur-boutique" class="tab-panel">
-        <div class="section-card">
-          <h2 class="font-serif italic text-xl mb-5">Ma Boutique</h2>
-          <div class="space-y-5">
-            <div><label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Nom de la boutique</label><input id="shop-name" class="edit-field" placeholder="Nom de votre boutique"/></div>
-            <div><label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Spécialité</label><input id="shop-specialty" class="edit-field" placeholder="Ex: Huiles naturelles, Artisanat…"/></div>
-            <div><label class="text-[10px] uppercase tracking-widest font-bold text-primary block mb-1 ml-1">Pays d'origine</label><select id="shop-country" class="edit-field"><option value="Maroc">🇲🇦 Maroc</option><option value="Gabon">🇬🇦 Gabon</option></select></div>
-            <button onclick="saveShop()" class="btn-primary text-on-primary px-8 py-3.5 rounded-xl text-sm font-bold tracking-wide w-full">Mettre à jour la boutique</button>
+        <div class="tabs-bar reveal">
+          <button class="tab-btn active" onclick="switchVendeurTab('annonces',this)">Annonces</button>
+          <button class="tab-btn" onclick="switchVendeurTab('ventes',this)">Ventes</button>
+          <button class="tab-btn" onclick="switchVendeurTab('paiements',this)">Paiements</button>
+          <button class="tab-btn" onclick="switchVendeurTab('boutique',this)">Ma Boutique</button>
+        </div>
+
+        <div id="vendeur-annonces" class="tab-panel active reveal">
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+              <h2 class="card-title" style="margin-bottom:0;">Mes Annonces</h2>
+              <a href="dashboard-vendeur.html" class="btn-fire" style="padding:10px 18px;font-size:9px;">
+                <span class="material-symbols-outlined" style="font-size:14px;">add</span>Nouvelle
+              </a>
+            </div>
+            <div id="listings-list"><div style="display:flex;justify-content:center;padding:40px;"><div class="spinner"></div></div></div>
+          </div>
+        </div>
+
+        <div id="vendeur-ventes" class="tab-panel reveal">
+          <div class="card">
+            <h2 class="card-title">Historique des ventes</h2>
+            <div id="sales-list"><div style="display:flex;justify-content:center;padding:40px;"><div class="spinner"></div></div></div>
+          </div>
+        </div>
+
+        <div id="vendeur-paiements" class="tab-panel reveal">
+          <div class="solde-card">
+            <p class="solde-label">Solde disponible</p>
+            <p class="solde-amount" id="solde-vendeur">—</p>
+            <div class="solde-actions">
+              <button onclick="openWithdrawModal()" class="btn-green">
+                <span class="material-symbols-outlined" style="font-size:14px;">send_money</span>Retirer
+              </button>
+              <button onclick="openTopupModal()" class="btn-green">
+                <span class="material-symbols-outlined" style="font-size:14px;">add_circle</span>Recharger
+              </button>
+            </div>
+          </div>
+          <div class="card">
+            <h2 class="card-title">Mode de versement</h2>
+            <div style="display:flex;align-items:center;gap:12px;padding:14px;border:1px solid rgba(255,255,255,.06);">
+              <span class="material-symbols-outlined" style="color:var(--fog);">account_balance</span>
+              <div style="flex:1;"><p style="font-size:13px;font-weight:500;">Compte bancaire</p><p style="font-size:11px;color:var(--fog);" id="payout-account-text">Non configuré</p></div>
+              <button onclick="openWithdrawModal()" style="background:none;border:none;font-size:11px;color:var(--fire);cursor:none;letter-spacing:1px;text-transform:uppercase;">Configurer</button>
+            </div>
+          </div>
+          <div class="card">
+            <h2 class="card-title">Historique des paiements</h2>
+            <div id="payments-list"><div style="display:flex;justify-content:center;padding:40px;"><div class="spinner"></div></div></div>
+          </div>
+        </div>
+
+        <div id="vendeur-boutique" class="tab-panel reveal">
+          <div class="card">
+            <h2 class="card-title">Ma Boutique</h2>
+            <div class="field-group"><label class="field-label">Nom de la boutique</label><input id="shop-name" class="field-input" placeholder="Nom de votre boutique"/></div>
+            <div class="field-group"><label class="field-label">Spécialité</label><input id="shop-specialty" class="field-input" placeholder="Ex: Huiles naturelles…"/></div>
+            <div class="field-group" style="margin-bottom:24px;"><label class="field-label">Pays d'origine</label><select id="shop-country" class="field-input"><option value="Maroc">🇲🇦 Maroc</option><option value="Gabon">🇬🇦 Gabon</option></select></div>
+            <button onclick="saveShop()" class="btn-fire" style="width:100%;justify-content:center;padding:16px;">Mettre à jour la boutique</button>
           </div>
         </div>
       </div>
     </div>
+
   </div>
+</div>
 
-</main>
-
-<!-- Bottom nav -->
-<nav class="bg-surface/80 backdrop-blur-xl fixed bottom-0 w-full z-50 rounded-t-[2rem] shadow-[0_-8px_40px_rgba(0,0,0,0.06)] md:hidden border-t border-outline-variant/10">
-  <div class="flex justify-around items-center w-full px-4 pb-6 pt-3">
-    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="hero.html"><span class="material-symbols-outlined">home</span><span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Home</span></a>
-    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="boutique.html"><span class="material-symbols-outlined">storefront</span><span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Shop</span></a>
-    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="dashboard-vendeur.html"><span class="material-symbols-outlined">add_circle</span><span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Sell</span></a>
-    <a class="flex flex-col items-center justify-center text-primary" href="#"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">person</span><span class="text-[10px] font-bold uppercase tracking-widest mt-0.5">Profil</span></a>
+<!-- BOTTOM NAV -->
+<nav class="bnav">
+  <div class="bnav-inner">
+    <a href="hero.html" class="bnav-item"><span class="material-symbols-outlined">home</span><span>Home</span></a>
+    <a href="boutique.html" class="bnav-item"><span class="material-symbols-outlined">storefront</span><span>Shop</span></a>
+    <a href="dashboard-vendeur.html" class="bnav-item"><span class="material-symbols-outlined">add_circle</span><span>Sell</span></a>
+    <a href="#" class="bnav-item active"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">person</span><span>Profil</span></a>
   </div>
 </nav>
 
 <script>
-// ════════════════════════════════════════════════════════════
-// CONFIG SUPABASE
-// ════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════
 const SUPABASE_URL = 'https://aakxoydznmybstfozjte.supabase.co'
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-// ════════════════════════════════════════════════════════════
-// CONFIG CINETPAY PRODUCTION
-// ⚠️ Remplace par tes vraies clés après activation compte CinetPay
-// ════════════════════════════════════════════════════════════
 const CINETPAY_CONFIG = {
-  apikey: 'VOTRE_APIKEY_CINETPAY',     // ← Remplacer
-  site_id: 'VOTRE_SITE_ID_CINETPAY',   // ← Remplacer
+  apikey: 'VOTRE_APIKEY_CINETPAY',
+  site_id: 'VOTRE_SITE_ID_CINETPAY',
   notify_url: 'https://aakxoydznmybstfozjte.supabase.co/functions/v1/cinetpay-webhook',
   return_url: window.location.origin + '/compte.html',
   mode: 'PRODUCTION'
 }
 
-// ════════════════════════════════════════════════════════════
-// ÉTAT GLOBAL
-// ════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
+// ÉTAT
+// ══════════════════════════════════════════════
 let currentUser = null, currentProfile = null, currentMode = 'client', isVendeur = false
 let pmContext = { type: null, orderId: null, amount: 0, currency: 'MAD', channel: 'MOBILE_MONEY' }
 let currentWalletBalance = 0
 
-// ════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
+// CURSEUR
+// ══════════════════════════════════════════════
+const cur = document.getElementById('cur'), crng = document.getElementById('curRing')
+let mx=0, my=0, rx=0, ry=0
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY })
+;(function anim() {
+  if(cur){ cur.style.left=mx+'px'; cur.style.top=my+'px' }
+  rx+=(mx-rx)*.12; ry+=(my-ry)*.12
+  if(crng){ crng.style.left=rx+'px'; crng.style.top=ry+'px' }
+  requestAnimationFrame(anim)
+})()
+
+// ══════════════════════════════════════════════
 // UTILITAIRES
-// ════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
 function showToast(msg, type='') {
   const t = document.getElementById('toast')
   t.textContent = msg; t.className = 'show ' + type
-  setTimeout(() => { t.className = '' }, 3500)
-}
-function generateTxId() {
-  return 'WS-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase()
-}
-const statusChip = {
-  delivered:'<span class="chip chip-green">Livré</span>',
-  shipped:'<span class="chip chip-blue">En transit</span>',
-  processing:'<span class="chip chip-amber">En préparation</span>',
-  pending:'<span class="chip chip-amber">En attente</span>',
-  cancelled:'<span class="chip chip-gray">Annulée</span>',
-  returned:'<span class="chip chip-red">Retourné</span>',
-  active:'<span class="chip chip-green">En ligne</span>',
-  inactive:'<span class="chip chip-gray">Inactif</span>',
-  paid:'<span class="chip chip-green">Payé</span>',
-  failed:'<span class="chip chip-red">Échoué</span>',
-  refunded:'<span class="chip chip-blue">Remboursé</span>'
+  setTimeout(() => t.className = '', 3500)
 }
 function fmt(amount, currency='MAD') {
-  return new Intl.NumberFormat('fr-MA', { style:'currency', currency, maximumFractionDigits:2 }).format(amount)
+  try { return new Intl.NumberFormat('fr-MA', { style:'currency', currency, maximumFractionDigits:2 }).format(amount) }
+  catch { return amount + ' ' + currency }
 }
 function fmtDate(iso) {
   return new Date(iso).toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' })
@@ -509,96 +666,107 @@ function countryFlag(c) {
   if (c.toLowerCase().includes('gabon')) return '🇬🇦'
   return '🌍'
 }
+function generateTxId() {
+  return 'WS-' + Date.now() + '-' + Math.random().toString(36).substr(2,6).toUpperCase()
+}
+const statusChip = {
+  delivered: '<span class="chip chip-green">Livré</span>',
+  shipped:   '<span class="chip chip-blue">En transit</span>',
+  processing:'<span class="chip chip-amber">En préparation</span>',
+  pending:   '<span class="chip chip-amber">En attente</span>',
+  cancelled: '<span class="chip chip-gray">Annulée</span>',
+  returned:  '<span class="chip chip-red">Retourné</span>',
+  active:    '<span class="chip chip-green">En ligne</span>',
+  inactive:  '<span class="chip chip-gray">Inactif</span>',
+  paid:      '<span class="chip chip-green">Payé</span>',
+  failed:    '<span class="chip chip-red">Échoué</span>',
+  refunded:  '<span class="chip chip-blue">Remboursé</span>'
+}
 
-// ════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
+// PANIER BADGE
+// ══════════════════════════════════════════════
+async function updateCartBadge() {
+  try {
+    const { data:{user} } = await db.auth.getUser()
+    if (!user) return
+    let { data:profile } = await db.from('users').select('id').eq('auth_id', user.id).maybeSingle()
+    if (!profile) return
+    const { data:items } = await db.from('cart_items').select('quantity').eq('user_id', profile.id)
+    const n = (items||[]).reduce((s,i) => s+(i.quantity||1), 0)
+    const b = document.getElementById('cart-badge')
+    b.textContent = n > 99 ? '99+' : n
+    if (n > 0) { b.style.display='flex' } else { b.style.display='none' }
+  } catch {}
+}
+
+// ══════════════════════════════════════════════
 // UPLOAD AVATAR
-// ════════════════════════════════════════════════════════════
-document.getElementById('avatar-input').addEventListener('change', async (e) => {
+// ══════════════════════════════════════════════
+document.getElementById('avatar-input').addEventListener('change', async e => {
   const file = e.target.files[0]
   if (!file || !currentUser) return
-  if (file.size > 2 * 1024 * 1024) { showToast('Image trop lourde — max 2 Mo', 'error'); e.target.value = ''; return }
-  if (!['image/jpeg','image/png','image/webp'].includes(file.type)) { showToast('Format non supporté — JPG, PNG ou WEBP', 'error'); e.target.value = ''; return }
-  const ext = file.name.split('.').pop().toLowerCase().replace('jpg','jpeg')
+  if (file.size > 2*1024*1024) { showToast('Image trop lourde — max 2 Mo', 'error'); return }
+  const ext = file.name.split('.').pop().toLowerCase()
   const filePath = `${currentUser.id}/${currentUser.id}.${ext}`
   const pw = document.getElementById('avatar-progress-wrap')
   const pb = document.getElementById('avatar-progress-bar')
   pw.style.display = 'block'; pb.style.width = '20%'
   try {
-    const { error: uploadError } = await db.storage.from('avatars').upload(filePath, file, { upsert: true, contentType: file.type })
-    if (uploadError) throw uploadError
+    const { error:uploadErr } = await db.storage.from('avatars').upload(filePath, file, { upsert:true, contentType:file.type })
+    if (uploadErr) throw uploadErr
     pb.style.width = '65%'
-    const { data: urlData } = db.storage.from('avatars').getPublicUrl(filePath)
-    const publicUrl = urlData.publicUrl
-    const { error: dbError } = await db.from('users').update({ avatar_url: publicUrl, updated_at: new Date().toISOString() }).eq('id', currentProfile.id)
-    if (dbError) throw dbError
+    const { data:urlData } = db.storage.from('avatars').getPublicUrl(filePath)
+    const { error:dbErr } = await db.from('users').update({ avatar_url:urlData.publicUrl, updated_at:new Date().toISOString() }).eq('id', currentProfile.id)
+    if (dbErr) throw dbErr
     pb.style.width = '100%'
     const img = document.getElementById('profile-avatar')
-    img.src = publicUrl + '?t=' + Date.now()
-    img.classList.remove('hidden')
-    document.getElementById('profile-avatar-placeholder').style.display = 'none'
-    currentProfile.avatar_url = publicUrl
-    showToast('✓ Photo de profil mise à jour', 'success')
+    img.src = urlData.publicUrl + '?t=' + Date.now()
+    img.style.display = 'block'
+    document.getElementById('avatar-placeholder').style.display = 'none'
+    showToast('✓ Photo mise à jour', 'success')
   } catch (err) {
-    showToast('Erreur upload : ' + (err.message || 'réessaie'), 'error')
+    showToast('Erreur upload : ' + (err.message||'réessaie'), 'error')
   } finally {
-    setTimeout(() => { pw.style.display = 'none'; pb.style.width = '0%' }, 1200)
+    setTimeout(() => { pw.style.display='none'; pb.style.width='0%' }, 1200)
     e.target.value = ''
   }
 })
 
-// ════════════════════════════════════════════════════════════
-// AUTH & INIT
-// ════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
 async function init() {
-  const { data: { session } } = await db.auth.getSession()
+  const { data:{ session } } = await db.auth.getSession()
   if (!session) { window.location.href = 'login.html'; return }
   currentUser = session.user
   const urlParams = new URLSearchParams(window.location.search)
-
-  // Gérer le retour après paiement CinetPay
   const txStatus = urlParams.get('tx_status')
   const txId = urlParams.get('tx_id')
-  if (txStatus === 'success' && txId) {
-    showToast('✓ Paiement reçu — en cours de traitement', 'success')
-    await pollPaymentStatus(txId)
-  } else if (txStatus === 'failed') {
-    showToast('Paiement échoué ou annulé', 'error')
-  }
-
+  if (txStatus === 'success' && txId) showToast('✓ Paiement reçu', 'success')
+  else if (txStatus === 'failed') showToast('Paiement échoué', 'error')
   await loadProfile()
   hideOverlay()
   if (urlParams.get('mode') === 'vendeur') switchMode('vendeur')
-  // Cible l'onglet paiements si retour depuis un paiement
-  if (txStatus && currentMode === 'vendeur') switchVendeurTab('paiements', document.querySelector('#vendeur-dashboard-section .nav-tab:nth-child(3)'))
+  updateCartBadge()
 }
 
-function hideOverlay() { document.getElementById('loading-overlay').classList.add('hidden') }
-
-// ════════════════════════════════════════════════════════════
-// POLLING STATUT PAIEMENT (retour après redirection)
-// ════════════════════════════════════════════════════════════
-async function pollPaymentStatus(transactionId, retries = 6) {
-  for (let i = 0; i < retries; i++) {
-    await new Promise(r => setTimeout(r, 2000))
-    const { data } = await db.from('payments').select('status').eq('transaction_id', transactionId).single()
-    if (data?.status === 'paid') {
-      showToast('✅ Paiement confirmé !', 'success')
-      return
-    }
-  }
+function hideOverlay() {
+  document.getElementById('loading-overlay').classList.add('hidden')
+  setTimeout(() => document.getElementById('loading-overlay').style.display='none', 400)
 }
 
-// ════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
 // LOAD PROFILE
-// ════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
 async function loadProfile() {
   const { data, error } = await db.from('users').select('*').eq('auth_id', currentUser.id).single()
   if (error || !data) {
     document.getElementById('profile-name').textContent = currentUser.email
     document.getElementById('profile-email').textContent = currentUser.email
     document.getElementById('input-email').value = currentUser.email
+    document.getElementById('new-tag').classList.remove('hidden')
     loadClientStats(null); loadOrders(null)
-    document.getElementById('new-badge').classList.remove('hidden')
     return
   }
   currentProfile = data
@@ -608,12 +776,11 @@ async function loadProfile() {
   document.getElementById('profile-email').textContent = data.email || currentUser.email
   document.getElementById('profile-since').textContent = 'Membre depuis ' + new Date(data.created_at).getFullYear()
   document.getElementById('profile-country').textContent = `${countryFlag(data.country)} ${data.country || '—'}`
-  const roleLabels = { buyer: 'Client', artisan: 'Vendeur', admin: 'Admin' }
+  const roleLabels = { buyer:'Client', artisan:'Vendeur', admin:'Admin' }
   document.getElementById('badge-role').textContent = roleLabels[data.role] || data.role || '—'
   if (data.avatar_url) {
     const img = document.getElementById('profile-avatar')
-    img.onload = () => { img.classList.remove('hidden'); document.getElementById('profile-avatar-placeholder').style.display = 'none' }
-    img.onerror = () => { img.classList.add('hidden'); document.getElementById('profile-avatar-placeholder').style.display = 'flex' }
+    img.onload = () => { img.style.display='block'; document.getElementById('avatar-placeholder').style.display='none' }
     img.src = data.avatar_url + '?t=' + Date.now()
   }
   document.getElementById('input-firstname').value = data.first_name || ''
@@ -627,222 +794,16 @@ async function loadProfile() {
     if (fullName) document.getElementById('shop-name').value = fullName
     loadVendeurData()
   } else {
-    document.getElementById('vendeur-upgrade-section').classList.remove('hidden')
-    document.getElementById('vendeur-dashboard-section').classList.add('hidden')
-    document.getElementById('new-badge').classList.remove('hidden')
+    document.getElementById('new-tag').classList.remove('hidden')
   }
   loadClientStats(data.id); loadOrders(data.id)
 }
 
-// ════════════════════════════════════════════════════════════
-// CINETPAY — MODAL PAIEMENT COMMANDE
-// ════════════════════════════════════════════════════════════
-function openOrderPaymentModal(orderId, amount, currency = 'MAD') {
-  pmContext = { type: 'order_payment', orderId, amount, currency, channel: 'MOBILE_MONEY' }
-  document.getElementById('pm-title').textContent = 'Paiement de commande'
-  document.getElementById('pm-subtitle').textContent = 'Via CinetPay — Mobile Money & Carte bancaire'
-  document.getElementById('pm-order-recap').classList.remove('hidden')
-  document.getElementById('pm-topup-section').classList.add('hidden')
-  document.getElementById('pm-order-amount').textContent = fmt(amount, currency)
-  document.getElementById('pm-order-ref').textContent = 'WS-' + orderId.slice(0, 8).toUpperCase()
-  document.getElementById('pm-total-display').textContent = fmt(amount, currency)
-  selectChannel('MOBILE_MONEY')
-  document.getElementById('payment-modal').classList.add('open')
-}
-
-// ════════════════════════════════════════════════════════════
-// CINETPAY — MODAL RECHARGE WALLET VENDEUR
-// ════════════════════════════════════════════════════════════
-function openTopupModal() {
-  pmContext = { type: 'wallet_topup', orderId: null, amount: 0, currency: 'MAD', channel: 'MOBILE_MONEY' }
-  document.getElementById('pm-title').textContent = 'Recharger mon solde'
-  document.getElementById('pm-subtitle').textContent = 'Ajoute des fonds à ton compte vendeur'
-  document.getElementById('pm-order-recap').classList.add('hidden')
-  document.getElementById('pm-topup-section').classList.remove('hidden')
-  document.getElementById('pm-total-display').textContent = '— MAD'
-  // Reset
-  document.querySelectorAll('.amount-chip').forEach(c => c.classList.remove('selected'))
-  document.getElementById('pm-custom-amount').value = ''
-  selectChannel('MOBILE_MONEY')
-  document.getElementById('payment-modal').classList.add('open')
-}
-
-function closePaymentModal() {
-  document.getElementById('payment-modal').classList.remove('open')
-}
-
-function selectChannel(channel) {
-  pmContext.channel = channel
-  document.getElementById('pm-btn-mobile').style.borderColor = channel === 'MOBILE_MONEY' ? '#006b2a' : ''
-  document.getElementById('pm-btn-mobile').style.background = channel === 'MOBILE_MONEY' ? '#eff5eb' : ''
-  document.getElementById('pm-btn-card').style.borderColor = channel === 'CREDIT_CARD' ? '#006b2a' : ''
-  document.getElementById('pm-btn-card').style.background = channel === 'CREDIT_CARD' ? '#eff5eb' : ''
-}
-
-function selectAmount(amount) {
-  pmContext.amount = amount
-  document.querySelectorAll('.amount-chip').forEach(c => c.classList.remove('selected'))
-  event.target.closest('.amount-chip').classList.add('selected')
-  document.getElementById('pm-custom-amount').value = ''
-  document.getElementById('pm-total-display').textContent = fmt(amount, pmContext.currency)
-}
-
-function customAmount(val) {
-  const amount = parseFloat(val) || 0
-  pmContext.amount = amount
-  document.querySelectorAll('.amount-chip').forEach(c => c.classList.remove('selected'))
-  document.getElementById('pm-total-display').textContent = amount > 0 ? fmt(amount, pmContext.currency) : '— MAD'
-}
-
-// ── LANCER LE PAIEMENT CINETPAY ──────────────────────────────
-async function launchCinetPay() {
-  if (!currentProfile) { showToast('Profil non chargé, réessaie', 'error'); return }
-  if (pmContext.amount < 50) { showToast('Montant minimum : 50 MAD', 'error'); return }
-
-  const btn = document.getElementById('pm-pay-btn')
-  btn.disabled = true
-  btn.innerHTML = '<div class="spinner" style="border-color:#fff3;border-top-color:#fff;width:18px;height:18px;"></div> Initialisation…'
-
-  const transactionId = generateTxId()
-
-  try {
-    // 1. Créer le paiement en Supabase AVANT d'ouvrir CinetPay (sécurité)
-    const paymentInsert = {
-      amount: pmContext.amount,
-      currency: pmContext.currency,
-      method: pmContext.channel === 'MOBILE_MONEY' ? 'Mobile Money' : 'Carte bancaire',
-      status: 'pending',
-      transaction_id: transactionId,
-      provider: 'cinetpay',
-      type: pmContext.type,
-      user_id: currentProfile.id,
-      order_id: pmContext.orderId || null,
-      created_at: new Date().toISOString()
-    }
-    const { error: insertErr } = await db.from('payments').insert(paymentInsert)
-    if (insertErr) throw insertErr
-
-    // 2. Configurer CinetPay
-    CinetPay.setConfig({
-      apikey: CINETPAY_CONFIG.apikey,
-      site_id: CINETPAY_CONFIG.site_id,
-      notify_url: CINETPAY_CONFIG.notify_url,
-      return_url: CINETPAY_CONFIG.return_url + '?tx_status=success&tx_id=' + transactionId,
-      mode: CINETPAY_CONFIG.mode
-    })
-
-    // 3. Lancer le checkout
-    CinetPay.getCheckout({
-      transaction_id: transactionId,
-      amount: pmContext.amount,
-      currency: pmContext.currency,
-      channels: pmContext.channel,
-      description: pmContext.type === 'wallet_topup'
-        ? 'Recharge solde WennaShop'
-        : 'Commande WennaShop #' + (pmContext.orderId || '').slice(0, 8),
-      customer_name: currentProfile.last_name || 'Client',
-      customer_surname: currentProfile.first_name || 'WennaShop',
-      customer_email: currentProfile.email || currentUser.email,
-      customer_phone_number: currentProfile.phone || '',
-      customer_address: '',
-      customer_city: currentProfile.country || '',
-      customer_country: currentProfile.country?.toLowerCase().includes('maroc') ? 'MA' : 'GA',
-      customer_state: '',
-      customer_zip_code: ''
-    })
-
-    // 4. Callbacks CinetPay
-    CinetPay.waitResponse(function(data) {
-      closePaymentModal()
-      if (data.status === 'ACCEPTED') {
-        showToast('✅ Paiement accepté !', 'success')
-        // Rafraîchir les données après confirmation
-        setTimeout(() => {
-          if (pmContext.type === 'wallet_topup') loadWalletBalance()
-          else loadOrders(currentProfile.id)
-        }, 2000)
-      } else {
-        showToast('Paiement non abouti — ' + (data.message || 'réessaie'), 'error')
-      }
-      resetPayBtn()
-    })
-
-    CinetPay.onError(function(data) {
-      closePaymentModal()
-      showToast('Erreur paiement : ' + (data.message || 'réessaie'), 'error')
-      resetPayBtn()
-    })
-
-  } catch (err) {
-    console.error('CinetPay launch error:', err)
-    showToast('Erreur de lancement : ' + (err.message || 'réessaie'), 'error')
-    resetPayBtn()
-  }
-}
-
-function resetPayBtn() {
-  const btn = document.getElementById('pm-pay-btn')
-  btn.disabled = false
-  btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">lock</span> Payer maintenant'
-}
-
-// ════════════════════════════════════════════════════════════
-// MODAL RETRAIT VENDEUR
-// ════════════════════════════════════════════════════════════
-function openWithdrawModal() {
-  document.getElementById('withdraw-balance-display').textContent = fmt(currentWalletBalance)
-  document.getElementById('withdraw-modal').classList.add('open')
-}
-function closeWithdrawModal() {
-  document.getElementById('withdraw-modal').classList.remove('open')
-}
-
-async function submitWithdrawal() {
-  const amount = parseFloat(document.getElementById('withdraw-amount').value)
-  const method = document.getElementById('withdraw-method').value
-  const account = document.getElementById('withdraw-account').value.trim()
-  if (!amount || amount < 100) { showToast('Montant minimum de retrait : 100 MAD', 'error'); return }
-  if (amount > currentWalletBalance) { showToast('Solde insuffisant', 'error'); return }
-  if (!account) { showToast('Renseigne ton numéro ou IBAN', 'error'); return }
-
-  // Insérer une demande de retrait dans wallet_transactions
-  const { error } = await db.from('wallet_transactions').insert({
-    user_id: currentProfile.id,
-    type: 'debit',
-    amount: amount,
-    currency: 'MAD',
-    description: `Demande de retrait — ${method === 'mobile_money' ? 'Mobile Money' : 'Virement bancaire'} vers ${account}`,
-    reference: generateTxId(),
-    status: 'pending'
-  })
-
-  if (!error) {
-    showToast('✓ Demande de retrait envoyée — traitement sous 48h', 'success')
-    document.getElementById('payout-account-text').textContent = account
-    closeWithdrawModal()
-  } else {
-    showToast('Erreur lors de la demande', 'error')
-  }
-}
-
-// ════════════════════════════════════════════════════════════
-// WALLET BALANCE
-// ════════════════════════════════════════════════════════════
-async function loadWalletBalance() {
-  if (!currentProfile) return
-  const { data } = await db.from('vendor_wallets').select('balance, currency').eq('user_id', currentProfile.id).single()
-  currentWalletBalance = data?.balance || 0
-  document.getElementById('solde-vendeur').textContent = fmt(currentWalletBalance, data?.currency || 'MAD')
-}
-
-// ════════════════════════════════════════════════════════════
-// CLIENT STATS & COMMANDES
-// ════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
+// CLIENT STATS & COMMANDES — FIX DOUBLE LOOKUP
+// ══════════════════════════════════════════════
 async function loadClientStats(userId) {
-  if (!userId) {
-    ['stat-orders','stat-favoris','stat-reviews'].forEach(id => document.getElementById(id).textContent = '0')
-    return
-  }
+  if (!userId) { ['stat-orders','stat-favoris','stat-reviews'].forEach(id => document.getElementById(id).textContent='0'); return }
   const [o, r] = await Promise.all([
     db.from('orders').select('id', { count:'exact', head:true }).eq('user_id', userId),
     db.from('reviews').select('id', { count:'exact', head:true }).eq('user_id', userId)
@@ -855,60 +816,176 @@ async function loadClientStats(userId) {
 async function loadOrders(userId) {
   const container = document.getElementById('orders-list')
   if (!userId) {
-    container.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-6">Aucune commande.</p>'
+    container.innerHTML = '<div class="empty-state"><span class="material-symbols-outlined">shopping_bag</span><p>Aucune commande.</p></div>'
     return
   }
-  const { data, error } = await db.from('orders')
+
+  // ── FIX : double-lookup profile.id + auth_id ──────────────
+  let { data:orders } = await db.from('orders')
     .select('id, status, total_amount, currency, created_at, order_items(quantity, unit_price, products(name, image_url))')
     .eq('user_id', userId)
-    .order('created_at', { ascending: false })
-    .limit(10)
-  if (error || !data || data.length === 0) {
-    container.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-6">Aucune commande pour l\'instant.</p>'
+    .order('created_at', { ascending:false })
+    .limit(20)
+
+  if ((!orders || orders.length === 0) && currentUser?.id && currentUser.id !== userId) {
+    const { data:orders2 } = await db.from('orders')
+      .select('id, status, total_amount, currency, created_at, order_items(quantity, unit_price, products(name, image_url))')
+      .eq('user_id', currentUser.id)
+      .order('created_at', { ascending:false })
+      .limit(20)
+    orders = orders2
+  }
+
+  if (!orders || orders.length === 0) {
+    container.innerHTML = '<div class="empty-state"><span class="material-symbols-outlined">shopping_bag</span><p>Aucune commande pour l\'instant.</p></div>'
     return
   }
-  container.innerHTML = data.map(order => {
+
+  container.innerHTML = orders.map(order => {
     const p = order.order_items?.[0]?.products
     const imgHtml = p?.image_url
-      ? `<img src="${p.image_url}" alt="${p.name}" class="product-thumb"/>`
-      : `<div class="product-thumb flex items-center justify-center bg-surface-container-low"><span class="material-symbols-outlined text-on-surface-variant">inventory_2</span></div>`
-    // Bouton payer si commande en attente de paiement
+      ? `<img src="${p.image_url}" alt="${p?.name||''}" class="order-thumb"/>`
+      : `<div class="order-thumb" style="display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="color:var(--fog);">inventory_2</span></div>`
     const payBtn = order.status === 'pending'
-      ? `<button onclick="openOrderPaymentModal('${order.id}',${order.total_amount},'${order.currency||'MAD'}')" class="ml-2 btn-primary text-on-primary text-[10px] px-3 py-1.5 rounded-lg font-bold flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:14px;">credit_card</span>Payer</button>`
+      ? `<button onclick="openOrderPaymentModal('${order.id}',${order.total_amount},'${order.currency||'MAD'}')" class="btn-fire" style="padding:6px 14px;font-size:9px;margin-left:6px;">
+          <span class="material-symbols-outlined" style="font-size:12px;">credit_card</span>Payer
+         </button>`
       : ''
-    return `<div class="order-row p-4 flex items-center gap-4 cursor-pointer">${imgHtml}<div class="flex-1"><div class="flex items-center gap-2 mb-1 flex-wrap"><p class="font-bold text-sm">${p?.name||'Commande #'+order.id.slice(0,8).toUpperCase()}</p>${statusChip[order.status]||'<span class="chip chip-gray">'+order.status+'</span>'}${payBtn}</div><p class="text-[11px] text-on-surface-variant">Commande #WS-${order.id.slice(0,8).toUpperCase()} · ${fmtDate(order.created_at)}</p><p class="text-xs font-bold text-primary mt-1">${fmt(order.total_amount, order.currency||'MAD')}</p></div><span class="material-symbols-outlined text-on-surface-variant">chevron_right</span></div>`
+    return `<div class="order-row">
+      ${imgHtml}
+      <div class="order-info">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;">
+          <span class="order-name">${p?.name || 'Commande #' + order.id.slice(0,8).toUpperCase()}</span>
+          ${statusChip[order.status] || `<span class="chip chip-gray">${order.status}</span>`}
+          ${payBtn}
+        </div>
+        <p class="order-meta">Réf. WS-${order.id.slice(0,8).toUpperCase()} · ${fmtDate(order.created_at)}</p>
+      </div>
+      <span class="order-price">${fmt(order.total_amount, order.currency||'MAD')}</span>
+      <span class="material-symbols-outlined" style="color:var(--fog);font-size:18px;flex-shrink:0;">chevron_right</span>
+    </div>`
   }).join('')
 }
 
-// ════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
+// CINETPAY
+// ══════════════════════════════════════════════
+function openOrderPaymentModal(orderId, amount, currency='MAD') {
+  pmContext = { type:'order_payment', orderId, amount, currency, channel:'MOBILE_MONEY' }
+  document.getElementById('pm-title').textContent = 'Paiement de commande'
+  document.getElementById('pm-order-recap').classList.remove('hidden')
+  document.getElementById('pm-topup-section').classList.add('hidden')
+  document.getElementById('pm-order-amount').textContent = fmt(amount, currency)
+  document.getElementById('pm-order-ref').textContent = 'WS-' + orderId.slice(0,8).toUpperCase()
+  document.getElementById('pm-total-display').textContent = fmt(amount, currency)
+  selectChannel('MOBILE_MONEY')
+  document.getElementById('payment-modal').classList.add('open')
+}
+function openTopupModal() {
+  pmContext = { type:'wallet_topup', orderId:null, amount:0, currency:'MAD', channel:'MOBILE_MONEY' }
+  document.getElementById('pm-title').textContent = 'Recharger mon solde'
+  document.getElementById('pm-order-recap').classList.add('hidden')
+  document.getElementById('pm-topup-section').classList.remove('hidden')
+  document.getElementById('pm-total-display').textContent = '—'
+  document.querySelectorAll('.amount-chip').forEach(c => c.classList.remove('selected'))
+  document.getElementById('pm-custom-amount').value = ''
+  selectChannel('MOBILE_MONEY')
+  document.getElementById('payment-modal').classList.add('open')
+}
+function closePaymentModal() { document.getElementById('payment-modal').classList.remove('open') }
+function selectChannel(ch) {
+  pmContext.channel = ch
+  document.getElementById('pm-btn-mobile').classList.toggle('selected', ch==='MOBILE_MONEY')
+  document.getElementById('pm-btn-card').classList.toggle('selected', ch==='CREDIT_CARD')
+}
+function selectAmount(amount) {
+  pmContext.amount = amount
+  document.querySelectorAll('.amount-chip').forEach(c => c.classList.remove('selected'))
+  event.target.closest('.amount-chip').classList.add('selected')
+  document.getElementById('pm-custom-amount').value = ''
+  document.getElementById('pm-total-display').textContent = fmt(amount, pmContext.currency)
+}
+function customAmount(val) {
+  pmContext.amount = parseFloat(val) || 0
+  document.querySelectorAll('.amount-chip').forEach(c => c.classList.remove('selected'))
+  document.getElementById('pm-total-display').textContent = pmContext.amount > 0 ? fmt(pmContext.amount, pmContext.currency) : '—'
+}
+
+async function launchCinetPay() {
+  if (!currentProfile) { showToast('Profil non chargé', 'error'); return }
+  if (pmContext.amount < 50) { showToast('Montant minimum : 50 MAD', 'error'); return }
+  const btn = document.getElementById('pm-pay-btn')
+  btn.disabled = true
+  btn.innerHTML = '<div class="spinner" style="border-top-color:#fff;"></div> Initialisation…'
+  const transactionId = generateTxId()
+  try {
+    const { error } = await db.from('payments').insert({ amount:pmContext.amount, currency:pmContext.currency, method:pmContext.channel==='MOBILE_MONEY'?'Mobile Money':'Carte', status:'pending', transaction_id:transactionId, provider:'cinetpay', type:pmContext.type, user_id:currentProfile.id, order_id:pmContext.orderId||null, created_at:new Date().toISOString() })
+    if (error) throw error
+    CinetPay.setConfig({ apikey:CINETPAY_CONFIG.apikey, site_id:CINETPAY_CONFIG.site_id, notify_url:CINETPAY_CONFIG.notify_url, return_url:CINETPAY_CONFIG.return_url+'?tx_status=success&tx_id='+transactionId, mode:CINETPAY_CONFIG.mode })
+    CinetPay.getCheckout({ transaction_id:transactionId, amount:pmContext.amount, currency:pmContext.currency, channels:pmContext.channel, description:pmContext.type==='wallet_topup'?'Recharge WennaShop':'Commande WennaShop', customer_name:currentProfile.last_name||'Client', customer_surname:currentProfile.first_name||'WennaShop', customer_email:currentProfile.email||currentUser.email, customer_phone_number:currentProfile.phone||'', customer_address:'', customer_city:currentProfile.country||'', customer_country:currentProfile.country?.toLowerCase().includes('maroc')?'MA':'GA', customer_state:'', customer_zip_code:'' })
+    CinetPay.waitResponse(data => {
+      closePaymentModal()
+      if (data.status==='ACCEPTED') { showToast('✅ Paiement accepté !', 'success'); setTimeout(() => pmContext.type==='wallet_topup'?loadWalletBalance():loadOrders(currentProfile.id), 2000) }
+      else showToast('Paiement non abouti', 'error')
+      resetPayBtn()
+    })
+    CinetPay.onError(data => { closePaymentModal(); showToast('Erreur paiement', 'error'); resetPayBtn() })
+  } catch (err) {
+    showToast('Erreur : ' + (err.message||'réessaie'), 'error'); resetPayBtn()
+  }
+}
+function resetPayBtn() {
+  const btn = document.getElementById('pm-pay-btn')
+  btn.disabled = false
+  btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;">lock</span> Payer maintenant'
+}
+
+// ══════════════════════════════════════════════
+// RETRAIT
+// ══════════════════════════════════════════════
+function openWithdrawModal() { document.getElementById('withdraw-balance-display').textContent=fmt(currentWalletBalance); document.getElementById('withdraw-modal').classList.add('open') }
+function closeWithdrawModal() { document.getElementById('withdraw-modal').classList.remove('open') }
+async function submitWithdrawal() {
+  const amount = parseFloat(document.getElementById('withdraw-amount').value)
+  const method = document.getElementById('withdraw-method').value
+  const account = document.getElementById('withdraw-account').value.trim()
+  if (!amount || amount < 100) { showToast('Minimum 100 MAD', 'error'); return }
+  if (amount > currentWalletBalance) { showToast('Solde insuffisant', 'error'); return }
+  if (!account) { showToast('Renseigne ton numéro / IBAN', 'error'); return }
+  const { error } = await db.from('wallet_transactions').insert({ user_id:currentProfile.id, type:'debit', amount, currency:'MAD', description:`Retrait ${method==='mobile_money'?'Mobile Money':'Virement'} → ${account}`, reference:generateTxId(), status:'pending' })
+  if (!error) { showToast('✓ Demande envoyée — 48h ouvrables', 'success'); document.getElementById('payout-account-text').textContent=account; closeWithdrawModal() }
+  else showToast('Erreur lors de la demande', 'error')
+}
+
+// ══════════════════════════════════════════════
+// WALLET
+// ══════════════════════════════════════════════
+async function loadWalletBalance() {
+  if (!currentProfile) return
+  const { data } = await db.from('vendor_wallets').select('balance, currency').eq('user_id', currentProfile.id).single()
+  currentWalletBalance = data?.balance || 0
+  document.getElementById('solde-vendeur').textContent = fmt(currentWalletBalance, data?.currency||'MAD')
+}
+
+// ══════════════════════════════════════════════
 // VENDEUR DATA
-// ════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
 async function loadVendeurData() {
   if (!currentProfile) return
   const sellerId = currentProfile.id
-  const { data: products } = await db.from('products')
-    .select('id,name,price,currency,status,origin_city,country,image_url,created_at')
-    .eq('seller_id', sellerId)
-    .order('created_at', { ascending: false })
-  renderListings(products || [])
-  const { data: sales } = await db.from('order_items')
-    .select('id,quantity,unit_price,created_at,products!inner(name,seller_id),orders(status,currency)')
-    .eq('products.seller_id', sellerId)
-    .order('created_at', { ascending: false })
-    .limit(20)
-  renderSales(sales || [])
+  const { data:products } = await db.from('products').select('id,name,price,currency,status,origin_city,country,image_url,created_at').eq('seller_id', sellerId).order('created_at', { ascending:false })
+  renderListings(products||[])
+  const { data:sales } = await db.from('order_items').select('id,quantity,unit_price,created_at,products!inner(name,seller_id),orders(status,currency)').eq('products.seller_id', sellerId).order('created_at', { ascending:false }).limit(20)
+  renderSales(sales||[])
   const now = new Date()
-  const revenueMonth = (sales || [])
-    .filter(i => new Date(i.created_at).getMonth() === now.getMonth())
-    .reduce((s, i) => s + (parseFloat(i.unit_price) * i.quantity), 0)
-  document.getElementById('stat-revenue-month').textContent = fmt(revenueMonth)
-  document.getElementById('stat-total-sales').textContent = (sales || []).length
-  document.getElementById('stat-listings').textContent = (products || []).length
-  const productIds = (products || []).map(p => p.id)
-  if (productIds.length > 0) {
-    const { data: reviews } = await db.from('reviews').select('rating').in('product_id', productIds).eq('status', 'approved')
-    document.getElementById('stat-rating').textContent = (reviews && reviews.length > 0)
-      ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1) : '—'
+  const revMonth = (sales||[]).filter(i => new Date(i.created_at).getMonth()===now.getMonth()).reduce((s,i) => s+parseFloat(i.unit_price)*i.quantity, 0)
+  document.getElementById('stat-revenue-month').textContent = fmt(revMonth)
+  document.getElementById('stat-total-sales').textContent = (sales||[]).length
+  document.getElementById('stat-listings').textContent = (products||[]).length
+  const pids = (products||[]).map(p => p.id)
+  if (pids.length > 0) {
+    const { data:reviews } = await db.from('reviews').select('rating').in('product_id', pids).eq('status', 'approved')
+    document.getElementById('stat-rating').textContent = reviews?.length ? (reviews.reduce((s,r) => s+r.rating, 0)/reviews.length).toFixed(1) : '—'
   }
   await loadWalletBalance()
   loadPaymentsHistory()
@@ -917,158 +994,148 @@ async function loadVendeurData() {
 async function loadPaymentsHistory() {
   const container = document.getElementById('payments-list')
   if (!currentProfile) return
-  const { data: payments } = await db.from('payments')
-    .select('id,amount,currency,status,created_at,method,type,transaction_id')
-    .eq('user_id', currentProfile.id)
-    .order('created_at', { ascending: false })
-    .limit(15)
-  if (!payments || !payments.length) {
-    container.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-4">Aucun paiement pour l\'instant.</p>'
-    return
-  }
-  const typeLabels = { order_payment: 'Commande', wallet_topup: 'Recharge solde', vendor_payout: 'Retrait' }
+  const { data:payments } = await db.from('payments').select('id,amount,currency,status,created_at,method,type,transaction_id').eq('user_id', currentProfile.id).order('created_at', { ascending:false }).limit(15)
+  if (!payments?.length) { container.innerHTML='<div class="empty-state"><span class="material-symbols-outlined">receipt_long</span><p>Aucun paiement.</p></div>'; return }
+  const typeLabels = { order_payment:'Commande', wallet_topup:'Recharge solde', vendor_payout:'Retrait' }
   container.innerHTML = payments.map(p => `
-    <div class="flex justify-between items-center py-3 border-b border-outline-variant/10 last:border-0">
+    <div class="payment-row">
       <div>
-        <p class="text-sm font-bold">${typeLabels[p.type] || 'Paiement'} · ${fmtDate(p.created_at)}</p>
-        <p class="text-[11px] text-on-surface-variant font-mono">${p.transaction_id || p.id.slice(0,12)}</p>
-        <p class="text-[11px] text-on-surface-variant">${p.method || 'En ligne'}</p>
+        <p style="font-size:13px;font-weight:500;">${typeLabels[p.type]||'Paiement'} · ${fmtDate(p.created_at)}</p>
+        <p style="font-size:10px;color:var(--fog);font-family:monospace;margin-top:2px;">${p.transaction_id||p.id.slice(0,12)}</p>
+        <p style="font-size:10px;color:var(--fog);">${p.method||'En ligne'}</p>
       </div>
-      <div class="text-right">
-        <p class="font-bold ${p.type === 'vendor_payout' ? 'text-error' : 'text-primary'}">${p.type === 'vendor_payout' ? '-' : '+'}${fmt(p.amount, p.currency || 'MAD')}</p>
-        ${statusChip[p.status] || '<span class="chip chip-gray">' + p.status + '</span>'}
+      <div style="text-align:right;">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:${p.type==='vendor_payout'?'#f87171':'#4ade80'};">${p.type==='vendor_payout'?'-':'+'}${fmt(p.amount, p.currency||'MAD')}</p>
+        ${statusChip[p.status]||`<span class="chip chip-gray">${p.status}</span>`}
       </div>
     </div>`).join('')
 }
 
 function renderListings(products) {
   const c = document.getElementById('listings-list')
-  if (!products.length) {
-    c.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-6">Aucune annonce. <a href="dashboard-vendeur.html" class="text-primary font-bold">Créer une annonce</a></p>'
-    return
-  }
-  c.innerHTML = products.map(p => {
-    const imgHtml = p.image_url
-      ? `<img src="${p.image_url}" alt="${p.name}" class="product-thumb"/>`
-      : `<div class="product-thumb flex items-center justify-center bg-surface-container-low"><span class="material-symbols-outlined text-on-surface-variant">image</span></div>`
-    return `<div class="listing-row p-4 flex items-center gap-4">${imgHtml}<div class="flex-1"><div class="flex items-center gap-2 mb-1"><p class="font-bold text-sm">${p.name}</p>${statusChip[p.status] || '<span class="chip chip-gray">'+p.status+'</span>'}</div><p class="text-[11px] text-on-surface-variant">${p.country||''} ${p.origin_city ? '· '+p.origin_city : ''}</p><p class="text-xs font-bold text-primary mt-1">${fmt(p.price, p.currency||'MAD')}</p></div><a href="dashboard-vendeur.html?edit=${p.id}" class="text-on-surface-variant hover:text-primary transition-colors p-2"><span class="material-symbols-outlined" style="font-size:18px;">edit</span></a></div>`
-  }).join('')
+  if (!products.length) { c.innerHTML='<div class="empty-state"><span class="material-symbols-outlined">inventory_2</span><p>Aucune annonce. <a href="dashboard-vendeur.html" style="color:var(--fire);">Créer une annonce</a></p></div>'; return }
+  c.innerHTML = products.map(p => `
+    <div class="listing-row">
+      ${p.image_url ? `<img src="${p.image_url}" alt="${p.name}" class="listing-thumb"/>` : `<div class="listing-thumb" style="display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="color:var(--fog);">image</span></div>`}
+      <div style="flex:1;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:13px;font-weight:500;">${p.name}</span>
+          ${statusChip[p.status]||`<span class="chip chip-gray">${p.status}</span>`}
+        </div>
+        <p style="font-size:11px;color:var(--fog);">${p.country||''} ${p.origin_city?'· '+p.origin_city:''}</p>
+        <p style="font-size:13px;font-weight:600;color:var(--fire);margin-top:2px;">${fmt(p.price, p.currency||'MAD')}</p>
+      </div>
+      <a href="dashboard-vendeur.html?edit=${p.id}" style="color:var(--fog);transition:color .2s;display:flex;" onmouseover="this.style.color='var(--fire)'" onmouseout="this.style.color='var(--fog)'">
+        <span class="material-symbols-outlined" style="font-size:18px;">edit</span>
+      </a>
+    </div>`).join('')
 }
 
 function renderSales(sales) {
   const c = document.getElementById('sales-list')
-  if (!sales.length) {
-    c.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-6">Aucune vente pour l\'instant.</p>'
-    return
-  }
+  if (!sales.length) { c.innerHTML='<div class="empty-state"><span class="material-symbols-outlined">trending_up</span><p>Aucune vente pour l\'instant.</p></div>'; return }
   c.innerHTML = sales.map(s => {
     const st = s.orders?.status || 'pending'
     const done = ['delivered','shipped'].includes(st)
-    return `<div class="order-row p-4 flex items-center gap-4"><div class="w-10 h-10 rounded-full ${done ? 'bg-green-100' : 'bg-blue-100'} flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined ${done ? 'text-primary' : 'text-secondary'}" style="font-size:18px;">${done ? 'arrow_downward' : 'schedule'}</span></div><div class="flex-1"><p class="font-bold text-sm">${s.products?.name||'—'} × ${s.quantity}</p><p class="text-[11px] text-on-surface-variant">${fmtDate(s.created_at)}</p></div><div class="text-right"><p class="font-bold text-primary text-sm">+${fmt(parseFloat(s.unit_price)*s.quantity)}</p>${statusChip[st] || '<span class="chip chip-gray">'+st+'</span>'}</div></div>`
+    return `<div class="order-row">
+      <div style="width:40px;height:40px;background:${done?'rgba(74,222,128,.1)':'rgba(96,165,250,.1)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <span class="material-symbols-outlined" style="font-size:18px;color:${done?'#4ade80':'#60a5fa'};">${done?'arrow_downward':'schedule'}</span>
+      </div>
+      <div style="flex:1;">
+        <p style="font-size:13px;font-weight:500;">${s.products?.name||'—'} × ${s.quantity}</p>
+        <p style="font-size:11px;color:var(--fog);">${fmtDate(s.created_at)}</p>
+      </div>
+      <div style="text-align:right;">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--fire);">+${fmt(parseFloat(s.unit_price)*s.quantity)}</p>
+        ${statusChip[st]||`<span class="chip chip-gray">${st}</span>`}
+      </div>
+    </div>`
   }).join('')
 }
 
-// ════════════════════════════════════════════════════════════
-// PROFILE & SHOP SAVE
-// ════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
+// SAUVEGARDE
+// ══════════════════════════════════════════════
 async function saveProfile() {
   if (!currentProfile) return
   const first = document.getElementById('input-firstname').value.trim()
   const last = document.getElementById('input-lastname').value.trim()
-  const { error } = await db.from('users').update({
-    first_name: first, last_name: last,
-    full_name: [first, last].filter(Boolean).join(' '),
-    updated_at: new Date().toISOString()
-  }).eq('id', currentProfile.id)
-  if (!error) {
-    document.getElementById('profile-name').textContent = [first, last].filter(Boolean).join(' ')
-    showToast('✓ Profil sauvegardé', 'success')
-  } else showToast('Erreur lors de la sauvegarde', 'error')
+  const { error } = await db.from('users').update({ first_name:first, last_name:last, full_name:[first,last].filter(Boolean).join(' '), updated_at:new Date().toISOString() }).eq('id', currentProfile.id)
+  if (!error) { document.getElementById('profile-name').textContent=[first,last].filter(Boolean).join(' '); showToast('✓ Profil sauvegardé', 'success') }
+  else showToast('Erreur de sauvegarde', 'error')
 }
 
 async function saveShop() {
   if (!currentProfile) return
-  const { error } = await db.from('users').update({
-    specialty: document.getElementById('shop-specialty').value.trim(),
-    country: document.getElementById('shop-country').value,
-    updated_at: new Date().toISOString()
-  }).eq('id', currentProfile.id)
+  const { error } = await db.from('users').update({ specialty:document.getElementById('shop-specialty').value.trim(), country:document.getElementById('shop-country').value, updated_at:new Date().toISOString() }).eq('id', currentProfile.id)
   if (!error) showToast('✓ Boutique mise à jour', 'success')
-  else showToast('Erreur lors de la mise à jour', 'error')
+  else showToast('Erreur de mise à jour', 'error')
 }
 
 async function upgradeToVendeur() {
   const shopName = document.getElementById('upgrade-shop-name').value.trim()
   const specialty = document.getElementById('upgrade-specialty').value.trim()
   const country = document.getElementById('upgrade-country').value
-  if (!shopName || !specialty || !country) { showToast('Remplis tous les champs obligatoires (*)', 'error'); return }
+  if (!shopName || !specialty || !country) { showToast('Remplis tous les champs (*)', 'error'); return }
   const btn = document.getElementById('upgrade-btn')
   btn.disabled = true
-  btn.innerHTML = '<div class="spinner" style="border-color:#fff3;border-top-color:#fff;"></div> Création en cours…'
+  btn.innerHTML = '<div class="spinner" style="border-top-color:#fff;"></div> Création en cours…'
   try {
-    const { error } = await db.from('users').update({
-      role: 'artisan', specialty, country, updated_at: new Date().toISOString()
-    }).eq('auth_id', currentUser.id)
+    const { error } = await db.from('users').update({ role:'artisan', specialty, country, updated_at:new Date().toISOString() }).eq('auth_id', currentUser.id)
     if (error) throw error
     document.getElementById('badge-role').textContent = 'Vendeur'
     isVendeur = true
     document.getElementById('vendeur-upgrade-section').classList.add('hidden')
     document.getElementById('vendeur-dashboard-section').classList.remove('hidden')
-    document.getElementById('new-badge').classList.add('hidden')
+    document.getElementById('new-tag').classList.add('hidden')
     document.getElementById('shop-name').value = shopName
     document.getElementById('shop-specialty').value = specialty
     document.getElementById('shop-country').value = country
-    if (currentProfile) { currentProfile.role = 'artisan'; currentProfile.specialty = specialty; currentProfile.country = country }
+    if (currentProfile) { currentProfile.role='artisan'; currentProfile.specialty=specialty; currentProfile.country=country }
     loadVendeurData()
-    showToast('🎉 Bienvenue parmi les vendeurs WennaShop !', 'success')
+    showToast('🎉 Bienvenue parmi les vendeurs !', 'success')
   } catch (err) {
-    showToast('Erreur lors de la création. Réessaie.', 'error')
+    showToast('Erreur lors de la création', 'error')
     btn.disabled = false
-    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">store</span> Devenir vendeur — c\'est gratuit'
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;">store</span> Devenir vendeur — c\'est gratuit'
   }
 }
 
 async function handleLogout() { await db.auth.signOut(); window.location.href = 'index.html' }
 
-// ════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
 // NAVIGATION
-// ════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
 function switchMode(mode) {
   currentMode = mode
   document.querySelectorAll('.mode-panel').forEach(p => p.classList.remove('active'))
   document.getElementById('mode-' + mode).classList.add('active')
-  document.getElementById('btn-client').classList.toggle('active', mode === 'client')
-  document.getElementById('btn-vendeur').classList.toggle('active', mode === 'vendeur')
-  if (mode === 'client') switchClientTab('commandes', document.querySelector('#mode-client .nav-tab'))
+  document.getElementById('btn-client').classList.toggle('active', mode==='client')
+  document.getElementById('btn-vendeur').classList.toggle('active', mode==='vendeur')
+  if (mode === 'client') switchClientTab('commandes', document.querySelector('#mode-client .tab-btn'))
 }
+
 function switchClientTab(tab, btn) {
   document.querySelectorAll('#mode-client .tab-panel').forEach(p => p.classList.remove('active'))
-  document.querySelectorAll('#mode-client .nav-tab').forEach(t => t.classList.remove('active'))
+  document.querySelectorAll('#mode-client .tab-btn').forEach(t => t.classList.remove('active'))
   document.getElementById('client-' + tab).classList.add('active')
   if (btn) btn.classList.add('active')
 }
+
 function switchVendeurTab(tab, btn) {
   document.querySelectorAll('#vendeur-dashboard-section .tab-panel').forEach(p => p.classList.remove('active'))
-  document.querySelectorAll('#vendeur-dashboard-section .nav-tab').forEach(t => t.classList.remove('active'))
+  document.querySelectorAll('#vendeur-dashboard-section .tab-btn').forEach(t => t.classList.remove('active'))
   document.getElementById('vendeur-' + tab).classList.add('active')
   if (btn) btn.classList.add('active')
 }
 
-// Fermer les modals en cliquant sur le fond
-document.getElementById('payment-modal').addEventListener('click', function(e) {
-  if (e.target === this) closePaymentModal()
-})
-document.getElementById('withdraw-modal').addEventListener('click', function(e) {
-  if (e.target === this) closeWithdrawModal()
-})
+// Fermer modals au clic fond
+document.getElementById('payment-modal').addEventListener('click', e => { if(e.target===e.currentTarget)closePaymentModal() })
+document.getElementById('withdraw-modal').addEventListener('click', e => { if(e.target===e.currentTarget)closeWithdrawModal() })
 
-// Animations scroll
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) e.target.style.animationPlayState = 'running' })
-}, { threshold: 0.05 })
-document.querySelectorAll('.anim-up,.anim-in').forEach(el => {
-  el.style.animationPlayState = 'paused'; observer.observe(el)
-})
+// Reveal scroll
+const rObs = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('vis') }), { threshold:.07 })
+document.querySelectorAll('.reveal').forEach(el => rObs.observe(el))
 
 init()
 </script>
