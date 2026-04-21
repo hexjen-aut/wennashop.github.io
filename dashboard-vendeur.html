@@ -16,17 +16,14 @@
     ::-webkit-scrollbar{width:4px;}
     ::-webkit-scrollbar-track{background:var(--coal);}
     ::-webkit-scrollbar-thumb{background:rgba(255,107,43,.3);}
-    /* INIT */
     #init-screen{position:fixed;inset:0;background:var(--ink);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;}
     #init-screen.hidden{display:none;}
     .spinner-init{width:36px;height:36px;border:2px solid rgba(255,107,43,.2);border-top-color:var(--fire);border-radius:50%;animation:spin2 .8s linear infinite;}
     @keyframes spin2{to{transform:rotate(360deg);}}
-    /* TOAST */
     #toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(8px);z-index:400;background:var(--slate);border:1px solid var(--border-fire);color:var(--snow);padding:12px 22px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;white-space:nowrap;}
     #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
     #toast.success{border-color:rgba(115,220,132,.4);background:#0a1f0e;}
     #toast.error{border-color:rgba(186,26,26,.4);background:#1f0a0a;}
-    /* SIDEBAR */
     #sidebar{width:260px;background:var(--coal);border-right:1px solid var(--border);height:100vh;display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;transition:transform .3s cubic-bezier(.22,1,.36,1);}
     #sidebar-overlay{position:fixed;inset:0;background:rgba(8,8,8,.75);backdrop-filter:blur(6px);z-index:99;opacity:0;pointer-events:none;transition:opacity .3s;}
     #sidebar-overlay.show{opacity:1;pointer-events:all;}
@@ -50,7 +47,6 @@
     .sb-footer{padding:10px;border-top:1px solid var(--border);}
     .nav-danger{color:#ef4444!important;}
     .nav-danger:hover{background:rgba(239,68,68,.08)!important;}
-    /* MAIN */
     .main-wrap{margin-left:260px;min-height:100vh;display:flex;flex-direction:column;}
     .top-bar{background:rgba(8,8,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
     .page-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;font-style:italic;line-height:1;}
@@ -60,10 +56,8 @@
     .btn-ghost{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border-fire);color:var(--fire);background:transparent;padding:9px 18px;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
     .btn-ghost:hover{background:rgba(255,107,43,.08);}
     main{flex:1;padding:28px 32px;}
-    /* SECTIONS */
     .section{display:none;}
     .section.active{display:block;}
-    /* STAT CARDS */
     .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-bottom:2px;}
     .stat-card{background:var(--slate);padding:24px;transition:background .2s;}
     .stat-card:hover{background:var(--smoke);}
@@ -73,16 +67,13 @@
     .stat-num{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:700;font-style:italic;line-height:1;margin-bottom:6px;}
     .stat-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#555;}
     .stat-trend{font-size:10px;color:var(--fire);margin-top:4px;letter-spacing:1px;}
-    /* TWO COL */
     .two-col{display:grid;grid-template-columns:2fr 1fr;gap:2px;margin-top:2px;}
-    /* CARDS */
     .card{background:var(--slate);}
     .card-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border);}
     .card-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;font-style:italic;}
     .card-link{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--fire);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;}
     .card-link:hover{text-decoration:underline;}
     .card-empty{padding:48px 24px;text-align:center;font-size:11px;color:#444;letter-spacing:2px;text-transform:uppercase;}
-    /* TABLE */
     .tbl{width:100%;border-collapse:collapse;}
     .tbl thead tr{border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);}
     .tbl th{padding:12px 16px;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#444;font-weight:500;text-align:left;}
@@ -92,7 +83,6 @@
     .tbl tbody tr{transition:background .15s;}
     .tbl tbody tr:hover{background:rgba(255,255,255,.03);}
     .tbl td:last-child{text-align:right;}
-    /* STATUS */
     .status-pending{background:#3d2e00;color:#d0a600;padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
     .status-active{background:#0a2010;color:#73dc84;padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
     .status-inactive{background:#2a0a0a;color:#ef4444;padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
@@ -102,13 +92,11 @@
     .status-cancelled{background:#2a0a0a;color:#ef4444;padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
     .status-paid{background:#0a2010;color:#73dc84;padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
     .status-failed{background:#2a0a0a;color:#ef4444;padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
-    /* ROWS */
     .order-row{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
     .order-row:last-child{border-bottom:none;}
     .order-row:hover{background:rgba(255,255,255,.03);}
     .stock-row{display:flex;align-items:center;justify-content:space-between;padding:12px 22px;border-bottom:1px solid var(--border);}
     .stock-row:last-child{border-bottom:none;}
-    /* TOOLBAR */
     .toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px;flex-wrap:wrap;}
     .toolbar-left{display:flex;align-items:center;gap:10px;}
     .inp-dark{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--snow);padding:9px 14px;font-size:12px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
@@ -117,24 +105,20 @@
     .sel-dark{background:rgba(255,255,255,.04) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 10px center;border:1px solid var(--border);color:var(--snow);padding:9px 30px 9px 14px;font-size:11px;font-family:'DM Sans',sans-serif;outline:none;appearance:none;cursor:pointer;transition:border-color .2s;}
     .sel-dark:focus{border-color:var(--border-fire);}
     .sel-dark option{background:var(--slate);}
-    /* THUMB */
     .prod-thumb{width:44px;height:44px;object-fit:cover;flex-shrink:0;}
     .prod-thumb-ph{width:44px;height:44px;background:var(--smoke);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#444;}
-    /* PAGINATION */
     .pagination{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-top:1px solid var(--border);}
     .page-info{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;}
     .page-btns{display:flex;gap:6px;}
     .page-btn{padding:6px 16px;font-size:9px;letter-spacing:2px;text-transform:uppercase;background:transparent;border:1px solid var(--border);color:#666;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
     .page-btn:hover:not(:disabled){border-color:var(--border-fire);color:var(--fire);}
     .page-btn:disabled{opacity:.3;cursor:not-allowed;}
-    /* CHART */
     .chart-wrap{padding:24px;height:180px;display:flex;align-items:flex-end;gap:8px;}
     .chart-bar-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;}
     .chart-val{font-size:9px;color:#555;letter-spacing:1px;}
     .chart-bar{width:100%;background:rgba(255,107,43,.12);position:relative;}
     .chart-bar-fill{position:absolute;inset-x:0;bottom:0;background:var(--fire);}
     .chart-lbl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#444;}
-    /* FORM */
     .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
     .form-group{display:flex;flex-direction:column;gap:6px;}
     .form-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#555;}
@@ -142,7 +126,6 @@
     .inp-full:focus{border-color:var(--border-fire);}
     .inp-full::placeholder{color:#333;}
     textarea.inp-full{resize:none;}
-    /* MODALS */
     .modal-ov{position:fixed;inset:0;z-index:200;background:rgba(8,8,8,.88);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;padding:24px;}
     .modal-ov.hidden{display:none;}
     .modal-box{background:var(--coal);border:1px solid var(--border);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;}
@@ -157,10 +140,27 @@
     .btn-danger:hover{opacity:.85;}
     .btn-cancel{background:transparent;border:1px solid var(--border);color:#888;padding:12px 24px;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;flex:1;font-family:'DM Sans',sans-serif;}
     .btn-cancel:hover{border-color:#888;color:var(--snow);}
-    /* EYEBROW */
     .eyebrow{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--fire);display:flex;align-items:center;gap:12px;}
     .eyebrow::before{content:'';display:block;width:20px;height:1px;background:var(--fire);}
-    /* MOBILE */
+
+    /* IMAGE UPLOAD */
+    .upload-zone{border:1px dashed rgba(255,107,43,.3);background:rgba(255,107,43,.03);padding:24px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
+    .upload-zone:hover{border-color:rgba(255,107,43,.6);background:rgba(255,107,43,.06);}
+    .upload-zone.dragover{border-color:var(--fire);background:rgba(255,107,43,.1);}
+    .upload-icon{font-size:32px;color:rgba(255,107,43,.35);margin-bottom:8px;}
+    .upload-label{font-size:11px;color:#666;letter-spacing:1px;}
+    .upload-hint{font-size:10px;color:#444;margin-top:4px;}
+    .upload-preview{width:100%;max-height:140px;object-fit:cover;display:none;margin-bottom:12px;}
+    .upload-progress-wrap{display:none;margin-top:12px;}
+    .upload-bar-bg{height:2px;background:rgba(255,107,43,.15);width:100%;}
+    .upload-bar-fill{height:2px;background:var(--fire);width:0%;transition:width .3s;}
+    .upload-status{font-size:10px;color:var(--fire);letter-spacing:1px;margin-top:6px;display:block;}
+    .upload-change{position:absolute;top:8px;right:8px;background:rgba(8,8,8,.7);border:1px solid var(--border);color:#888;font-size:9px;letter-spacing:1px;padding:4px 8px;cursor:pointer;font-family:'DM Sans',sans-serif;display:none;}
+    .upload-change:hover{color:var(--snow);}
+    .url-toggle{margin-top:8px;text-align:right;}
+    .url-toggle-btn{background:none;border:none;color:#444;font-size:10px;letter-spacing:1px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:color .2s;}
+    .url-toggle-btn:hover{color:#888;}
+
     @media(max-width:1023px){
       #sidebar{transform:translateX(-100%);}
       #sidebar.open{transform:translateX(0);}
@@ -177,7 +177,6 @@
 </head>
 <body>
 
-<!-- INIT -->
 <div id="init-screen">
   <div class="eyebrow">Espace Vendeur</div>
   <span style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:700;font-style:italic;">Wenna<b style="color:var(--fire)">Shop</b></span>
@@ -188,7 +187,6 @@
 <div id="toast"></div>
 <div id="sidebar-overlay" onclick="closeSidebar()"></div>
 
-<!-- SIDEBAR -->
 <aside id="sidebar">
   <div class="sb-logo">
     <div>
@@ -237,7 +235,6 @@
   </div>
 </aside>
 
-<!-- MAIN WRAP -->
 <div class="main-wrap">
   <header class="top-bar">
     <div style="display:flex;align-items:center;gap:16px;">
@@ -320,9 +317,7 @@
       <div class="card">
         <div style="overflow-x:auto;">
           <table class="tbl">
-            <thead><tr>
-              <th>Produit</th><th>Catégorie</th><th>Prix</th><th>Stock</th><th>Statut</th><th>Actions</th>
-            </tr></thead>
+            <thead><tr><th>Produit</th><th>Catégorie</th><th>Prix</th><th>Stock</th><th>Statut</th><th>Actions</th></tr></thead>
             <tbody id="products-table-body"><tr><td colspan="6" style="text-align:center;padding:48px;color:#444;font-size:11px;letter-spacing:2px;text-transform:uppercase;">Chargement...</td></tr></tbody>
           </table>
         </div>
@@ -351,9 +346,7 @@
       <div class="card">
         <div style="overflow-x:auto;">
           <table class="tbl">
-            <thead><tr>
-              <th>Commande</th><th>Client</th><th>Montant</th><th>Date</th><th>Statut</th><th>Actions</th>
-            </tr></thead>
+            <thead><tr><th>Commande</th><th>Client</th><th>Montant</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
             <tbody id="orders-table-body"><tr><td colspan="6" style="text-align:center;padding:48px;color:#444;font-size:11px;letter-spacing:2px;text-transform:uppercase;">Chargement...</td></tr></tbody>
           </table>
         </div>
@@ -479,7 +472,39 @@
         <div class="form-group"><label class="form-label">Catégorie</label>
           <select id="product-category" class="inp-full sel-dark" style="appearance:none;"><option value="">Sélectionner...</option></select>
         </div>
-        <div class="form-group"><label class="form-label">URL de l'image principale</label><input id="product-image" type="url" placeholder="https://…" class="inp-full"/></div>
+
+        <!-- ═══ IMAGE UPLOAD (remplace le champ URL) ═══ -->
+        <div class="form-group">
+          <label class="form-label">Photo du produit</label>
+          <!-- Zone de drop / clic -->
+          <div class="upload-zone" id="upload-zone"
+            onclick="document.getElementById('product-image-file').click()"
+            ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+            <img id="upload-preview" class="upload-preview" src="" alt="Aperçu"/>
+            <button type="button" class="upload-change" id="upload-change-btn" onclick="event.stopPropagation();resetUpload()">Changer</button>
+            <div id="upload-placeholder">
+              <span class="material-symbols-outlined upload-icon">cloud_upload</span>
+              <div class="upload-label">Appuyer pour choisir une photo</div>
+              <div class="upload-hint">JPG · PNG · WEBP — max 5 Mo</div>
+            </div>
+            <div class="upload-progress-wrap" id="upload-progress-wrap">
+              <div class="upload-bar-bg"><div class="upload-bar-fill" id="upload-bar-fill"></div></div>
+              <span class="upload-status" id="upload-status">Envoi en cours…</span>
+            </div>
+          </div>
+          <!-- Input file caché -->
+          <input id="product-image-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none;" onchange="handleImageUpload(this.files[0])"/>
+          <!-- Champ hidden qui stocke l'URL finale -->
+          <input id="product-image" type="hidden"/>
+          <!-- Lien discret pour entrer une URL à la main -->
+          <div class="url-toggle">
+            <button type="button" class="url-toggle-btn" onclick="toggleUrlInput()">Ou entrer une URL directement</button>
+          </div>
+          <input id="product-image-url-manual" type="url" placeholder="https://…" class="inp-full" style="display:none;margin-top:8px;"
+            oninput="document.getElementById('product-image').value=this.value;showManualPreview(this.value)"/>
+        </div>
+        <!-- ══════════════════════════════════════════ -->
+
         <div class="form-group"><label class="form-label">Statut</label>
           <select id="product-status" class="inp-full sel-dark" style="appearance:none;">
             <option value="pending">En attente de validation</option>
@@ -540,13 +565,12 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.config.js"></script>
 <script>
-// ✅ window.db injecté par supabase.config.js — jamais recréé ici
-function getDb() { return window.db }
+function getDb(){return window.db}
 
-let currentSeller = null, allProducts = [], prodPage = 1, currentOrderId = null, productToDelete = null, categories = []
-const PROD_PER_PAGE = 10
+let currentSeller=null,allProducts=[],prodPage=1,currentOrderId=null,productToDelete=null,categories=[]
+const PROD_PER_PAGE=10
 
-// ── UTILS ─────────────────────────────────────────────────────────────────────
+// ── UTILS ──────────────────────────────────────────────────────────────────
 function setInitMsg(m){const e=document.getElementById('init-msg');if(e)e.textContent=m}
 function hideInitScreen(){document.getElementById('init-screen').classList.add('hidden')}
 function showToast(msg,type='default'){
@@ -560,14 +584,106 @@ function fmtAmount(n,currency='MAD'){return n==null?'—':Number(n).toFixed(2)+'
 function statusBadge(s){
   const m={pending:['status-pending','En attente'],active:['status-active','Actif'],inactive:['status-inactive','Inactif'],processing:['status-processing','En traitement'],shipped:['status-shipped','Expédiée'],delivered:['status-delivered','Livrée'],cancelled:['status-cancelled','Annulée'],paid:['status-paid','Payé'],failed:['status-failed','Échoué'],refunded:['status-processing','Remboursé'],approved:['status-active','Approuvé'],rejected:['status-inactive','Rejeté'],returned:['status-cancelled','Retourné']}
   const [cls,label]=m[s]||['status-pending',s||'—']
-  return `<span class="${cls}">${label}</span>`
+  return`<span class="${cls}">${label}</span>`
 }
 function starsHtml(rating){
   const n=Math.round(rating||0)
   return Array.from({length:5},(_,i)=>`<span class="material-symbols-outlined ${i<n?'icon-fill':''}" style="font-size:16px;color:${i<n?'var(--fire)':'#333'}">star</span>`).join('')
 }
 
-// ── NAV ───────────────────────────────────────────────────────────────────────
+// ── IMAGE UPLOAD ────────────────────────────────────────────────────────────
+let urlInputVisible = false
+
+function onDragOver(e){e.preventDefault();document.getElementById('upload-zone').classList.add('dragover')}
+function onDragLeave(){document.getElementById('upload-zone').classList.remove('dragover')}
+function onDrop(e){
+  e.preventDefault()
+  document.getElementById('upload-zone').classList.remove('dragover')
+  const file=e.dataTransfer.files[0]
+  if(file)handleImageUpload(file)
+}
+
+async function handleImageUpload(file){
+  if(!file)return
+  if(!file.type.startsWith('image/')){showToast('Fichier non supporté — JPG, PNG ou WEBP uniquement','error');return}
+  if(file.size>5*1024*1024){showToast('Image trop lourde — max 5 Mo','error');return}
+
+  const db=getDb()
+  if(!db){showToast('Connexion Supabase non disponible','error');return}
+
+  // Aperçu local immédiat
+  const reader=new FileReader()
+  reader.onload=e=>{
+    const prev=document.getElementById('upload-preview')
+    prev.src=e.target.result
+    prev.style.display='block'
+    document.getElementById('upload-placeholder').style.display='none'
+    document.getElementById('upload-change-btn').style.display='block'
+  }
+  reader.readAsDataURL(file)
+
+  // Progress UI
+  document.getElementById('upload-progress-wrap').style.display='block'
+  document.getElementById('upload-bar-fill').style.width='0%'
+  document.getElementById('upload-status').textContent='Envoi en cours…'
+
+  // Fake progress animation
+  let prog=0
+  const interval=setInterval(()=>{
+    prog=Math.min(prog+8,85)
+    document.getElementById('upload-bar-fill').style.width=prog+'%'
+  },120)
+
+  try{
+    const ext=file.name.split('.').pop().toLowerCase()||'jpg'
+    const filename=`products/${currentSeller?.id||'anon'}/${Date.now()}.${ext}`
+    const {data,error}=await db.storage.from('products').upload(filename,file,{cacheControl:'3600',upsert:true,contentType:file.type})
+    clearInterval(interval)
+    if(error)throw error
+
+    document.getElementById('upload-bar-fill').style.width='100%'
+    document.getElementById('upload-status').textContent='Image envoyée ✓'
+
+    const {data:{publicUrl}}=db.storage.from('products').getPublicUrl(filename)
+    document.getElementById('product-image').value=publicUrl
+    setTimeout(()=>document.getElementById('upload-progress-wrap').style.display='none',1500)
+  }catch(err){
+    clearInterval(interval)
+    document.getElementById('upload-status').textContent='Erreur : '+err.message
+    document.getElementById('upload-bar-fill').style.background='#ef4444'
+    showToast('Erreur upload : '+err.message,'error')
+  }
+}
+
+function resetUpload(){
+  document.getElementById('product-image').value=''
+  document.getElementById('product-image-file').value=''
+  const prev=document.getElementById('upload-preview')
+  prev.src='';prev.style.display='none'
+  document.getElementById('upload-placeholder').style.display='block'
+  document.getElementById('upload-change-btn').style.display='none'
+  document.getElementById('upload-progress-wrap').style.display='none'
+  document.getElementById('upload-bar-fill').style.width='0%'
+  document.getElementById('upload-bar-fill').style.background='var(--fire)'
+}
+
+function toggleUrlInput(){
+  urlInputVisible=!urlInputVisible
+  const inp=document.getElementById('product-image-url-manual')
+  inp.style.display=urlInputVisible?'block':'none'
+  if(!urlInputVisible)inp.value=''
+}
+
+function showManualPreview(url){
+  if(!url)return
+  const prev=document.getElementById('upload-preview')
+  prev.src=url
+  prev.style.display='block'
+  document.getElementById('upload-placeholder').style.display='none'
+  document.getElementById('upload-change-btn').style.display='block'
+}
+
+// ── NAV ─────────────────────────────────────────────────────────────────────
 const pageTitles={overview:"Vue d'ensemble",products:'Mes Produits',orders:'Commandes',revenue:'Revenus',reviews:'Avis Clients',profile:'Ma Boutique'}
 function showSection(name){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'))
@@ -596,14 +712,14 @@ function checkMobile(){
 }
 window.addEventListener('resize',checkMobile);checkMobile()
 
-// ── AUTH ──────────────────────────────────────────────────────────────────────
+// ── AUTH ─────────────────────────────────────────────────────────────────────
 async function initAuth(){
   const db=getDb()
   if(!db){setTimeout(initAuth,100);return}
   try{
     setInitMsg('Vérification de la session…')
     const {data:{session},error:sessErr}=await db.auth.getSession()
-    if(sessErr||!session){window.location.href='index.html';return}
+    if(sessErr||!session){window.location.href='login.html';return}
     setInitMsg('Chargement du profil…')
     let {data:user}=await db.from('users').select('*').eq('auth_id',session.user.id).maybeSingle()
     if(!user){
@@ -618,7 +734,7 @@ async function initAuth(){
     if(!user){showToast('Impossible de charger le profil.','error');hideInitScreen();return}
     if(user.role!=='artisan'&&user.role!=='admin'){
       hideInitScreen()
-      document.querySelector('.main-wrap').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:24px;padding:40px;text-align:center;"><div style="width:52px;height:52px;background:rgba(255,107,43,.1);border:1px solid var(--border-fire);display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="color:var(--fire);font-size:26px">lock</span></div><div><h2 style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;font-style:italic;margin-bottom:10px;">Accès Espace Vendeur</h2><p style="color:#666;font-size:14px;max-width:340px;line-height:1.6;">Ton compte n'a pas encore accès à l'espace vendeur. Deviens vendeur depuis ton compte.</p></div><div style="display:flex;gap:12px;"><a href="compte.html?mode=vendeur" class="btn-fire" style="text-decoration:none;">Devenir vendeur</a><a href="index.html" class="btn-ghost" style="text-decoration:none;">Accueil</a></div></div>`
+      document.querySelector('.main-wrap').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:24px;padding:40px;text-align:center;"><div style="width:52px;height:52px;background:rgba(255,107,43,.1);border:1px solid var(--border-fire);display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="color:var(--fire);font-size:26px">lock</span></div><div><h2 style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;font-style:italic;margin-bottom:10px;">Accès Espace Vendeur</h2><p style="color:#666;font-size:14px;max-width:340px;line-height:1.6;">Ton compte n'a pas encore accès à l'espace vendeur.</p></div><div style="display:flex;gap:12px;"><a href="index.html" class="btn-ghost" style="text-decoration:none;">Accueil</a></div></div>`
       return
     }
     currentSeller=user
@@ -634,7 +750,7 @@ async function initAuth(){
 }
 async function logout(){const db=getDb();if(db)await db.auth.signOut();window.location.href='login.html'}
 
-// ── CATEGORIES ────────────────────────────────────────────────────────────────
+// ── CATEGORIES ───────────────────────────────────────────────────────────────
 async function loadCategories(){
   const db=getDb()
   const {data}=await db.from('categories').select('id, name').order('name')
@@ -642,7 +758,6 @@ async function loadCategories(){
   document.getElementById('product-category').innerHTML='<option value="">Sélectionner...</option>'+categories.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')
 }
 
-// ── HELPER IDs produits du vendeur ────────────────────────────────────────────
 async function getMyProductIds(){
   const db=getDb()
   if(!currentSeller)return[]
@@ -650,7 +765,7 @@ async function getMyProductIds(){
   return(data||[]).map(p=>p.id)
 }
 
-// ── OVERVIEW ──────────────────────────────────────────────────────────────────
+// ── OVERVIEW ─────────────────────────────────────────────────────────────────
 async function loadOverview(){
   const db=getDb()
   if(!currentSeller)return
@@ -693,9 +808,7 @@ async function loadRecentOrders(){
   const {data:items}=await db.from('order_items').select('order_id').in('product_id',productIds)
   const orderIds=[...new Set((items||[]).map(i=>i.order_id))]
   if(!orderIds.length){el.innerHTML='<div class="card-empty">Aucune commande</div>';return}
-  const {data}=await db.from('orders')
-    .select('id, total_amount, status, created_at, users!orders_user_id_fkey(full_name, email)')
-    .in('id',orderIds).order('created_at',{ascending:false}).limit(5)
+  const {data}=await db.from('orders').select('id, total_amount, status, created_at, users!orders_user_id_fkey(full_name, email)').in('id',orderIds).order('created_at',{ascending:false}).limit(5)
   if(!data?.length){el.innerHTML='<div class="card-empty">Aucune commande</div>';return}
   el.innerHTML=data.map(o=>`
     <div class="order-row" onclick="showSection('orders')">
@@ -722,7 +835,7 @@ async function loadLowStock(){
     </div>`).join('')
 }
 
-// ── PRODUCTS ──────────────────────────────────────────────────────────────────
+// ── PRODUCTS ─────────────────────────────────────────────────────────────────
 async function loadProducts(){
   const db=getDb()
   if(!currentSeller)return
@@ -768,7 +881,9 @@ function renderProductsTable(data){
   document.getElementById('prod-next').disabled=prodPage===totalPages
 }
 function changeProdPage(dir){prodPage+=dir;filterProducts()}
+
 function openProductModal(p=null){
+  resetUpload()
   document.getElementById('product-id').value=p?.id||''
   document.getElementById('product-name').value=p?.name||''
   document.getElementById('product-description').value=p?.description||''
@@ -781,10 +896,18 @@ function openProductModal(p=null){
   document.getElementById('product-category').value=p?.category_id||''
   document.getElementById('modal-title').textContent=p?'Modifier le produit':'Nouveau produit'
   document.getElementById('modal-submit-btn').textContent=p?'Enregistrer':'Créer'
+  // Afficher l'image existante si édition
+  if(p?.image_url){
+    const prev=document.getElementById('upload-preview')
+    prev.src=p.image_url;prev.style.display='block'
+    document.getElementById('upload-placeholder').style.display='none'
+    document.getElementById('upload-change-btn').style.display='block'
+  }
   document.getElementById('modal-overlay').classList.remove('hidden')
 }
 function closeProductModal(){document.getElementById('modal-overlay').classList.add('hidden')}
 function editProduct(id){const p=allProducts.find(p=>p.id===id);if(p)openProductModal(p)}
+
 async function saveProduct(e){
   const db=getDb();e.preventDefault()
   const btn=document.getElementById('modal-submit-btn');btn.disabled=true;btn.textContent='Enregistrement...'
@@ -809,6 +932,7 @@ async function saveProduct(e){
   if(error)showToast('Erreur : '+error.message,'error')
   else{showToast(id?'Produit mis à jour !':'Produit créé !','success');closeProductModal();loadProducts();loadOverview()}
 }
+
 function askDeleteProduct(id){productToDelete=id;document.getElementById('delete-modal-overlay').classList.remove('hidden')}
 function closeDeleteModal(){productToDelete=null;document.getElementById('delete-modal-overlay').classList.add('hidden')}
 async function confirmDelete(){
@@ -819,7 +943,7 @@ async function confirmDelete(){
   else{showToast('Produit supprimé','default');loadProducts();loadOverview()}
 }
 
-// ── ORDERS ────────────────────────────────────────────────────────────────────
+// ── ORDERS ───────────────────────────────────────────────────────────────────
 async function loadOrders(){
   const db=getDb();if(!currentSeller)return
   const productIds=await getMyProductIds()
@@ -847,9 +971,7 @@ async function loadOrders(){
 async function openOrderModal(id){
   const db=getDb();currentOrderId=id
   document.getElementById('order-modal-overlay').classList.remove('hidden')
-  const {data:o,error}=await db.from('orders')
-    .select('*, users!orders_user_id_fkey(full_name, email), order_items(quantity, unit_price, products(name))')
-    .eq('id',id).single()
+  const {data:o,error}=await db.from('orders').select('*, users!orders_user_id_fkey(full_name, email), order_items(quantity, unit_price, products(name))').eq('id',id).single()
   const content=document.getElementById('order-detail-content')
   if(error||!o){content.innerHTML='<p style="color:#555;font-size:13px;">Commande introuvable</p>';return}
   document.getElementById('order-status-update').value=o.status
@@ -876,7 +998,7 @@ async function updateOrderStatus(){
   else{showToast('Statut mis à jour','success');closeOrderModal();loadOrders()}
 }
 
-// ── REVENUE ───────────────────────────────────────────────────────────────────
+// ── REVENUE ──────────────────────────────────────────────────────────────────
 async function loadRevenue(){
   const db=getDb();if(!currentSeller)return
   const productIds=await getMyProductIds()
@@ -918,7 +1040,7 @@ async function loadRevenue(){
     </tr>`).join('')
 }
 
-// ── REVIEWS ───────────────────────────────────────────────────────────────────
+// ── REVIEWS ──────────────────────────────────────────────────────────────────
 async function loadReviews(){
   const db=getDb();if(!currentSeller)return
   const productIds=await getMyProductIds()
@@ -950,7 +1072,7 @@ async function loadReviews(){
     </div>`).join('')
 }
 
-// ── PROFILE ───────────────────────────────────────────────────────────────────
+// ── PROFILE ──────────────────────────────────────────────────────────────────
 function loadProfileSection(){
   if(!currentSeller)return
   const u=currentSeller
