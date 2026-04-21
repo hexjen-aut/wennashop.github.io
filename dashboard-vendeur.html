@@ -1,330 +1,451 @@
 <!DOCTYPE html>
-<html class="light" lang="fr">
+<html lang="fr">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="description" content="WennaShop — Dashboard Vendeur"/>
-  <meta name="theme-color" content="#006b2a"/>
   <title>Dashboard Vendeur – WennaShop</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "on-surface":"#171d17","inverse-surface":"#2c322b","on-tertiary":"#ffffff","error":"#ba1a1a",
-            "surface-container-low":"#eff5eb","on-primary-container":"#f7fff2","background":"#f5fbf1",
-            "surface-container-lowest":"#ffffff","outline-variant":"#becaba","primary":"#006b2a",
-            "surface-container":"#eaf0e5","secondary-container":"#78b0fe","on-error":"#ffffff",
-            "on-secondary-container":"#00427d","surface-container-highest":"#dee4da",
-            "surface-container-high":"#e4eae0","on-primary":"#ffffff","inverse-on-surface":"#edf3e8",
-            "on-surface-variant":"#3f4a3e","surface":"#f5fbf1","outline":"#6f7a6d",
-            "primary-fixed":"#8ff99d","secondary":"#1a5fa8","tertiary":"#745b00","inverse-primary":"#73dc84"
-          },
-          borderRadius: { "DEFAULT":"1rem","lg":"2rem","xl":"3rem","full":"9999px" },
-          fontFamily: { "headline":["Noto Serif"],"body":["Inter"],"label":["Inter"] }
-        }
-      }
-    }
-  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
   <style>
-    .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24;font-size:24px}
-    .icon-fill{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24}
-    body{font-family:'Inter',sans-serif;background:#f5fbf1;min-height:100dvh}
-    .no-scrollbar::-webkit-scrollbar{display:none}
-    #sidebar{transition:transform .3s cubic-bezier(.22,1,.36,1)}
-    #sidebar-overlay{transition:opacity .3s ease}
-    .nav-item{transition:all .2s ease}
-    .nav-item.active{background:#006b2a;color:#fff}
-    .nav-item.active .nav-icon{color:#fff}
-    .nav-item:not(.active):hover{background:#eaf0e5;color:#171d17}
-    .stat-card{transition:transform .2s ease,box-shadow .2s ease}
-    .stat-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,107,42,.1)}
-    .table-row{transition:background .15s ease}
-    .table-row:hover{background:#eff5eb}
-    .section{display:none}
-    .section.active{display:block}
-    .status-pending{background:#fff3cd;color:#856404}
-    .status-active{background:#d1e7dd;color:#0a3622}
-    .status-inactive{background:#f8d7da;color:#721c24}
-    .status-processing{background:#cfe2ff;color:#084298}
-    .status-shipped{background:#e2d9f3;color:#41298d}
-    .status-delivered{background:#d1e7dd;color:#0a3622}
-    .status-cancelled{background:#f8d7da;color:#721c24}
-    .status-paid{background:#d1e7dd;color:#0a3622}
-    .status-failed{background:#f8d7da;color:#721c24}
-    #toast{transition:all .3s ease}
-    #init-screen{position:fixed;inset:0;background:#f5fbf1;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem}
-    #init-screen.hidden{display:none}
-    @keyframes spin2{to{transform:rotate(360deg)}}
-    .spinner-init{width:36px;height:36px;border:3px solid #e4eae0;border-top-color:#006b2a;border-radius:50%;animation:spin2 .8s linear infinite}
+    :root{--fire:#FF6B2B;--ember:#E85A1A;--ink:#080808;--coal:#111111;--slate:#1A1A1A;--smoke:#242424;--fog:#888;--snow:#f0ece6;--border:rgba(255,255,255,.07);--border-fire:rgba(255,107,43,.25);}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);min-height:100dvh;overflow-x:hidden;}
+    .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24;font-size:22px;line-height:1;}
+    .icon-fill{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;}
+    ::-webkit-scrollbar{width:4px;}
+    ::-webkit-scrollbar-track{background:var(--coal);}
+    ::-webkit-scrollbar-thumb{background:rgba(255,107,43,.3);}
+    /* INIT */
+    #init-screen{position:fixed;inset:0;background:var(--ink);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;}
+    #init-screen.hidden{display:none;}
+    .spinner-init{width:36px;height:36px;border:2px solid rgba(255,107,43,.2);border-top-color:var(--fire);border-radius:50%;animation:spin2 .8s linear infinite;}
+    @keyframes spin2{to{transform:rotate(360deg);}}
+    /* TOAST */
+    #toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(8px);z-index:400;background:var(--slate);border:1px solid var(--border-fire);color:var(--snow);padding:12px 22px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;white-space:nowrap;}
+    #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    #toast.success{border-color:rgba(115,220,132,.4);background:#0a1f0e;}
+    #toast.error{border-color:rgba(186,26,26,.4);background:#1f0a0a;}
+    /* SIDEBAR */
+    #sidebar{width:260px;background:var(--coal);border-right:1px solid var(--border);height:100vh;display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;transition:transform .3s cubic-bezier(.22,1,.36,1);}
+    #sidebar-overlay{position:fixed;inset:0;background:rgba(8,8,8,.75);backdrop-filter:blur(6px);z-index:99;opacity:0;pointer-events:none;transition:opacity .3s;}
+    #sidebar-overlay.show{opacity:1;pointer-events:all;}
+    .sb-logo{padding:22px 24px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+    .sb-logo-text{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;font-style:italic;color:var(--snow);text-decoration:none;letter-spacing:-.5px;}
+    .sb-logo-text b{color:var(--fire);}
+    .sb-logo-sub{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#444;margin-top:2px;}
+    .sb-seller{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+    .sb-av{width:40px;height:40px;border-radius:50%;background:rgba(255,107,43,.1);border:1px solid var(--border-fire);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:var(--fire);flex-shrink:0;}
+    .sb-name{font-size:13px;font-weight:600;}
+    .sb-country{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;display:flex;align-items:center;gap:5px;margin-top:3px;}
+    .sb-dot{width:6px;height:6px;background:#22c55e;border-radius:50%;}
+    .sb-nav{flex:1;overflow-y:auto;padding:14px 10px;display:flex;flex-direction:column;gap:2px;}
+    .sb-nav::-webkit-scrollbar{display:none;}
+    .nav-item{display:flex;align-items:center;gap:12px;padding:10px 14px;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#666;background:transparent;border:none;cursor:pointer;text-decoration:none;transition:all .2s;width:100%;text-align:left;font-family:'DM Sans',sans-serif;}
+    .nav-item:hover{color:var(--snow);background:rgba(255,255,255,.04);}
+    .nav-item.active{background:rgba(255,107,43,.1);color:var(--fire);border-left:2px solid var(--fire);padding-left:12px;}
+    .nav-icon{font-size:18px;flex-shrink:0;}
+    #badge-orders{margin-left:auto;background:var(--fire);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:9999px;}
+    #badge-orders.hidden{display:none;}
+    .sb-footer{padding:10px;border-top:1px solid var(--border);}
+    .nav-danger{color:#ef4444!important;}
+    .nav-danger:hover{background:rgba(239,68,68,.08)!important;}
+    /* MAIN */
+    .main-wrap{margin-left:260px;min-height:100vh;display:flex;flex-direction:column;}
+    .top-bar{background:rgba(8,8,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+    .page-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;font-style:italic;line-height:1;}
+    .page-date{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#444;margin-top:4px;}
+    .btn-fire{display:inline-flex;align-items:center;gap:8px;background:var(--fire);color:#fff;padding:10px 22px;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;transition:background .2s,transform .2s;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));font-family:'DM Sans',sans-serif;}
+    .btn-fire:hover{background:var(--ember);transform:translateY(-1px);}
+    .btn-ghost{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border-fire);color:var(--fire);background:transparent;padding:9px 18px;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
+    .btn-ghost:hover{background:rgba(255,107,43,.08);}
+    main{flex:1;padding:28px 32px;}
+    /* SECTIONS */
+    .section{display:none;}
+    .section.active{display:block;}
+    /* STAT CARDS */
+    .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-bottom:2px;}
+    .stat-card{background:var(--slate);padding:24px;transition:background .2s;}
+    .stat-card:hover{background:var(--smoke);}
+    .stat-icon{width:40px;height:40px;background:rgba(255,107,43,.1);border:1px solid var(--border-fire);display:flex;align-items:center;justify-content:center;color:var(--fire);margin-bottom:16px;}
+    .stat-icon.blue{background:rgba(26,95,168,.1);border-color:rgba(26,95,168,.3);color:#78b0fe;}
+    .stat-icon.amber{background:rgba(116,91,0,.15);border-color:rgba(116,91,0,.3);color:#d0a600;}
+    .stat-num{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:700;font-style:italic;line-height:1;margin-bottom:6px;}
+    .stat-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#555;}
+    .stat-trend{font-size:10px;color:var(--fire);margin-top:4px;letter-spacing:1px;}
+    /* TWO COL */
+    .two-col{display:grid;grid-template-columns:2fr 1fr;gap:2px;margin-top:2px;}
+    /* CARDS */
+    .card{background:var(--slate);}
+    .card-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border);}
+    .card-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;font-style:italic;}
+    .card-link{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--fire);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;}
+    .card-link:hover{text-decoration:underline;}
+    .card-empty{padding:48px 24px;text-align:center;font-size:11px;color:#444;letter-spacing:2px;text-transform:uppercase;}
+    /* TABLE */
+    .tbl{width:100%;border-collapse:collapse;}
+    .tbl thead tr{border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);}
+    .tbl th{padding:12px 16px;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#444;font-weight:500;text-align:left;}
+    .tbl th:last-child{text-align:right;}
+    .tbl td{padding:14px 16px;font-size:13px;border-bottom:1px solid var(--border);}
+    .tbl tr:last-child td{border-bottom:none;}
+    .tbl tbody tr{transition:background .15s;}
+    .tbl tbody tr:hover{background:rgba(255,255,255,.03);}
+    .tbl td:last-child{text-align:right;}
+    /* STATUS */
+    .status-pending{background:#3d2e00;color:#d0a600;padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
+    .status-active{background:#0a2010;color:#73dc84;padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
+    .status-inactive{background:#2a0a0a;color:#ef4444;padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
+    .status-processing{background:#0a1830;color:#78b0fe;padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
+    .status-shipped{background:#1a1030;color:#c4b5fd;padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
+    .status-delivered{background:#0a2010;color:#73dc84;padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
+    .status-cancelled{background:#2a0a0a;color:#ef4444;padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
+    .status-paid{background:#0a2010;color:#73dc84;padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
+    .status-failed{background:#2a0a0a;color:#ef4444;padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
+    /* ROWS */
+    .order-row{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
+    .order-row:last-child{border-bottom:none;}
+    .order-row:hover{background:rgba(255,255,255,.03);}
+    .stock-row{display:flex;align-items:center;justify-content:space-between;padding:12px 22px;border-bottom:1px solid var(--border);}
+    .stock-row:last-child{border-bottom:none;}
+    /* TOOLBAR */
+    .toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px;flex-wrap:wrap;}
+    .toolbar-left{display:flex;align-items:center;gap:10px;}
+    .inp-dark{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--snow);padding:9px 14px;font-size:12px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
+    .inp-dark:focus{border-color:var(--border-fire);}
+    .inp-dark::placeholder{color:#444;}
+    .sel-dark{background:rgba(255,255,255,.04) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 10px center;border:1px solid var(--border);color:var(--snow);padding:9px 30px 9px 14px;font-size:11px;font-family:'DM Sans',sans-serif;outline:none;appearance:none;cursor:pointer;transition:border-color .2s;}
+    .sel-dark:focus{border-color:var(--border-fire);}
+    .sel-dark option{background:var(--slate);}
+    /* THUMB */
+    .prod-thumb{width:44px;height:44px;object-fit:cover;flex-shrink:0;}
+    .prod-thumb-ph{width:44px;height:44px;background:var(--smoke);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#444;}
+    /* PAGINATION */
+    .pagination{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-top:1px solid var(--border);}
+    .page-info{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;}
+    .page-btns{display:flex;gap:6px;}
+    .page-btn{padding:6px 16px;font-size:9px;letter-spacing:2px;text-transform:uppercase;background:transparent;border:1px solid var(--border);color:#666;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
+    .page-btn:hover:not(:disabled){border-color:var(--border-fire);color:var(--fire);}
+    .page-btn:disabled{opacity:.3;cursor:not-allowed;}
+    /* CHART */
+    .chart-wrap{padding:24px;height:180px;display:flex;align-items:flex-end;gap:8px;}
+    .chart-bar-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;}
+    .chart-val{font-size:9px;color:#555;letter-spacing:1px;}
+    .chart-bar{width:100%;background:rgba(255,107,43,.12);position:relative;}
+    .chart-bar-fill{position:absolute;inset-x:0;bottom:0;background:var(--fire);}
+    .chart-lbl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#444;}
+    /* FORM */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .form-group{display:flex;flex-direction:column;gap:6px;}
+    .form-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#555;}
+    .inp-full{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--snow);padding:12px 16px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
+    .inp-full:focus{border-color:var(--border-fire);}
+    .inp-full::placeholder{color:#333;}
+    textarea.inp-full{resize:none;}
+    /* MODALS */
+    .modal-ov{position:fixed;inset:0;z-index:200;background:rgba(8,8,8,.88);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;padding:24px;}
+    .modal-ov.hidden{display:none;}
+    .modal-box{background:var(--coal);border:1px solid var(--border);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;}
+    .modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--coal);z-index:10;}
+    .modal-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;font-style:italic;}
+    .modal-close{background:none;border:none;color:#555;cursor:pointer;transition:color .2s;}
+    .modal-close:hover{color:var(--snow);}
+    .modal-body{padding:24px;}
+    .modal-footer{display:flex;gap:10px;padding:0 24px 24px;}
+    .modal-sm{max-width:380px;}
+    .btn-danger{background:#ef4444;color:#fff;padding:12px 24px;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;transition:opacity .2s;flex:1;font-family:'DM Sans',sans-serif;}
+    .btn-danger:hover{opacity:.85;}
+    .btn-cancel{background:transparent;border:1px solid var(--border);color:#888;padding:12px 24px;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;flex:1;font-family:'DM Sans',sans-serif;}
+    .btn-cancel:hover{border-color:#888;color:var(--snow);}
+    /* EYEBROW */
+    .eyebrow{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--fire);display:flex;align-items:center;gap:12px;}
+    .eyebrow::before{content:'';display:block;width:20px;height:1px;background:var(--fire);}
+    /* MOBILE */
     @media(max-width:1023px){
-      #sidebar{position:fixed;top:0;left:0;z-index:100;transform:translateX(-100%);height:100%;box-shadow:4px 0 30px rgba(0,0,0,.12)}
-      #sidebar.open{transform:translateX(0)}
-      #sidebar-overlay{position:fixed;inset:0;background:rgba(23,29,23,.45);z-index:99;backdrop-filter:blur(4px)}
+      #sidebar{transform:translateX(-100%);}
+      #sidebar.open{transform:translateX(0);}
+      .main-wrap{margin-left:0;}
+      .top-bar{padding:14px 20px;}
+      main{padding:20px 16px;}
+      .stat-grid{grid-template-columns:repeat(2,1fr);}
+      .two-col{grid-template-columns:1fr;}
+      .form-grid{grid-template-columns:1fr;}
+      .toolbar{flex-direction:column;align-items:flex-start;}
+      #menu-btn{display:block!important;}
     }
   </style>
 </head>
-<body class="bg-background text-on-surface overflow-x-hidden">
+<body>
 
+<!-- INIT -->
 <div id="init-screen">
-  <span style="font-family:'Noto Serif',serif" class="italic text-3xl text-primary tracking-tighter">WennaShop</span>
+  <div class="eyebrow">Espace Vendeur</div>
+  <span style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:700;font-style:italic;">Wenna<b style="color:var(--fire)">Shop</b></span>
   <div class="spinner-init"></div>
-  <p id="init-msg" class="text-sm text-on-surface-variant">Vérification du compte…</p>
+  <p id="init-msg" style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#444;">Vérification du compte…</p>
 </div>
 
-<div id="toast" class="fixed top-6 right-6 z-[400] px-5 py-3 rounded-xl bg-inverse-surface text-inverse-on-surface text-sm font-medium shadow-2xl opacity-0 pointer-events-none max-w-xs" role="status"></div>
-<div id="sidebar-overlay" class="hidden opacity-0 pointer-events-none" onclick="closeSidebar()"></div>
+<div id="toast"></div>
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
 
-<aside id="sidebar" class="w-64 bg-surface-container-lowest border-r border-outline-variant/20 h-screen flex flex-col fixed top-0 left-0 lg:z-auto lg:translate-x-0">
-  <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/15">
-    <a href="index.html" class="flex items-center gap-3">
-      <span class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-        <span style="font-family:'Noto Serif',serif" class="italic text-on-primary font-bold text-sm">W</span>
-      </span>
-      <div>
-        <h1 style="font-family:'Noto Serif',serif" class="italic text-lg text-primary leading-none">WennaShop</h1>
-        <p class="text-[9px] uppercase tracking-widest text-outline font-bold">Espace Vendeur</p>
-      </div>
-    </a>
-    <button class="lg:hidden text-outline hover:text-on-surface" onclick="closeSidebar()">
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="sb-logo">
+    <div>
+      <a href="index.html" class="sb-logo-text">Wenna<b>Shop</b></a>
+      <div class="sb-logo-sub">Espace Vendeur</div>
+    </div>
+    <button id="sb-close" class="modal-close" onclick="closeSidebar()" style="display:none;">
       <span class="material-symbols-outlined" style="font-size:20px">close</span>
     </button>
   </div>
-  <div class="px-4 py-4 border-b border-outline-variant/15">
-    <div class="flex items-center gap-3">
-      <div id="seller-avatar" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-base flex-shrink-0">?</div>
-      <div class="min-w-0">
-        <p id="seller-name" class="text-sm font-semibold truncate">Chargement...</p>
-        <div class="flex items-center gap-1 mt-0.5">
-          <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-          <p id="seller-country" class="text-[10px] text-outline uppercase tracking-wider">—</p>
-        </div>
-      </div>
+  <div class="sb-seller">
+    <div id="seller-avatar" class="sb-av">?</div>
+    <div>
+      <div id="seller-name" class="sb-name">Chargement...</div>
+      <div class="sb-country"><span class="sb-dot"></span><span id="seller-country">—</span></div>
     </div>
   </div>
-  <nav class="flex-1 overflow-y-auto no-scrollbar px-3 py-4 space-y-1">
-    <button onclick="showSection('overview')" data-nav="overview" class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium">
-      <span class="nav-icon material-symbols-outlined" style="font-size:20px">dashboard</span>Vue d'ensemble
+  <nav class="sb-nav">
+    <button onclick="showSection('overview')" data-nav="overview" class="nav-item active">
+      <span class="nav-icon material-symbols-outlined">dashboard</span>Vue d'ensemble
     </button>
-    <button onclick="showSection('products')" data-nav="products" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-on-surface-variant">
-      <span class="nav-icon material-symbols-outlined" style="font-size:20px">inventory_2</span>Mes Produits
+    <button onclick="showSection('products')" data-nav="products" class="nav-item">
+      <span class="nav-icon material-symbols-outlined">inventory_2</span>Mes Produits
     </button>
-    <button onclick="showSection('orders')" data-nav="orders" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-on-surface-variant">
-      <span class="nav-icon material-symbols-outlined" style="font-size:20px">shopping_bag</span>Commandes
-      <span id="badge-orders" class="ml-auto bg-error text-on-error text-[9px] font-bold px-1.5 py-0.5 rounded-full hidden">0</span>
+    <button onclick="showSection('orders')" data-nav="orders" class="nav-item">
+      <span class="nav-icon material-symbols-outlined">shopping_bag</span>Commandes
+      <span id="badge-orders" class="hidden">0</span>
     </button>
-    <button onclick="showSection('revenue')" data-nav="revenue" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-on-surface-variant">
-      <span class="nav-icon material-symbols-outlined" style="font-size:20px">payments</span>Revenus
+    <button onclick="showSection('revenue')" data-nav="revenue" class="nav-item">
+      <span class="nav-icon material-symbols-outlined">payments</span>Revenus
     </button>
-    <button onclick="showSection('reviews')" data-nav="reviews" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-on-surface-variant">
-      <span class="nav-icon material-symbols-outlined" style="font-size:20px">star</span>Avis Clients
+    <button onclick="showSection('reviews')" data-nav="reviews" class="nav-item">
+      <span class="nav-icon material-symbols-outlined">star</span>Avis Clients
     </button>
-    <button onclick="showSection('profile')" data-nav="profile" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-on-surface-variant">
-      <span class="nav-icon material-symbols-outlined" style="font-size:20px">store</span>Ma Boutique
+    <button onclick="showSection('profile')" data-nav="profile" class="nav-item">
+      <span class="nav-icon material-symbols-outlined">store</span>Ma Boutique
     </button>
   </nav>
-  <div class="px-3 py-4 border-t border-outline-variant/15 space-y-1">
-    <a href="boutique.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-on-surface-variant">
-      <span class="nav-icon material-symbols-outlined" style="font-size:20px">storefront</span>Voir la boutique
+  <div class="sb-footer">
+    <a href="boutique.html" class="nav-item">
+      <span class="nav-icon material-symbols-outlined">storefront</span>Voir la boutique
     </a>
-    <button onclick="logout()" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-error hover:bg-error/10">
-      <span class="material-symbols-outlined" style="font-size:20px">logout</span>Déconnexion
+    <button onclick="logout()" class="nav-item nav-danger">
+      <span class="material-symbols-outlined" style="font-size:18px">logout</span>Déconnexion
     </button>
   </div>
 </aside>
 
-<div class="lg:ml-64 min-h-screen flex flex-col">
-  <header class="bg-surface-container-lowest/80 backdrop-blur-xl sticky top-0 z-40 border-b border-outline-variant/10 px-6 py-4 flex items-center justify-between">
-    <div class="flex items-center gap-4">
-      <button class="lg:hidden text-on-surface" onclick="openSidebar()"><span class="material-symbols-outlined">menu</span></button>
+<!-- MAIN WRAP -->
+<div class="main-wrap">
+  <header class="top-bar">
+    <div style="display:flex;align-items:center;gap:16px;">
+      <button id="menu-btn" onclick="openSidebar()" style="background:none;border:none;color:var(--fog);cursor:pointer;display:none;">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
       <div>
-        <h2 id="page-title" style="font-family:'Noto Serif',serif" class="italic text-xl text-on-surface">Vue d'ensemble</h2>
-        <p id="page-date" class="text-[10px] text-outline uppercase tracking-widest"></p>
+        <h1 id="page-title" class="page-title">Vue d'ensemble</h1>
+        <p id="page-date" class="page-date"></p>
       </div>
     </div>
-    <button onclick="showSection('products'); setTimeout(openProductModal, 100)" class="hidden sm:flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider hover:opacity-90">
+    <button onclick="showSection('products'); setTimeout(openProductModal, 100)" class="btn-fire">
       <span class="material-symbols-outlined" style="font-size:16px">add</span>Nouveau produit
     </button>
   </header>
 
-  <main class="flex-1 p-6">
+  <main>
 
     <!-- OVERVIEW -->
-    <section id="section-overview" class="section active space-y-6">
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="stat-card bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10">
-          <div class="flex items-start justify-between mb-3"><div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center"><span class="material-symbols-outlined text-primary" style="font-size:20px">inventory_2</span></div><span id="ov-products-trend" class="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">—</span></div>
-          <p id="ov-products" class="text-3xl font-bold text-on-surface" style="font-family:'Noto Serif',serif">—</p>
-          <p class="text-[10px] uppercase tracking-widest text-outline mt-1 font-bold">Produits actifs</p>
+    <section id="section-overview" class="section active">
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-icon"><span class="material-symbols-outlined" style="font-size:20px">inventory_2</span></div>
+          <div id="ov-products" class="stat-num">—</div>
+          <div class="stat-label">Produits actifs</div>
+          <div id="ov-products-trend" class="stat-trend">—</div>
         </div>
-        <div class="stat-card bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10">
-          <div class="flex items-start justify-between mb-3"><div class="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center"><span class="material-symbols-outlined text-secondary" style="font-size:20px">shopping_bag</span></div><span id="ov-orders-trend" class="text-[10px] font-bold text-secondary bg-secondary/10 px-2 py-0.5 rounded-full">—</span></div>
-          <p id="ov-orders" class="text-3xl font-bold text-on-surface" style="font-family:'Noto Serif',serif">—</p>
-          <p class="text-[10px] uppercase tracking-widest text-outline mt-1 font-bold">Mes commandes</p>
+        <div class="stat-card">
+          <div class="stat-icon blue"><span class="material-symbols-outlined" style="font-size:20px">shopping_bag</span></div>
+          <div id="ov-orders" class="stat-num">—</div>
+          <div class="stat-label">Commandes</div>
+          <div id="ov-orders-trend" class="stat-trend">—</div>
         </div>
-        <div class="stat-card bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10">
-          <div class="flex items-start justify-between mb-3"><div class="w-10 h-10 rounded-xl bg-tertiary/10 flex items-center justify-center"><span class="material-symbols-outlined text-tertiary" style="font-size:20px">payments</span></div><span id="ov-revenue-trend" class="text-[10px] font-bold text-tertiary bg-tertiary/10 px-2 py-0.5 rounded-full">MAD</span></div>
-          <p id="ov-revenue" class="text-3xl font-bold text-on-surface" style="font-family:'Noto Serif',serif">—</p>
-          <p class="text-[10px] uppercase tracking-widest text-outline mt-1 font-bold">Revenus</p>
+        <div class="stat-card">
+          <div class="stat-icon amber"><span class="material-symbols-outlined" style="font-size:20px">payments</span></div>
+          <div id="ov-revenue" class="stat-num">—</div>
+          <div class="stat-label">Revenus MAD</div>
+          <div id="ov-revenue-trend" class="stat-trend"> </div>
         </div>
-        <div class="stat-card bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10">
-          <div class="flex items-start justify-between mb-3"><div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center"><span class="material-symbols-outlined text-primary" style="font-size:20px">star</span></div><span class="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">/ 5</span></div>
-          <p id="ov-rating" class="text-3xl font-bold text-on-surface" style="font-family:'Noto Serif',serif">—</p>
-          <p class="text-[10px] uppercase tracking-widest text-outline mt-1 font-bold">Note moyenne</p>
+        <div class="stat-card">
+          <div class="stat-icon"><span class="material-symbols-outlined" style="font-size:20px">star</span></div>
+          <div id="ov-rating" class="stat-num">—</div>
+          <div class="stat-label">Note moyenne / 5</div>
         </div>
       </div>
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div class="lg:col-span-2 bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
-          <div class="flex items-center justify-between px-5 py-4 border-b border-outline-variant/10">
-            <h3 style="font-family:'Noto Serif',serif" class="italic text-lg font-bold">Commandes récentes</h3>
-            <button onclick="showSection('orders')" class="text-xs text-primary font-bold uppercase tracking-wider hover:underline">Voir tout</button>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Commandes récentes</div>
+            <button onclick="showSection('orders')" class="card-link">Voir tout</button>
           </div>
-          <div id="recent-orders" class="divide-y divide-outline-variant/10"><div class="px-5 py-8 text-center text-outline text-sm">Chargement...</div></div>
+          <div id="recent-orders"><div class="card-empty">Chargement...</div></div>
         </div>
-        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
-          <div class="flex items-center justify-between px-5 py-4 border-b border-outline-variant/10">
-            <h3 style="font-family:'Noto Serif',serif" class="italic text-lg font-bold">Stock faible</h3>
-            <span class="text-[10px] text-error font-bold uppercase tracking-wider">Urgent</span>
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Stock faible</div>
+            <span style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#ef4444;">Urgent</span>
           </div>
-          <div id="low-stock" class="divide-y divide-outline-variant/10"><div class="px-5 py-8 text-center text-outline text-sm">Chargement...</div></div>
+          <div id="low-stock"><div class="card-empty">Chargement...</div></div>
         </div>
       </div>
     </section>
 
     <!-- PRODUCTS -->
-    <section id="section-products" class="section space-y-5">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div class="flex items-center gap-3">
-          <input id="prod-search" type="search" placeholder="Rechercher un produit..." oninput="filterProducts()" class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary w-64"/>
-          <select id="prod-filter-status" onchange="filterProducts()" class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary">
-            <option value="">Tous les statuts</option><option value="active">Actif</option><option value="pending">En attente</option><option value="inactive">Inactif</option>
+    <section id="section-products" class="section">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input id="prod-search" type="search" placeholder="Rechercher un produit…" oninput="filterProducts()" class="inp-dark" style="width:240px;"/>
+          <select id="prod-filter-status" onchange="filterProducts()" class="sel-dark">
+            <option value="">Tous les statuts</option>
+            <option value="active">Actif</option>
+            <option value="pending">En attente</option>
+            <option value="inactive">Inactif</option>
           </select>
         </div>
-        <button onclick="openProductModal()" class="flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:opacity-90">
+        <button onclick="openProductModal()" class="btn-fire">
           <span class="material-symbols-outlined" style="font-size:16px">add</span>Nouveau produit
         </button>
       </div>
-      <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <thead><tr class="border-b border-outline-variant/10 bg-surface-container-low">
-              <th class="text-left px-5 py-3 text-[10px] uppercase tracking-widest text-outline font-bold">Produit</th>
-              <th class="text-left px-4 py-3 text-[10px] uppercase tracking-widest text-outline font-bold hidden md:table-cell">Catégorie</th>
-              <th class="text-left px-4 py-3 text-[10px] uppercase tracking-widest text-outline font-bold">Prix</th>
-              <th class="text-left px-4 py-3 text-[10px] uppercase tracking-widest text-outline font-bold hidden sm:table-cell">Stock</th>
-              <th class="text-left px-4 py-3 text-[10px] uppercase tracking-widest text-outline font-bold">Statut</th>
-              <th class="text-right px-5 py-3 text-[10px] uppercase tracking-widest text-outline font-bold">Actions</th>
+      <div class="card">
+        <div style="overflow-x:auto;">
+          <table class="tbl">
+            <thead><tr>
+              <th>Produit</th><th>Catégorie</th><th>Prix</th><th>Stock</th><th>Statut</th><th>Actions</th>
             </tr></thead>
-            <tbody id="products-table-body"><tr><td colspan="6" class="text-center py-12 text-outline text-sm">Chargement...</td></tr></tbody>
+            <tbody id="products-table-body"><tr><td colspan="6" style="text-align:center;padding:48px;color:#444;font-size:11px;letter-spacing:2px;text-transform:uppercase;">Chargement...</td></tr></tbody>
           </table>
         </div>
-        <div id="products-pagination" class="px-5 py-4 border-t border-outline-variant/10 flex items-center justify-between hidden">
-          <p id="prod-count-label" class="text-xs text-outline"></p>
-          <div class="flex gap-2">
-            <button id="prod-prev" onclick="changeProdPage(-1)" class="px-3 py-1.5 rounded-lg border border-outline-variant/30 text-xs text-on-surface-variant hover:bg-surface-container-low disabled:opacity-40" disabled>Précédent</button>
-            <button id="prod-next" onclick="changeProdPage(1)" class="px-3 py-1.5 rounded-lg border border-outline-variant/30 text-xs text-on-surface-variant hover:bg-surface-container-low">Suivant</button>
+        <div id="products-pagination" class="pagination hidden">
+          <span id="prod-count-label" class="page-info"></span>
+          <div class="page-btns">
+            <button id="prod-prev" onclick="changeProdPage(-1)" class="page-btn" disabled>Précédent</button>
+            <button id="prod-next" onclick="changeProdPage(1)" class="page-btn">Suivant</button>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ORDERS -->
-    <section id="section-orders" class="section space-y-5">
-      <select id="order-filter" onchange="loadOrders()" class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary">
-        <option value="">Tous les statuts</option><option value="pending">En attente</option><option value="processing">En traitement</option><option value="shipped">Expédiée</option><option value="delivered">Livrée</option><option value="cancelled">Annulée</option>
-      </select>
-      <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <thead><tr class="border-b border-outline-variant/10 bg-surface-container-low">
-              <th class="text-left px-5 py-3 text-[10px] uppercase tracking-widest text-outline font-bold">Commande</th>
-              <th class="text-left px-4 py-3 text-[10px] uppercase tracking-widest text-outline font-bold hidden md:table-cell">Client</th>
-              <th class="text-left px-4 py-3 text-[10px] uppercase tracking-widest text-outline font-bold">Montant</th>
-              <th class="text-left px-4 py-3 text-[10px] uppercase tracking-widest text-outline font-bold hidden sm:table-cell">Date</th>
-              <th class="text-left px-4 py-3 text-[10px] uppercase tracking-widest text-outline font-bold">Statut</th>
-              <th class="text-right px-5 py-3 text-[10px] uppercase tracking-widest text-outline font-bold">Actions</th>
+    <section id="section-orders" class="section">
+      <div class="toolbar">
+        <select id="order-filter" onchange="loadOrders()" class="sel-dark">
+          <option value="">Tous les statuts</option>
+          <option value="pending">En attente</option>
+          <option value="processing">En traitement</option>
+          <option value="shipped">Expédiée</option>
+          <option value="delivered">Livrée</option>
+          <option value="cancelled">Annulée</option>
+        </select>
+      </div>
+      <div class="card">
+        <div style="overflow-x:auto;">
+          <table class="tbl">
+            <thead><tr>
+              <th>Commande</th><th>Client</th><th>Montant</th><th>Date</th><th>Statut</th><th>Actions</th>
             </tr></thead>
-            <tbody id="orders-table-body"><tr><td colspan="6" class="text-center py-12 text-outline text-sm">Chargement...</td></tr></tbody>
+            <tbody id="orders-table-body"><tr><td colspan="6" style="text-align:center;padding:48px;color:#444;font-size:11px;letter-spacing:2px;text-transform:uppercase;">Chargement...</td></tr></tbody>
           </table>
         </div>
       </div>
     </section>
 
     <!-- REVENUE -->
-    <section id="section-revenue" class="section space-y-6">
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="stat-card bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10"><p class="text-[10px] uppercase tracking-widest text-outline mb-2 font-bold">Total encaissé</p><p id="rev-total" class="text-2xl font-bold" style="font-family:'Noto Serif',serif">— MAD</p></div>
-        <div class="stat-card bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10"><p class="text-[10px] uppercase tracking-widest text-outline mb-2 font-bold">Ce mois</p><p id="rev-month" class="text-2xl font-bold" style="font-family:'Noto Serif',serif">— MAD</p></div>
-        <div class="stat-card bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10"><p class="text-[10px] uppercase tracking-widest text-outline mb-2 font-bold">Paiements reçus</p><p id="rev-count" class="text-2xl font-bold" style="font-family:'Noto Serif',serif">—</p></div>
-        <div class="stat-card bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10"><p class="text-[10px] uppercase tracking-widest text-outline mb-2 font-bold">Panier moyen</p><p id="rev-avg" class="text-2xl font-bold" style="font-family:'Noto Serif',serif">— MAD</p></div>
+    <section id="section-revenue" class="section">
+      <div class="stat-grid" style="margin-bottom:2px;">
+        <div class="stat-card"><div class="stat-label" style="margin-bottom:8px;">Total encaissé</div><div id="rev-total" class="stat-num" style="font-size:28px;">— MAD</div></div>
+        <div class="stat-card"><div class="stat-label" style="margin-bottom:8px;">Ce mois</div><div id="rev-month" class="stat-num" style="font-size:28px;">— MAD</div></div>
+        <div class="stat-card"><div class="stat-label" style="margin-bottom:8px;">Paiements reçus</div><div id="rev-count" class="stat-num" style="font-size:28px;">—</div></div>
+        <div class="stat-card"><div class="stat-label" style="margin-bottom:8px;">Panier moyen</div><div id="rev-avg" class="stat-num" style="font-size:28px;">— MAD</div></div>
       </div>
-      <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 p-6">
-        <h3 style="font-family:'Noto Serif',serif" class="italic text-lg font-bold mb-6">Revenus sur 6 mois</h3>
-        <div id="revenue-chart" class="flex items-end gap-3 h-40"><div class="text-center text-outline text-sm w-full flex items-center justify-center">Chargement...</div></div>
+      <div class="card" style="margin-bottom:2px;">
+        <div class="card-head"><div class="card-title">Revenus sur 6 mois</div></div>
+        <div id="revenue-chart" class="chart-wrap"><div style="color:#444;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin:auto;">Chargement...</div></div>
       </div>
-      <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
-        <div class="px-5 py-4 border-b border-outline-variant/10"><h3 style="font-family:'Noto Serif',serif" class="italic text-lg font-bold">Historique des paiements</h3></div>
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <thead><tr class="border-b border-outline-variant/10 bg-surface-container-low">
-              <th class="text-left px-5 py-3 text-[10px] uppercase tracking-widest text-outline font-bold">Référence</th>
-              <th class="text-left px-4 py-3 text-[10px] uppercase tracking-widest text-outline font-bold">Montant</th>
-              <th class="text-left px-4 py-3 text-[10px] uppercase tracking-widest text-outline font-bold hidden sm:table-cell">Méthode</th>
-              <th class="text-left px-4 py-3 text-[10px] uppercase tracking-widest text-outline font-bold hidden md:table-cell">Date</th>
-              <th class="text-left px-4 py-3 text-[10px] uppercase tracking-widest text-outline font-bold">Statut</th>
-            </tr></thead>
-            <tbody id="payments-table-body"><tr><td colspan="5" class="text-center py-12 text-outline text-sm">Chargement...</td></tr></tbody>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Historique des paiements</div></div>
+        <div style="overflow-x:auto;">
+          <table class="tbl">
+            <thead><tr><th>Référence</th><th>Montant</th><th>Méthode</th><th>Date</th><th>Statut</th></tr></thead>
+            <tbody id="payments-table-body"><tr><td colspan="5" style="text-align:center;padding:48px;color:#444;font-size:11px;letter-spacing:2px;text-transform:uppercase;">Chargement...</td></tr></tbody>
           </table>
         </div>
       </div>
     </section>
 
     <!-- REVIEWS -->
-    <section id="section-reviews" class="section space-y-5">
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="stat-card bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10 text-center"><p id="rev-avg-rating" class="text-4xl font-bold text-tertiary" style="font-family:'Noto Serif',serif">—</p><div id="rev-stars" class="flex justify-center gap-0.5 my-2"></div><p class="text-[10px] uppercase tracking-widest text-outline font-bold">Note moyenne</p></div>
-        <div class="stat-card bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10 text-center"><p id="rev-total-count" class="text-4xl font-bold" style="font-family:'Noto Serif',serif">—</p><p class="text-[10px] uppercase tracking-widest text-outline font-bold mt-2">Total avis</p></div>
-        <div class="stat-card bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10 text-center"><p id="rev-approved-count" class="text-4xl font-bold text-primary" style="font-family:'Noto Serif',serif">—</p><p class="text-[10px] uppercase tracking-widest text-outline font-bold mt-2">Avis approuvés</p></div>
-      </div>
-      <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
-        <div class="flex items-center justify-between px-5 py-4 border-b border-outline-variant/10">
-          <h3 style="font-family:'Noto Serif',serif" class="italic text-lg font-bold">Avis reçus</h3>
-          <select id="review-filter" onchange="loadReviews()" class="bg-surface-container-low border border-outline-variant/30 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:border-primary">
-            <option value="">Tous</option><option value="approved">Approuvés</option><option value="pending">En attente</option>
+    <section id="section-reviews" class="section">
+      <div class="stat-grid" style="margin-bottom:2px;">
+        <div class="stat-card" style="text-align:center;">
+          <div id="rev-avg-rating" style="font-family:'Cormorant Garamond',serif;font-size:56px;font-weight:700;font-style:italic;color:var(--fire);line-height:1;">—</div>
+          <div id="rev-stars" style="display:flex;justify-content:center;gap:3px;margin:10px 0;"></div>
+          <div class="stat-label">Note moyenne</div>
+        </div>
+        <div class="stat-card" style="text-align:center;">
+          <div id="rev-total-count" class="stat-num">—</div>
+          <div class="stat-label">Total avis</div>
+        </div>
+        <div class="stat-card" style="text-align:center;">
+          <div id="rev-approved-count" class="stat-num">—</div>
+          <div class="stat-label">Avis approuvés</div>
+        </div>
+        <div class="stat-card" style="display:flex;align-items:center;justify-content:center;">
+          <select id="review-filter" onchange="loadReviews()" class="sel-dark">
+            <option value="">Tous les avis</option>
+            <option value="approved">Approuvés</option>
+            <option value="pending">En attente</option>
           </select>
         </div>
-        <div id="reviews-list" class="divide-y divide-outline-variant/10"><div class="px-5 py-8 text-center text-outline text-sm">Chargement...</div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Avis reçus</div></div>
+        <div id="reviews-list"><div class="card-empty">Chargement...</div></div>
       </div>
     </section>
 
     <!-- PROFILE -->
-    <section id="section-profile" class="section space-y-6 max-w-2xl">
-      <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
-        <div class="px-5 py-4 border-b border-outline-variant/10 flex items-center justify-between">
-          <h3 style="font-family:'Noto Serif',serif" class="italic text-lg font-bold">Informations de la boutique</h3>
-          <span id="profile-status-badge" class="text-[10px] font-bold px-3 py-1 rounded-full">—</span>
+    <section id="section-profile" class="section" style="max-width:640px;">
+      <div class="card" style="margin-bottom:2px;">
+        <div class="card-head">
+          <div class="card-title">Informations de la boutique</div>
+          <span id="profile-status-badge" class="status-pending">—</span>
         </div>
-        <form id="profile-form" onsubmit="saveProfile(event)" class="p-6 space-y-5">
-          <div class="flex items-center gap-4 mb-6">
-            <div id="profile-avatar-display" class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl flex-shrink-0">?</div>
-            <div><p class="text-sm font-semibold" id="profile-email-display">—</p><p class="text-xs text-outline" id="profile-role-display">—</p></div>
+        <form id="profile-form" onsubmit="saveProfile(event)" style="padding:24px;display:flex;flex-direction:column;gap:18px;">
+          <div style="display:flex;align-items:center;gap:16px;padding-bottom:18px;border-bottom:1px solid var(--border);">
+            <div id="profile-avatar-display" class="sb-av" style="width:52px;height:52px;font-size:20px;">?</div>
+            <div>
+              <div id="profile-email-display" style="font-size:14px;font-weight:600;">—</div>
+              <div id="profile-role-display" style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-top:3px;">—</div>
+            </div>
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div><label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Prénom</label><input id="pf-first-name" type="text" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary"/></div>
-            <div><label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Nom</label><input id="pf-last-name" type="text" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary"/></div>
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">Prénom</label><input id="pf-first-name" type="text" class="inp-full"/></div>
+            <div class="form-group"><label class="form-label">Nom</label><input id="pf-last-name" type="text" class="inp-full"/></div>
           </div>
-          <div><label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Spécialité / Boutique</label><input id="pf-specialty" type="text" placeholder="Ex: Huiles naturelles · Casablanca" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary"/></div>
-          <div><label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Pays</label><select id="pf-country" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary"><option value="Maroc">Maroc</option><option value="Gabon">Gabon</option></select></div>
-          <div class="pt-2"><button type="submit" class="bg-primary text-on-primary px-6 py-3 rounded-xl text-sm font-bold uppercase tracking-wider hover:opacity-90">Enregistrer les modifications</button></div>
+          <div class="form-group"><label class="form-label">Spécialité / Boutique</label><input id="pf-specialty" type="text" placeholder="Ex: Huiles naturelles · Casablanca" class="inp-full"/></div>
+          <div class="form-group"><label class="form-label">Pays</label>
+            <select id="pf-country" class="inp-full sel-dark" style="appearance:none;">
+              <option value="Maroc">Maroc</option><option value="Gabon">Gabon</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-fire" style="align-self:flex-start;">Enregistrer les modifications</button>
         </form>
       </div>
-      <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden">
-        <div class="px-5 py-4 border-b border-outline-variant/10"><h3 style="font-family:'Noto Serif',serif" class="italic text-lg font-bold">Sécurité</h3></div>
-        <div class="p-6"><button onclick="resetPassword()" class="border border-outline-variant/30 text-on-surface-variant px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-surface-container-low">Envoyer un lien de réinitialisation du mot de passe</button></div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Sécurité</div></div>
+        <div style="padding:24px;">
+          <button onclick="resetPassword()" class="btn-ghost">Envoyer un lien de réinitialisation</button>
+        </div>
       </div>
     </section>
 
@@ -332,69 +453,90 @@
 </div>
 
 <!-- MODAL PRODUIT -->
-<div id="modal-overlay" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4" style="background:rgba(23,29,23,.5);backdrop-filter:blur(6px)">
-  <div id="modal-box" class="bg-surface-container-lowest rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
-    <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10 sticky top-0 bg-surface-container-lowest z-10">
-      <h3 id="modal-title" style="font-family:'Noto Serif',serif" class="italic text-xl font-bold">Nouveau produit</h3>
-      <button onclick="closeProductModal()" class="text-outline hover:text-on-surface"><span class="material-symbols-outlined">close</span></button>
+<div id="modal-overlay" class="modal-ov hidden">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <h3 id="modal-title" class="modal-title">Nouveau produit</h3>
+      <button onclick="closeProductModal()" class="modal-close"><span class="material-symbols-outlined">close</span></button>
     </div>
-    <form id="product-form" onsubmit="saveProduct(event)" class="p-6 space-y-5">
-      <input type="hidden" id="product-id"/>
-      <div><label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Nom du produit *</label><input id="product-name" type="text" required class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"/></div>
-      <div><label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Description</label><textarea id="product-description" rows="3" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary resize-none"></textarea></div>
-      <div class="grid grid-cols-2 gap-4">
-        <div><label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Prix (MAD) *</label><input id="product-price" type="number" step="0.01" min="0" required class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"/></div>
-        <div><label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Stock *</label><input id="product-stock" type="number" min="0" required class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"/></div>
+    <form id="product-form" onsubmit="saveProduct(event)">
+      <div class="modal-body" style="display:flex;flex-direction:column;gap:18px;">
+        <input type="hidden" id="product-id"/>
+        <div class="form-group"><label class="form-label">Nom du produit *</label><input id="product-name" type="text" required class="inp-full"/></div>
+        <div class="form-group"><label class="form-label">Description</label><textarea id="product-description" rows="3" class="inp-full"></textarea></div>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Prix (MAD) *</label><input id="product-price" type="number" step="0.01" min="0" required class="inp-full"/></div>
+          <div class="form-group"><label class="form-label">Stock *</label><input id="product-stock" type="number" min="0" required class="inp-full"/></div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Pays *</label>
+            <select id="product-country" class="inp-full sel-dark" style="appearance:none;">
+              <option value="Maroc">Maroc</option><option value="Gabon">Gabon</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Ville d'origine</label><input id="product-city" type="text" placeholder="Ex: Casablanca" class="inp-full"/></div>
+        </div>
+        <div class="form-group"><label class="form-label">Catégorie</label>
+          <select id="product-category" class="inp-full sel-dark" style="appearance:none;"><option value="">Sélectionner...</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">URL de l'image principale</label><input id="product-image" type="url" placeholder="https://…" class="inp-full"/></div>
+        <div class="form-group"><label class="form-label">Statut</label>
+          <select id="product-status" class="inp-full sel-dark" style="appearance:none;">
+            <option value="pending">En attente de validation</option>
+            <option value="active">Actif</option>
+            <option value="inactive">Inactif</option>
+          </select>
+        </div>
       </div>
-      <div class="grid grid-cols-2 gap-4">
-        <div><label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Pays *</label><select id="product-country" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"><option value="Maroc">Maroc</option><option value="Gabon">Gabon</option></select></div>
-        <div><label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Ville d'origine</label><input id="product-city" type="text" placeholder="Ex: Casablanca" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"/></div>
-      </div>
-      <div><label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Catégorie</label><select id="product-category" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"><option value="">Sélectionner...</option></select></div>
-      <div><label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">URL de l'image principale</label><input id="product-image" type="url" placeholder="https://..." class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"/></div>
-      <div><label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Statut</label><select id="product-status" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"><option value="pending">En attente de validation</option><option value="active">Actif</option><option value="inactive">Inactif</option></select></div>
-      <div class="flex gap-3 pt-2">
-        <button type="button" onclick="closeProductModal()" class="flex-1 border border-outline-variant/30 text-on-surface-variant px-5 py-3 rounded-xl text-sm font-medium hover:bg-surface-container-low">Annuler</button>
-        <button type="submit" id="modal-submit-btn" class="flex-1 bg-primary text-on-primary px-5 py-3 rounded-xl text-sm font-bold uppercase tracking-wider hover:opacity-90">Enregistrer</button>
+      <div class="modal-footer">
+        <button type="button" onclick="closeProductModal()" class="btn-cancel">Annuler</button>
+        <button type="submit" id="modal-submit-btn" class="btn-fire" style="flex:1;">Enregistrer</button>
       </div>
     </form>
   </div>
 </div>
 
 <!-- MODAL COMMANDE -->
-<div id="order-modal-overlay" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4" style="background:rgba(23,29,23,.5);backdrop-filter:blur(6px)">
-  <div class="bg-surface-container-lowest rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
-    <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10">
-      <h3 style="font-family:'Noto Serif',serif" class="italic text-xl font-bold">Détail commande</h3>
-      <button onclick="closeOrderModal()" class="text-outline hover:text-on-surface"><span class="material-symbols-outlined">close</span></button>
+<div id="order-modal-overlay" class="modal-ov hidden">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <h3 class="modal-title">Détail commande</h3>
+      <button onclick="closeOrderModal()" class="modal-close"><span class="material-symbols-outlined">close</span></button>
     </div>
-    <div id="order-detail-content" class="p-6 space-y-4">Chargement...</div>
-    <div class="px-6 pb-6">
-      <label class="block text-[10px] uppercase tracking-widest text-outline font-bold mb-1.5">Mettre à jour le statut</label>
-      <div class="flex gap-3">
-        <select id="order-status-update" class="flex-1 bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary">
-          <option value="pending">En attente</option><option value="processing">En traitement</option><option value="shipped">Expédiée</option><option value="delivered">Livrée</option><option value="cancelled">Annulée</option>
+    <div id="order-detail-content" class="modal-body">Chargement...</div>
+    <div style="padding:0 24px 24px;">
+      <div class="form-label" style="margin-bottom:8px;">Mettre à jour le statut</div>
+      <div style="display:flex;gap:10px;">
+        <select id="order-status-update" class="sel-dark" style="flex:1;">
+          <option value="pending">En attente</option>
+          <option value="processing">En traitement</option>
+          <option value="shipped">Expédiée</option>
+          <option value="delivered">Livrée</option>
+          <option value="cancelled">Annulée</option>
         </select>
-        <button onclick="updateOrderStatus()" class="bg-primary text-on-primary px-5 py-2.5 rounded-xl text-sm font-bold hover:opacity-90 whitespace-nowrap">Mettre à jour</button>
+        <button onclick="updateOrderStatus()" class="btn-fire">Mettre à jour</button>
       </div>
     </div>
   </div>
 </div>
 
 <!-- MODAL SUPPRESSION -->
-<div id="delete-modal-overlay" class="hidden fixed inset-0 z-[300] flex items-center justify-center p-4" style="background:rgba(23,29,23,.5);backdrop-filter:blur(6px)">
-  <div class="bg-surface-container-lowest rounded-2xl w-full max-w-sm shadow-2xl p-6 space-y-4" onclick="event.stopPropagation()">
-    <div class="w-12 h-12 rounded-full bg-error/10 flex items-center justify-center mx-auto"><span class="material-symbols-outlined text-error">delete</span></div>
-    <h3 style="font-family:'Noto Serif',serif" class="italic text-lg font-bold text-center">Supprimer ce produit ?</h3>
-    <p class="text-sm text-on-surface-variant text-center">Cette action est irréversible.</p>
-    <div class="flex gap-3 pt-2">
-      <button onclick="closeDeleteModal()" class="flex-1 border border-outline-variant/30 text-on-surface-variant px-5 py-3 rounded-xl text-sm font-medium hover:bg-surface-container-low">Annuler</button>
-      <button onclick="confirmDelete()" class="flex-1 bg-error text-on-error px-5 py-3 rounded-xl text-sm font-bold hover:opacity-90">Supprimer</button>
+<div id="delete-modal-overlay" class="modal-ov hidden">
+  <div class="modal-box modal-sm" onclick="event.stopPropagation()">
+    <div style="padding:32px 24px 24px;text-align:center;">
+      <div style="width:52px;height:52px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+        <span class="material-symbols-outlined" style="color:#ef4444;font-size:26px;">delete</span>
+      </div>
+      <h3 class="modal-title" style="margin-bottom:10px;">Supprimer ce produit ?</h3>
+      <p style="font-size:13px;color:#666;margin-bottom:24px;">Cette action est irréversible.</p>
+      <div style="display:flex;gap:10px;">
+        <button onclick="closeDeleteModal()" class="btn-cancel">Annuler</button>
+        <button onclick="confirmDelete()" class="btn-danger">Supprimer</button>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ✅ CORRECTION : supabase.config.js — plus de client local -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.config.js"></script>
 <script>
@@ -409,21 +551,20 @@ function setInitMsg(m){const e=document.getElementById('init-msg');if(e)e.textCo
 function hideInitScreen(){document.getElementById('init-screen').classList.add('hidden')}
 function showToast(msg,type='default'){
   const el=document.getElementById('toast')
-  const c={default:'bg-inverse-surface text-inverse-on-surface',success:'bg-primary text-on-primary',error:'bg-error text-on-error'}
-  el.className=`fixed top-6 right-6 z-[400] px-5 py-3 rounded-xl text-sm font-medium shadow-2xl max-w-xs ${c[type]||c.default}`
-  el.textContent=msg;el.style.opacity='1';el.style.pointerEvents='auto'
-  setTimeout(()=>{el.style.opacity='0';el.style.pointerEvents='none'},3500)
+  el.textContent=msg
+  el.className=type==='success'?'show success':type==='error'?'show error':'show'
+  setTimeout(()=>el.className='',3500)
 }
 function fmtDate(d){return d?new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}):'—'}
 function fmtAmount(n,currency='MAD'){return n==null?'—':Number(n).toFixed(2)+' '+currency}
 function statusBadge(s){
   const m={pending:['status-pending','En attente'],active:['status-active','Actif'],inactive:['status-inactive','Inactif'],processing:['status-processing','En traitement'],shipped:['status-shipped','Expédiée'],delivered:['status-delivered','Livrée'],cancelled:['status-cancelled','Annulée'],paid:['status-paid','Payé'],failed:['status-failed','Échoué'],refunded:['status-processing','Remboursé'],approved:['status-active','Approuvé'],rejected:['status-inactive','Rejeté'],returned:['status-cancelled','Retourné']}
   const [cls,label]=m[s]||['status-pending',s||'—']
-  return `<span class="${cls} text-[10px] font-bold px-2.5 py-1 rounded-full">${label}</span>`
+  return `<span class="${cls}">${label}</span>`
 }
 function starsHtml(rating){
   const n=Math.round(rating||0)
-  return Array.from({length:5},(_,i)=>`<span class="material-symbols-outlined ${i<n?'text-tertiary icon-fill':'text-outline-variant'}" style="font-size:14px">star</span>`).join('')
+  return Array.from({length:5},(_,i)=>`<span class="material-symbols-outlined ${i<n?'icon-fill':''}" style="font-size:16px;color:${i<n?'var(--fire)':'#333'}">star</span>`).join('')
 }
 
 // ── NAV ───────────────────────────────────────────────────────────────────────
@@ -431,7 +572,7 @@ const pageTitles={overview:"Vue d'ensemble",products:'Mes Produits',orders:'Comm
 function showSection(name){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'))
   document.getElementById('section-'+name)?.classList.add('active')
-  document.querySelectorAll('.nav-item[data-nav]').forEach(b=>{const a=b.dataset.nav===name;b.classList.toggle('active',a);b.classList.toggle('text-on-surface-variant',!a)})
+  document.querySelectorAll('.nav-item[data-nav]').forEach(b=>{b.classList.toggle('active',b.dataset.nav===name)})
   document.getElementById('page-title').textContent=pageTitles[name]||''
   closeSidebar()
   if(name==='products')loadProducts()
@@ -440,8 +581,20 @@ function showSection(name){
   if(name==='reviews')loadReviews()
   if(name==='profile')loadProfileSection()
 }
-function openSidebar(){const o=document.getElementById('sidebar-overlay');document.getElementById('sidebar').classList.add('open');o.classList.remove('hidden','pointer-events-none');requestAnimationFrame(()=>o.style.opacity='1')}
-function closeSidebar(){const o=document.getElementById('sidebar-overlay');document.getElementById('sidebar').classList.remove('open');o.style.opacity='0';setTimeout(()=>o.classList.add('hidden','pointer-events-none'),300)}
+function openSidebar(){
+  document.getElementById('sidebar').classList.add('open')
+  document.getElementById('sidebar-overlay').classList.add('show')
+  const cb=document.getElementById('sb-close');if(cb)cb.style.display='block'
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open')
+  document.getElementById('sidebar-overlay').classList.remove('show')
+}
+function checkMobile(){
+  const m=window.innerWidth<1024
+  const btn=document.getElementById('menu-btn');if(btn)btn.style.display=m?'block':'none'
+}
+window.addEventListener('resize',checkMobile);checkMobile()
 
 // ── AUTH ──────────────────────────────────────────────────────────────────────
 async function initAuth(){
@@ -465,7 +618,7 @@ async function initAuth(){
     if(!user){showToast('Impossible de charger le profil.','error');hideInitScreen();return}
     if(user.role!=='artisan'&&user.role!=='admin'){
       hideInitScreen()
-      document.querySelector('.lg\\:ml-64').innerHTML=`<div class="flex flex-col items-center justify-center min-h-screen gap-6 p-8 text-center"><div class="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center"><span class="material-symbols-outlined text-amber-600" style="font-size:32px">lock</span></div><div><h2 style="font-family:'Noto Serif',serif" class="italic text-2xl font-bold mb-2">Accès Espace Vendeur</h2><p class="text-on-surface-variant text-sm max-w-sm">Ton compte n'a pas encore accès à l'espace vendeur.</p></div><div class="flex gap-3"><a href="compte.html?mode=vendeur" class="bg-primary text-on-primary px-6 py-3 rounded-xl text-sm font-bold">Devenir vendeur</a><a href="index.html" class="border border-outline-variant/30 text-on-surface-variant px-6 py-3 rounded-xl text-sm font-medium">Accueil</a></div></div>`
+      document.querySelector('.main-wrap').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:24px;padding:40px;text-align:center;"><div style="width:52px;height:52px;background:rgba(255,107,43,.1);border:1px solid var(--border-fire);display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="color:var(--fire);font-size:26px">lock</span></div><div><h2 style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;font-style:italic;margin-bottom:10px;">Accès Espace Vendeur</h2><p style="color:#666;font-size:14px;max-width:340px;line-height:1.6;">Ton compte n'a pas encore accès à l'espace vendeur. Deviens vendeur depuis ton compte.</p></div><div style="display:flex;gap:12px;"><a href="compte.html?mode=vendeur" class="btn-fire" style="text-decoration:none;">Devenir vendeur</a><a href="index.html" class="btn-ghost" style="text-decoration:none;">Accueil</a></div></div>`
       return
     }
     currentSeller=user
@@ -536,19 +689,24 @@ async function loadRecentOrders(){
   const db=getDb()
   const productIds=await getMyProductIds()
   const el=document.getElementById('recent-orders')
-  if(!productIds.length){el.innerHTML='<div class="px-5 py-8 text-center text-outline text-sm">Aucune commande</div>';return}
+  if(!productIds.length){el.innerHTML='<div class="card-empty">Aucune commande</div>';return}
   const {data:items}=await db.from('order_items').select('order_id').in('product_id',productIds)
   const orderIds=[...new Set((items||[]).map(i=>i.order_id))]
-  if(!orderIds.length){el.innerHTML='<div class="px-5 py-8 text-center text-outline text-sm">Aucune commande</div>';return}
-  // ✅ join explicite via FK orders.user_id → users
+  if(!orderIds.length){el.innerHTML='<div class="card-empty">Aucune commande</div>';return}
   const {data}=await db.from('orders')
     .select('id, total_amount, status, created_at, users!orders_user_id_fkey(full_name, email)')
     .in('id',orderIds).order('created_at',{ascending:false}).limit(5)
-  if(!data?.length){el.innerHTML='<div class="px-5 py-8 text-center text-outline text-sm">Aucune commande</div>';return}
+  if(!data?.length){el.innerHTML='<div class="card-empty">Aucune commande</div>';return}
   el.innerHTML=data.map(o=>`
-    <div class="table-row px-5 py-3 flex items-center justify-between gap-3 cursor-pointer" onclick="showSection('orders')">
-      <div><p class="text-sm font-medium font-mono">#${o.id.slice(0,8).toUpperCase()}</p><p class="text-xs text-outline">${o.users?.full_name||o.users?.email||'—'} · ${fmtDate(o.created_at)}</p></div>
-      <div class="flex items-center gap-3"><span class="text-sm font-bold">${fmtAmount(o.total_amount)}</span>${statusBadge(o.status)}</div>
+    <div class="order-row" onclick="showSection('orders')">
+      <div>
+        <div style="font-size:12px;font-weight:600;font-family:monospace;">#${o.id.slice(0,8).toUpperCase()}</div>
+        <div style="font-size:11px;color:#555;margin-top:3px;">${o.users?.full_name||o.users?.email||'—'} · ${fmtDate(o.created_at)}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="font-size:14px;font-weight:600;color:var(--fire);">${fmtAmount(o.total_amount)}</span>
+        ${statusBadge(o.status)}
+      </div>
     </div>`).join('')
 }
 
@@ -556,11 +714,11 @@ async function loadLowStock(){
   const db=getDb()
   const {data}=await db.from('products').select('id,name,stock').eq('seller_id',currentSeller.id).lte('stock',5).order('stock',{ascending:true}).limit(6)
   const el=document.getElementById('low-stock')
-  if(!data?.length){el.innerHTML='<div class="px-5 py-8 text-center text-outline text-sm">Aucun stock critique</div>';return}
+  if(!data?.length){el.innerHTML='<div class="card-empty">Aucun stock critique</div>';return}
   el.innerHTML=data.map(p=>`
-    <div class="px-5 py-3 flex items-center justify-between gap-2">
-      <p class="text-sm truncate">${p.name}</p>
-      <span class="text-xs font-bold px-2 py-1 rounded-full ${p.stock===0?'bg-error/10 text-error':'status-pending'} whitespace-nowrap">${p.stock===0?'Rupture':p.stock+' restants'}</span>
+    <div class="stock-row">
+      <span style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">${p.name}</span>
+      <span class="${p.stock===0?'status-inactive':'status-pending'}" style="white-space:nowrap;margin-left:8px;">${p.stock===0?'Rupture':p.stock+' restants'}</span>
     </div>`).join('')
 }
 
@@ -568,7 +726,6 @@ async function loadLowStock(){
 async function loadProducts(){
   const db=getDb()
   if(!currentSeller)return
-  // ✅ colonnes réelles : origin_city, country, image_url (pas city/pays/active)
   const {data,error}=await db.from('products').select('id, name, price, stock, status, country, origin_city, image_url, category_id, categories(name)').eq('seller_id',currentSeller.id).order('created_at',{ascending:false})
   if(error){showToast('Erreur produits: '+error.message,'error');return}
   allProducts=data||[];prodPage=1;filterProducts()
@@ -580,23 +737,30 @@ function filterProducts(){
 }
 function renderProductsTable(data){
   const tbody=document.getElementById('products-table-body'),pagination=document.getElementById('products-pagination')
-  if(!data.length){tbody.innerHTML='<tr><td colspan="6" class="text-center py-12 text-outline text-sm">Aucun produit</td></tr>';pagination.classList.add('hidden');return}
+  if(!data.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:48px;color:#444;font-size:11px;letter-spacing:2px;text-transform:uppercase;">Aucun produit</td></tr>';pagination.classList.add('hidden');return}
   const total=data.length,totalPages=Math.ceil(total/PROD_PER_PAGE)
   if(prodPage>totalPages)prodPage=1
   tbody.innerHTML=data.slice((prodPage-1)*PROD_PER_PAGE,prodPage*PROD_PER_PAGE).map(p=>`
-    <tr class="table-row border-b border-outline-variant/10">
-      <td class="px-5 py-4"><div class="flex items-center gap-3">
-        ${p.image_url?`<img src="${p.image_url}" class="w-10 h-10 rounded-xl object-cover flex-shrink-0" onerror="this.style.display='none'"/>`:`<div class="w-10 h-10 rounded-xl bg-surface-container-low flex-shrink-0 flex items-center justify-center"><span class="material-symbols-outlined text-outline" style="font-size:18px">image</span></div>`}
-        <div><p class="text-sm font-medium">${p.name}</p><p class="text-xs text-outline">${p.origin_city||p.country||'—'}</p></div>
-      </div></td>
-      <td class="px-4 py-4 hidden md:table-cell text-sm text-on-surface-variant">${p.categories?.name||'—'}</td>
-      <td class="px-4 py-4 text-sm font-bold">${fmtAmount(p.price)}</td>
-      <td class="px-4 py-4 hidden sm:table-cell"><span class="text-sm ${(p.stock??0)<=5?'text-error font-bold':'text-on-surface-variant'}">${p.stock??'0'}</span></td>
-      <td class="px-4 py-4">${statusBadge(p.status)}</td>
-      <td class="px-5 py-4 text-right"><div class="flex items-center justify-end gap-3">
-        <button onclick="editProduct('${p.id}')" class="text-xs text-primary font-bold hover:underline">Modifier</button>
-        <button onclick="askDeleteProduct('${p.id}')" class="text-xs text-error font-bold hover:underline">Supprimer</button>
-      </div></td>
+    <tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:12px;">
+          ${p.image_url?`<img src="${p.image_url}" class="prod-thumb" onerror="this.style.display='none'"/>`:`<div class="prod-thumb-ph"><span class="material-symbols-outlined" style="font-size:18px">image</span></div>`}
+          <div>
+            <div style="font-size:13px;font-weight:600;">${p.name}</div>
+            <div style="font-size:10px;color:#555;letter-spacing:1px;text-transform:uppercase;margin-top:2px;">${p.origin_city||p.country||'—'}</div>
+          </div>
+        </div>
+      </td>
+      <td style="color:#666;font-size:12px;">${p.categories?.name||'—'}</td>
+      <td style="font-weight:600;color:var(--fire);">${fmtAmount(p.price)}</td>
+      <td style="font-weight:${(p.stock??0)<=5?'700':'400'};color:${(p.stock??0)<=5?'#ef4444':'#888'};">${p.stock??'0'}</td>
+      <td>${statusBadge(p.status)}</td>
+      <td>
+        <div style="display:flex;justify-content:flex-end;gap:14px;">
+          <button onclick="editProduct('${p.id}')" style="background:none;border:none;color:var(--fire);font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;">Modifier</button>
+          <button onclick="askDeleteProduct('${p.id}')" style="background:none;border:none;color:#ef4444;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;">Supprimer</button>
+        </div>
+      </td>
     </tr>`).join('')
   pagination.classList.remove('hidden')
   document.getElementById('prod-count-label').textContent=`${total} produit${total>1?'s':''} · Page ${prodPage}/${totalPages}`
@@ -611,21 +775,20 @@ function openProductModal(p=null){
   document.getElementById('product-price').value=p?.price||''
   document.getElementById('product-stock').value=p?.stock??''
   document.getElementById('product-country').value=p?.country||'Maroc'
-  document.getElementById('product-city').value=p?.origin_city||''   // ✅ origin_city
+  document.getElementById('product-city').value=p?.origin_city||''
   document.getElementById('product-image').value=p?.image_url||''
   document.getElementById('product-status').value=p?.status||'pending'
   document.getElementById('product-category').value=p?.category_id||''
   document.getElementById('modal-title').textContent=p?'Modifier le produit':'Nouveau produit'
   document.getElementById('modal-submit-btn').textContent=p?'Enregistrer':'Créer'
-  const o=document.getElementById('modal-overlay');o.classList.remove('hidden');requestAnimationFrame(()=>o.style.opacity='1')
+  document.getElementById('modal-overlay').classList.remove('hidden')
 }
-function closeProductModal(){const o=document.getElementById('modal-overlay');o.style.opacity='0';setTimeout(()=>o.classList.add('hidden'),200)}
+function closeProductModal(){document.getElementById('modal-overlay').classList.add('hidden')}
 function editProduct(id){const p=allProducts.find(p=>p.id===id);if(p)openProductModal(p)}
 async function saveProduct(e){
   const db=getDb();e.preventDefault()
   const btn=document.getElementById('modal-submit-btn');btn.disabled=true;btn.textContent='Enregistrement...'
   const id=document.getElementById('product-id').value
-  // ✅ payload avec colonnes réelles du schéma
   const payload={
     name:        document.getElementById('product-name').value.trim(),
     description: document.getElementById('product-description').value.trim(),
@@ -661,45 +824,47 @@ async function loadOrders(){
   const db=getDb();if(!currentSeller)return
   const productIds=await getMyProductIds()
   const tbody=document.getElementById('orders-table-body')
-  if(!productIds.length){tbody.innerHTML='<tr><td colspan="6" class="text-center py-12 text-outline text-sm">Aucun produit</td></tr>';return}
+  if(!productIds.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:48px;color:#444;font-size:11px;letter-spacing:2px;text-transform:uppercase;">Aucun produit</td></tr>';return}
   const {data:items}=await db.from('order_items').select('order_id').in('product_id',productIds)
   const orderIds=[...new Set((items||[]).map(i=>i.order_id))]
-  if(!orderIds.length){tbody.innerHTML='<tr><td colspan="6" class="text-center py-12 text-outline text-sm">Aucune commande</td></tr>';return}
+  if(!orderIds.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:48px;color:#444;font-size:11px;letter-spacing:2px;text-transform:uppercase;">Aucune commande</td></tr>';return}
   const statusFilter=document.getElementById('order-filter').value
-  // ✅ join explicite FK
   let q=db.from('orders').select('id, total_amount, status, created_at, users!orders_user_id_fkey(full_name, email)').in('id',orderIds).order('created_at',{ascending:false})
   if(statusFilter)q=q.eq('status',statusFilter)
   const {data,error}=await q
   if(error){showToast('Erreur commandes: '+error.message,'error');return}
-  if(!data?.length){tbody.innerHTML='<tr><td colspan="6" class="text-center py-12 text-outline text-sm">Aucune commande</td></tr>';return}
+  if(!data?.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:48px;color:#444;font-size:11px;letter-spacing:2px;text-transform:uppercase;">Aucune commande</td></tr>';return}
   tbody.innerHTML=data.map(o=>`
-    <tr class="table-row border-b border-outline-variant/10">
-      <td class="px-5 py-4"><p class="text-sm font-medium font-mono">#${o.id.slice(0,8).toUpperCase()}</p></td>
-      <td class="px-4 py-4 hidden md:table-cell text-sm text-on-surface-variant">${o.users?.full_name||o.users?.email||'—'}</td>
-      <td class="px-4 py-4 text-sm font-bold">${fmtAmount(o.total_amount)}</td>
-      <td class="px-4 py-4 hidden sm:table-cell text-sm text-on-surface-variant">${fmtDate(o.created_at)}</td>
-      <td class="px-4 py-4">${statusBadge(o.status)}</td>
-      <td class="px-5 py-4 text-right"><button onclick="openOrderModal('${o.id}')" class="text-xs text-primary font-bold hover:underline">Détails</button></td>
+    <tr>
+      <td style="font-family:monospace;font-size:12px;font-weight:600;">#${o.id.slice(0,8).toUpperCase()}</td>
+      <td style="color:#888;font-size:13px;">${o.users?.full_name||o.users?.email||'—'}</td>
+      <td style="font-weight:600;color:var(--fire);">${fmtAmount(o.total_amount)}</td>
+      <td style="color:#666;font-size:12px;">${fmtDate(o.created_at)}</td>
+      <td>${statusBadge(o.status)}</td>
+      <td><button onclick="openOrderModal('${o.id}')" style="background:none;border:none;color:var(--fire);font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;">Détails</button></td>
     </tr>`).join('')
 }
 async function openOrderModal(id){
   const db=getDb();currentOrderId=id
   document.getElementById('order-modal-overlay').classList.remove('hidden')
-  // ✅ join FK explicite + order_items→products
   const {data:o,error}=await db.from('orders')
     .select('*, users!orders_user_id_fkey(full_name, email), order_items(quantity, unit_price, products(name))')
     .eq('id',id).single()
   const content=document.getElementById('order-detail-content')
-  if(error||!o){content.innerHTML='<p class="text-sm text-outline">Commande introuvable</p>';return}
+  if(error||!o){content.innerHTML='<p style="color:#555;font-size:13px;">Commande introuvable</p>';return}
   document.getElementById('order-status-update').value=o.status
-  const itemsHtml=(o.order_items||[]).map(i=>`<div class="flex items-center justify-between text-sm py-1.5"><span class="text-on-surface-variant">${i.products?.name||'—'} <span class="font-bold text-on-surface">× ${i.quantity}</span></span><span class="font-bold">${fmtAmount(i.unit_price*i.quantity)}</span></div>`).join('')
-  content.innerHTML=`<div class="space-y-3">
-    <div class="flex justify-between text-sm py-1.5 border-b border-outline-variant/10"><span class="text-[10px] text-outline font-bold uppercase tracking-widest">Commande</span><span class="font-mono font-bold">#${o.id.slice(0,8).toUpperCase()}</span></div>
-    <div class="flex justify-between text-sm py-1.5 border-b border-outline-variant/10"><span class="text-[10px] text-outline font-bold uppercase tracking-widest">Client</span><span>${o.users?.full_name||o.users?.email||'—'}</span></div>
-    <div class="flex justify-between text-sm py-1.5 border-b border-outline-variant/10"><span class="text-[10px] text-outline font-bold uppercase tracking-widest">Date</span><span>${fmtDate(o.created_at)}</span></div>
-    <div class="flex justify-between text-sm py-1.5 border-b border-outline-variant/10"><span class="text-[10px] text-outline font-bold uppercase tracking-widest">Statut</span><span>${statusBadge(o.status)}</span></div>
-    <div class="pt-2"><p class="text-[10px] uppercase tracking-widest text-outline font-bold mb-2">Articles</p>${itemsHtml||'<p class="text-sm text-outline">—</p>'}</div>
-    <div class="flex justify-between text-sm pt-3 border-t border-outline-variant/10"><span class="font-bold">Total</span><span class="font-bold text-primary text-base">${fmtAmount(o.total_amount)}</span></div>
+  const itemsHtml=(o.order_items||[]).map(i=>`
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;">
+      <span style="color:#888;">${i.products?.name||'—'} <strong style="color:var(--snow);">× ${i.quantity}</strong></span>
+      <span style="font-weight:600;color:var(--fire);">${fmtAmount(i.unit_price*i.quantity)}</span>
+    </div>`).join('')
+  content.innerHTML=`<div>
+    <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);"><span style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#444;">Commande</span><span style="font-family:monospace;font-weight:600;">#${o.id.slice(0,8).toUpperCase()}</span></div>
+    <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);"><span style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#444;">Client</span><span style="font-size:13px;">${o.users?.full_name||o.users?.email||'—'}</span></div>
+    <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);"><span style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#444;">Date</span><span style="color:#888;font-size:13px;">${fmtDate(o.created_at)}</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);"><span style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#444;">Statut</span>${statusBadge(o.status)}</div>
+    <div style="padding-top:16px;"><div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#444;margin-bottom:8px;">Articles</div>${itemsHtml||'<p style="color:#555;font-size:13px;">—</p>'}</div>
+    <div style="display:flex;justify-content:space-between;padding:16px 0 0;border-top:1px solid var(--border);margin-top:8px;"><span style="font-weight:600;">Total</span><span style="font-weight:700;color:var(--fire);font-size:16px;">${fmtAmount(o.total_amount)}</span></div>
   </div>`
 }
 function closeOrderModal(){document.getElementById('order-modal-overlay').classList.add('hidden');currentOrderId=null}
@@ -736,20 +901,20 @@ async function loadRevenue(){
   paid.forEach(p=>{const d=new Date(p.created_at);const m=months.find(x=>x.month===d.getMonth()&&x.year===d.getFullYear());if(m)m.total+=Number(p.amount)})
   const maxVal=Math.max(...months.map(m=>m.total),1)
   document.getElementById('revenue-chart').innerHTML=months.map(m=>`
-    <div class="flex flex-col items-center gap-1 flex-1">
-      <span class="text-[10px] font-bold text-on-surface-variant">${m.total>0?Math.round(m.total):''}</span>
-      <div class="w-full rounded-t-lg bg-primary/15 relative" style="height:${Math.max((m.total/maxVal)*120,4)}px"><div class="absolute inset-x-0 bottom-0 rounded-t-lg bg-primary" style="height:100%"></div></div>
-      <span class="text-[10px] text-outline uppercase">${m.label}</span>
+    <div class="chart-bar-wrap">
+      <span class="chart-val">${m.total>0?Math.round(m.total):''}</span>
+      <div class="chart-bar" style="height:${Math.max((m.total/maxVal)*100,4)}px;"><div class="chart-bar-fill"></div></div>
+      <span class="chart-lbl">${m.label}</span>
     </div>`).join('')
   const tbody=document.getElementById('payments-table-body')
-  if(!allPayments.length){tbody.innerHTML='<tr><td colspan="5" class="text-center py-12 text-outline text-sm">Aucun paiement</td></tr>';return}
+  if(!allPayments.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:48px;color:#444;font-size:11px;letter-spacing:2px;text-transform:uppercase;">Aucun paiement</td></tr>';return}
   tbody.innerHTML=allPayments.slice(0,20).map(p=>`
-    <tr class="table-row border-b border-outline-variant/10">
-      <td class="px-5 py-4 text-sm font-mono text-on-surface-variant">${p.created_at?new Date(p.created_at).getTime().toString(36).toUpperCase().slice(-8):'—'}</td>
-      <td class="px-4 py-4 text-sm font-bold">${fmtAmount(p.amount,p.currency||'MAD')}</td>
-      <td class="px-4 py-4 hidden sm:table-cell text-sm text-on-surface-variant">${p.method||'—'}</td>
-      <td class="px-4 py-4 hidden md:table-cell text-sm text-on-surface-variant">${fmtDate(p.created_at)}</td>
-      <td class="px-4 py-4">${statusBadge(p.status)}</td>
+    <tr>
+      <td style="font-family:monospace;font-size:11px;color:#555;">${p.created_at?new Date(p.created_at).getTime().toString(36).toUpperCase().slice(-8):'—'}</td>
+      <td style="font-weight:600;color:var(--fire);">${fmtAmount(p.amount,p.currency||'MAD')}</td>
+      <td style="color:#888;font-size:12px;">${p.method||'—'}</td>
+      <td style="color:#666;font-size:12px;">${fmtDate(p.created_at)}</td>
+      <td>${statusBadge(p.status)}</td>
     </tr>`).join('')
 }
 
@@ -758,7 +923,7 @@ async function loadReviews(){
   const db=getDb();if(!currentSeller)return
   const productIds=await getMyProductIds()
   const list=document.getElementById('reviews-list')
-  if(!productIds.length){list.innerHTML='<div class="px-5 py-8 text-center text-outline text-sm">Aucun produit</div>';return}
+  if(!productIds.length){list.innerHTML='<div class="card-empty">Aucun produit</div>';return}
   const filter=document.getElementById('review-filter').value
   let q=db.from('reviews').select('id, rating, comment, status, created_at, reviewer_name, products(name)').in('product_id',productIds).order('created_at',{ascending:false})
   if(filter)q=q.eq('status',filter)
@@ -770,15 +935,18 @@ async function loadReviews(){
   document.getElementById('rev-stars').innerHTML=starsHtml(avg)
   document.getElementById('rev-total-count').textContent=all.length
   document.getElementById('rev-approved-count').textContent=approved.length
-  if(!all.length){list.innerHTML='<div class="px-5 py-8 text-center text-outline text-sm">Aucun avis</div>';return}
+  if(!all.length){list.innerHTML='<div class="card-empty">Aucun avis</div>';return}
   list.innerHTML=all.map(r=>`
-    <div class="px-5 py-4 space-y-1.5">
-      <div class="flex items-center justify-between gap-2 flex-wrap">
-        <div class="flex items-center gap-2"><div class="flex gap-0.5">${starsHtml(r.rating)}</div><span class="text-sm font-medium">${r.reviewer_name||'Anonyme'}</span></div>
-        <div class="flex items-center gap-2">${statusBadge(r.status)}<span class="text-xs text-outline">${fmtDate(r.created_at)}</span></div>
+    <div style="padding:18px 22px;border-bottom:1px solid var(--border);">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:6px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="display:flex;gap:2px;">${starsHtml(r.rating)}</div>
+          <span style="font-size:13px;font-weight:600;">${r.reviewer_name||'Anonyme'}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">${statusBadge(r.status)}<span style="font-size:11px;color:#555;">${fmtDate(r.created_at)}</span></div>
       </div>
-      ${r.products?.name?`<p class="text-xs text-outline">Produit : <span class="font-medium text-on-surface-variant">${r.products.name}</span></p>`:''}
-      ${r.comment?`<p class="text-sm text-on-surface-variant">${r.comment}</p>`:''}
+      ${r.products?.name?`<p style="font-size:11px;color:#555;letter-spacing:1px;margin-bottom:4px;">Produit : <span style="color:#888;">${r.products.name}</span></p>`:''}
+      ${r.comment?`<p style="font-size:13px;color:#888;line-height:1.6;">${r.comment}</p>`:''}
     </div>`).join('')
 }
 
@@ -797,7 +965,7 @@ function loadProfileSection(){
   const badge=document.getElementById('profile-status-badge')
   const sm={active:['status-active','Actif'],pending:['status-pending','En attente'],inactive:['status-inactive','Inactif'],banned:['status-inactive','Banni']}
   const [cls,label]=sm[u.status]||['status-pending','—']
-  badge.className=`text-[10px] font-bold px-3 py-1 rounded-full ${cls}`;badge.textContent=label
+  badge.className=cls;badge.textContent=label
 }
 async function saveProfile(e){
   const db=getDb();e.preventDefault()
