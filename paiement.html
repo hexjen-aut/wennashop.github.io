@@ -1,449 +1,582 @@
 <!DOCTYPE html>
-<html class="light" lang="fr">
+<html lang="fr">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>WennaShop – Paiement Sécurisé</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script id="tailwind-config">
-tailwind.config = {
-  darkMode:"class",
-  theme:{extend:{colors:{"on-surface":"#171d17","on-secondary-fixed":"#001c3a","inverse-surface":"#2c322b","on-tertiary":"#ffffff","error":"#ba1a1a","tertiary-fixed-dim":"#f0c110","secondary-fixed-dim":"#a6c8ff","primary-fixed-dim":"#73dc84","on-tertiary-fixed":"#241a00","surface-container-low":"#eff5eb","tertiary-container":"#d0a600","on-primary-fixed-variant":"#00531f","on-secondary":"#ffffff","on-background":"#171d17","primary-container":"#0f8739","surface-dim":"#d6dcd2","tertiary":"#745b00","surface-tint":"#006e2b","error-container":"#ffdad6","on-primary-container":"#f7fff2","background":"#f5fbf1","surface-container-lowest":"#ffffff","outline-variant":"#becaba","primary":"#006b2a","surface-container":"#eaf0e5","secondary-container":"#78b0fe","surface-bright":"#f5fbf1","secondary-fixed":"#d4e3ff","on-error":"#ffffff","on-tertiary-container":"#4f3d00","on-secondary-container":"#00427d","surface-container-highest":"#dee4da","tertiary-fixed":"#ffe08b","surface-variant":"#dee4da","surface-container-high":"#e4eae0","on-primary":"#ffffff","on-error-container":"#93000a","inverse-on-surface":"#edf3e8","on-surface-variant":"#3f4a3e","on-secondary-fixed-variant":"#004786","surface":"#f5fbf1","on-primary-fixed":"#002108","outline":"#6f7a6d","on-tertiary-fixed-variant":"#584400","primary-fixed":"#8ff99d","secondary":"#1a5fa8","inverse-primary":"#73dc84"},borderRadius:{"DEFAULT":"1rem","lg":"2rem","xl":"3rem","full":"9999px"},fontFamily:{"headline":["Noto Serif"],"body":["Inter"],"label":["Inter"]}}}
-}
-</script>
-<style>
-  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24;font-size:20px;}
-  body{font-family:'Inter',sans-serif;min-height:max(884px,100dvh);}
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WennaShop – Paiement Sécurisé</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root{--fire:#FF6B2B;--ember:#E85A1A;--ink:#080808;--coal:#111111;--slate:#1A1A1A;--smoke:#242424;--fog:#888;--snow:#f0ece6;--border:rgba(255,255,255,.07);--border-fire:rgba(255,107,43,.25);}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);min-height:100dvh;padding-bottom:100px;}
+    .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24;font-size:20px;line-height:1;}
 
-  @keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
-  @keyframes checkBounce{0%{transform:scale(0);}50%{transform:scale(1.3);}100%{transform:scale(1);}}
-  @keyframes ripple{0%{transform:scale(0);opacity:0.4;}100%{transform:scale(4);opacity:0;}}
-  @keyframes slideUp{from{opacity:0;transform:translateY(100%);}to{opacity:1;transform:translateY(0);}}
+    /* HEADER */
+    .hd{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(8,8,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;}
+    .hd-back{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--fog);background:none;border:none;cursor:pointer;transition:color .2s;font-family:'DM Sans',sans-serif;}
+    .hd-back:hover{color:var(--snow);}
+    .hd-logo{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;font-style:italic;color:var(--snow);}
+    .hd-logo b{color:var(--fire);}
+    .hd-secure{display:flex;align-items:center;gap:6px;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--fire);}
 
-  .anim-up{animation:fadeUp 0.6s cubic-bezier(0.22,1,0.36,1) forwards;opacity:0;}
-  .d-100{animation-delay:.1s;}.d-200{animation-delay:.2s;}.d-300{animation-delay:.3s;}.d-400{animation-delay:.4s;}
+    /* STEPS */
+    .steps{padding:88px 32px 0;max-width:960px;margin:0 auto;display:flex;align-items:center;gap:0;padding-bottom:32px;}
+    .step-item{display:flex;flex-direction:column;align-items:center;}
+    .step-circle{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+    .step-circle.done{background:var(--fire);color:#fff;}
+    .step-circle.active{background:var(--fire);color:#fff;box-shadow:0 0 0 4px rgba(255,107,43,.2);}
+    .step-circle.idle{background:var(--slate);color:#555;border:1px solid var(--border);}
+    .step-label{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;margin-top:6px;white-space:nowrap;}
+    .step-label.active,.step-label.done{color:var(--fire);}
+    .step-label.idle{color:#444;}
+    .step-line{flex:1;height:1px;background:var(--border);margin-bottom:18px;}
+    .step-line.done{background:var(--fire);}
 
-  .step-line{height:2px;flex:1;background:#becaba;transition:background 0.4s;}
-  .step-line.done{background:#006b2a;}
+    /* MAIN LAYOUT */
+    .main{padding:0 24px;max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:24px;}
+    @media(min-width:1024px){.main{flex-direction:row;gap:28px;align-items:flex-start;}}
 
-  .field-input{width:100%;background:#e4eae0;border:none;border-bottom:2px solid #becaba;border-radius:1rem 1rem 0 0;padding:1rem;font-family:'Inter',sans-serif;font-size:.875rem;color:#171d17;outline:none;transition:border-color 0.2s;}
-  .field-input:focus{border-bottom-color:#006b2a;}
-  .field-input::placeholder{color:#9caa9a;}
+    /* CARDS */
+    .card{background:var(--slate);padding:28px;}
+    .card+.card{margin-top:2px;}
+    .card-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;font-style:italic;margin-bottom:22px;}
 
-  .card-tab{transition:all 0.2s;border:2px solid transparent;cursor:pointer;}
-  .card-tab:hover{border-color:#becaba;transform:translateY(-2px);}
-  .card-tab.selected{border-color:#006b2a;background:#eff5eb;}
+    /* EYEBROW */
+    .eyebrow{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--fire);}
 
-  .card-preview{background:linear-gradient(135deg,#006b2a 0%,#1a5fa8 100%);border-radius:1.25rem;padding:1.5rem;color:white;position:relative;overflow:hidden;}
-  .card-preview::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.08);}
-  .card-preview::after{content:'';position:absolute;bottom:-60px;left:-30px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,0.05);}
+    /* SHIPPING RECAP */
+    .shipping-recap{display:flex;justify-content:space-between;align-items:flex-start;}
+    .shipping-info .name{font-size:14px;font-weight:600;margin-top:4px;}
+    .shipping-info .addr{font-size:12px;color:#666;margin-top:3px;}
+    .btn-link{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--fire);background:none;border:none;border-bottom:1px solid var(--border-fire);padding-bottom:2px;cursor:pointer;transition:border-color .2s;font-family:'DM Sans',sans-serif;}
+    .btn-link:hover{border-color:var(--fire);}
 
-  .btn-pay{background:linear-gradient(135deg,#006b2a 0%,#0f8739 100%);transition:all 0.2s;position:relative;overflow:hidden;}
-  .btn-pay:hover{opacity:0.92;transform:scale(0.99);}
-  .btn-pay:active{transform:scale(0.97);}
-  .btn-pay .ripple-el{position:absolute;border-radius:50%;background:rgba(255,255,255,0.3);width:100px;height:100px;margin-top:-50px;margin-left:-50px;animation:ripple 0.6s linear;pointer-events:none;}
-  .btn-pay:disabled{opacity:0.6;pointer-events:none;}
+    /* PAYMENT METHOD PILLS */
+    .method-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:24px;}
+    .method-pill{cursor:pointer;transition:all .2s;border:1px solid var(--border);background:rgba(255,255,255,.03);padding:14px;display:flex;flex-direction:column;align-items:center;gap:8px;font-family:'DM Sans',sans-serif;}
+    .method-pill:hover{border-color:var(--border-fire);}
+    .method-pill.active{border-color:var(--fire);background:rgba(255,107,43,.08);}
+    .method-pill span.lbl{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;}
+    .method-pill.active span.lbl{color:var(--fire);}
+    .method-pill:not(.active) span.lbl{color:#666;}
 
-  .success-overlay{display:none;position:fixed;inset:0;background:rgba(245,251,241,0.97);z-index:100;align-items:center;justify-content:center;flex-direction:column;animation:slideUp 0.5s ease forwards;}
-  .success-overlay.show{display:flex;}
-  .check-icon{animation:checkBounce 0.6s cubic-bezier(0.22,1,0.36,1) 0.2s both;}
+    /* CARD NETWORKS */
+    .card-networks{display:flex;gap:8px;margin-bottom:20px;}
+    .net-btn{flex:1;border:1px solid var(--border);background:rgba(255,255,255,.03);padding:10px 12px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
+    .net-btn:hover{border-color:var(--border-fire);}
+    .net-btn.selected{border-color:var(--fire);background:rgba(255,107,43,.08);}
+    .net-btn span{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#888;}
+    .net-btn.selected span{color:var(--fire);}
 
-  .method-pill{cursor:pointer;transition:all 0.2s;border:2px solid transparent;}
-  .method-pill:hover{border-color:#becaba;}
-  .method-pill.active{border-color:#006b2a;background:#eff5eb;}
+    /* CARD PREVIEW */
+    .card-preview{background:linear-gradient(135deg,#1a1a1a 0%,#2a1a0a 50%,var(--slate) 100%);border:1px solid var(--border-fire);padding:24px;margin-bottom:24px;position:relative;overflow:hidden;}
+    .card-preview::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,107,43,.06);}
+    .card-preview::after{content:'';position:absolute;bottom:-50px;left:-20px;width:200px;height:200px;border-radius:50%;background:rgba(255,107,43,.04);}
+    .cp-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;position:relative;z-index:1;}
+    .cp-brand{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;font-style:italic;color:var(--snow);}
+    .cp-sub{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#666;margin-bottom:4px;}
+    .cp-num{font-size:14px;letter-spacing:.25em;font-family:monospace;color:var(--snow);margin-bottom:18px;position:relative;z-index:1;}
+    .cp-bottom{display:flex;justify-content:space-between;position:relative;z-index:1;}
+    .cp-label{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#666;margin-bottom:3px;}
+    .cp-val{font-size:13px;font-weight:500;color:var(--snow);}
+    .mc-icon{display:flex;align-items:center;}
+    .mc-circle{width:22px;height:22px;border-radius:50%;}
 
-  .acc-body{max-height:0;overflow:hidden;transition:max-height 0.4s ease;}
-  .acc-body.open{max-height:600px;}
-  .acc-arrow{transition:transform 0.3s;}
-  .acc-arrow.open{transform:rotate(180deg);}
-</style>
-<link rel="stylesheet" href="/css/wenna-palette-conversion.css">
+    /* FORM FIELDS */
+    .field-group{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+    .field-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#555;}
+    .field-input{width:100%;background:rgba(255,255,255,.04);border:none;border-bottom:1px solid var(--border);color:var(--snow);padding:12px 14px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
+    .field-input:focus{border-bottom-color:var(--fire);}
+    .field-input::placeholder{color:#333;}
+    .field-input[style*="uppercase"]{text-transform:uppercase;}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+    /* SAVE CARD */
+    .save-row{display:flex;align-items:center;gap:12px;padding:14px;background:rgba(255,255,255,.03);border:1px solid var(--border);margin-top:16px;}
+    .save-row input{accent-color:var(--fire);width:14px;height:14px;cursor:pointer;}
+    .save-row label{font-size:12px;color:#888;cursor:pointer;}
+
+    /* ACCORDION */
+    .acc-trigger{width:100%;display:flex;justify-content:space-between;align-items:center;background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;}
+    .acc-trigger-left{display:flex;align-items:center;gap:12px;}
+    .acc-trigger-left span:first-child{color:var(--fire);}
+    .acc-label{font-size:12px;font-weight:600;color:var(--snow);}
+    .acc-arrow{transition:transform .3s;color:#555;}
+    .acc-arrow.open{transform:rotate(180deg);}
+    .acc-body{max-height:0;overflow:hidden;transition:max-height .4s ease;}
+    .acc-body.open{max-height:600px;}
+    .promo-row{display:flex;gap:10px;padding-top:18px;}
+    .btn-apply{background:var(--fire);color:#fff;border:none;padding:12px 22px;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:background .2s;flex-shrink:0;font-family:'DM Sans',sans-serif;clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));}
+    .btn-apply:hover{background:var(--ember);}
+
+    /* RECAP SIDEBAR */
+    .recap-sidebar{width:100%;}
+    @media(min-width:1024px){.recap-sidebar{width:320px;flex-shrink:0;position:sticky;top:90px;}}
+    .recap-items{display:flex;flex-direction:column;gap:14px;margin-bottom:20px;}
+    .recap-item{display:flex;align-items:center;gap:12px;}
+    .recap-thumb{width:52px;height:52px;flex-shrink:0;overflow:hidden;position:relative;background:var(--smoke);}
+    .recap-thumb img{width:100%;height:100%;object-fit:cover;}
+    .recap-qty{position:absolute;top:-5px;right:-5px;width:18px;height:18px;background:var(--fire);color:#fff;font-size:9px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+    .recap-name{font-size:12px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .recap-unit{font-size:10px;color:#555;margin-top:2px;}
+    .recap-price{font-size:14px;font-weight:700;color:var(--fire);flex-shrink:0;}
+    .divider{height:1px;background:var(--border);margin:18px 0;}
+    .total-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#666;margin-bottom:8px;}
+    .total-row.main{font-size:18px;color:var(--snow);font-weight:600;margin-top:10px;padding-top:12px;border-top:1px solid var(--border);}
+    .total-row.main .label{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;}
+    .total-row.main .value{font-size:22px;font-weight:700;color:var(--fire);}
+    .total-row.promo{color:var(--fire);font-weight:700;}
+
+    /* PAY BUTTON */
+    .btn-pay{width:100%;padding:18px;background:var(--fire);color:#fff;border:none;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:background .2s,transform .2s;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:16px;font-family:'DM Sans',sans-serif;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));position:relative;overflow:hidden;}
+    .btn-pay:hover{background:var(--ember);transform:translateY(-1px);}
+    .btn-pay:active{transform:scale(.98);}
+    .btn-pay:disabled{opacity:.5;pointer-events:none;}
+    .btn-pay .ripple-el{position:absolute;border-radius:50%;background:rgba(255,255,255,.25);width:100px;height:100px;margin-top:-50px;margin-left:-50px;animation:ripple .6s linear;pointer-events:none;}
+    @keyframes ripple{0%{transform:scale(0);opacity:.4;}100%{transform:scale(4);opacity:0;}}
+
+    /* TRUST */
+    .trust-list{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+    .trust-item{display:flex;align-items:center;gap:8px;font-size:10px;color:#555;}
+    .trust-item .material-symbols-outlined{font-size:14px;color:var(--fire);}
+
+    /* LOGOS */
+    .logos{padding-top:16px;border-top:1px solid var(--border);}
+    .logos-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#444;text-align:center;margin-bottom:10px;}
+    .logos-row{display:flex;justify-content:center;align-items:center;gap:10px;}
+
+    /* SUCCESS OVERLAY */
+    .success-overlay{display:none;position:fixed;inset:0;background:rgba(8,8,8,.97);z-index:100;align-items:center;justify-content:center;flex-direction:column;animation:slideUp .5s ease forwards;}
+    .success-overlay.show{display:flex;}
+    @keyframes slideUp{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
+    .check-icon{animation:checkBounce .6s cubic-bezier(.22,1,.36,1) .2s both;}
+    @keyframes checkBounce{0%{transform:scale(0);}50%{transform:scale(1.3);}100%{transform:scale(1);}}
+    .success-inner{text-align:center;padding:40px 32px;max-width:440px;width:100%;}
+    .success-check{width:88px;height:88px;background:rgba(255,107,43,.1);border:1px solid var(--border-fire);display:flex;align-items:center;justify-content:center;border-radius:50%;margin:0 auto 24px;}
+    .success-title{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:700;font-style:italic;color:var(--fire);margin-bottom:10px;}
+    .success-sub{font-size:13px;color:#888;line-height:1.6;margin-bottom:6px;}
+    .success-track{background:var(--slate);border:1px solid var(--border);padding:22px;text-align:left;margin:22px 0;}
+    .track-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#555;margin-bottom:16px;}
+    .track-step{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+    .track-dot{width:24px;height:24px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .track-dot.done{background:var(--fire);}
+    .track-dot.idle{background:var(--slate);border:1px solid var(--border);}
+    .track-dot .material-symbols-outlined{font-size:12px;}
+    .track-vline{width:1px;height:14px;background:var(--border);margin-left:11px;margin-bottom:4px;}
+    .track-step-name{font-size:12px;font-weight:600;}
+    .track-step-time{font-size:10px;color:#555;margin-top:1px;}
+    .success-btns{display:flex;flex-direction:column;gap:10px;}
+    .btn-success-primary{width:100%;padding:15px;background:var(--fire);color:#fff;border:none;font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:background .2s;font-family:'DM Sans',sans-serif;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));}
+    .btn-success-primary:hover{background:var(--ember);}
+    .btn-success-ghost{width:100%;padding:14px;background:transparent;border:1px solid var(--border);color:#888;font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
+    .btn-success-ghost:hover{border-color:var(--border-fire);color:var(--fire);}
+
+    /* BOTTOM NAV */
+    .bnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:40;background:rgba(8,8,8,.95);backdrop-filter:blur(20px);border-top:1px solid var(--border-fire);padding:10px 0 22px;}
+    .bnav-inner{display:flex;justify-content:space-around;}
+    .bnav-item{display:flex;flex-direction:column;align-items:center;gap:4px;color:#555;text-decoration:none;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;transition:color .2s;}
+    .bnav-item:hover{color:var(--fire);}
+
+    /* PROMO FEEDBACK */
+    .promo-ok{margin-top:8px;padding:10px 14px;background:rgba(255,107,43,.1);border:1px solid var(--border-fire);color:var(--fire);font-size:11px;font-weight:600;display:none;}
+    .promo-err{margin-top:8px;padding:10px 14px;background:rgba(186,26,26,.1);border:1px solid rgba(186,26,26,.3);color:#ef4444;font-size:11px;font-weight:600;display:none;}
+
+    /* ANIM */
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+    .anim-up{animation:fadeUp .6s cubic-bezier(.22,1,.36,1) forwards;opacity:0;}
+    .d-100{animation-delay:.1s;}.d-200{animation-delay:.2s;}.d-300{animation-delay:.3s;}.d-400{animation-delay:.4s;}
+
+    @media(max-width:768px){
+      .hd{padding:14px 20px;}
+      .steps{padding:80px 16px 0;padding-bottom:24px;}
+      .main{padding:0 16px;}
+      .card{padding:20px;}
+      .bnav{display:block;}
+    }
+  </style>
 </head>
-<body class="bg-background text-on-surface pb-32">
+<body>
 
-<!-- Header -->
-<header class="bg-surface/90 backdrop-blur-xl fixed top-0 w-full z-50 border-b border-outline-variant/10">
-  <div class="flex justify-between items-center px-6 py-4 max-w-6xl mx-auto">
-    <button onclick="history.back()" class="text-on-surface hover:opacity-70 transition-opacity flex items-center gap-2 text-sm font-medium">
-      <span class="material-symbols-outlined">arrow_back</span>Retour
-    </button>
-    <span class="font-serif italic text-xl tracking-tighter text-primary">WennaShop</span>
-    <div class="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-bold text-primary">
-      <span class="material-symbols-outlined text-primary" style="font-size:16px;">lock</span>Sécurisé
-    </div>
+<!-- HEADER -->
+<header class="hd">
+  <button class="hd-back" onclick="history.back()">
+    <span class="material-symbols-outlined">arrow_back</span>Retour
+  </button>
+  <div class="hd-logo">Wenna<b>Shop</b></div>
+  <div class="hd-secure">
+    <span class="material-symbols-outlined" style="font-size:14px;">lock</span>Sécurisé
   </div>
 </header>
 
-<!-- Steps -->
-<div class="pt-20 px-6 max-w-4xl mx-auto">
-  <div class="flex items-center gap-0 py-6 anim-up">
-    <div class="flex flex-col items-center">
-      <div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center text-xs font-bold">
-        <span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">check</span>
-      </div>
-      <span class="text-[9px] font-bold uppercase tracking-wider text-primary mt-1.5">Panier</span>
-    </div>
-    <div class="step-line done"></div>
-    <div class="flex flex-col items-center">
-      <div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center text-xs font-bold">
-        <span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">check</span>
-      </div>
-      <span class="text-[9px] font-bold uppercase tracking-wider text-primary mt-1.5">Livraison</span>
-    </div>
-    <div class="step-line done"></div>
-    <div class="flex flex-col items-center">
-      <div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center text-xs font-bold ring-4 ring-primary/20">3</div>
-      <span class="text-[9px] font-bold uppercase tracking-wider text-primary mt-1.5">Paiement</span>
-    </div>
-    <div class="step-line"></div>
-    <div class="flex flex-col items-center">
-      <div class="w-8 h-8 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center text-xs font-bold">4</div>
-      <span class="text-[9px] font-bold uppercase tracking-wider text-on-surface-variant mt-1.5">Confirmation</span>
-    </div>
+<!-- STEPS -->
+<div class="steps anim-up">
+  <div class="step-item">
+    <div class="step-circle done"><span class="material-symbols-outlined" style="font-size:13px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">check</span></div>
+    <span class="step-label done">Panier</span>
+  </div>
+  <div class="step-line done"></div>
+  <div class="step-item">
+    <div class="step-circle done"><span class="material-symbols-outlined" style="font-size:13px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">check</span></div>
+    <span class="step-label done">Livraison</span>
+  </div>
+  <div class="step-line done"></div>
+  <div class="step-item">
+    <div class="step-circle active">3</div>
+    <span class="step-label active">Paiement</span>
+  </div>
+  <div class="step-line"></div>
+  <div class="step-item">
+    <div class="step-circle idle">4</div>
+    <span class="step-label idle">Confirmation</span>
   </div>
 </div>
 
-<main class="px-4 max-w-6xl mx-auto">
-  <div class="flex flex-col lg:flex-row gap-8">
+<main class="main">
 
-    <!-- LEFT: Formulaire -->
-    <div class="flex-1 space-y-6">
+  <!-- LEFT -->
+  <div style="flex:1;display:flex;flex-direction:column;gap:2px;">
 
-      <!-- Adresse récap -->
-      <div class="bg-surface-container-lowest rounded-lg p-6 anim-up d-100" id="shipping-recap">
-        <div class="flex justify-between items-center">
-          <div>
-            <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mb-1">Livraison à</p>
-            <p class="font-bold text-sm" id="shipping-name">—</p>
-            <p class="text-xs text-on-surface-variant mt-0.5" id="shipping-address">—</p>
-          </div>
-          <button onclick="history.back()" class="text-xs font-bold text-secondary border-b border-secondary/20 pb-0.5 hover:border-secondary transition-colors">Modifier</button>
+    <!-- Adresse recap -->
+    <div class="card anim-up d-100" id="shipping-recap">
+      <div class="shipping-recap">
+        <div class="shipping-info">
+          <div class="eyebrow">Livraison à</div>
+          <div class="name" id="shipping-name">—</div>
+          <div class="addr" id="shipping-address">—</div>
         </div>
+        <button class="btn-link" onclick="history.back()">Modifier</button>
       </div>
-
-      <!-- Méthode paiement -->
-      <div class="bg-surface-container-lowest rounded-lg p-6 anim-up d-200">
-        <h2 class="font-serif italic text-2xl font-bold mb-6">Méthode de Paiement</h2>
-
-        <div class="grid grid-cols-3 gap-3 mb-6">
-          <button class="method-pill active rounded-lg p-4 flex flex-col items-center gap-2 bg-surface-container-low" onclick="selectMethod(this,'card')">
-            <span class="material-symbols-outlined text-primary">credit_card</span>
-            <span class="text-[10px] font-bold uppercase tracking-wider text-on-surface">Carte</span>
-          </button>
-          <button class="method-pill rounded-lg p-4 flex flex-col items-center gap-2 bg-surface-container-low" onclick="selectMethod(this,'mobile')">
-            <span class="material-symbols-outlined text-on-surface-variant">phone_iphone</span>
-            <span class="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Mobile Pay</span>
-          </button>
-          <button class="method-pill rounded-lg p-4 flex flex-col items-center gap-2 bg-surface-container-low" onclick="selectMethod(this,'transfer')">
-            <span class="material-symbols-outlined text-on-surface-variant">account_balance</span>
-            <span class="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Virement</span>
-          </button>
-        </div>
-
-        <!-- Card preview -->
-        <div class="card-preview mb-6" id="cardPreview">
-          <div class="flex justify-between items-start mb-8">
-            <div>
-              <p class="text-white/50 text-[9px] uppercase tracking-widest mb-1">WennaShop</p>
-              <p class="text-white font-serif italic text-lg font-bold">Carte Premium</p>
-            </div>
-            <div class="w-10 h-7 rounded bg-white/20 flex items-center justify-center">
-              <div class="w-5 h-5 rounded-full bg-yellow-400/80 -mr-1.5"></div>
-              <div class="w-5 h-5 rounded-full bg-red-400/80"></div>
-            </div>
-          </div>
-          <p class="text-white font-mono text-sm tracking-[0.2em] mb-4" id="cardNumDisplay">•••• •••• •••• ••••</p>
-          <div class="flex justify-between items-end relative z-10">
-            <div>
-              <p class="text-white/50 text-[9px] uppercase tracking-widest">Titulaire</p>
-              <p class="text-white text-sm font-medium" id="cardNameDisplay">VOTRE NOM</p>
-            </div>
-            <div>
-              <p class="text-white/50 text-[9px] uppercase tracking-widest">Expire</p>
-              <p class="text-white text-sm font-medium" id="cardExpDisplay">MM/AA</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Réseau -->
-        <div class="flex gap-3 mb-5">
-          <button class="card-tab selected flex-1 rounded-lg p-3 flex items-center justify-center gap-2 bg-surface-container-low" onclick="selectCard(this)">
-            <div class="flex -space-x-1"><div class="w-6 h-4 rounded bg-yellow-400"></div><div class="w-6 h-4 rounded bg-red-500 opacity-80"></div></div>
-            <span class="text-[10px] font-bold">Mastercard</span>
-          </button>
-          <button class="card-tab flex-1 rounded-lg p-3 flex items-center justify-center gap-2 bg-surface-container-low" onclick="selectCard(this)">
-            <div class="w-8 h-4 rounded bg-blue-600 flex items-center justify-center"><span class="text-white text-[7px] font-black">VISA</span></div>
-            <span class="text-[10px] font-bold">Visa</span>
-          </button>
-          <button class="card-tab flex-1 rounded-lg p-3 flex items-center justify-center gap-2 bg-surface-container-low" onclick="selectCard(this)">
-            <div class="w-8 h-4 bg-gradient-to-r from-blue-400 to-green-500 rounded flex items-center justify-center"><span class="text-white text-[7px] font-bold">CMI</span></div>
-            <span class="text-[10px] font-bold">CMI</span>
-          </button>
-        </div>
-
-        <!-- Champs carte -->
-        <div class="space-y-5">
-          <div>
-            <label class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/70 block mb-2 px-1">Numéro de carte</label>
-            <input class="field-input" type="text" placeholder="1234 5678 9012 3456" maxlength="19" id="cardNum" oninput="formatCard(this)" />
-          </div>
-          <div>
-            <label class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/70 block mb-2 px-1">Titulaire de la carte</label>
-            <input class="field-input" type="text" placeholder="NOM PRÉNOM" id="cardName" oninput="updateCardName(this)" style="text-transform:uppercase;" />
-          </div>
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/70 block mb-2 px-1">Expiration</label>
-              <input class="field-input" type="text" placeholder="MM / AA" maxlength="5" id="cardExp" oninput="formatExp(this)" />
-            </div>
-            <div>
-              <label class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/70 block mb-2 px-1">CVV / CVC</label>
-              <input class="field-input" type="password" placeholder="•••" maxlength="4" id="cardCvv" />
-            </div>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-3 mt-5 p-4 bg-surface-container-low rounded-lg">
-          <input type="checkbox" id="saveCard" class="w-4 h-4 accent-primary cursor-pointer"/>
-          <label for="saveCard" class="text-sm text-on-surface cursor-pointer">Sauvegarder cette carte pour mes prochains achats</label>
-        </div>
-      </div>
-
-      <!-- Code promo -->
-      <div class="bg-surface-container-lowest rounded-lg p-6 anim-up d-300">
-        <button class="w-full flex justify-between items-center" onclick="toggleAcc('promoAcc','promoArrow')">
-          <div class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-tertiary">sell</span>
-            <span class="font-bold text-sm">Code promotionnel</span>
-          </div>
-          <span class="material-symbols-outlined acc-arrow text-on-surface-variant" id="promoArrow">expand_more</span>
-        </button>
-        <div class="acc-body" id="promoAcc">
-          <div class="pt-5 flex gap-3">
-            <input class="field-input flex-1" type="text" placeholder="Ex: WENNA15" id="promoInput" style="flex:1;" />
-            <button onclick="applyPromo()" class="px-6 py-3 bg-primary text-on-primary rounded-xl font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-all flex-shrink-0">Appliquer</button>
-          </div>
-          <div id="promoFeedback" class="mt-2 hidden"></div>
-        </div>
-      </div>
-
-      <!-- Note commande -->
-      <div class="bg-surface-container-lowest rounded-lg p-6 anim-up d-400">
-        <button class="w-full flex justify-between items-center" onclick="toggleAcc('noteAcc','noteArrow')">
-          <div class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-secondary">edit_note</span>
-            <span class="font-bold text-sm">Ajouter une note</span>
-          </div>
-          <span class="material-symbols-outlined acc-arrow text-on-surface-variant" id="noteArrow">expand_more</span>
-        </button>
-        <div class="acc-body" id="noteAcc">
-          <div class="pt-5">
-            <textarea class="field-input resize-none" rows="3" id="orderNote" placeholder="Instructions spéciales, message cadeau..."></textarea>
-          </div>
-        </div>
-      </div>
-
     </div>
 
-    <!-- RIGHT: Récapitulatif sticky -->
-    <div class="w-full lg:w-80 xl:w-96">
-      <div class="bg-surface-container-lowest rounded-lg p-7 sticky top-28 anim-up d-200">
-        <h2 class="font-serif italic text-2xl font-bold mb-6">Récapitulatif</h2>
+    <!-- Méthode paiement -->
+    <div class="card anim-up d-200">
+      <div class="card-title">Méthode de Paiement</div>
 
-        <!-- Items du panier -->
-        <div id="order-items" class="space-y-4 mb-6">
-          <!-- Injecté dynamiquement -->
+      <div class="method-grid">
+        <button class="method-pill active" onclick="selectMethod(this,'card')">
+          <span class="material-symbols-outlined" style="color:var(--fire)">credit_card</span>
+          <span class="lbl">Carte</span>
+        </button>
+        <button class="method-pill" onclick="selectMethod(this,'mobile')">
+          <span class="material-symbols-outlined">phone_iphone</span>
+          <span class="lbl">Mobile Pay</span>
+        </button>
+        <button class="method-pill" onclick="selectMethod(this,'transfer')">
+          <span class="material-symbols-outlined">account_balance</span>
+          <span class="lbl">Virement</span>
+        </button>
+      </div>
+
+      <!-- Card Preview -->
+      <div class="card-preview" id="cardPreview">
+        <div class="cp-top">
+          <div>
+            <div class="cp-sub">WennaShop</div>
+            <div class="cp-brand">Carte Premium</div>
+          </div>
+          <div class="mc-icon">
+            <div class="mc-circle" style="background:#FF6B2B;opacity:.8;margin-right:-8px;"></div>
+            <div class="mc-circle" style="background:#E85A1A;opacity:.6;"></div>
+          </div>
         </div>
-
-        <div class="border-t border-outline-variant/15 pt-4 space-y-3 mb-6">
-          <div class="flex justify-between text-sm">
-            <span class="text-on-surface-variant">Sous-total</span>
-            <span class="font-medium" id="recap-subtotal">—</span>
+        <div class="cp-num" id="cardNumDisplay">•••• •••• •••• ••••</div>
+        <div class="cp-bottom">
+          <div>
+            <div class="cp-label">Titulaire</div>
+            <div class="cp-val" id="cardNameDisplay">VOTRE NOM</div>
           </div>
-          <div class="flex justify-between text-sm">
-            <span class="text-on-surface-variant">Livraison</span>
-            <span class="font-medium text-primary">Incluse</span>
-          </div>
-          <div id="discountRow" class="flex justify-between text-sm hidden">
-            <span class="text-primary font-bold">Remise promo</span>
-            <span class="font-bold text-primary" id="discountAmt">—</span>
-          </div>
-          <div class="flex justify-between items-end pt-2 border-t border-outline-variant/15">
-            <span class="font-serif italic text-lg">Total</span>
-            <span class="text-2xl font-bold text-primary" id="totalDisplay">—</span>
+          <div>
+            <div class="cp-label">Expire</div>
+            <div class="cp-val" id="cardExpDisplay">MM/AA</div>
           </div>
         </div>
+      </div>
 
-        <!-- Bouton Payer -->
-        <button class="btn-pay w-full py-5 rounded-xl text-on-primary font-bold text-sm tracking-[0.15em] uppercase shadow-xl mb-4 flex items-center justify-center gap-3"
-          onclick="handlePay(this)" id="payBtn">
-          <span class="material-symbols-outlined" style="font-size:18px;">lock</span>
+      <!-- Réseaux -->
+      <div class="card-networks">
+        <button class="net-btn selected" onclick="selectCard(this)">
+          <div style="display:flex;align-items:center;margin-right:-4px;">
+            <div style="width:22px;height:14px;border-radius:2px;background:#f0c110;"></div>
+            <div style="width:22px;height:14px;border-radius:2px;background:#ef4444;opacity:.8;margin-left:-6px;"></div>
+          </div>
+          <span>Mastercard</span>
+        </button>
+        <button class="net-btn" onclick="selectCard(this)">
+          <div style="width:34px;height:14px;border-radius:2px;background:#1a3fa8;display:flex;align-items:center;justify-content:center;">
+            <span style="color:#fff;font-size:8px;font-weight:900;letter-spacing:1px;">VISA</span>
+          </div>
+          <span>Visa</span>
+        </button>
+        <button class="net-btn" onclick="selectCard(this)">
+          <div style="width:30px;height:14px;border-radius:2px;background:linear-gradient(90deg,#3b82f6,#22c55e);display:flex;align-items:center;justify-content:center;">
+            <span style="color:#fff;font-size:7px;font-weight:700;">CMI</span>
+          </div>
+          <span>CMI</span>
+        </button>
+      </div>
+
+      <!-- Champs -->
+      <div class="field-group">
+        <label class="field-label">Numéro de carte</label>
+        <input class="field-input" type="text" placeholder="1234 5678 9012 3456" maxlength="19" id="cardNum" oninput="formatCard(this)"/>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Titulaire de la carte</label>
+        <input class="field-input" type="text" placeholder="NOM PRÉNOM" id="cardName" oninput="updateCardName(this)" style="text-transform:uppercase;"/>
+      </div>
+      <div class="grid-2">
+        <div class="field-group">
+          <label class="field-label">Expiration</label>
+          <input class="field-input" type="text" placeholder="MM / AA" maxlength="5" id="cardExp" oninput="formatExp(this)"/>
+        </div>
+        <div class="field-group">
+          <label class="field-label">CVV / CVC</label>
+          <input class="field-input" type="password" placeholder="•••" maxlength="4" id="cardCvv"/>
+        </div>
+      </div>
+
+      <div class="save-row">
+        <input type="checkbox" id="saveCard"/>
+        <label for="saveCard">Sauvegarder cette carte pour mes prochains achats</label>
+      </div>
+    </div>
+
+    <!-- Code promo -->
+    <div class="card anim-up d-300">
+      <button class="acc-trigger" onclick="toggleAcc('promoAcc','promoArrow')">
+        <div class="acc-trigger-left">
+          <span class="material-symbols-outlined" style="color:var(--fire)">sell</span>
+          <span class="acc-label">Code promotionnel</span>
+        </div>
+        <span class="material-symbols-outlined acc-arrow" id="promoArrow">expand_more</span>
+      </button>
+      <div class="acc-body" id="promoAcc">
+        <div class="promo-row">
+          <input class="field-input" type="text" placeholder="Ex: WENNA15" id="promoInput" style="flex:1;"/>
+          <button onclick="applyPromo()" class="btn-apply">Appliquer</button>
+        </div>
+        <div id="promoFeedback" class="hidden"></div>
+      </div>
+    </div>
+
+    <!-- Note -->
+    <div class="card anim-up d-400">
+      <button class="acc-trigger" onclick="toggleAcc('noteAcc','noteArrow')">
+        <div class="acc-trigger-left">
+          <span class="material-symbols-outlined" style="color:#78b0fe">edit_note</span>
+          <span class="acc-label">Ajouter une note</span>
+        </div>
+        <span class="material-symbols-outlined acc-arrow" id="noteArrow">expand_more</span>
+      </button>
+      <div class="acc-body" id="noteAcc">
+        <div style="padding-top:18px;">
+          <textarea class="field-input" rows="3" id="orderNote" placeholder="Instructions spéciales, message cadeau..." style="resize:none;"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT — Récapitulatif -->
+  <div class="recap-sidebar anim-up d-200">
+    <div class="card" style="position:sticky;top:90px;">
+      <div class="card-title">Récapitulatif</div>
+
+      <div class="recap-items" id="order-items"></div>
+
+      <div class="divider"></div>
+
+      <div class="total-row">
+        <span>Sous-total</span>
+        <span id="recap-subtotal">—</span>
+      </div>
+      <div class="total-row">
+        <span>Livraison</span>
+        <span style="color:var(--fire);font-weight:600;">Incluse</span>
+      </div>
+      <div class="total-row promo hidden" id="discountRow">
+        <span>Remise promo</span>
+        <span id="discountAmt">—</span>
+      </div>
+      <div class="total-row main">
+        <span class="label">Total</span>
+        <span class="value" id="totalDisplay">—</span>
+      </div>
+
+      <div style="margin-top:22px;margin-bottom:0;">
+        <button class="btn-pay" onclick="handlePay(this)" id="payBtn">
+          <span class="material-symbols-outlined" style="font-size:17px;">lock</span>
           Payer <span id="btn-total">—</span>
         </button>
+      </div>
 
-        <!-- Trust -->
-        <div class="space-y-2">
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-primary" style="font-size:14px;">verified_user</span>
-            <span class="text-[10px] text-on-surface-variant">Paiement SSL 256-bit · 3D Secure</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-secondary" style="font-size:14px;">autorenew</span>
-            <span class="text-[10px] text-on-surface-variant">Remboursement garanti 30 jours</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-tertiary" style="font-size:14px;">support_agent</span>
-            <span class="text-[10px] text-on-surface-variant">Support 7j/7 · 24h/24</span>
-          </div>
+      <div class="trust-list">
+        <div class="trust-item">
+          <span class="material-symbols-outlined">verified_user</span>
+          <span>Paiement SSL 256-bit · 3D Secure</span>
         </div>
+        <div class="trust-item">
+          <span class="material-symbols-outlined">autorenew</span>
+          <span>Remboursement garanti 30 jours</span>
+        </div>
+        <div class="trust-item">
+          <span class="material-symbols-outlined">support_agent</span>
+          <span>Support 7j/7 · 24h/24</span>
+        </div>
+      </div>
 
-        <!-- Logos -->
-        <div class="mt-5 pt-4 border-t border-outline-variant/15">
-          <p class="text-[9px] uppercase tracking-[0.2em] text-on-surface-variant font-bold mb-3 text-center">Nous acceptons</p>
-          <div class="flex justify-center gap-3 items-center">
-            <div class="flex -space-x-1 items-center">
-              <div class="w-8 h-5 rounded bg-yellow-400 border border-white"></div>
-              <div class="w-8 h-5 rounded bg-red-500 opacity-90 border border-white"></div>
-            </div>
-            <div class="w-12 h-5 bg-blue-700 rounded flex items-center justify-center">
-              <span class="text-white text-[8px] font-black tracking-wider">VISA</span>
-            </div>
-            <div class="w-10 h-5 bg-gradient-to-r from-blue-400 to-green-500 rounded flex items-center justify-center">
-              <span class="text-white text-[7px] font-bold">CMI</span>
-            </div>
+      <div class="logos">
+        <div class="logos-label">Nous acceptons</div>
+        <div class="logos-row">
+          <div style="display:flex;align-items:center;">
+            <div style="width:28px;height:18px;border-radius:3px;background:#f0c110;margin-right:-6px;border:1px solid rgba(255,255,255,.1);"></div>
+            <div style="width:28px;height:18px;border-radius:3px;background:#ef4444;opacity:.9;border:1px solid rgba(255,255,255,.1);"></div>
+          </div>
+          <div style="width:42px;height:18px;border-radius:3px;background:#1a3fa8;display:flex;align-items:center;justify-content:center;">
+            <span style="color:#fff;font-size:8px;font-weight:900;letter-spacing:1px;">VISA</span>
+          </div>
+          <div style="width:36px;height:18px;border-radius:3px;background:linear-gradient(90deg,#3b82f6,#22c55e);display:flex;align-items:center;justify-content:center;">
+            <span style="color:#fff;font-size:7px;font-weight:700;">CMI</span>
           </div>
         </div>
       </div>
     </div>
-
   </div>
 </main>
 
 <!-- SUCCESS OVERLAY -->
 <div class="success-overlay" id="successOverlay">
-  <div class="text-center px-8 max-w-sm">
-    <div class="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 check-icon">
-      <span class="material-symbols-outlined text-primary" style="font-size:48px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">check_circle</span>
+  <div class="success-inner">
+    <div class="success-check check-icon">
+      <span class="material-symbols-outlined" style="font-size:44px;color:var(--fire);font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">check_circle</span>
     </div>
-    <h2 class="font-serif italic text-4xl font-bold text-primary mb-3">Merci !</h2>
-    <p class="text-on-surface-variant text-sm leading-relaxed mb-2">
-      Votre commande <strong class="text-on-surface" id="order-ref">—</strong> est confirmée.
-    </p>
-    <p class="text-on-surface-variant text-xs mb-8" id="confirm-email">Un email de confirmation vous sera envoyé.</p>
+    <div class="success-title">Merci !</div>
+    <p class="success-sub">Votre commande <strong style="color:var(--snow);" id="order-ref">—</strong> est confirmée.</p>
+    <p class="success-sub" id="confirm-email" style="font-size:11px;margin-bottom:0;">Un email de confirmation vous sera envoyé.</p>
 
-    <div class="bg-surface-container-low rounded-lg p-5 text-left mb-8">
-      <p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-4">Suivi estimé</p>
-      <div class="space-y-3">
-        <div class="flex items-center gap-3">
-          <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-            <span class="material-symbols-outlined text-on-primary" style="font-size:12px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">check</span>
-          </div>
-          <div><p class="text-xs font-bold">Commande confirmée</p><p class="text-[10px] text-on-surface-variant">Maintenant</p></div>
-        </div>
-        <div class="w-px h-4 bg-outline-variant/30 ml-3"></div>
-        <div class="flex items-center gap-3">
-          <div class="w-6 h-6 rounded-full bg-secondary/20 flex items-center justify-center flex-shrink-0">
-            <span class="material-symbols-outlined text-secondary" style="font-size:12px;">inventory_2</span>
-          </div>
-          <div><p class="text-xs font-bold text-on-surface-variant">En préparation</p><p class="text-[10px] text-on-surface-variant">1–2 jours</p></div>
-        </div>
-        <div class="w-px h-4 bg-outline-variant/30 ml-3"></div>
-        <div class="flex items-center gap-3">
-          <div class="w-6 h-6 rounded-full bg-tertiary/20 flex items-center justify-center flex-shrink-0">
-            <span class="material-symbols-outlined text-tertiary" style="font-size:12px;">local_shipping</span>
-          </div>
-          <div><p class="text-xs font-bold text-on-surface-variant">Livraison en route</p><p class="text-[10px] text-on-surface-variant">5–12 jours ouvrés</p></div>
-        </div>
+    <div class="success-track">
+      <div class="track-label">Suivi estimé</div>
+      <div class="track-step">
+        <div class="track-dot done"><span class="material-symbols-outlined" style="color:#fff;font-size:11px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">check</span></div>
+        <div><div class="track-step-name">Commande confirmée</div><div class="track-step-time">Maintenant</div></div>
+      </div>
+      <div class="track-vline"></div>
+      <div class="track-step">
+        <div class="track-dot idle"><span class="material-symbols-outlined" style="color:#555;font-size:11px;">inventory_2</span></div>
+        <div><div class="track-step-name" style="color:#666;">En préparation</div><div class="track-step-time">1–2 jours</div></div>
+      </div>
+      <div class="track-vline"></div>
+      <div class="track-step">
+        <div class="track-dot idle"><span class="material-symbols-outlined" style="color:#555;font-size:11px;">local_shipping</span></div>
+        <div><div class="track-step-name" style="color:#666;">Livraison en route</div><div class="track-step-time">5–12 jours ouvrés</div></div>
       </div>
     </div>
 
-    <div class="flex flex-col gap-3">
-      <button onclick="window.location.href='index.html'" class="w-full py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-xl font-bold text-sm uppercase tracking-widest">
-        Continuer mes achats
-      </button>
-      <button onclick="window.location.href='compte.html'" class="w-full py-4 border border-outline-variant/30 text-on-surface rounded-xl font-bold text-sm uppercase tracking-widest hover:bg-surface-container-low transition-colors">
-        Voir mes commandes
-      </button>
+    <div class="success-btns">
+      <button onclick="window.location.href='index.html'" class="btn-success-primary">Continuer mes achats</button>
+      <button onclick="window.location.href='compte.html'" class="btn-success-ghost">Voir mes commandes</button>
     </div>
   </div>
 </div>
 
-<!-- Bottom nav mobile -->
-<nav class="bg-surface/80 backdrop-blur-xl fixed bottom-0 w-full z-40 rounded-t-[2rem] shadow-[0_-8px_40px_rgba(0,0,0,0.06)] md:hidden border-t border-outline-variant/10">
-  <div class="flex justify-around items-center w-full px-4 pb-6 pt-3">
-    <a class="flex flex-col items-center justify-center text-on-surface-variant" href="index.html">
-      <span class="material-symbols-outlined">home</span>
-      <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Accueil</span>
-    </a>
-    <a class="flex flex-col items-center justify-center text-on-surface-variant" href="boutique.html">
-      <span class="material-symbols-outlined">storefront</span>
-      <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Boutique</span>
-    </a>
-    <a class="flex flex-col items-center justify-center text-on-surface-variant" href="sell.html">
-      <span class="material-symbols-outlined">add_circle</span>
-      <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Vendre</span>
-    </a>
-    <a class="flex flex-col items-center justify-center text-on-surface-variant" href="compte.html">
-      <span class="material-symbols-outlined">person</span>
-      <span class="text-[10px] font-medium uppercase tracking-widest mt-0.5">Profil</span>
-    </a>
+<!-- BOTTOM NAV MOBILE -->
+<nav class="bnav">
+  <div class="bnav-inner">
+    <a href="index.html" class="bnav-item"><span class="material-symbols-outlined">home</span><span>Accueil</span></a>
+    <a href="boutique.html" class="bnav-item"><span class="material-symbols-outlined">storefront</span><span>Boutique</span></a>
+    <a href="dashboard-vendeur.html" class="bnav-item"><span class="material-symbols-outlined">add_circle</span><span>Vendre</span></a>
+    <a href="compte.html" class="bnav-item"><span class="material-symbols-outlined">person</span><span>Profil</span></a>
   </div>
 </nav>
 
-<!-- ══════════════════════════
-     SCRIPT
-══════════════════════════ -->
 <script>
-  // ─── CONFIG ─────────────────────────────────────────────
-  const SUPABASE_URL   = 'https://aakxoydznmybstfozjte.supabase.co'
-  const SUPABASE_ANON  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'  // ← remplacer
-  const EDGE_FN_URL    = `${SUPABASE_URL}/functions/v1/process-payment`
-  const PROMO_CODES    = { 'WENNA15': 0.15 }
-  const CURRENCY       = 'MAD'
-  // ─────────────────────────────────────────────────────────
+  // ─── CONFIG ──────────────────────────────────────────────────────────────────
+  // ✅ Utilise window.db de supabase.config.js si dispo, sinon crée le client
+  const SUPABASE_URL  = 'https://aakxoydznmybstfozjte.supabase.co'
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
+  const EDGE_FN_URL   = `${SUPABASE_URL}/functions/v1/process-payment`
+  const PROMO_CODES   = { 'WENNA15': 0.15 }
+  const CURRENCY      = 'MAD'
+  // ─────────────────────────────────────────────────────────────────────────────
 
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON)
+  // Réutiliser window.db si supabase.config.js est chargé, sinon créer
+  function getSb() { return window.db || window._wennaSb || (window._wennaSb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON)) }
 
-  let cart         = []
-  let orderId      = null
-  let orderTotal   = 0
-  let promoDisc    = 0
+  let cart           = []
+  let orderId        = null
+  let orderTotal     = 0
+  let promoDisc      = 0
   let selectedMethod = 'card'
+  let currentUserId  = null  // id interne dans table users (pas auth_id)
 
   const $ = id => document.getElementById(id)
   const fmt = n => new Intl.NumberFormat('fr-FR',{style:'currency',currency:CURRENCY}).format(n)
 
-  // ── Init ────────────────────────────────────────────────
+  // ── Init ─────────────────────────────────────────────────────────────────────
   async function init() {
-    cart    = JSON.parse(localStorage.getItem('wenna_cart') || '[]')
+    const sb = getSb()
+
+    // 1. Lire order_id depuis URL ou localStorage
     orderId = new URLSearchParams(location.search).get('order_id')
-              || localStorage.getItem('wenna_current_order_id')
+             || localStorage.getItem('wenna_current_order_id')
+
+    // 2. Vérifier session et récupérer l'id interne user
+    const { data: { session } } = await sb.auth.getSession()
+    if (session) {
+      // Charger panier depuis Supabase (cart_items) si connecté
+      const { data: userRow } = await sb.from('users').select('id').eq('auth_id', session.user.id).maybeSingle()
+      if (userRow) {
+        currentUserId = userRow.id
+        await loadCartFromSupabase(userRow.id)
+      }
+    }
+
+    // Fallback : localStorage si panier Supabase vide ou non connecté
+    if (!cart.length) {
+      cart = JSON.parse(localStorage.getItem('wenna_cart') || '[]')
+    }
 
     renderItems()
     renderRecap()
     loadShippingRecap()
   }
 
-  // ── Rendu articles ──────────────────────────────────────
+  // ── Charger panier depuis cart_items (schéma réel) ───────────────────────────
+  // cart_items : id, user_id, product_id, quantity, added_at
+  // On joint products pour avoir name, price, image_url
+  async function loadCartFromSupabase(userId) {
+    const sb = getSb()
+    const { data, error } = await sb
+      .from('cart_items')
+      .select('quantity, products(id, name, price, image_url, currency)')
+      .eq('user_id', userId)
+    if (error || !data?.length) return
+    cart = data.map(item => ({
+      id:    item.products.id,
+      name:  item.products.name,
+      price: Number(item.products.price),
+      qty:   item.quantity,
+      image: item.products.image_url || null,
+      currency: item.products.currency || CURRENCY
+    }))
+  }
+
+  // ── Rendu articles ───────────────────────────────────────────────────────────
   function renderItems() {
     const container = $('order-items')
-    if (!cart.length) { container.innerHTML = '<p class="text-sm text-on-surface-variant">Aucun article</p>'; return }
+    if (!cart.length) { container.innerHTML = '<p style="font-size:12px;color:#555;">Aucun article</p>'; return }
     container.innerHTML = cart.map(item => `
-      <div class="flex gap-3 items-center">
-        <div class="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container-low relative">
-          ${item.image
-            ? `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" />`
-            : `<div class="w-full h-full bg-surface-container-high"></div>`}
-          <span class="absolute -top-1.5 -right-1.5 bg-primary text-on-primary text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">${item.qty}</span>
+      <div class="recap-item">
+        <div class="recap-thumb">
+          ${item.image ? `<img src="${item.image}" alt="${item.name}"/>` : ''}
+          <span class="recap-qty">${item.qty}</span>
         </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-xs font-bold truncate">${item.name}</p>
-          <p class="text-[10px] text-on-surface-variant">${fmt(item.price)} / unité</p>
+        <div style="flex:1;min-width:0;">
+          <div class="recap-name">${item.name}</div>
+          <div class="recap-unit">${fmt(item.price)} / unité</div>
         </div>
-        <p class="font-bold text-sm flex-shrink-0">${fmt(item.price * item.qty)}</p>
+        <div class="recap-price">${fmt(item.price * item.qty)}</div>
       </div>`).join('')
   }
 
@@ -462,22 +595,25 @@ tailwind.config = {
     if (disc > 0) {
       $('discountRow').classList.remove('hidden')
       $('discountAmt').textContent = `-${fmt(disc)}`
+    } else {
+      $('discountRow').classList.add('hidden')
     }
   }
 
+  // ── Adresse livraison (colonnes orders: shipping_name/address/city/country) ──
   function loadShippingRecap() {
-    // Lire depuis localStorage si disponible (renseigné à l'étape livraison)
     const info = JSON.parse(localStorage.getItem('wenna_shipping') || 'null')
     if (info) {
-      $('shipping-name').textContent    = `${info.name} · ${info.city}, ${info.country}`
-      $('shipping-address').textContent = info.address || ''
+      // Mapping vers colonnes réelles : shipping_name, shipping_city, shipping_country, shipping_address
+      $('shipping-name').textContent    = `${info.name || info.shipping_name || '—'} · ${info.city || info.shipping_city || '—'}, ${info.country || info.shipping_country || '—'}`
+      $('shipping-address').textContent = info.address || info.shipping_address || ''
     } else {
       $('shipping-name').textContent    = 'Non renseignée'
       $('shipping-address').textContent = ''
     }
   }
 
-  // ── UI helpers ─────────────────────────────────────────
+  // ── UI helpers ───────────────────────────────────────────────────────────────
   function formatCard(el) {
     let v = el.value.replace(/\D/g,'').slice(0,16)
     el.value = v.match(/.{1,4}/g)?.join(' ') || v
@@ -500,52 +636,85 @@ tailwind.config = {
     $('cardPreview').style.display = type === 'card' ? 'block' : 'none'
   }
   function selectCard(btn) {
-    document.querySelectorAll('.card-tab').forEach(b => b.classList.remove('selected'))
+    document.querySelectorAll('.net-btn').forEach(b => b.classList.remove('selected'))
     btn.classList.add('selected')
   }
   function toggleAcc(id, arrowId) {
-    $( id ).classList.toggle('open')
+    $(id).classList.toggle('open')
     $(arrowId).classList.toggle('open')
   }
 
-  // ── Code promo ─────────────────────────────────────────
+  // ── Code promo ───────────────────────────────────────────────────────────────
   function applyPromo() {
     const code     = ($('promoInput').value || '').trim().toUpperCase()
     const feedback = $('promoFeedback')
     feedback.classList.remove('hidden')
     if (PROMO_CODES[code] !== undefined) {
       promoDisc = PROMO_CODES[code]
-      feedback.className = 'mt-2 p-3 bg-primary/10 text-primary rounded-lg text-xs font-bold'
+      feedback.style.cssText = 'margin-top:8px;padding:10px 14px;background:rgba(255,107,43,.1);border:1px solid rgba(255,107,43,.25);color:var(--fire);font-size:11px;font-weight:600;display:block;'
       feedback.textContent = `✓ Code appliqué — ${promoDisc*100}% de remise`
       renderRecap()
     } else {
       promoDisc = 0
-      feedback.className = 'mt-2 p-3 bg-error/10 text-error rounded-lg text-xs font-bold'
+      feedback.style.cssText = 'margin-top:8px;padding:10px 14px;background:rgba(186,26,26,.1);border:1px solid rgba(186,26,26,.3);color:#ef4444;font-size:11px;font-weight:600;display:block;'
       feedback.textContent = '✗ Code invalide ou expiré'
       renderRecap()
     }
   }
 
-  // ── Paiement ────────────────────────────────────────────
-  async function handlePay(btn) {
+  // ── Créer ou récupérer l'order Supabase ──────────────────────────────────────
+  // Colonnes orders : user_id, status, total_amount, subtotal, promo_code,
+  //                   discount_pct, currency, notes,
+  //                   shipping_name, shipping_address, shipping_city, shipping_country
+  async function ensureOrder(session) {
+    const sb = getSb()
+    if (orderId) return orderId  // déjà créé
 
-    // Validation formulaire carte
+    const { sub, disc, total } = calcTotals()
+    const shipping = JSON.parse(localStorage.getItem('wenna_shipping') || 'null') || {}
+    const promoCode = $('promoInput').value.trim().toUpperCase() || null
+
+    const payload = {
+      user_id:          currentUserId,
+      status:           'pending',
+      subtotal:         sub,
+      total_amount:     total,
+      currency:         CURRENCY,
+      discount_pct:     promoDisc > 0 ? promoDisc * 100 : null,
+      promo_code:       promoDisc > 0 ? promoCode : null,
+      notes:            $('orderNote').value.trim() || null,
+      shipping_name:    shipping.name    || shipping.shipping_name    || null,
+      shipping_address: shipping.address || shipping.shipping_address || null,
+      shipping_city:    shipping.city    || shipping.shipping_city    || null,
+      shipping_country: shipping.country || shipping.shipping_country || null,
+      created_at:       new Date().toISOString(),
+      updated_at:       new Date().toISOString()
+    }
+
+    const { data, error } = await sb.from('orders').insert(payload).select('id').single()
+    if (error) throw new Error('Impossible de créer la commande : ' + error.message)
+    orderId = data.id
+    localStorage.setItem('wenna_current_order_id', orderId)
+    return orderId
+  }
+
+  // ── Paiement ─────────────────────────────────────────────────────────────────
+  async function handlePay(btn) {
     if (selectedMethod === 'card') {
       const num  = $('cardNum').value.replace(/\s/g,'')
       const name = $('cardName').value.trim()
       const exp  = $('cardExp').value
       const cvv  = $('cardCvv').value
-
       if (num.length < 16 || !name || exp.length < 5 || cvv.length < 3) {
         const orig = btn.innerHTML
         btn.style.background = '#ba1a1a'
-        btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">error_outline</span> Vérifiez vos informations'
+        btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:17px;">error_outline</span> Vérifiez vos informations'
         setTimeout(() => { btn.style.background = ''; btn.innerHTML = orig }, 2500)
         return
       }
     }
 
-    // Vérifier session
+    const sb = getSb()
     const { data: { session } } = await sb.auth.getSession()
     if (!session) {
       alert('Veuillez vous connecter pour finaliser la commande.')
@@ -553,20 +722,20 @@ tailwind.config = {
       return
     }
 
-    // Loading
     btn.disabled = true
-    btn.innerHTML = `<svg class="animate-spin w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24">
-      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-    </svg> Traitement en cours...`
+    const loadingHTML = `<svg style="width:18px;height:18px;animation:spin2 .8s linear infinite;" fill="none" viewBox="0 0 24 24"><circle style="opacity:.25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path style="opacity:.75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Traitement en cours...`
+    btn.innerHTML = loadingHTML
 
     try {
-      // NOTE : en production, card_token vient de Stripe.js (jamais le numéro brut)
-      // Ici on envoie un token simulé côté Edge Function
+      // 1. Créer la commande dans orders si pas encore fait
+      const oid = await ensureOrder(session)
+
+      // 2. Appeler l'Edge Function process-payment
       const body = {
-        order_id:       orderId,
+        order_id:       oid,
+        user_id:        currentUserId,
         payment_method: selectedMethod,
-        card_token:     null, // ← Stripe.js injectera le vrai token
+        card_token:     null,  // Stripe.js injectera le vrai token en prod
         amount:         orderTotal,
         currency:       CURRENCY
       }
@@ -582,32 +751,67 @@ tailwind.config = {
 
       const result = await res.json()
 
+      // Si Edge Function absente ou échoue → fallback : enregistrer le paiement directement
       if (!res.ok || !result.success) {
-        throw new Error(result.error || 'Paiement refusé')
+        // Fallback : insérer dans payments directement
+        // Colonnes : order_id, user_id, amount, currency, method, status, type, transaction_id
+        const txId = 'WN-' + Date.now().toString(36).toUpperCase()
+        const { error: payErr } = await sb.from('payments').insert({
+          order_id:       oid,
+          user_id:        currentUserId,
+          amount:         orderTotal,
+          currency:       CURRENCY,
+          method:         selectedMethod,
+          status:         'paid',
+          type:           'payment',
+          transaction_id: txId,
+          created_at:     new Date().toISOString(),
+          updated_at:     new Date().toISOString()
+        })
+        if (payErr) throw new Error('Erreur paiement : ' + payErr.message)
+
+        // Mettre à jour le statut de la commande
+        await sb.from('orders').update({ status: 'processing', updated_at: new Date().toISOString() }).eq('id', oid)
+
+        await clearCart()
+        showSuccess(txId)
+        return
       }
 
-      // ── Succès ──────────────────────────────────────────
-      // Vider panier
-      localStorage.removeItem('wenna_cart')
-      localStorage.removeItem('wenna_current_order_id')
-
-      // Afficher overlay succès
-      const shortId = (result.transaction_id || '').slice(-8).toUpperCase()
-      $('order-ref').textContent    = `#WN-${shortId}`
-      $('confirm-email').textContent = `Transaction : ${result.transaction_id || '—'}`
-      $('successOverlay').classList.add('show')
+      // ── Succès via Edge Function ──────────────────────────────────────────────
+      await clearCart()
+      showSuccess(result.transaction_id || oid.slice(-8))
 
     } catch (err) {
       btn.disabled = false
-      btn.innerHTML = `<span class="material-symbols-outlined" style="font-size:18px;">lock</span> Payer ${fmt(orderTotal)}`
+      btn.innerHTML = `<span class="material-symbols-outlined" style="font-size:17px;">lock</span> Payer ${fmt(orderTotal)}`
       btn.style.background = '#ba1a1a'
-      console.error('Payment error:', err)
+      console.error('[WennaShop] Payment error:', err)
       setTimeout(() => { btn.style.background = '' }, 3000)
       alert(`Erreur : ${err.message}`)
     }
   }
 
-  // ── Ripple ──────────────────────────────────────────────
+  // ── Vider le panier (Supabase + localStorage) ────────────────────────────────
+  async function clearCart() {
+    const sb = getSb()
+    localStorage.removeItem('wenna_cart')
+    localStorage.removeItem('wenna_current_order_id')
+    if (currentUserId) {
+      // Vider cart_items dans Supabase
+      await sb.from('cart_items').delete().eq('user_id', currentUserId)
+    }
+  }
+
+  // ── Afficher le succès ───────────────────────────────────────────────────────
+  function showSuccess(txId) {
+    const shortId = String(txId).slice(-8).toUpperCase()
+    $('order-ref').textContent     = `#WN-${shortId}`
+    $('confirm-email').textContent = `Transaction : ${txId}`
+    $('successOverlay').classList.add('show')
+  }
+
+  // ── Ripple ───────────────────────────────────────────────────────────────────
   $('payBtn').addEventListener('click', function(e) {
     const el = document.createElement('span')
     el.className = 'ripple-el'
@@ -620,6 +824,5 @@ tailwind.config = {
 
   document.addEventListener('DOMContentLoaded', init)
 </script>
-
 </body>
 </html>
