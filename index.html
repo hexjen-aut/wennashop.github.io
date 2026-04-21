@@ -1,661 +1,514 @@
 <!DOCTYPE html>
-<html lang="fr" class="light">
+<html lang="fr">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>WennaShop — Connexion / Inscription</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-tailwind.config = {
-  darkMode: "class",
-  theme: {
-    extend: {
-      colors: {
-        "surface":"#f5fbf1","surface-container-low":"#eff5eb","surface-container":"#eaf0e5",
-        "surface-container-high":"#e4eae0","surface-container-highest":"#dee4da",
-        "surface-container-lowest":"#ffffff","on-surface":"#171d17",
-        "on-surface-variant":"#3f4a3e","outline":"#6f7a6d","outline-variant":"#becaba",
-        "primary":"#006b2a","primary-container":"#0f8739","on-primary":"#ffffff",
-        "on-primary-container":"#f7fff2","secondary":"#1a5fa8","on-secondary":"#ffffff",
-        "tertiary":"#745b00","error":"#ba1a1a","on-error":"#ffffff"
-      },
-      borderRadius:{"DEFAULT":"1rem","lg":"2rem","xl":"3rem","full":"9999px"},
-      fontFamily:{"headline":["Noto Serif"],"body":["Inter"],"label":["Inter"]}
-    }
-  }
-}
-</script>
-
 <style>
-  *, *::before, *::after { box-sizing: border-box; }
-  .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24; font-size:20px; }
-  body { font-family:'Inter',sans-serif; background:#f5fbf1; min-height:100dvh; overflow-x:hidden; }
-  h1,h2,h3 { font-family:'Noto Serif',serif; }
+:root{
+  --fire:#FF6B2B;--ember:#E85A1A;--ink:#080808;--coal:#111111;--slate:#1A1A1A;
+  --smoke:#242424;--fog:#888;--snow:#f0ece6;--border:rgba(255,255,255,.07);
+  --border-fire:rgba(255,107,43,.25);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);min-height:100dvh;overflow-x:hidden;}
+.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24;font-size:20px;line-height:1;}
 
-  .brand-gradient { background: linear-gradient(135deg, #006b2a 0%, #0f8739 100%); }
+/* CURSOR */
+*{cursor:none!important;}
+#cursor{position:fixed;width:10px;height:10px;background:var(--fire);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .1s;}
+#cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(255,107,43,.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .12s ease,top .12s ease,width .2s,height .2s;}
+@media(hover:none){#cursor,#cursor-ring{display:none;}*{cursor:auto!important;}}
 
-  #panel-connexion,
-  #panel-inscription {
-    display: block;
-    width: 100%;
-    animation: fadeSlideIn .35s cubic-bezier(.4,0,.2,1) both;
-  }
-  #panel-connexion.hidden-panel,
-  #panel-inscription.hidden-panel { display: none; }
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:1fr 1fr;min-height:100dvh;}
+@media(max-width:768px){.layout{grid-template-columns:1fr;}}
 
-  @keyframes fadeSlideIn {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+/* LEFT PANEL */
+.left-panel{position:relative;overflow:hidden;background:var(--coal);}
+@media(max-width:768px){.left-panel{height:220px;}}
+.left-panel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55;filter:grayscale(20%);}
+.left-panel-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(8,8,8,.85) 0%,rgba(255,107,43,.08) 100%);}
+.left-content{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding:48px;}
+@media(max-width:768px){.left-content{justify-content:center;padding:24px;text-align:center;}}
+.left-eyebrow{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--fire);display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.left-eyebrow::before{content:'';display:block;width:20px;height:1px;background:var(--fire);}
+@media(max-width:768px){.left-eyebrow{justify-content:center;}}
+.left-logo{font-family:'Cormorant Garamond',serif;font-size:clamp(48px,6vw,80px);font-weight:700;font-style:italic;line-height:1;letter-spacing:-2px;color:var(--snow);margin-bottom:16px;}
+.left-logo b{color:var(--fire);}
+.left-tagline{font-size:13px;color:#777;letter-spacing:1px;line-height:1.6;max-width:320px;}
+.left-flags{display:flex;gap:16px;margin-top:32px;align-items:center;}
+@media(max-width:768px){.left-flags{justify-content:center;}}
+.flag-item{display:flex;align-items:center;gap:8px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#555;}
+.flag-sep{width:1px;height:16px;background:var(--border);}
+.left-deco{position:absolute;top:-40px;right:-60px;font-family:'Cormorant Garamond',serif;font-size:320px;font-style:italic;font-weight:700;color:rgba(255,107,43,.03);line-height:1;pointer-events:none;user-select:none;}
 
-  .w-input {
-    width:100%; padding:.9rem 1rem .9rem 2.8rem;
-    background:#e4eae0; border:none; border-bottom:2px solid #becaba;
-    border-radius:.75rem .75rem 0 0; outline:none;
-    font-size:.9rem; color:#171d17; font-family:'Inter',sans-serif;
-    transition:border-color .2s;
-  }
-  .w-input:focus { border-bottom-color:#006b2a; }
-  .w-input-plain { padding-left:1rem; }
-  .input-icon {
-    position:absolute; left:.75rem; top:50%;
-    transform:translateY(-50%); color:#6f7a6d; pointer-events:none;
-  }
+/* RIGHT PANEL */
+.right-panel{background:var(--ink);display:flex;align-items:center;justify-content:center;padding:40px 32px;overflow-y:auto;}
+@media(max-width:480px){.right-panel{padding:24px 16px;}}
+.form-wrap{width:100%;max-width:420px;}
 
-  .choice-btn {
-    flex:1; display:flex; align-items:center; justify-content:center; gap:.4rem;
-    padding:.75rem; border-radius:.75rem;
-    border:1.5px solid rgba(190,202,186,0.4);
-    background:#eff5eb; font-size:.82rem; color:#3f4a3e;
-    transition:all .2s; cursor:pointer; font-family:'Inter',sans-serif;
-  }
-  .choice-btn.active {
-    border-color:#006b2a; background:rgba(0,107,42,0.1);
-    color:#006b2a; font-weight:600;
-  }
-  .role-btn {
-    flex:1; display:flex; flex-direction:column; align-items:center; gap:.3rem;
-    padding:.75rem; border-radius:.75rem;
-    border:1.5px solid rgba(190,202,186,0.4);
-    background:#eff5eb; font-size:.75rem; color:#3f4a3e;
-    transition:all .2s; cursor:pointer; font-family:'Inter',sans-serif;
-  }
-  .role-btn.active {
-    border-color:#1a5fa8; background:rgba(26,95,168,0.1);
-    color:#1a5fa8; font-weight:600;
-  }
-  .role-btn .material-symbols-outlined { font-size:22px; }
+/* TABS */
+.tabs{display:flex;background:var(--slate);border:1px solid var(--border);padding:3px;margin-bottom:36px;}
+.tab{flex:1;padding:10px;font-size:9px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:#555;background:transparent;border:none;cursor:none;transition:all .2s;font-family:'DM Sans',sans-serif;}
+.tab.active{background:var(--fire);color:#fff;}
 
-  .tab-pill {
-    padding:.6rem 1.5rem; border-radius:9999px;
-    font-size:.82rem; font-weight:500; cursor:pointer;
-    transition:all .2s; border:none; background:transparent;
-    color:#3f4a3e; font-family:'Inter',sans-serif;
-  }
-  .tab-pill.active {
-    background:#1a5fa8; color:#fff; font-weight:700;
-    box-shadow:0 2px 8px rgba(26,95,168,.3);
-  }
+/* PANEL */
+.panel{animation:fadeUp .35s ease both;}
+.panel.hidden-panel{display:none;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 
-  .btn-submit {
-    width:100%; padding:1rem; border-radius:.875rem; border:none;
-    cursor:pointer; background:linear-gradient(135deg,#006b2a,#0f8739);
-    color:#fff; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
-    font-size:.85rem; font-family:'Inter',sans-serif;
-    box-shadow:0 8px 24px rgba(0,107,42,.3); transition:all .2s;
-    display:flex; align-items:center; justify-content:center; gap:.5rem;
-  }
-  .btn-submit:hover  { box-shadow:0 12px 32px rgba(0,107,42,.4); opacity:.93; }
-  .btn-submit:active { transform:scale(.97); }
-  .btn-submit:disabled { opacity:.5; cursor:not-allowed; }
+/* HEADING */
+.form-heading{margin-bottom:28px;}
+.form-eyebrow{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--fire);margin-bottom:10px;}
+.form-title{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:700;font-style:italic;line-height:1.1;color:var(--snow);}
+.form-sub{font-size:12px;color:#555;margin-top:6px;letter-spacing:.5px;}
 
-  .spinner {
-    display:none; width:18px; height:18px; flex-shrink:0;
-    border:2px solid rgba(255,255,255,.4); border-top-color:#fff;
-    border-radius:50%; animation:spin .7s linear infinite;
-  }
-  @keyframes spin { to { transform:rotate(360deg); } }
-  .is-loading .spinner   { display:block; }
-  .is-loading .btn-label { display:none; }
+/* FORM FIELDS */
+.field{margin-bottom:18px;}
+.field-label{display:flex;justify-content:space-between;align-items:center;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#555;margin-bottom:8px;}
+.field-label a,.field-label button.forgot{background:none;border:none;color:var(--fire);font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:none;font-family:'DM Sans',sans-serif;}
+.field-label a:hover,.field-label button.forgot:hover{text-decoration:underline;}
+.input-wrap{position:relative;}
+.inp{width:100%;background:var(--slate);border:1px solid var(--border);border-bottom:1px solid rgba(255,107,43,.15);color:var(--snow);padding:13px 44px 13px 16px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s,background .2s;}
+.inp:focus{border-color:var(--border-fire);background:var(--smoke);}
+.inp::placeholder{color:#333;}
+.inp-icon-left .inp{padding-left:42px;}
+.field-icon{position:absolute;top:50%;transform:translateY(-50%);color:#444;pointer-events:none;}
+.field-icon.left{left:14px;}
+.field-icon.right{right:12px;pointer-events:all;cursor:none;color:#555;background:none;border:none;transition:color .2s;}
+.field-icon.right:hover{color:var(--snow);}
 
-  .btn-google {
-    width:100%; padding:.9rem; border-radius:.875rem;
-    border:1.5px solid rgba(190,202,186,.5);
-    background:#fff; display:flex; align-items:center; justify-content:center; gap:.6rem;
-    font-size:.85rem; font-weight:500; color:#171d17; cursor:pointer; transition:all .2s;
-    font-family:'Inter',sans-serif;
-  }
-  .btn-google:hover { background:#eff5eb; }
+/* 2-col grid */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:380px){.grid-2{grid-template-columns:1fr;}}
 
-  #toast {
-    position:fixed; bottom:1.5rem; left:50%;
-    transform:translateX(-50%) translateY(60px);
-    padding:.75rem 1.5rem; border-radius:9999px;
-    font-size:.82rem; font-weight:600; color:#fff;
-    z-index:999; transition:transform .35s ease, opacity .35s ease;
-    opacity:0; white-space:nowrap; pointer-events:none;
-    font-family:'Inter',sans-serif;
-  }
-  #toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
-  #toast.ok   { background:#006b2a; }
-  #toast.ko   { background:#ba1a1a; }
+/* CHOICE BTNS */
+.choice-group{display:flex;gap:10px;margin-bottom:4px;}
+.choice-btn{flex:1;padding:11px 8px;border:1px solid var(--border);background:var(--slate);color:#666;font-size:11px;font-family:'DM Sans',sans-serif;cursor:none;transition:all .2s;text-align:center;}
+.choice-btn:hover{border-color:var(--border-fire);color:var(--snow);}
+.choice-btn.active{border-color:var(--fire);background:rgba(255,107,43,.1);color:var(--fire);}
+.role-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border:1px solid var(--border);background:var(--slate);color:#666;font-size:10px;letter-spacing:1px;text-transform:uppercase;font-family:'DM Sans',sans-serif;cursor:none;transition:all .2s;}
+.role-btn:hover{border-color:var(--border-fire);color:var(--snow);}
+.role-btn.active{border-color:var(--fire);background:rgba(255,107,43,.1);color:var(--fire);}
 
-  /* Bannière erreur config Supabase */
-  #supabase-warning {
-    display:none;
-    background:#fff3cd; border:1px solid #ffc107; border-radius:.75rem;
-    padding:.75rem 1rem; margin-bottom:1rem;
-    font-size:.8rem; color:#856404; font-family:'Inter',sans-serif;
-  }
+/* PWD STRENGTH */
+.pwd-bar-wrap{height:2px;background:rgba(255,255,255,.06);margin-top:6px;}
+#pwd-bar{height:2px;width:0;transition:width .3s,background .3s;}
+#pwd-hint{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-top:4px;}
 
-  #pwd-bar { height:3px; border-radius:99px; transition:width .3s, background .3s; width:0; }
+/* CGU */
+.cgu-wrap{display:flex;align-items:flex-start;gap:10px;margin-bottom:20px;}
+.cgu-check{width:16px;height:16px;margin-top:2px;accent-color:var(--fire);flex-shrink:0;cursor:none;}
+.cgu-text{font-size:11px;color:#555;line-height:1.6;}
+.cgu-text a{color:var(--fire);}
+
+/* DIVIDER */
+.divider{display:flex;align-items:center;gap:12px;margin:18px 0;}
+.divider-line{flex:1;height:1px;background:var(--border);}
+.divider-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#333;}
+
+/* BTNS */
+.btn-fire{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--fire);color:#fff;padding:14px;font-size:10px;font-weight:500;letter-spacing:3px;text-transform:uppercase;border:none;cursor:none;transition:background .2s,transform .15s;font-family:'DM Sans',sans-serif;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));margin-bottom:12px;}
+.btn-fire:hover{background:var(--ember);transform:translateY(-1px);}
+.btn-fire:active{transform:translateY(0);}
+.btn-fire:disabled{opacity:.5;cursor:none;}
+.btn-google{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:transparent;border:1px solid var(--border);color:#777;padding:13px;font-size:11px;font-family:'DM Sans',sans-serif;cursor:none;transition:all .2s;}
+.btn-google:hover{border-color:rgba(255,255,255,.15);color:var(--snow);}
+
+/* SPINNER */
+.spinner{display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.is-loading .spinner{display:block;}
+.is-loading .btn-label{display:none;}
+
+/* SWITCH LINK */
+.switch-link{text-align:center;margin-top:20px;font-size:11px;color:#555;}
+.switch-link button{background:none;border:none;color:var(--fire);font-size:11px;font-family:'DM Sans',sans-serif;cursor:none;}
+.switch-link button:hover{text-decoration:underline;}
+
+/* TOAST */
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(10px);z-index:400;background:var(--slate);border:1px solid var(--border-fire);color:var(--snow);padding:12px 24px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+#toast.ok{border-color:rgba(115,220,132,.4);background:#0a1f0e;}
+#toast.ko{border-color:rgba(186,26,26,.4);background:#1f0a0a;}
+
+/* SUPABASE WARNING */
+#supabase-warning{display:none;background:rgba(208,166,0,.08);border:1px solid rgba(208,166,0,.3);padding:10px 14px;margin-bottom:16px;font-size:11px;color:#d0a600;font-family:'DM Sans',sans-serif;}
 </style>
-<link rel="stylesheet" href="/css/wenna-palette-conversion.css">
 </head>
-
 <body>
-<div class="flex flex-col md:flex-row min-h-screen">
 
-  <!-- ══ Visual gauche ══ -->
-  <div class="relative w-full md:w-5/12 lg:w-1/2 h-56 md:h-screen overflow-hidden flex-shrink-0">
-    <img
-      src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgIEV3Z8FI_kBplU-v8C_dfV7ZQborpWKonq8b78QFDgCEEDdNkmkoUnWUZbOvbxvJav0X2KMGROBJaResC9473f0yhK2IQGYxdRcHFeWQEffTn6fDFmzIrA7zqYs7Ox4b8hiEKGz3jySZJzOUWo8xvohFBDjUF0D6GRHMU_jYuvWG1BQL9U6oJ9HSusYn5P1GlcuEuyAE1bR79MROVzY9PgjYY2ng7t3QaM8Oy-WMz-xWag9CXLI-7Fevxfr6h56lhb3xcbhdM_c"
-      alt="WennaShop heritage"
-      class="absolute inset-0 w-full h-full object-cover"
-    />
-    <div class="absolute inset-0 brand-gradient opacity-25"></div>
-    <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-8 bg-black/15 backdrop-blur-[2px] md:backdrop-blur-none md:bg-transparent">
-      <h1 class="text-on-primary-container font-black italic text-5xl md:text-7xl tracking-tighter drop-shadow-lg mb-3">WennaShop</h1>
-      <p class="text-on-primary-container text-xs tracking-[.22em] uppercase font-semibold opacity-90">Bridging Gabon &amp; Morocco</p>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<div id="toast"></div>
+
+<div class="layout">
+
+  <!-- LEFT -->
+  <div class="left-panel">
+    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80" alt="WennaShop"/>
+    <div class="left-panel-overlay"></div>
+    <div class="left-deco">W</div>
+    <div class="left-content">
+      <div class="left-eyebrow">Marketplace Premium</div>
+      <div class="left-logo">Wenna<b>Shop</b></div>
+      <div class="left-tagline">La plateforme qui connecte le Gabon et le Maroc — artisans, acheteurs, cultures.</div>
+      <div class="left-flags">
+        <div class="flag-item">🇬🇦 Gabon</div>
+        <div class="flag-sep"></div>
+        <div class="flag-item">🇲🇦 Maroc</div>
+      </div>
     </div>
   </div>
 
-  <!-- ══ Formulaire Auth ══ -->
-  <main class="flex-1 flex items-start md:items-center justify-center bg-surface px-4 py-8 relative overflow-y-auto">
-    <div class="w-full max-w-md py-4">
+  <!-- RIGHT -->
+  <div class="right-panel">
+    <div class="form-wrap">
 
-      <!-- Avertissement config (affiché si Supabase non configuré) -->
-      <div id="supabase-warning">
-        ⚠️ Supabase non configuré — remplacez la clé anon dans le JS pour activer l'authentification réelle.
+      <div id="supabase-warning">⚠️ Supabase non configuré</div>
+
+      <!-- TABS -->
+      <div class="tabs">
+        <button id="tab-cnx" class="tab active" onclick="switchMode('connexion')">Connexion</button>
+        <button id="tab-ins" class="tab" onclick="switchMode('inscription')">Inscription</button>
       </div>
 
-      <!-- Tabs -->
-      <div class="flex justify-center mb-6">
-        <div class="flex p-1 bg-surface-container-highest rounded-full gap-1">
-          <button id="tab-cnx" class="tab-pill active" onclick="switchMode('connexion')">Connexion</button>
-          <button id="tab-ins" class="tab-pill"        onclick="switchMode('inscription')">Inscription</button>
-        </div>
-      </div>
-
-      <!-- ══ PANEL CONNEXION ══ -->
-      <div id="panel-connexion">
-
-        <div class="text-center mb-6">
-          <h2 class="text-3xl font-bold text-on-surface mb-1">Bon retour</h2>
-          <p class="text-on-surface-variant text-sm">Curating the finest heritage products.</p>
+      <!-- PANEL CONNEXION -->
+      <div id="panel-connexion" class="panel">
+        <div class="form-heading">
+          <div class="form-eyebrow">Accès sécurisé</div>
+          <div class="form-title">Bon retour.</div>
+          <div class="form-sub">Connectez-vous à votre espace WennaShop.</div>
         </div>
 
-        <!-- Email -->
-        <div class="mb-4">
-          <label class="block text-[10px] uppercase tracking-widest font-bold text-primary mb-1 ml-1">Email</label>
-          <div class="relative">
-            <span class="material-symbols-outlined input-icon">mail</span>
-            <input id="cnx-email" type="email" placeholder="amira@exemple.com" class="w-input" autocomplete="email"/>
+        <div class="field inp-icon-left">
+          <div class="field-label">Email</div>
+          <div class="input-wrap">
+            <span class="material-symbols-outlined field-icon left">mail</span>
+            <input id="cnx-email" type="email" placeholder="amira@exemple.com" class="inp" autocomplete="email"/>
           </div>
         </div>
 
-        <!-- Mot de passe -->
-        <div class="mb-6">
-          <div class="flex justify-between mb-1 px-1">
-            <label class="text-[10px] uppercase tracking-widest font-bold text-primary">Mot de passe</label>
-            <button type="button" onclick="sendReset()" class="text-[10px] uppercase tracking-widest text-secondary font-medium hover:underline bg-transparent border-none cursor-pointer">Oublié ?</button>
+        <div class="field inp-icon-left">
+          <div class="field-label">
+            Mot de passe
+            <button class="forgot" onclick="sendReset()">Oublié ?</button>
           </div>
-          <div class="relative">
-            <span class="material-symbols-outlined input-icon">lock</span>
-            <input id="cnx-pwd" type="password" placeholder="••••••••" class="w-input" autocomplete="current-password"/>
-            <button type="button" onclick="togglePwd('cnx-pwd','eye-cnx')" class="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface">
-              <span id="eye-cnx" class="material-symbols-outlined">visibility</span>
-            </button>
+          <div class="input-wrap">
+            <span class="material-symbols-outlined field-icon left">lock</span>
+            <input id="cnx-pwd" type="password" placeholder="••••••••" class="inp" autocomplete="current-password"/>
+            <button class="material-symbols-outlined field-icon right" onclick="togglePwd('cnx-pwd','eye-cnx')" id="eye-cnx">visibility</button>
           </div>
         </div>
 
-        <button id="btn-cnx" class="btn-submit mb-4" onclick="handleConnexion()">
+        <button id="btn-cnx" class="btn-fire" onclick="handleConnexion()">
           <div class="spinner"></div>
           <span class="btn-label">Se connecter</span>
         </button>
 
-        <div class="flex items-center gap-3 my-4">
-          <div class="flex-1 border-t border-outline-variant/25"></div>
-          <span class="text-[10px] uppercase tracking-[.18em] text-outline">ou</span>
-          <div class="flex-1 border-t border-outline-variant/25"></div>
+        <div class="divider">
+          <div class="divider-line"></div>
+          <span class="divider-label">ou</span>
+          <div class="divider-line"></div>
         </div>
 
         <button class="btn-google" onclick="handleGoogle()">
-          <img src="https://www.google.com/favicon.ico" class="w-4 h-4" alt="Google"/>
+          <img src="https://www.google.com/favicon.ico" width="16" height="16" alt="Google"/>
           Continuer avec Google
         </button>
 
-        <p class="text-center text-xs text-on-surface-variant mt-5">
+        <div class="switch-link">
           Pas encore de compte ?
-          <button onclick="switchMode('inscription')" class="text-secondary font-semibold hover:underline bg-transparent border-none cursor-pointer">S'inscrire</button>
-        </p>
-      </div><!-- /panel-connexion -->
+          <button onclick="switchMode('inscription')">S'inscrire</button>
+        </div>
+      </div>
 
-
-      <!-- ══ PANEL INSCRIPTION ══ -->
-      <div id="panel-inscription" class="hidden-panel">
-
-        <div class="text-center mb-5">
-          <h2 class="text-3xl font-bold text-on-surface mb-1">Créer un compte</h2>
-          <p class="text-on-surface-variant text-sm">Rejoignez la communauté WennaShop.</p>
+      <!-- PANEL INSCRIPTION -->
+      <div id="panel-inscription" class="panel hidden-panel">
+        <div class="form-heading">
+          <div class="form-eyebrow">Nouveau compte</div>
+          <div class="form-title">Rejoignez-nous.</div>
+          <div class="form-sub">Créez votre espace vendeur ou acheteur.</div>
         </div>
 
-        <!-- Prénom + Nom -->
-        <div class="grid grid-cols-2 gap-3 mb-4">
-          <div>
-            <label class="block text-[10px] uppercase tracking-widest font-bold text-primary mb-1 ml-1">Prénom</label>
-            <input id="ins-prenom" type="text"  class="w-input w-input-plain" autocomplete="given-name"/>
+        <div class="grid-2" style="margin-bottom:18px;">
+          <div class="field">
+            <div class="field-label">Prénom</div>
+            <input id="ins-prenom" type="text" class="inp" autocomplete="given-name"/>
           </div>
-          <div>
-            <label class="block text-[10px] uppercase tracking-widest font-bold text-primary mb-1 ml-1">Nom</label>
-            <input id="ins-nom" type="text"  class="w-input w-input-plain" autocomplete="family-name"/>
-          </div>
-        </div>
-
-        <!-- Email -->
-        <div class="mb-4">
-          <label class="block text-[10px] uppercase tracking-widest font-bold text-primary mb-1 ml-1">Email</label>
-          <div class="relative">
-            <span class="material-symbols-outlined input-icon">mail</span>
-            <input id="ins-email" type="email" class="w-input" autocomplete="email"/>
+          <div class="field">
+            <div class="field-label">Nom</div>
+            <input id="ins-nom" type="text" class="inp" autocomplete="family-name"/>
           </div>
         </div>
 
-        <!-- Mot de passe -->
-        <div class="mb-4">
-          <label class="block text-[10px] uppercase tracking-widest font-bold text-primary mb-1 ml-1">Mot de passe</label>
-          <div class="relative">
-            <span class="material-symbols-outlined input-icon">lock</span>
-            <input id="ins-pwd" type="password" placeholder="Min. 8 caractères" class="w-input" autocomplete="new-password" oninput="evalStrength(this.value)"/>
-            <button type="button" onclick="togglePwd('ins-pwd','eye-ins')" class="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface">
-              <span id="eye-ins" class="material-symbols-outlined">visibility</span>
-            </button>
-          </div>
-          <div class="mt-1.5 mx-1 bg-outline-variant/20 rounded-full h-[3px]">
-            <div id="pwd-bar"></div>
-          </div>
-          <p id="pwd-hint" class="text-[10px] text-outline ml-1 mt-1"></p>
-        </div>
-
-        <!-- Pays -->
-        <div class="mb-4">
-          <label class="block text-[10px] uppercase tracking-widest font-bold text-primary mb-2 ml-1">Pays d'origine</label>
-          <div class="flex gap-3">
-            <button type="button" class="choice-btn" data-country="gabon" onclick="selectCountry('gabon')">🇬🇦 Gabon</button>
-            <button type="button" class="choice-btn" data-country="maroc" onclick="selectCountry('maroc')">🇲🇦 Maroc</button>
+        <div class="field inp-icon-left">
+          <div class="field-label">Email</div>
+          <div class="input-wrap">
+            <span class="material-symbols-outlined field-icon left">mail</span>
+            <input id="ins-email" type="email" class="inp" autocomplete="email"/>
           </div>
         </div>
 
-        <!-- Rôle -->
-        <div class="mb-5">
-          <label class="block text-[10px] uppercase tracking-widest font-bold text-primary mb-2 ml-1">Vous êtes</label>
-          <div class="flex gap-3">
-            <button type="button" class="role-btn" data-role="buyer" onclick="selectRole('buyer')">
-              <span class="material-symbols-outlined">shopping_bag</span>
+        <div class="field inp-icon-left">
+          <div class="field-label">Mot de passe</div>
+          <div class="input-wrap">
+            <span class="material-symbols-outlined field-icon left">lock</span>
+            <input id="ins-pwd" type="password" placeholder="Min. 8 caractères" class="inp" autocomplete="new-password" oninput="evalStrength(this.value)"/>
+            <button class="material-symbols-outlined field-icon right" onclick="togglePwd('ins-pwd','eye-ins')" id="eye-ins">visibility</button>
+          </div>
+          <div class="pwd-bar-wrap"><div id="pwd-bar"></div></div>
+          <div id="pwd-hint"></div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">Pays d'origine</div>
+          <div class="choice-group">
+            <button class="choice-btn" data-country="gabon" onclick="selectCountry('gabon')">🇬🇦 Gabon</button>
+            <button class="choice-btn" data-country="maroc" onclick="selectCountry('maroc')">🇲🇦 Maroc</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">Vous êtes</div>
+          <div class="choice-group">
+            <button class="role-btn" data-role="buyer" onclick="selectRole('buyer')">
+              <span class="material-symbols-outlined" style="font-size:22px;">shopping_bag</span>
               Acheteur
             </button>
-            <button type="button" class="role-btn" data-role="artisan" onclick="selectRole('artisan')">
-              <span class="material-symbols-outlined">storefront</span>
+            <button class="role-btn" data-role="artisan" onclick="selectRole('artisan')">
+              <span class="material-symbols-outlined" style="font-size:22px;">storefront</span>
               Artisan / Vendeur
             </button>
           </div>
         </div>
 
-        <!-- CGU -->
-        <div class="flex items-start gap-3 mb-5">
-          <input id="cgu" type="checkbox" class="mt-1 rounded border-outline-variant text-primary focus:ring-primary cursor-pointer"/>
-          <label for="cgu" class="text-xs text-on-surface-variant leading-relaxed cursor-pointer">
-            J'accepte les <a href="#" class="text-secondary font-semibold hover:underline">CGU</a>
-            et la <a href="#" class="text-secondary font-semibold hover:underline">Politique de confidentialité</a>.
+        <div class="cgu-wrap">
+          <input id="cgu" type="checkbox" class="cgu-check"/>
+          <label for="cgu" class="cgu-text">
+            J'accepte les <a href="#">CGU</a> et la <a href="#">Politique de confidentialité</a>.
           </label>
         </div>
 
-        <button id="btn-ins" class="btn-submit mb-4" onclick="handleInscription()">
+        <button id="btn-ins" class="btn-fire" onclick="handleInscription()">
           <div class="spinner"></div>
           <span class="btn-label">Créer mon compte</span>
         </button>
 
-        <div class="flex items-center gap-3 my-4">
-          <div class="flex-1 border-t border-outline-variant/25"></div>
-          <span class="text-[10px] uppercase tracking-[.18em] text-outline">ou</span>
-          <div class="flex-1 border-t border-outline-variant/25"></div>
+        <div class="divider">
+          <div class="divider-line"></div>
+          <span class="divider-label">ou</span>
+          <div class="divider-line"></div>
         </div>
 
         <button class="btn-google" onclick="handleGoogle()">
-          <img src="https://www.google.com/favicon.ico" class="w-4 h-4" alt="Google"/>
+          <img src="https://www.google.com/favicon.ico" width="16" height="16" alt="Google"/>
           S'inscrire avec Google
         </button>
 
-        <p class="text-center text-xs text-on-surface-variant mt-5">
+        <div class="switch-link">
           Déjà un compte ?
-          <button onclick="switchMode('connexion')" class="text-secondary font-semibold hover:underline bg-transparent border-none cursor-pointer">Se connecter</button>
-        </p>
-      </div><!-- /panel-inscription -->
+          <button onclick="switchMode('connexion')">Se connecter</button>
+        </div>
+      </div>
 
-      <p class="text-center text-[10px] text-on-surface-variant/50 mt-6">
-        En continuant, vous acceptez nos <a href="#" class="text-secondary hover:underline">CGU</a>
-        et notre <a href="#" class="text-secondary hover:underline">Politique de confidentialité</a>.
-      </p>
     </div>
-
-    <!-- Accent décoratif -->
-    <div class="hidden lg:block absolute bottom-10 right-10 opacity-[.04] pointer-events-none select-none">
-      <span style="font-family:'Noto Serif',serif;font-size:160px;font-style:italic;font-weight:900;color:#006b2a;">W</span>
-    </div>
-  </main>
+  </div>
 </div>
 
-<!-- Toast  -->
-<div id="toast"></div>
-
 <script>
-// ══════════════════════════════════════════════
-// SUPABASE — Configuration WennaShop Production
-// ✅ FIX : clé anon JWT correcte (sans suffixe sb_publishable_...)
-// Récupérer depuis : Supabase Dashboard → Settings → API → anon public
-// ══════════════════════════════════════════════
-const SUPABASE_URL  = 'https://aakxoydznmybstfozjte.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0';
+// ── CURSOR ────────────────────────────────────
+const cur = document.getElementById('cursor')
+const ring = document.getElementById('cursor-ring')
+let mx = 0, my = 0
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY
+  cur.style.left = mx + 'px'; cur.style.top = my + 'px'
+  ring.style.left = mx + 'px'; ring.style.top = my + 'px'
+})
 
-let db = null;
+// ── SUPABASE ──────────────────────────────────
+const SUPABASE_URL  = 'https://aakxoydznmybstfozjte.supabase.co'
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
+let db = null
 
-function initSupabase() {
-  // Vérification que la clé est bien un JWT valide (commence par eyJ)
-  if (!SUPABASE_ANON || !SUPABASE_ANON.startsWith('eyJ')) {
-    console.warn('Supabase: clé anon manquante ou invalide. Mode démo actif.');
-    document.getElementById('supabase-warning').style.display = 'block';
-    return;
+;(function initSupabase() {
+  if (!SUPABASE_ANON?.startsWith('eyJ')) {
+    document.getElementById('supabase-warning').style.display = 'block'; return
   }
   try {
-    const { createClient } = window.supabase;
-    db = createClient(SUPABASE_URL, SUPABASE_ANON);
-    console.log('Supabase initialisé ✓');
+    db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON)
   } catch(e) {
-    console.error('Supabase init error:', e.message);
-    document.getElementById('supabase-warning').style.display = 'block';
+    document.getElementById('supabase-warning').style.display = 'block'
   }
-}
+})()
 
-initSupabase();
-
-// ─── Redirect si déjà connecté ────────────────
-(async () => {
-  if (!db) return;
+;(async () => {
+  if (!db) return
   try {
-    const { data: { session } } = await db.auth.getSession();
-    if (session) window.location.href = 'hero.html';
-  } catch(e) {
-    console.warn('getSession error:', e.message);
-  }
-})();
+    const { data: { session } } = await db.auth.getSession()
+    if (session) window.location.href = 'hero.html'
+  } catch(e) {}
+})()
 
-// ── État local ────────────────────────────────
-let currentMode     = 'connexion';
-let selectedCountry = null;
-let selectedRole    = null;
+// ── STATE ─────────────────────────────────────
+let selectedCountry = null, selectedRole = null
 
-// ══════════════════════════════════════════════
-// SWITCH PANEL
-// ══════════════════════════════════════════════
+// ── SWITCH ────────────────────────────────────
 function switchMode(mode) {
-  currentMode = mode;
-  const panelCnx = document.getElementById('panel-connexion');
-  const panelIns = document.getElementById('panel-inscription');
-  const tabCnx   = document.getElementById('tab-cnx');
-  const tabIns   = document.getElementById('tab-ins');
-
+  const cnx = document.getElementById('panel-connexion')
+  const ins  = document.getElementById('panel-inscription')
+  const tCnx = document.getElementById('tab-cnx')
+  const tIns = document.getElementById('tab-ins')
   if (mode === 'connexion') {
-    panelCnx.classList.remove('hidden-panel');
-    panelIns.classList.add('hidden-panel');
-    panelCnx.style.animation = 'none';
-    panelCnx.offsetHeight;
-    panelCnx.style.animation = '';
-    tabCnx.classList.add('active');
-    tabIns.classList.remove('active');
+    cnx.classList.remove('hidden-panel'); ins.classList.add('hidden-panel')
+    tCnx.classList.add('active'); tIns.classList.remove('active')
+    cnx.style.animation='none'; cnx.offsetHeight; cnx.style.animation=''
   } else {
-    panelIns.classList.remove('hidden-panel');
-    panelCnx.classList.add('hidden-panel');
-    panelIns.style.animation = 'none';
-    panelIns.offsetHeight;
-    panelIns.style.animation = '';
-    tabIns.classList.add('active');
-    tabCnx.classList.remove('active');
+    ins.classList.remove('hidden-panel'); cnx.classList.add('hidden-panel')
+    tIns.classList.add('active'); tCnx.classList.remove('active')
+    ins.style.animation='none'; ins.offsetHeight; ins.style.animation=''
   }
 }
 
-// ─── Sélecteurs pays / rôle ───────────────────
 function selectCountry(val) {
-  selectedCountry = val;
-  document.querySelectorAll('[data-country]').forEach(b =>
-    b.classList.toggle('active', b.dataset.country === val)
-  );
+  selectedCountry = val
+  document.querySelectorAll('[data-country]').forEach(b => b.classList.toggle('active', b.dataset.country === val))
 }
 function selectRole(val) {
-  selectedRole = val;
-  document.querySelectorAll('[data-role]').forEach(b =>
-    b.classList.toggle('active', b.dataset.role === val)
-  );
+  selectedRole = val
+  document.querySelectorAll('[data-role]').forEach(b => b.classList.toggle('active', b.dataset.role === val))
 }
 
-// ─── Toggle visibilité mot de passe ──────────
 function togglePwd(inputId, iconId) {
-  const inp = document.getElementById(inputId);
-  const ico = document.getElementById(iconId);
-  inp.type = inp.type === 'password' ? 'text' : 'password';
-  ico.textContent = inp.type === 'password' ? 'visibility' : 'visibility_off';
+  const inp = document.getElementById(inputId)
+  const ico = document.getElementById(iconId)
+  inp.type = inp.type === 'password' ? 'text' : 'password'
+  ico.textContent = inp.type === 'password' ? 'visibility' : 'visibility_off'
 }
 
-// ─── Force du mot de passe ───────────────────
 function evalStrength(pwd) {
-  const bar  = document.getElementById('pwd-bar');
-  const hint = document.getElementById('pwd-hint');
-  if (!bar) return;
-  let score = 0;
-  if (pwd.length >= 8)           score++;
-  if (/[A-Z]/.test(pwd))         score++;
-  if (/[0-9]/.test(pwd))         score++;
-  if (/[^A-Za-z0-9]/.test(pwd))  score++;
+  let score = 0
+  if (pwd.length >= 8) score++
+  if (/[A-Z]/.test(pwd)) score++
+  if (/[0-9]/.test(pwd)) score++
+  if (/[^A-Za-z0-9]/.test(pwd)) score++
   const levels = [
-    { w:'0%',   bg:'transparent', msg:'' },
-    { w:'25%',  bg:'#ba1a1a',     msg:'Faible' },
-    { w:'50%',  bg:'#d0a600',     msg:'Moyen' },
-    { w:'75%',  bg:'#0f8739',     msg:'Bon' },
-    { w:'100%', bg:'#006b2a',     msg:'Excellent' },
-  ];
-  const l = levels[score] || levels[0];
-  bar.style.width      = l.w;
-  bar.style.background = l.bg;
-  hint.textContent     = l.msg;
+    {w:'0%',bg:'transparent',msg:''},
+    {w:'25%',bg:'#ba1a1a',msg:'Faible'},
+    {w:'50%',bg:'#d0a600',msg:'Moyen'},
+    {w:'75%',bg:'var(--fire)',msg:'Bon'},
+    {w:'100%',bg:'#22c55e',msg:'Excellent'},
+  ]
+  const l = levels[score] || levels[0]
+  document.getElementById('pwd-bar').style.width = l.w
+  document.getElementById('pwd-bar').style.background = l.bg
+  document.getElementById('pwd-hint').textContent = l.msg
 }
 
-// ─── Toast ────────────────────────────────────
 function toast(msg, type = 'ok') {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className   = `show ${type}`;
-  setTimeout(() => { el.className = type; }, 3500);
+  const el = document.getElementById('toast')
+  el.textContent = msg
+  el.className = `show ${type}`
+  setTimeout(() => el.className = type, 3500)
 }
 
-// ─── Loading state ────────────────────────────
 function setLoading(btnId, on) {
-  const btn = document.getElementById(btnId);
-  if (!btn) return;
-  btn.disabled = on;
-  btn.classList.toggle('is-loading', on);
+  const btn = document.getElementById(btnId)
+  if (!btn) return
+  btn.disabled = on
+  btn.classList.toggle('is-loading', on)
 }
 
-// ─── Validation ───────────────────────────────
 function need(id, label) {
-  const v = document.getElementById(id)?.value?.trim();
-  if (!v) { toast(`Champ requis : ${label}`, 'ko'); return null; }
-  return v;
+  const v = document.getElementById(id)?.value?.trim()
+  if (!v) { toast(`Champ requis : ${label}`, 'ko'); return null }
+  return v
 }
 
-// ══════════════════════════════════════════════
-// CONNEXION
-// ══════════════════════════════════════════════
+// ── CONNEXION ─────────────────────────────────
 async function handleConnexion() {
-  const email = need('cnx-email', 'Email');
-  const pwd   = need('cnx-pwd',   'Mot de passe');
-  if (!email || !pwd) return;
-
-  // ✅ FIX : plus de mode démo silencieux — on informe clairement
-  if (!db) {
-    toast('Supabase non configuré — ajoutez votre clé anon', 'ko');
-    return;
-  }
-
-  setLoading('btn-cnx', true);
+  const email = need('cnx-email', 'Email')
+  const pwd   = need('cnx-pwd',   'Mot de passe')
+  if (!email || !pwd) return
+  if (!db) { toast('Supabase non configuré', 'ko'); return }
+  setLoading('btn-cnx', true)
   try {
-    const { data, error } = await db.auth.signInWithPassword({ email, password: pwd });
-    if (error) throw error;
-    toast('Connexion réussie ✓');
+    const { data, error } = await db.auth.signInWithPassword({ email, password: pwd })
+    if (error) throw error
+    toast('Connexion réussie ✓', 'ok')
     setTimeout(() => {
-      // Redirection selon le rôle
-      const role = data.user?.user_metadata?.role;
-      if (role === 'artisan') {
-        window.location.href = 'dashboard-vendeur.html';
-      } else {
-        window.location.href = 'hero.html';
-      }
-    }, 900);
-  } catch (err) {
-    let msg = 'Erreur de connexion.';
-    if (err.message === 'Invalid login credentials') {
-      msg = 'Email ou mot de passe incorrect.';
-    } else if (err.message === 'Email not confirmed') {
-      msg = 'Vérifiez votre email avant de vous connecter.';
-    } else if (err.message) {
-      msg = err.message;
-    }
-    toast(msg, 'ko');
-  } finally {
-    setLoading('btn-cnx', false);
-  }
+      const role = data.user?.user_metadata?.role
+      window.location.href = role === 'artisan' ? 'dashboard-vendeur.html' : 'hero.html'
+    }, 900)
+  } catch(err) {
+    let msg = 'Erreur de connexion.'
+    if (err.message === 'Invalid login credentials') msg = 'Email ou mot de passe incorrect.'
+    else if (err.message === 'Email not confirmed') msg = 'Vérifiez votre email avant de vous connecter.'
+    else if (err.message) msg = err.message
+    toast(msg, 'ko')
+  } finally { setLoading('btn-cnx', false) }
 }
 
-// ══════════════════════════════════════════════
-// INSCRIPTION
-// ══════════════════════════════════════════════
+// ── INSCRIPTION ───────────────────────────────
 async function handleInscription() {
-  const prenom = need('ins-prenom', 'Prénom');
-  const nom    = need('ins-nom',    'Nom');
-  const email  = need('ins-email',  'Email');
-  if (!prenom || !nom || !email) return;
-
-  const pwd = document.getElementById('ins-pwd')?.value || '';
-  if (pwd.length < 8)   { toast('Mot de passe : 8 caractères minimum', 'ko'); return; }
-  if (!selectedCountry) { toast("Sélectionnez votre pays d'origine", 'ko'); return; }
-  if (!selectedRole)    { toast('Sélectionnez votre rôle', 'ko'); return; }
-  if (!document.getElementById('cgu')?.checked) {
-    toast('Acceptez les CGU pour continuer', 'ko'); return;
-  }
-
-  // ✅ FIX : plus de mode démo silencieux
-  if (!db) {
-    toast('Supabase non configuré — ajoutez votre clé anon', 'ko');
-    return;
-  }
-
-  setLoading('btn-ins', true);
+  const prenom = need('ins-prenom', 'Prénom')
+  const nom    = need('ins-nom', 'Nom')
+  const email  = need('ins-email', 'Email')
+  if (!prenom || !nom || !email) return
+  const pwd = document.getElementById('ins-pwd')?.value || ''
+  if (pwd.length < 8) { toast('Mot de passe : 8 caractères minimum', 'ko'); return }
+  if (!selectedCountry) { toast("Sélectionnez votre pays d'origine", 'ko'); return }
+  if (!selectedRole) { toast('Sélectionnez votre rôle', 'ko'); return }
+  if (!document.getElementById('cgu')?.checked) { toast('Acceptez les CGU pour continuer', 'ko'); return }
+  if (!db) { toast('Supabase non configuré', 'ko'); return }
+  setLoading('btn-ins', true)
   try {
-    // 1 — Auth Supabase
     const { data: authData, error: authErr } = await db.auth.signUp({
-      email,
-      password: pwd,
-      options: {
-        data: {
-          full_name:  `${prenom} ${nom}`,
-          first_name: prenom,
-          last_name:  nom,
-          country:    selectedCountry,
-          role:       selectedRole,
-        }
-      }
-    });
-    if (authErr) throw authErr;
-
-    // 2 — Profil dans la table publique `users`
+      email, password: pwd,
+      options: { data: { full_name:`${prenom} ${nom}`, first_name:prenom, last_name:nom, country:selectedCountry, role:selectedRole } }
+    })
+    if (authErr) throw authErr
     if (authData?.user) {
       const { error: profileErr } = await db.from('users').upsert({
-        id:         authData.user.id,
-        email,
-        first_name: prenom,
-        last_name:  nom,
-        full_name:  `${prenom} ${nom}`,
-        country:    selectedCountry,
-        role:       selectedRole,
-        status:     selectedRole === 'artisan' ? 'pending' : 'active',
-        created_at: new Date().toISOString(),
-      }, { onConflict: 'id' });
-
-      // Log l'erreur profil mais ne bloque pas — l'auth est créée
-      if (profileErr) console.warn('Profile insert warning:', profileErr.message);
+        id: authData.user.id, email, first_name:prenom, last_name:nom,
+        full_name:`${prenom} ${nom}`, country:selectedCountry, role:selectedRole,
+        status: selectedRole === 'artisan' ? 'pending' : 'active',
+        created_at: new Date().toISOString()
+      }, { onConflict:'id' })
+      if (profileErr) console.warn('Profile insert warning:', profileErr.message)
     }
-
-    // Message différent selon rôle
-    if (selectedRole === 'artisan') {
-      toast('Compte créé ! Vérifiez votre email, puis attendez validation. ✓');
-    } else {
-      toast('Compte créé ! Vérifiez votre email ✓');
-    }
-    setTimeout(() => switchMode('connexion'), 2500);
-
-  } catch (err) {
-    let msg = "Erreur lors de l'inscription.";
-    if (err.message?.includes('already registered') || err.message?.includes('already exists')) {
-      msg = 'Cet email est déjà utilisé.';
-    } else if (err.message?.includes('Password should be')) {
-      msg = 'Mot de passe trop faible — utilisez min. 8 caractères.';
-    } else if (err.message) {
-      msg = err.message;
-    }
-    toast(msg, 'ko');
-  } finally {
-    setLoading('btn-ins', false);
-  }
+    toast(selectedRole === 'artisan' ? 'Compte créé ! Vérifiez votre email puis attendez validation. ✓' : 'Compte créé ! Vérifiez votre email ✓', 'ok')
+    setTimeout(() => switchMode('connexion'), 2500)
+  } catch(err) {
+    let msg = "Erreur lors de l'inscription."
+    if (err.message?.includes('already registered') || err.message?.includes('already exists')) msg = 'Cet email est déjà utilisé.'
+    else if (err.message?.includes('Password should be')) msg = 'Mot de passe trop faible.'
+    else if (err.message) msg = err.message
+    toast(msg, 'ko')
+  } finally { setLoading('btn-ins', false) }
 }
 
-// ══════════════════════════════════════════════
-// GOOGLE OAUTH
-// ══════════════════════════════════════════════
+// ── GOOGLE ────────────────────────────────────
 async function handleGoogle() {
-  if (!db) { toast('Supabase non configuré', 'ko'); return; }
-  const { error } = await db.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: window.location.origin + '/hero.html' }
-  });
-  if (error) toast(error.message, 'ko');
+  if (!db) { toast('Supabase non configuré', 'ko'); return }
+  const { error } = await db.auth.signInWithOAuth({ provider:'google', options:{ redirectTo: window.location.origin + '/hero.html' } })
+  if (error) toast(error.message, 'ko')
 }
 
-// ══════════════════════════════════════════════
-// RESET MOT DE PASSE
-// ══════════════════════════════════════════════
+// ── RESET ─────────────────────────────────────
 async function sendReset() {
-  const email = document.getElementById('cnx-email')?.value?.trim();
-  if (!email) { toast('Entrez votre email pour réinitialiser', 'ko'); return; }
-  if (!db)    { toast('Supabase non configuré', 'ko'); return; }
-  const { error } = await db.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin + '/index.html'
-  });
-  if (error) toast(error.message, 'ko');
-  else       toast('Email de réinitialisation envoyé ✓');
+  const email = document.getElementById('cnx-email')?.value?.trim()
+  if (!email) { toast('Entrez votre email pour réinitialiser', 'ko'); return }
+  if (!db) { toast('Supabase non configuré', 'ko'); return }
+  const { error } = await db.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/index.html' })
+  if (error) toast(error.message, 'ko')
+  else toast('Email de réinitialisation envoyé ✓', 'ok')
 }
 </script>
-
 </body>
 </html>
