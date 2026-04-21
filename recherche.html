@@ -1,425 +1,587 @@
 <!DOCTYPE html>
-<html class="light" lang="fr">
+<html lang="fr">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>WennaShop | Explorer</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>WennaShop — Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,900&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-tailwind.config = {
-  darkMode:"class",
-  theme:{extend:{
-    "colors":{
-      "surface-container":"#eaf0e5","on-secondary-fixed-variant":"#004786","tertiary-fixed":"#ffe08b","on-primary-fixed-variant":"#00531f","inverse-primary":"#73dc84","on-tertiary-fixed-variant":"#584400","tertiary-fixed-dim":"#f0c110","surface":"#f5fbf1","secondary":"#1a5fa8","on-tertiary-fixed":"#241a00","inverse-surface":"#2c322b","on-secondary-fixed":"#001c3a","surface-dim":"#d6dcd2","on-primary-container":"#f7fff2","primary-fixed":"#8ff99d","secondary-container":"#78b0fe","surface-container-lowest":"#ffffff","secondary-fixed-dim":"#a6c8ff","on-tertiary":"#ffffff","inverse-on-surface":"#edf3e8","error-container":"#ffdad6","background":"#f5fbf1","surface-container-low":"#eff5eb","on-background":"#171d17","surface-bright":"#f5fbf1","surface-container-high":"#e4eae0","on-secondary-container":"#00427d","surface-tint":"#006e2b","on-secondary":"#ffffff","secondary-fixed":"#d4e3ff","on-primary":"#ffffff","error":"#ba1a1a","tertiary-container":"#d0a600","outline-variant":"#becaba","on-primary-fixed":"#002108","on-surface-variant":"#3f4a3e","surface-variant":"#dee4da","outline":"#6f7a6d","primary-container":"#0f8739","primary":"#006b2a","surface-container-highest":"#dee4da","tertiary":"#745b00","on-error":"#ffffff","on-tertiary-container":"#4f3d00","on-error-container":"#93000a","on-surface":"#171d17","primary-fixed-dim":"#73dc84"
-    },
-    "borderRadius":{"DEFAULT":"1rem","lg":"2rem","xl":"3rem","full":"9999px"},
-    "fontFamily":{"headline":["Noto Serif"],"body":["Inter"],"label":["Inter"]}
-  }}
-}
-</script>
 <style>
-  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24;}
-  .hide-scrollbar::-webkit-scrollbar{display:none;}
-  .hide-scrollbar{-ms-overflow-style:none;scrollbar-width:none;}
-  body{min-height:max(884px,100dvh);}
+:root {
+  --fire: #FF6B2B;
+  --ember: #E85A1A;
+  --ink: #080808;
+  --coal: #111111;
+  --slate: #1A1A1A;
+  --smoke: #242424;
+  --fog: #888;
+  --snow: #f0ece6;
+  --fire-dim: rgba(255,107,43,0.12);
+  --fire-border: rgba(255,107,43,0.25);
+}
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body { font-family:'DM Sans',sans-serif; background:var(--ink); color:var(--snow); min-height:100vh; overflow-x:hidden; cursor:none; padding-top:64px; padding-bottom:90px; }
 
-  @keyframes shimmer{0%{background-position:-600px 0;}100%{background-position:600px 0;}}
-  .skeleton{
-    background:linear-gradient(90deg,#dde8d8 25%,#cdd8c8 50%,#dde8d8 75%);
-    background-size:600px 100%;
-    animation:shimmer 1.4s infinite linear;
-    border-radius:0.75rem;
-  }
+/* CURSEUR */
+.cur { position:fixed; width:10px; height:10px; background:var(--fire); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); transition:width .2s,height .2s; }
+.cur-ring { position:fixed; width:36px; height:36px; border:1px solid rgba(255,107,43,.45); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:width .3s,height .3s; }
+
+/* ICONS */
+.material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24; font-size:22px; line-height:1; vertical-align:middle; }
+
+/* HEADER */
+.hd { position:fixed; top:0; left:0; right:0; z-index:100; height:64px; padding:0 48px; display:flex; align-items:center; justify-content:space-between; background:rgba(8,8,8,.92); backdrop-filter:blur(20px); border-bottom:1px solid rgba(255,107,43,.12); }
+.logo { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:700; font-style:italic; color:var(--snow); text-decoration:none; letter-spacing:-.5px; }
+.logo b { color:var(--fire); }
+.hd-acts { display:flex; align-items:center; gap:20px; }
+.hd-acts a, .hd-acts button { background:none; border:none; color:var(--fog); cursor:none; text-decoration:none; transition:color .2s; display:flex; align-items:center; position:relative; }
+.hd-acts a:hover, .hd-acts button:hover { color:var(--fire); }
+.cbadge { position:absolute; top:-6px; right:-6px; width:16px; height:16px; background:var(--fire); color:#fff; font-size:9px; font-weight:700; border-radius:50%; display:none; align-items:center; justify-content:center; }
+
+/* LAYOUT */
+.page-wrap { display:flex; gap:0; max-width:1200px; margin:0 auto; }
+
+/* SIDEBAR */
+.sidebar { width:280px; flex-shrink:0; border-right:1px solid rgba(255,255,255,.05); padding:40px 28px; position:sticky; top:64px; height:calc(100vh - 64px); overflow-y:auto; }
+.sidebar::-webkit-scrollbar { width:3px; }
+.sidebar::-webkit-scrollbar-thumb { background:rgba(255,107,43,.2); }
+
+.sidebar-section { margin-bottom:36px; }
+.sidebar-title { font-size:9px; letter-spacing:3px; text-transform:uppercase; color:#444; margin-bottom:14px; }
+
+/* SEARCH */
+.search-wrap { position:relative; margin-bottom:28px; }
+.search-input { width:100%; background:rgba(255,255,255,.04); border:none; border-bottom:2px solid rgba(255,255,255,.08); color:var(--snow); padding:12px 40px 12px 14px; font-size:13px; font-family:'DM Sans',sans-serif; outline:none; transition:border-color .2s; }
+.search-input:focus { border-bottom-color:var(--fire); background:rgba(255,255,255,.06); }
+.search-input::placeholder { color:#333; }
+.search-clear { position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; color:#444; cursor:none; display:none; transition:color .2s; }
+.search-clear:hover { color:var(--fire); }
+.search-clear.show { display:flex; }
+
+/* CATEGORY PILLS */
+.cat-list { display:flex; flex-direction:column; gap:2px; }
+.cat-pill { background:transparent; border:none; color:var(--fog); cursor:none; font-size:12px; font-family:'DM Sans',sans-serif; padding:9px 12px; text-align:left; transition:all .2s; letter-spacing:.5px; display:flex; align-items:center; gap:8px; }
+.cat-pill:hover { color:var(--snow); background:rgba(255,255,255,.04); }
+.cat-pill.active { color:var(--fire); background:var(--fire-dim); }
+.cat-pill.active::before { content:''; width:3px; height:3px; background:var(--fire); border-radius:50%; flex-shrink:0; }
+
+/* ORIGIN CHECKBOXES */
+.origin-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.origin-card { border:1px solid rgba(255,255,255,.08); padding:14px 10px; text-align:center; cursor:pointer; transition:all .2s; position:relative; }
+.origin-card input { position:absolute; opacity:0; pointer-events:none; }
+.origin-card:hover { border-color:rgba(255,107,43,.3); }
+.origin-card.checked { border-color:var(--fire); background:var(--fire-dim); }
+.origin-flag { font-size:18px; display:block; margin-bottom:4px; }
+.origin-name { font-size:11px; font-weight:500; letter-spacing:.5px; }
+.origin-sub { font-size:9px; color:var(--fog); letter-spacing:1px; text-transform:uppercase; margin-top:2px; }
+
+/* PRICE RANGE */
+.price-display { font-size:12px; color:var(--fire); margin-bottom:12px; }
+.range-input { width:100%; accent-color:var(--fire); margin-bottom:6px; cursor:pointer; }
+
+/* RESET BTN */
+.btn-reset { width:100%; padding:10px; font-size:9px; letter-spacing:2px; text-transform:uppercase; background:transparent; border:1px solid rgba(255,255,255,.08); color:var(--fog); cursor:none; transition:all .2s; font-family:'DM Sans',sans-serif; margin-top:12px; }
+.btn-reset:hover { border-color:var(--fire); color:var(--fire); }
+
+/* PRODUCTS AREA */
+.products-area { flex:1; padding:40px 40px; min-width:0; }
+
+/* PAGE TITLE */
+.page-eyebrow { font-size:9px; letter-spacing:3px; text-transform:uppercase; color:var(--fire); margin-bottom:8px; display:flex; align-items:center; gap:12px; }
+.page-eyebrow::before { content:''; display:block; width:20px; height:1px; background:var(--fire); }
+.page-title { font-family:'Cormorant Garamond',serif; font-size:clamp(40px,5vw,64px); font-weight:700; font-style:italic; letter-spacing:-1.5px; line-height:.92; margin-bottom:8px; }
+.page-sub { font-size:12px; color:var(--fog); letter-spacing:2px; text-transform:uppercase; margin-bottom:28px; }
+
+/* TOOLBAR */
+.toolbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; padding-bottom:16px; border-bottom:1px solid rgba(255,255,255,.05); flex-wrap:wrap; gap:12px; }
+.results-count { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:#555; }
+.sort-select { appearance:none; background:rgba(255,255,255,.04) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 10px center; border:1px solid rgba(255,255,255,.08); color:var(--snow); padding:8px 28px 8px 12px; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; font-family:'DM Sans',sans-serif; cursor:pointer; outline:none; transition:border-color .2s; }
+.sort-select:focus { border-color:var(--fire-border); }
+.sort-select option { background:var(--slate); }
+
+/* PRODUCT GRID */
+.prod-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; }
+.prod-grid.cols-4 { grid-template-columns:repeat(4,1fr); }
+
+/* PRODUCT CARD */
+.prod-card { background:var(--slate); cursor:none; position:relative; overflow:hidden; transition:transform .4s cubic-bezier(.22,1,.36,1); }
+.prod-card:hover { transform:translateY(-4px); z-index:2; }
+.prod-img { aspect-ratio:3/4; overflow:hidden; position:relative; }
+.prod-img img { width:100%; height:100%; object-fit:cover; transition:transform .7s cubic-bezier(.22,1,.36,1); }
+.prod-card:hover .prod-img img { transform:scale(1.08); }
+.prod-badge { position:absolute; top:12px; left:12px; background:rgba(8,8,8,.72); border:1px solid rgba(255,255,255,.1); backdrop-filter:blur(8px); padding:4px 10px; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:#aaa; }
+.prod-rare { position:absolute; top:12px; right:12px; background:var(--fire); padding:4px 10px; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:#fff; }
+.prod-add { position:absolute; bottom:12px; right:12px; width:40px; height:40px; background:var(--fire); display:flex; align-items:center; justify-content:center; opacity:0; transform:scale(.8); transition:opacity .25s,transform .25s; border:none; cursor:none; color:#fff; }
+.prod-card:hover .prod-add { opacity:1; transform:scale(1); }
+.prod-info { padding:16px 18px 20px; }
+.prod-cat { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:#444; margin-bottom:6px; }
+.prod-name { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:600; color:var(--snow); line-height:1.2; margin-bottom:10px; }
+.prod-ft { display:flex; align-items:center; justify-content:space-between; }
+.prod-price { font-size:15px; font-weight:500; color:var(--fire); }
+
+/* SKELETON */
+.skel { background:linear-gradient(90deg,#1a1a1a 25%,#222 50%,#1a1a1a 75%); background-size:200% 100%; animation:shim 1.5s infinite; }
+@keyframes shim { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* NO RESULTS */
+.no-results { padding:80px 0; text-align:center; display:none; }
+.no-results.show { display:block; }
+.no-results-title { font-family:'Cormorant Garamond',serif; font-size:32px; font-style:italic; color:#333; margin-bottom:10px; }
+.no-results-sub { font-size:12px; color:#444; margin-bottom:20px; }
+
+/* TOAST */
+#toast { position:fixed; bottom:32px; left:50%; transform:translateX(-50%) translateY(8px); z-index:500; background:var(--slate); border:1px solid var(--fire-border); color:var(--snow); padding:14px 24px; font-size:12px; opacity:0; pointer-events:none; transition:all .3s; white-space:nowrap; }
+#toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* BOTTOM NAV */
+.bnav { display:none; position:fixed; bottom:0; left:0; right:0; z-index:100; background:rgba(8,8,8,.95); backdrop-filter:blur(20px); border-top:1px solid rgba(255,107,43,.15); padding:10px 0 22px; }
+.bnav-inner { display:flex; justify-content:space-around; }
+.bnav-item { display:flex; flex-direction:column; align-items:center; gap:4px; color:#555; text-decoration:none; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; transition:color .2s; cursor:none; }
+.bnav-item.active, .bnav-item:hover { color:var(--fire); }
+
+/* MOBILE SEARCH BAR */
+.mobile-search { display:none; padding:12px 20px; border-bottom:1px solid rgba(255,255,255,.05); }
+.mobile-search .search-input { width:100%; }
+
+@media(max-width:1024px){
+  .sidebar { display:none; }
+  .products-area { padding:24px 20px; }
+  .mobile-search { display:block; }
+  .hd { padding:0 20px; }
+}
+@media(max-width:768px){
+  body { cursor:auto; }
+  .cur, .cur-ring { display:none; }
+  .prod-grid { grid-template-columns:repeat(2,1fr); }
+  .bnav { display:block; }
+}
 </style>
-<link rel="stylesheet" href="/css/wenna-palette-conversion.css">
 </head>
-<body class="bg-surface font-body text-on-surface antialiased">
+<body>
 
-<!-- TopAppBar — design original -->
-<header class="fixed top-0 w-full z-50 bg-[#f5fbf1]/80 dark:bg-slate-900/80 backdrop-blur-xl flex justify-between items-center px-6 py-4 w-full">
-  <div class="flex items-center gap-4">
-    <button class="text-[#171d17] dark:text-slate-400 scale-95 active:scale-90 transition-transform">
-      <span class="material-symbols-outlined">menu</span>
-    </button>
-    <h1 class="font-['Noto_Serif'] font-black italic text-[#006b2a] dark:text-[#0f8739] text-2xl tracking-tight">WennaShop</h1>
-  </div>
-  <div class="flex items-center gap-4">
-    <a href="panier.html" class="text-[#171d17] dark:text-slate-400 scale-95 active:scale-90 transition-transform relative">
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="curRing"></div>
+<div id="toast"></div>
+
+<!-- HEADER -->
+<header class="hd">
+  <a href="index.html" class="logo">Wenna<b>Shop</b></a>
+  <div class="hd-acts">
+    <a href="compte.html" title="Mon compte"><span class="material-symbols-outlined">person</span></a>
+    <a href="panier.html" style="position:relative;" title="Panier">
       <span class="material-symbols-outlined">shopping_bag</span>
-      <span id="cart-badge" class="absolute -top-1 -right-1 bg-primary text-white text-[9px] font-bold w-4 h-4 rounded-full items-center justify-center hidden flex">0</span>
+      <span class="cbadge" id="cart-badge">0</span>
     </a>
   </div>
 </header>
 
-<main class="pt-24 pb-32 px-6 max-w-7xl mx-auto">
-
-  <!-- Editorial Header — design original -->
-  <section class="mb-12">
-    <h2 class="font-headline text-5xl md:text-6xl font-bold text-primary mb-2 tracking-tight">Explore</h2>
-    <p class="font-label text-sm uppercase tracking-[0.1em] text-on-surface-variant opacity-70">Curating the Heritage of Gabon &amp; Morocco</p>
-  </section>
-
-  <!-- Search & Filter — design original -->
-  <section class="mb-12 space-y-8">
-
-    <!-- Barre de recherche — design original -->
-    <div class="relative flex items-center group">
-      <span class="material-symbols-outlined absolute left-4 text-outline group-focus-within:text-primary transition-colors">search</span>
-      <input
-        id="search-input"
-        class="w-full pl-12 pr-10 py-5 bg-surface-container-high border-b border-outline-variant/15 focus:border-primary focus:ring-0 rounded-t-lg font-body text-lg transition-all outline-none"
-        placeholder="Rechercher des trésors..."
-        type="text"
-        autocomplete="off"
-      />
-      <button id="btn-clear" onclick="clearSearch()"
-        class="absolute right-4 text-outline hover:text-on-surface transition-colors hidden">
-        <span class="material-symbols-outlined">close</span>
-      </button>
-    </div>
-
-    <!-- Catégories — design original (pills chargées dynamiquement) -->
-    <div class="flex flex-col gap-4">
-      <span class="font-label text-xs font-bold uppercase tracking-widest text-on-surface-variant">Catégories</span>
-      <div id="cat-row" class="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
-        <button
-          data-id=""
-          onclick="selectCat(this)"
-          class="cat-pill flex-shrink-0 px-8 py-3 bg-secondary text-on-secondary rounded-full font-label text-sm font-medium transition-all hover:opacity-90">
-          All
-        </button>
-        <!-- Catégories Supabase injectées ici -->
-      </div>
-    </div>
-
-    <!-- Origine + Prix — design original -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
-
-      <!-- Origine -->
-      <div class="bg-surface-container-low p-8 rounded-lg space-y-4">
-        <h3 class="font-headline text-xl font-bold">Origine</h3>
-        <div class="flex gap-4">
-          <label class="flex-1 cursor-pointer group">
-            <input class="hidden peer" type="checkbox" id="f-gabon" onchange="applyFilters()" />
-            <div class="p-4 rounded-lg bg-surface-container-lowest text-center border-2 border-transparent peer-checked:border-primary peer-checked:bg-primary-fixed-dim/20 transition-all">
-              <span class="block font-headline text-lg mb-1">Gabon</span>
-              <span class="block font-label text-[10px] uppercase tracking-tighter opacity-60">Afrique Centrale</span>
-            </div>
-          </label>
-          <label class="flex-1 cursor-pointer group">
-            <input class="hidden peer" type="checkbox" id="f-maroc" onchange="applyFilters()" />
-            <div class="p-4 rounded-lg bg-surface-container-lowest text-center border-2 border-transparent peer-checked:border-secondary peer-checked:bg-secondary-container/20 transition-all">
-              <span class="block font-headline text-lg mb-1">Maroc</span>
-              <span class="block font-label text-[10px] uppercase tracking-tighter opacity-60">Afrique du Nord</span>
-            </div>
-          </label>
-        </div>
-      </div>
-
-      <!-- Prix -->
-      <div class="bg-surface-container-low p-8 rounded-lg space-y-6">
-        <div class="flex justify-between items-center">
-          <h3 class="font-headline text-xl font-bold">Prix</h3>
-          <span id="price-label" class="font-label text-sm font-semibold text-tertiary">0 – 50 000 MAD</span>
-        </div>
-        <!-- Double slider -->
-        <div class="space-y-3">
-          <input type="range" id="price-min" min="0" max="50000" value="0" step="100"
-            class="w-full accent-primary cursor-pointer"
-            oninput="updatePriceLabel()" onchange="applyFilters()" />
-          <input type="range" id="price-max" min="0" max="50000" value="50000" step="100"
-            class="w-full accent-primary cursor-pointer"
-            oninput="updatePriceLabel()" onchange="applyFilters()" />
-        </div>
-        <div class="flex justify-between font-label text-[11px] uppercase tracking-widest text-on-surface-variant/60">
-          <span>Min</span><span>Max</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Compteur résultats -->
-    <div class="flex justify-between items-center pt-2">
-      <span id="results-count" class="font-label text-sm text-on-surface-variant"></span>
-      <button id="btn-reset" onclick="resetAll()"
-        class="hidden font-label text-xs text-secondary underline underline-offset-2 hover:no-underline">
-        Réinitialiser
-      </button>
-    </div>
-
-  </section>
-
-  <!-- Grille résultats — design original -->
-  <section id="products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
-    <!-- Skeletons -->
-    <div class="skeleton aspect-[3/4] rounded-lg"></div>
-    <div class="skeleton aspect-[3/4] rounded-lg"></div>
-    <div class="skeleton aspect-[3/4] rounded-lg"></div>
-    <div class="skeleton aspect-[3/4] rounded-lg"></div>
-  </section>
-
-  <!-- Aucun résultat -->
-  <div id="no-results" class="hidden flex flex-col items-center justify-center py-24 text-center gap-4">
-    <span class="material-symbols-outlined text-5xl text-outline">search_off</span>
-    <p class="font-headline text-xl font-bold">Aucun produit trouvé</p>
-    <p class="text-on-surface-variant text-sm">Essayez d'autres mots-clés ou réinitialisez les filtres.</p>
-    <button onclick="resetAll()" class="mt-2 px-6 py-2 rounded-full border border-outline-variant text-sm font-bold hover:bg-surface-container-high transition-colors">
-      Réinitialiser
+<!-- MOBILE SEARCH -->
+<div class="mobile-search">
+  <div class="search-wrap" style="margin-bottom:0;">
+    <input class="search-input" id="search-input-mobile" type="search" placeholder="Rechercher des trésors…" oninput="onSearch(this.value)"/>
+    <button class="search-clear" id="search-clear-mobile" onclick="clearSearch()">
+      <span class="material-symbols-outlined" style="font-size:18px;">close</span>
     </button>
   </div>
+</div>
 
-</main>
+<!-- LAYOUT -->
+<div class="page-wrap">
 
-<!-- BottomNavBar — design original -->
-<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-[#f5fbf1]/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-t-[2rem] z-50 shadow-[0_-8px_40px_rgba(23,29,23,0.06)]">
-  <a href="index.html" class="flex flex-col items-center justify-center text-[#171d17]/60 dark:text-slate-400 scale-100 active:scale-97 transition-all duration-200">
-    <span class="material-symbols-outlined">home</span>
-    <span class="font-['Inter'] font-medium text-[11px] tracking-[0.05em] uppercase mt-1">Home</span>
-  </a>
-  <a href="recherche.html" class="flex flex-col items-center justify-center text-[#006b2a] dark:text-[#0f8739] font-bold">
-    <span class="material-symbols-outlined">storefront</span>
-    <span class="font-['Inter'] font-medium text-[11px] tracking-[0.05em] uppercase mt-1">Shop</span>
-  </a>
-  <a href="sell.html" class="flex flex-col items-center justify-center text-[#171d17]/60 dark:text-slate-400 scale-100 active:scale-97 transition-all duration-200">
-    <span class="material-symbols-outlined">add_circle</span>
-    <span class="font-['Inter'] font-medium text-[11px] tracking-[0.05em] uppercase mt-1">Sell</span>
-  </a>
-  <a href="compte.html" class="flex flex-col items-center justify-center text-[#171d17]/60 dark:text-slate-400 scale-100 active:scale-97 transition-all duration-200">
-    <span class="material-symbols-outlined">person</span>
-    <span class="font-['Inter'] font-medium text-[11px] tracking-[0.05em] uppercase mt-1">Profile</span>
-  </a>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <!-- SEARCH -->
+    <div class="search-wrap">
+      <input class="search-input" id="search-input" type="search" placeholder="Rechercher des trésors…" oninput="onSearch(this.value)"/>
+      <button class="search-clear" id="search-clear" onclick="clearSearch()">
+        <span class="material-symbols-outlined" style="font-size:18px;">close</span>
+      </button>
+    </div>
+
+    <!-- CATEGORIES -->
+    <div class="sidebar-section">
+      <p class="sidebar-title">Catégories</p>
+      <div class="cat-list" id="cat-list">
+        <button class="cat-pill active" data-id="" onclick="selectCat(this)">Tout voir</button>
+      </div>
+    </div>
+
+    <!-- ORIGINE -->
+    <div class="sidebar-section">
+      <p class="sidebar-title">Origine</p>
+      <div class="origin-grid">
+        <div class="origin-card" id="card-gabon" onclick="toggleOrigin('gabon')">
+          <input type="checkbox" id="f-gabon"/>
+          <span class="origin-flag">🇬🇦</span>
+          <p class="origin-name">Gabon</p>
+          <p class="origin-sub">Centrale</p>
+        </div>
+        <div class="origin-card" id="card-maroc" onclick="toggleOrigin('maroc')">
+          <input type="checkbox" id="f-maroc"/>
+          <span class="origin-flag">🇲🇦</span>
+          <p class="origin-name">Maroc</p>
+          <p class="origin-sub">Nord</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRIX -->
+    <div class="sidebar-section">
+      <p class="sidebar-title">Budget</p>
+      <p class="price-display" id="price-display">0 – 50 000 MAD</p>
+      <input type="range" class="range-input" id="price-min" min="0" max="50000" value="0" step="100" oninput="updatePrice()" onchange="applyFilters()"/>
+      <input type="range" class="range-input" id="price-max" min="0" max="50000" value="50000" step="100" oninput="updatePrice()" onchange="applyFilters()"/>
+    </div>
+
+    <!-- EN STOCK -->
+    <div class="sidebar-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;">
+        <p style="font-size:12px;font-weight:500;">En stock uniquement</p>
+        <div class="toggle-track" id="stock-toggle" onclick="toggleStock()">
+          <div class="toggle-thumb"></div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-reset" onclick="resetAll()">Réinitialiser les filtres</button>
+  </aside>
+
+  <!-- PRODUCTS AREA -->
+  <div class="products-area">
+    <div class="page-eyebrow">Artisanat authentique</div>
+    <h1 class="page-title">Explorer</h1>
+    <p class="page-sub" id="page-sub">Gabon × Maroc · Sélection curatée</p>
+
+    <div class="toolbar">
+      <span class="results-count" id="results-count"></span>
+      <select class="sort-select" id="sort-select" onchange="applyFilters()">
+        <option value="created_at:desc">Plus récents</option>
+        <option value="price:asc">Prix croissant</option>
+        <option value="price:desc">Prix décroissant</option>
+        <option value="name:asc">A → Z</option>
+      </select>
+    </div>
+
+    <div class="prod-grid" id="prod-grid">
+      <!-- skeletons -->
+      <div class="prod-card"><div class="prod-img skel"></div><div class="prod-info"><div class="skel" style="height:9px;width:50%;margin-bottom:8px;border-radius:2px;"></div><div class="skel" style="height:17px;width:75%;margin-bottom:10px;border-radius:2px;"></div><div class="skel" style="height:13px;width:35%;border-radius:2px;"></div></div></div>
+      <div class="prod-card"><div class="prod-img skel"></div><div class="prod-info"><div class="skel" style="height:9px;width:50%;margin-bottom:8px;border-radius:2px;"></div><div class="skel" style="height:17px;width:75%;margin-bottom:10px;border-radius:2px;"></div><div class="skel" style="height:13px;width:35%;border-radius:2px;"></div></div></div>
+      <div class="prod-card"><div class="prod-img skel"></div><div class="prod-info"><div class="skel" style="height:9px;width:50%;margin-bottom:8px;border-radius:2px;"></div><div class="skel" style="height:17px;width:75%;margin-bottom:10px;border-radius:2px;"></div><div class="skel" style="height:13px;width:35%;border-radius:2px;"></div></div></div>
+      <div class="prod-card"><div class="prod-img skel"></div><div class="prod-info"><div class="skel" style="height:9px;width:50%;margin-bottom:8px;border-radius:2px;"></div><div class="skel" style="height:17px;width:75%;margin-bottom:10px;border-radius:2px;"></div><div class="skel" style="height:13px;width:35%;border-radius:2px;"></div></div></div>
+      <div class="prod-card"><div class="prod-img skel"></div><div class="prod-info"><div class="skel" style="height:9px;width:50%;margin-bottom:8px;border-radius:2px;"></div><div class="skel" style="height:17px;width:75%;margin-bottom:10px;border-radius:2px;"></div><div class="skel" style="height:13px;width:35%;border-radius:2px;"></div></div></div>
+      <div class="prod-card"><div class="prod-img skel"></div><div class="prod-info"><div class="skel" style="height:9px;width:50%;margin-bottom:8px;border-radius:2px;"></div><div class="skel" style="height:17px;width:75%;margin-bottom:10px;border-radius:2px;"></div><div class="skel" style="height:13px;width:35%;border-radius:2px;"></div></div></div>
+    </div>
+
+    <div class="no-results" id="no-results">
+      <p class="no-results-title">Aucun produit trouvé</p>
+      <p class="no-results-sub">Essayez d'autres filtres ou revenez plus tard.</p>
+      <button class="btn-reset" onclick="resetAll()" style="display:inline-flex;width:auto;padding:10px 24px;">Réinitialiser</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bnav">
+  <div class="bnav-inner">
+    <a href="index.html" class="bnav-item"><span class="material-symbols-outlined">home</span><span>Home</span></a>
+    <a href="recherche.html" class="bnav-item active"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">storefront</span><span>Shop</span></a>
+    <a href="dashboard-vendeur.html" class="bnav-item"><span class="material-symbols-outlined">add_circle</span><span>Sell</span></a>
+    <a href="compte.html" class="bnav-item"><span class="material-symbols-outlined">person</span><span>Profil</span></a>
+  </div>
 </nav>
 
-<!-- ══════════════════════════════════
-     SCRIPT SUPABASE
-══════════════════════════════════ -->
+<!-- TOGGLE STYLE -->
+<style>
+.toggle-track { width:42px; height:22px; border-radius:999px; background:rgba(255,255,255,.1); transition:background .2s; cursor:pointer; position:relative; flex-shrink:0; }
+.toggle-track.on { background:var(--fire); }
+.toggle-thumb { width:16px; height:16px; background:#fff; border-radius:50%; position:absolute; top:3px; left:3px; transition:left .2s; box-shadow:0 1px 4px rgba(0,0,0,.3); }
+.toggle-track.on .toggle-thumb { left:23px; }
+</style>
+
 <script>
-  // ─── CONFIG ──────────────────────────────────────────────
-  const SUPABASE_URL  = 'https://aakxoydznmybstfozjte.supabase.co'
-  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
-  // ─────────────────────────────────────────────────────────
+const sb = supabase.createClient(
+  'https://aakxoydznmybstfozjte.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
+)
 
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON)
+// ── CURSEUR ──────────────────────────────────
+const cur=document.getElementById('cur'), crng=document.getElementById('curRing')
+let mx=0,my=0,rx=0,ry=0
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY})
+;(function anim(){if(cur){cur.style.left=mx+'px';cur.style.top=my+'px'}rx+=(mx-rx)*.12;ry+=(my-ry)*.12;if(crng){crng.style.left=rx+'px';crng.style.top=ry+'px'}requestAnimationFrame(anim)})()
 
-  // ─── État ────────────────────────────────────────────────
-  let searchTerm    = ''
-  let selectedCatId = ''
-  let debounceTimer = null
+// ── STATE ────────────────────────────────────
+let state = {
+  search: '', catId: '', pays: null,
+  priceMin: 0, priceMax: 50000, stockOnly: false,
+  sort: 'created_at:desc', debounce: null
+}
 
-  const $ = id => document.getElementById(id)
+// ── TOAST ────────────────────────────────────
+function showToast(msg,d=2500){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),d)}
 
-  function fmt(n, c = 'MAD') {
-    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: c }).format(n)
+// ── FORMAT ───────────────────────────────────
+function fmt(n,c='MAD'){
+  try{return new Intl.NumberFormat('fr-FR',{style:'currency',currency:c,minimumFractionDigits:0}).format(n)}
+  catch{return Number(n).toFixed(0)+' '+c}
+}
+
+// ── BADGE PANIER (Supabase) ───────────────────
+async function updateCartBadge(){
+  try{
+    const {data:{user}}=await sb.auth.getUser()
+    if(!user)return
+    let {data:profile}=await sb.from('users').select('id').eq('auth_id',user.id).maybeSingle()
+    if(!profile)return
+    const {data:items}=await sb.from('cart_items').select('quantity').eq('user_id',profile.id)
+    const n=(items||[]).reduce((s,i)=>s+(i.quantity||1),0)
+    const b=document.getElementById('cart-badge')
+    b.textContent=n>99?'99+':n
+    b.style.display=n>0?'flex':'none'
+  }catch{}
+}
+
+// ── ADD TO CART (Supabase via Cart module) ────
+async function addToCart(productId, productName) {
+  const {data:{user}}=await sb.auth.getUser()
+  if(!user){showToast('Connecte-toi pour ajouter au panier');setTimeout(()=>window.location.href='compte.html',1500);return}
+  let {data:profile}=await sb.from('users').select('id').eq('auth_id',user.id).maybeSingle()
+  if(!profile){showToast('Profil introuvable');return}
+  const userId=profile.id
+  const {data:existing}=await sb.from('cart_items').select('id,quantity').eq('user_id',userId).eq('product_id',productId).maybeSingle()
+  let error
+  if(existing){
+    ({error}=await sb.from('cart_items').update({quantity:existing.quantity+1}).eq('id',existing.id))
+  }else{
+    ({error}=await sb.from('cart_items').insert({user_id:userId,product_id:productId,quantity:1,added_at:new Date().toISOString()}))
   }
+  if(error)showToast('Erreur : '+error.message)
+  else{showToast(`« ${productName} » ajouté ✓`);updateCartBadge()}
+}
 
-  // ─── Badge panier ────────────────────────────────────────
-  function updateCartBadge() {
-    const n = JSON.parse(localStorage.getItem('wenna_cart') || '[]').reduce((s,i) => s + i.qty, 0)
-    const b = $('cart-badge')
-    b.textContent = n
-    n > 0 ? b.classList.remove('hidden') : b.classList.add('hidden')
+// ── URL PARAMS ───────────────────────────────
+function readURLParams(){
+  const p=new URLSearchParams(location.search)
+  if(p.get('pays')) state.pays = p.get('pays')==='gabon'?'Gabon':p.get('pays')==='maroc'?'Maroc':null
+  if(p.get('cat')) state.catId = p.get('cat')
+  if(p.get('q')) state.search = p.get('q')
+  if(state.pays==='Gabon'){document.getElementById('f-gabon').checked=true;document.getElementById('card-gabon').classList.add('checked')}
+  if(state.pays==='Maroc'){document.getElementById('f-maroc').checked=true;document.getElementById('card-maroc').classList.add('checked')}
+  if(state.search){
+    document.getElementById('search-input').value=state.search
+    document.getElementById('search-input-mobile').value=state.search
   }
+}
 
-  // ─── Catégories depuis Supabase ──────────────────────────
-  async function loadCategories() {
-    const { data } = await sb.from('categories').select('id, name').order('name')
-    if (!data) return
-    const row = $('cat-row')
-    data.forEach(cat => {
-      const btn = document.createElement('button')
-      btn.className = 'cat-pill flex-shrink-0 px-8 py-3 bg-surface-container-highest text-on-surface-variant rounded-full font-label text-sm font-medium hover:bg-secondary-container hover:text-on-secondary-container transition-all'
-      btn.dataset.id = cat.id
-      btn.textContent = cat.name
-      btn.onclick = () => selectCat(btn)
-      row.appendChild(btn)
-    })
-  }
-
-  function selectCat(btn) {
-    document.querySelectorAll('.cat-pill').forEach(b => {
-      b.className = 'cat-pill flex-shrink-0 px-8 py-3 bg-surface-container-highest text-on-surface-variant rounded-full font-label text-sm font-medium hover:bg-secondary-container hover:text-on-secondary-container transition-all'
-    })
-    btn.className = 'cat-pill flex-shrink-0 px-8 py-3 bg-secondary text-on-secondary rounded-full font-label text-sm font-medium transition-all hover:opacity-90'
-    selectedCatId = btn.dataset.id || ''
-    search()
-  }
-
-  // ─── Prix ────────────────────────────────────────────────
-  function updatePriceLabel() {
-    const mn = parseInt($('price-min').value)
-    const mx = parseInt($('price-max').value)
-    $('price-label').textContent = `${mn.toLocaleString('fr-FR')} – ${mx.toLocaleString('fr-FR')} MAD`
-  }
-
-  function applyFilters() {
-    updatePriceLabel()
-    search()
-  }
-
-  // ─── Recherche ───────────────────────────────────────────
-  $('search-input') && document.addEventListener('DOMContentLoaded', () => {
-    $('search-input').addEventListener('input', e => {
-      searchTerm = e.target.value.trim()
-      $('btn-clear').classList.toggle('hidden', !searchTerm)
-      $('btn-reset').classList.toggle('hidden', !searchTerm && !selectedCatId)
-      clearTimeout(debounceTimer)
-      debounceTimer = setTimeout(search, 350)
-    })
+// ── CATEGORIES ───────────────────────────────
+async function loadCategories(){
+  const {data}=await sb.from('categories').select('id,name').order('name')
+  if(!data)return
+  const list=document.getElementById('cat-list')
+  data.forEach(cat=>{
+    const btn=document.createElement('button')
+    btn.className='cat-pill'
+    btn.dataset.id=cat.id
+    btn.textContent=cat.name
+    btn.onclick=()=>selectCat(btn)
+    if(state.catId===String(cat.id))btn.classList.add('active')
+    list.appendChild(btn)
   })
+}
 
-  function clearSearch() {
-    $('search-input').value = ''
-    searchTerm = ''
-    $('btn-clear').classList.add('hidden')
-    search()
-  }
+function selectCat(btn){
+  document.querySelectorAll('.cat-pill').forEach(b=>b.classList.remove('active'))
+  btn.classList.add('active')
+  state.catId=btn.dataset.id||''
+  loadProducts()
+}
 
-  function resetAll() {
-    clearSearch()
-    $('f-gabon').checked = false
-    $('f-maroc').checked = false
-    $('price-min').value = 0
-    $('price-max').value = 50000
-    updatePriceLabel()
-    // Réactiver "All"
-    document.querySelectorAll('.cat-pill').forEach((b, i) => {
-      if (i === 0) {
-        b.className = 'cat-pill flex-shrink-0 px-8 py-3 bg-secondary text-on-secondary rounded-full font-label text-sm font-medium transition-all hover:opacity-90'
-        b.dataset.id = ''
-      } else {
-        b.className = 'cat-pill flex-shrink-0 px-8 py-3 bg-surface-container-highest text-on-surface-variant rounded-full font-label text-sm font-medium hover:bg-secondary-container hover:text-on-secondary-container transition-all'
-      }
+// ── SEARCH ───────────────────────────────────
+function onSearch(val){
+  state.search=val.trim()
+  // sync inputs
+  const si=document.getElementById('search-input')
+  const sm=document.getElementById('search-input-mobile')
+  if(si!==document.activeElement)si.value=val
+  if(sm!==document.activeElement)sm.value=val
+  // show/hide clear
+  document.getElementById('search-clear').classList.toggle('show',!!val)
+  document.getElementById('search-clear-mobile').classList.toggle('show',!!val)
+  clearTimeout(state.debounce)
+  state.debounce=setTimeout(loadProducts,350)
+}
+
+function clearSearch(){
+  state.search=''
+  document.getElementById('search-input').value=''
+  document.getElementById('search-input-mobile').value=''
+  document.getElementById('search-clear').classList.remove('show')
+  document.getElementById('search-clear-mobile').classList.remove('show')
+  loadProducts()
+}
+
+// ── ORIGIN TOGGLE ────────────────────────────
+function toggleOrigin(pays){
+  const id='f-'+pays
+  const cardId='card-'+pays
+  const cb=document.getElementById(id)
+  const card=document.getElementById(cardId)
+  cb.checked=!cb.checked
+  card.classList.toggle('checked',cb.checked)
+  applyFilters()
+}
+
+// ── PRICE ────────────────────────────────────
+function updatePrice(){
+  const mn=parseInt(document.getElementById('price-min').value)
+  const mx=parseInt(document.getElementById('price-max').value)
+  document.getElementById('price-display').textContent=`${mn.toLocaleString('fr-FR')} – ${mx.toLocaleString('fr-FR')} MAD`
+}
+
+// ── STOCK TOGGLE ─────────────────────────────
+function toggleStock(){
+  const t=document.getElementById('stock-toggle')
+  t.classList.toggle('on')
+  state.stockOnly=t.classList.contains('on')
+  loadProducts()
+}
+
+// ── APPLY FILTERS ────────────────────────────
+function applyFilters(){
+  const g=document.getElementById('f-gabon').checked
+  const m=document.getElementById('f-maroc').checked
+  state.pays=(g&&m)||(!g&&!m)?null:g?'Gabon':'Maroc'
+  state.priceMin=parseInt(document.getElementById('price-min').value||0)
+  state.priceMax=parseInt(document.getElementById('price-max').value||50000)
+  state.sort=document.getElementById('sort-select').value
+  updatePrice()
+  loadProducts()
+}
+
+// ── RESET ────────────────────────────────────
+function resetAll(){
+  state={...state,search:'',catId:'',pays:null,priceMin:0,priceMax:50000,stockOnly:false}
+  document.getElementById('search-input').value=''
+  document.getElementById('search-input-mobile').value=''
+  document.getElementById('search-clear').classList.remove('show')
+  document.getElementById('search-clear-mobile').classList.remove('show')
+  document.getElementById('f-gabon').checked=false
+  document.getElementById('f-maroc').checked=false
+  document.getElementById('card-gabon').classList.remove('checked')
+  document.getElementById('card-maroc').classList.remove('checked')
+  document.getElementById('price-min').value=0
+  document.getElementById('price-max').value=50000
+  document.getElementById('stock-toggle').classList.remove('on')
+  updatePrice()
+  document.querySelectorAll('.cat-pill').forEach((b,i)=>{b.classList.toggle('active',i===0)})
+  loadProducts()
+}
+
+// ── SKELETONS ────────────────────────────────
+function showSkeletons(){
+  document.getElementById('no-results').classList.remove('show')
+  document.getElementById('prod-grid').innerHTML=Array(6).fill(0).map(()=>`
+    <div class="prod-card">
+      <div class="prod-img skel"></div>
+      <div class="prod-info">
+        <div class="skel" style="height:9px;width:50%;margin-bottom:8px;border-radius:2px;"></div>
+        <div class="skel" style="height:17px;width:75%;margin-bottom:10px;border-radius:2px;"></div>
+        <div class="skel" style="height:13px;width:35%;border-radius:2px;"></div>
+      </div>
+    </div>`).join('')
+}
+
+// ── LOAD PRODUCTS ────────────────────────────
+async function loadProducts(){
+  showSkeletons()
+  const [col,dir]=state.sort.split(':')
+
+  // Essai RPC full-text
+  let products=null
+  if(state.search){
+    const {data,error}=await sb.rpc('search_products',{
+      term:state.search,
+      country_filter:state.pays,
+      category_filter:state.catId||null,
+      price_min:state.priceMin,
+      price_max:state.priceMax
     })
-    selectedCatId = ''
-    $('btn-reset').classList.add('hidden')
-    search()
+    if(!error)products=data
   }
 
-  // ─── Exécution recherche ─────────────────────────────────
-  async function search() {
-    showSkeletons()
-
-    const gabon = $('f-gabon').checked
-    const maroc = $('f-maroc').checked
-    const country = (gabon && !maroc) ? 'Gabon' : (!gabon && maroc) ? 'Maroc' : null
-    const pMin = parseInt($('price-min').value)
-    const pMax = parseInt($('price-max').value)
-
-    // ── 1. Essai RPC full-text (search_vector) ──────────────
-    const { data, error } = await sb.rpc('search_products', {
-      term:            searchTerm,
-      country_filter:  country,
-      category_filter: selectedCatId || null,
-      price_min:       pMin,
-      price_max:       pMax
-    })
-
-    if (error) {
-      console.warn('RPC error, fallback ilike:', error.message)
-      // ── 2. Fallback .ilike si RPC échoue ───────────────────
-      let q = sb.from('products')
-        .select('id, name, description, price, currency, country, origin_city, image_url, images, category_id')
-        .eq('status', 'active')
-        .gte('price', pMin)
-        .lte('price', pMax)
-      if (searchTerm)    q = q.ilike('name', `%${searchTerm}%`)
-      if (country)       q = q.eq('country', country)
-      if (selectedCatId) q = q.eq('category_id', selectedCatId)
-      const { data: fb } = await q.order('created_at', { ascending: false })
-      renderProducts(fb || [])
-      return
-    }
-
-    renderProducts(data || [])
+  // Fallback ou requête normale
+  if(!products){
+    let q=sb.from('products')
+      .select('id,name,price,currency,country,origin_city,stock,images,image_url,category_id,categories(name)',{count:'exact'})
+      .eq('status','active')
+      .gte('price',state.priceMin)
+      .lte('price',state.priceMax)
+      .order(col,{ascending:dir==='asc'})
+    if(state.pays) q=q.ilike('country',state.pays)
+    if(state.catId) q=q.eq('category_id',state.catId)
+    if(state.stockOnly) q=q.gt('stock',0)
+    if(state.search) q=q.ilike('name',`%${state.search}%`)
+    const {data,count}=await q.limit(48)
+    products=data||[]
+    const label=count?`${count} produit${count>1?'s':''}`:'';
+    document.getElementById('results-count').textContent=label
+    document.getElementById('page-sub').textContent=count?`${count} résultat${count>1?'s':''} trouvé${count>1?'s':''}` : 'Gabon × Maroc · Sélection curatée'
+  }else{
+    document.getElementById('results-count').textContent=products.length?`${products.length} produit${products.length>1?'s':''}`:'';
   }
 
-  // ─── Skeletons ───────────────────────────────────────────
-  function showSkeletons() {
-    $('no-results').classList.add('hidden')
-    $('products-grid').innerHTML = Array(8).fill(0).map(() => `
-      <div class="group">
-        <div class="skeleton aspect-[3/4] mb-6 rounded-lg"></div>
-        <div class="skeleton h-3 w-16 mb-2 rounded"></div>
-        <div class="skeleton h-5 w-4/5 mb-2 rounded"></div>
-        <div class="skeleton h-4 w-24 rounded"></div>
-      </div>`).join('')
+  renderProducts(products)
+}
+
+// ── RENDER ───────────────────────────────────
+function renderProducts(products){
+  const grid=document.getElementById('prod-grid')
+  if(!products||!products.length){
+    grid.innerHTML=''
+    document.getElementById('no-results').classList.add('show')
+    return
   }
+  document.getElementById('no-results').classList.remove('show')
+  grid.innerHTML=products.map(p=>{
+    const img=Array.isArray(p.images)&&p.images.length?p.images[0]:(p.image_url||'https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=400&q=80')
+    const low=p.stock!=null&&p.stock>0&&p.stock<=5
+    const paysLabel=(p.country||'').toLowerCase().includes('maroc')?'MA':'GA'
+    const catName=p.categories?.name||''
+    const safeName=(p.name||'').replace(/'/g,"\\'").replace(/"/g,'&quot;')
+    const cur=p.currency||'MAD'
+    return `
+      <div class="prod-card" onclick="location.href='detail_produit.html?id=${p.id}'">
+        <div class="prod-img">
+          <img src="${img}" alt="${safeName}" loading="lazy"
+               onerror="this.src='https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=400&q=80'"/>
+          <span class="prod-badge">${paysLabel}</span>
+          ${low?'<span class="prod-rare">Rare</span>':''}
+          <button class="prod-add" onclick="event.stopPropagation();addToCart('${p.id}','${safeName}')">
+            <span class="material-symbols-outlined" style="font-size:18px;">add</span>
+          </button>
+        </div>
+        <div class="prod-info">
+          <div class="prod-cat">${catName}${p.origin_city?' · '+p.origin_city:''}</div>
+          <div class="prod-name">${p.name}</div>
+          <div class="prod-ft">
+            <div class="prod-price">${fmt(p.price,cur)}</div>
+          </div>
+        </div>
+      </div>`
+  }).join('')
+}
 
-  // ─── Rendu produits — design original des cards ──────────
-  function renderProducts(products) {
-    const grid = $('products-grid')
-    $('results-count').textContent = products.length
-      ? `${products.length} produit${products.length > 1 ? 's' : ''} trouvé${products.length > 1 ? 's' : ''}`
-      : ''
-
-    if (!products.length) {
-      grid.innerHTML = ''
-      $('no-results').classList.remove('hidden')
-      return
-    }
-
-    $('no-results').classList.add('hidden')
-
-    grid.innerHTML = products.map((p, i) => {
-      const imgs = Array.isArray(p.images) && p.images.length ? p.images : [p.image_url || '']
-      const isMaroc  = p.country === 'Maroc'
-      const badge    = isMaroc
-        ? `<span class="px-3 py-1 bg-secondary text-on-secondary text-[10px] font-bold uppercase tracking-widest rounded-full">${p.country}</span>`
-        : `<span class="px-3 py-1 bg-primary text-on-primary text-[10px] font-bold uppercase tracking-widest rounded-full">${p.country || ''}</span>`
-
-      // Décalage éditorial sur col 3-4 comme design original
-      const offset = (i % 4 === 2 || i % 4 === 3) ? 'md:mt-8' : ''
-      const cur = p.currency || 'MAD'
-
-      return `
-        <article class="group ${offset}">
-          <a href="detail_produit.html?id=${p.id}">
-            <div class="relative aspect-[3/4] overflow-hidden rounded-lg bg-surface-container-lowest mb-6">
-              ${imgs[0]
-                ? `<img
-                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    src="${imgs[0]}"
-                    alt="${p.name}"
-                    loading="lazy"
-                  />`
-                : `<div class="w-full h-full flex items-center justify-center bg-surface-container-high">
-                     <span class="material-symbols-outlined text-4xl text-outline">image</span>
-                   </div>`
-              }
-              <div class="absolute top-4 left-4">${badge}</div>
-            </div>
-            <div class="space-y-1 px-1">
-              <span class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">${p.origin_city || ''}</span>
-              <h3 class="font-headline text-lg font-bold leading-tight group-hover:text-primary transition-colors">${p.name}</h3>
-              <p class="font-body text-sm font-medium text-primary">${fmt(p.price, cur)}</p>
-            </div>
-          </a>
-        </article>`
-    }).join('')
-  }
-
-  // ─── Init ────────────────────────────────────────────────
-  async function init() {
-    updateCartBadge()
-    updatePriceLabel()
-
-    // Attacher l'écouteur recherche
-    $('search-input').addEventListener('input', e => {
-      searchTerm = e.target.value.trim()
-      $('btn-clear').classList.toggle('hidden', !searchTerm)
-      $('btn-reset').classList.toggle('hidden', !searchTerm)
-      clearTimeout(debounceTimer)
-      debounceTimer = setTimeout(search, 350)
-    })
-
-    await loadCategories()
-    await search()
-  }
-
-  document.addEventListener('DOMContentLoaded', init)
+// ── INIT ─────────────────────────────────────
+document.addEventListener('DOMContentLoaded',async()=>{
+  updateCartBadge()
+  updatePrice()
+  readURLParams()
+  await loadCategories()
+  await loadProducts()
+})
 </script>
-
 </body>
 </html>
