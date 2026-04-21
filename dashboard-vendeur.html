@@ -603,7 +603,7 @@ async function initAuth(){
   try{
     setInitMsg('Vérification de la session…')
     const {data:{session},error:sessErr}=await db.auth.getSession()
-    if(sessErr||!session){window.location.href='login.html';return}
+    if(sessErr||!session){window.location.href='index.html';return}
     setInitMsg('Chargement du profil…')
     let {data:user}=await db.from('users').select('*').eq('auth_id',session.user.id).maybeSingle()
     if(!user){
