@@ -1,418 +1,492 @@
 <!DOCTYPE html>
-<html class="light" lang="fr">
+<html lang="fr">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Détail Produit — WennaShop</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="cart.js"></script> 
-<script id="tailwind-config">
-  tailwind.config = {
-    darkMode: "class",
-    theme: {
-      extend: {
-        "colors": {
-          "on-surface": "#171d17","on-secondary-fixed": "#001c3a","inverse-surface": "#2c322b","on-tertiary": "#ffffff","error": "#ba1a1a","tertiary-fixed-dim": "#f0c110","secondary-fixed-dim": "#a6c8ff","primary-fixed-dim": "#73dc84","on-tertiary-fixed": "#241a00","surface-container-low": "#eff5eb","tertiary-container": "#d0a600","on-primary-fixed-variant": "#00531f","on-secondary": "#ffffff","on-background": "#171d17","primary-container": "#0f8739","surface-dim": "#d6dcd2","tertiary": "#745b00","surface-tint": "#006e2b","error-container": "#ffdad6","on-primary-container": "#f7fff2","background": "#f5fbf1","surface-container-lowest": "#ffffff","outline-variant": "#becaba","primary": "#006b2a","surface-container": "#eaf0e5","secondary-container": "#78b0fe","surface-bright": "#f5fbf1","secondary-fixed": "#d4e3ff","on-error": "#ffffff","on-tertiary-container": "#4f3d00","on-secondary-container": "#00427d","surface-container-highest": "#dee4da","tertiary-fixed": "#ffe08b","surface-variant": "#dee4da","surface-container-high": "#e4eae0","on-primary": "#ffffff","on-error-container": "#93000a","inverse-on-surface": "#edf3e8","on-surface-variant": "#3f4a3e","on-secondary-fixed-variant": "#004786","surface": "#f5fbf1","on-primary-fixed": "#002108","outline": "#6f7a6d","on-tertiary-fixed-variant": "#584400","primary-fixed": "#8ff99d","secondary": "#1a5fa8","inverse-primary": "#73dc84"
-        },
-        "borderRadius": { "DEFAULT": "1rem","lg": "2rem","xl": "3rem","full": "9999px" },
-        "fontFamily": { "headline": ["Noto Serif"],"body": ["Inter"],"label": ["Inter"] }
-      },
-    },
-  }
-</script>
+<script src="cart.js"></script>
 <style>
-  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24; }
-  body { font-family: 'Inter', sans-serif; min-height: max(884px, 100dvh); }
-  h1, h2, h3 { font-family: 'Noto Serif', serif; }
+:root{
+  --fire:#FF6B2B;--ember:#E85A1A;--ink:#080808;--coal:#111111;--slate:#1A1A1A;
+  --smoke:#242424;--fog:#888;--snow:#f0ece6;--border:rgba(255,255,255,.07);
+  --border-fire:rgba(255,107,43,.25);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);min-height:100dvh;overflow-x:hidden;padding-bottom:100px;}
+.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24;font-size:22px;line-height:1;}
+.icon-fill{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--coal);}
+::-webkit-scrollbar-thumb{background:rgba(255,107,43,.3);}
 
-  @keyframes shimmer {
-    0%   { background-position: -600px 0; }
-    100% { background-position: 600px 0; }
-  }
-  .skeleton {
-    background: linear-gradient(90deg, #dde8d8 25%, #cdd8c8 50%, #dde8d8 75%);
-    background-size: 600px 100%;
-    animation: shimmer 1.4s infinite linear;
-    border-radius: 0.5rem;
-  }
+/* CURSOR */
+*{cursor:none!important;}
+#cursor{position:fixed;width:10px;height:10px;background:var(--fire);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .1s;}
+#cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(255,107,43,.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .12s ease,top .12s ease;}
+@media(hover:none){#cursor,#cursor-ring{display:none;}*{cursor:auto!important;}}
 
-  #toast {
-    position: fixed;
-    bottom: 110px;
-    left: 50%;
-    transform: translateX(-50%) translateY(16px);
-    opacity: 0;
-    background: #006b2a;
-    color: white;
-    padding: 10px 22px;
-    border-radius: 9999px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    z-index: 999;
-    white-space: nowrap;
-    pointer-events: none;
-  }
-  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(8,8,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;font-style:italic;color:var(--snow);text-decoration:none;letter-spacing:-.5px;}
+.nav-logo b{color:var(--fire);}
+.nav-btn{background:none;border:none;color:var(--fog);transition:color .2s;display:flex;align-items:center;}
+.nav-btn:hover{color:var(--snow);}
+.cart-wrap{position:relative;}
+.cart-badge{position:absolute;top:-6px;right:-6px;background:var(--fire);color:#fff;font-size:9px;font-weight:700;width:16px;height:16px;border-radius:50%;display:none;align-items:center;justify-content:center;}
+.cart-badge.show{display:flex;}
+
+/* SKELETON */
+@keyframes shimmer{0%{background-position:-600px 0;}100%{background-position:600px 0;}}
+.skeleton{background:linear-gradient(90deg,var(--slate) 25%,var(--smoke) 50%,var(--slate) 75%);background-size:600px 100%;animation:shimmer 1.4s infinite linear;}
+
+/* TOAST */
+#toast{position:fixed;bottom:120px;left:50%;transform:translateX(-50%) translateY(10px);z-index:400;background:var(--slate);border:1px solid var(--border-fire);color:var(--snow);padding:12px 24px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+#toast.ok{border-color:rgba(115,220,132,.4);background:#0a1f0e;}
+#toast.ko{border-color:rgba(186,26,26,.4);background:#1f0a0a;}
+
+/* MAIN */
+main{padding-top:72px;}
+
+/* SKELETON LAYOUT */
+.sk-gallery{display:grid;grid-template-columns:1fr 280px;gap:3px;height:580px;padding:3px;}
+@media(max-width:768px){.sk-gallery{grid-template-columns:1fr;height:320px;}.sk-thumbs{display:none;}}
+.sk-thumbs{display:flex;flex-direction:column;gap:3px;}
+.sk-thumb{flex:1;}
+.sk-info{padding:32px 32px 0;}
+.sk-line{height:12px;border-radius:3px;margin-bottom:12px;}
+
+/* GALLERY */
+.gallery{display:grid;grid-template-columns:1fr 280px;gap:3px;height:580px;}
+@media(max-width:768px){.gallery{grid-template-columns:1fr;height:360px;}.thumbs-col{display:none;}}
+.main-img-wrap{position:relative;overflow:hidden;background:var(--coal);}
+.main-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease;}
+.main-img-wrap:hover img{transform:scale(1.03);}
+.origin-badge{position:absolute;bottom:20px;left:20px;background:rgba(8,8,8,.85);backdrop-filter:blur(10px);border:1px solid var(--border-fire);color:var(--fire);font-size:9px;font-weight:500;letter-spacing:3px;text-transform:uppercase;padding:6px 14px;}
+.thumbs-col{display:flex;flex-direction:column;gap:3px;}
+.thumb{flex:1;overflow:hidden;background:var(--coal);position:relative;}
+.thumb img{width:100%;height:100%;object-fit:cover;transition:opacity .2s,transform .4s;}
+.thumb:hover img{opacity:.8;transform:scale(1.04);}
+.thumb-more{position:absolute;inset:0;background:rgba(8,8,8,.6);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--snow);letter-spacing:2px;}
+
+/* CONTENT */
+.content{padding:40px 32px 0;}
+@media(max-width:768px){.content{padding:28px 20px 0;}}
+.eyebrow{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--fire);display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.eyebrow::before{content:'';display:block;width:20px;height:1px;background:var(--fire);}
+.product-title{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,5vw,60px);font-weight:700;font-style:italic;line-height:1.05;letter-spacing:-1px;margin-bottom:20px;}
+.price-row{display:flex;align-items:baseline;gap:16px;margin-bottom:28px;}
+.price{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:700;font-style:italic;color:var(--fire);}
+.rating{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--fog);}
+
+/* CHIPS */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:36px;}
+.chip{display:flex;align-items:center;gap:8px;background:var(--slate);border:1px solid var(--border);padding:8px 14px;font-size:11px;color:var(--fog);}
+.chip .material-symbols-outlined{font-size:16px;color:var(--fire);}
+
+/* DESCRIPTION */
+.section-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;font-style:italic;margin-bottom:14px;}
+.description{font-size:14px;color:#999;line-height:1.8;max-width:640px;margin-bottom:40px;}
+
+/* SELLER */
+.seller-card{background:var(--slate);border:1px solid var(--border);padding:24px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:48px;flex-wrap:wrap;gap:16px;}
+.seller-av{width:52px;height:52px;border-radius:50%;background:rgba(255,107,43,.1);border:1px solid var(--border-fire);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;font-style:italic;color:var(--fire);flex-shrink:0;overflow:hidden;}
+.seller-av img{width:100%;height:100%;object-fit:cover;}
+.seller-name{font-size:14px;font-weight:600;margin-bottom:4px;}
+.seller-meta{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#444;}
+.btn-seller{background:transparent;border:1px solid var(--border-fire);color:var(--fire);padding:9px 18px;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;font-family:'DM Sans',sans-serif;transition:all .2s;white-space:nowrap;}
+.btn-seller:hover{background:rgba(255,107,43,.08);}
+
+/* REVIEWS */
+.reviews-section{margin-bottom:48px;}
+.review-card{background:var(--slate);border:1px solid var(--border);padding:20px;margin-bottom:2px;}
+.review-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.reviewer{font-size:13px;font-weight:600;}
+.review-date{font-size:10px;color:#444;letter-spacing:1px;}
+.stars{color:var(--fire);font-size:13px;margin-bottom:8px;}
+.review-text{font-size:13px;color:#888;line-height:1.7;}
+
+/* RELATED */
+.related-section{margin-bottom:48px;}
+.related-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:24px;}
+.related-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:3px;}
+@media(min-width:768px){.related-grid{grid-template-columns:repeat(4,1fr);}}
+.related-card{text-decoration:none;color:inherit;display:block;}
+.related-img{aspect-ratio:4/5;background:var(--coal);overflow:hidden;margin-bottom:12px;}
+.related-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease;}
+.related-card:hover .related-img img{transform:scale(1.05);}
+.related-country{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--fire);margin-bottom:4px;}
+.related-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;font-style:italic;line-height:1.2;margin-bottom:4px;}
+.related-price{font-size:13px;color:var(--fog);}
+
+/* SECTION DIVIDER */
+.divider{height:1px;background:var(--border);margin:40px 0;}
+
+/* BOTTOM BAR */
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(8,8,8,.96);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;gap:12px;}
+.btn-wish{width:52px;height:52px;background:transparent;border:1px solid var(--border);color:var(--fog);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
+.btn-wish:hover{border-color:var(--border-fire);color:var(--fire);}
+.btn-wish.active .material-symbols-outlined{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;color:var(--fire);}
+.btn-cart{flex:1;height:52px;background:var(--fire);color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;font-size:10px;font-weight:500;letter-spacing:3px;text-transform:uppercase;border:none;font-family:'DM Sans',sans-serif;transition:background .2s,transform .15s;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));}
+.btn-cart:hover{background:var(--ember);transform:translateY(-1px);}
+.btn-cart:active{transform:translateY(0);}
+
+/* ERROR */
+.error-state{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:40px;}
+.error-state .material-symbols-outlined{font-size:52px;color:#333;margin-bottom:16px;}
+.error-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;font-style:italic;margin-bottom:8px;}
+.error-sub{font-size:13px;color:var(--fog);margin-bottom:24px;}
+.btn-back{display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid var(--border-fire);color:var(--fire);padding:10px 22px;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;text-decoration:none;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.btn-back:hover{background:rgba(255,107,43,.08);}
 </style>
-<link rel="stylesheet" href="/css/wenna-palette-conversion.css">
 </head>
-<body class="bg-background text-on-surface min-h-screen pb-32">
+<body>
 
-<div id="toast">Ajouté au panier</div>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<div id="toast"></div>
 
-<!-- Top Navigation -->
-<nav class="bg-emerald-50/80 dark:bg-emerald-950/80 backdrop-blur-xl text-emerald-800 dark:text-emerald-100 fixed top-0 w-full z-50 shadow-sm dark:shadow-none">
-  <div class="flex justify-between items-center px-6 py-4 w-full">
-    <button onclick="history.back()" class="hover:opacity-80 transition-opacity scale-95 active:duration-150">
-      <span class="material-symbols-outlined">arrow_back</span>
-    </button>
-    <span class="font-serif italic text-2xl tracking-tighter text-emerald-900 dark:text-emerald-50">WennaShop</span>
-    <a href="panier.html" class="hover:opacity-80 transition-opacity scale-95 active:duration-150 relative">
-      <span class="material-symbols-outlined">shopping_bag</span>
-      <span id="cart-badge" class="absolute -top-1 -right-1 bg-primary text-white text-[9px] font-bold w-4 h-4 rounded-full items-center justify-center hidden flex">0</span>
-    </a>
-  </div>
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-btn" onclick="history.back()">
+    <span class="material-symbols-outlined">arrow_back</span>
+  </button>
+  <a href="index.html" class="nav-logo">Wenna<b>Shop</b></a>
+  <a href="panier.html" class="nav-btn cart-wrap">
+    <span class="material-symbols-outlined">shopping_bag</span>
+    <span id="cart-badge" class="cart-badge">0</span>
+  </a>
 </nav>
 
-<main class="pt-16">
+<main>
 
   <!-- SKELETON -->
   <div id="skeleton-section">
-    <section class="relative px-4 pt-4">
-      <div class="grid grid-cols-12 gap-4 h-[530px]">
-        <div class="col-span-8 skeleton rounded-lg"></div>
-        <div class="col-span-4 flex flex-col gap-4">
-          <div class="flex-1 skeleton rounded-lg"></div>
-          <div class="flex-1 skeleton rounded-lg"></div>
-        </div>
+    <div class="sk-gallery">
+      <div class="skeleton" style="height:100%;"></div>
+      <div class="sk-thumbs">
+        <div class="skeleton sk-thumb"></div>
+        <div class="skeleton sk-thumb"></div>
       </div>
-    </section>
-    <section class="px-6 mt-8 flex flex-col gap-4">
-      <div class="skeleton h-3 w-32"></div>
-      <div class="skeleton h-10 w-3/4"></div>
-      <div class="skeleton h-6 w-24"></div>
-      <div class="skeleton h-20 w-full mt-2"></div>
-    </section>
+    </div>
+    <div class="sk-info">
+      <div class="skeleton sk-line" style="width:80px;"></div>
+      <div class="skeleton sk-line" style="width:60%;height:20px;margin-bottom:20px;"></div>
+      <div class="skeleton sk-line" style="width:100px;height:16px;"></div>
+      <div class="skeleton sk-line" style="width:100%;height:80px;margin-top:24px;border-radius:4px;"></div>
+    </div>
   </div>
 
-  <!-- PRODUIT -->
+  <!-- PRODUCT -->
   <div id="product-section" style="display:none;">
 
-    <!-- Galerie immersive -->
-    <section class="relative px-4 pt-4">
-      <div class="grid grid-cols-12 gap-4 h-[530px]">
-        <div class="col-span-8 rounded-lg overflow-hidden relative group">
-          <img id="main-img" alt="" class="w-full h-full object-cover" src="" />
-          <div class="absolute bottom-4 left-4 bg-surface-container-lowest/90 backdrop-blur px-3 py-1 rounded-full">
-            <span id="origin-badge" class="text-[10px] font-bold tracking-[0.2em] text-secondary uppercase"></span>
-          </div>
-        </div>
-        <div id="thumbs-col" class="col-span-4 flex flex-col gap-4"></div>
+    <!-- GALLERY -->
+    <div class="gallery">
+      <div class="main-img-wrap">
+        <img id="main-img" src="" alt=""/>
+        <div class="origin-badge" id="origin-badge"></div>
       </div>
-    </section>
+      <div class="thumbs-col" id="thumbs-col"></div>
+    </div>
 
-    <!-- Infos produit -->
-    <section class="px-6 mt-8">
-      <div class="flex justify-between items-start">
-        <div>
-          <span id="product-category" class="label-sm text-[11px] font-medium uppercase tracking-[0.15em] text-tertiary mb-2 block"></span>
-          <h1 id="product-title" class="text-4xl md:text-5xl font-bold leading-tight mb-4"></h1>
+    <div class="content">
+
+      <!-- TITRE + PRIX -->
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;margin-bottom:8px;">
+        <div style="flex:1;min-width:0;">
+          <div class="eyebrow" id="product-category"></div>
+          <h1 class="product-title" id="product-title"></h1>
         </div>
-        <div class="text-right">
-          <span id="product-price" class="text-2xl font-bold text-primary"></span>
-          <div id="rating-row" class="flex items-center gap-1 justify-end mt-1" style="display:none !important;">
-            <span class="material-symbols-outlined text-sm text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span>
-            <span id="avg-rating" class="text-xs font-medium"></span>
+        <div style="text-align:right;flex-shrink:0;">
+          <div class="price" id="product-price"></div>
+          <div class="rating" id="rating-row" style="display:none;justify-content:flex-end;margin-top:4px;">
+            <span class="material-symbols-outlined icon-fill" style="font-size:14px;color:var(--fire);">star</span>
+            <span id="avg-rating"></span>
           </div>
         </div>
       </div>
 
-      <!-- Chips origine / tags -->
-      <div id="chips-container" class="flex gap-2 mt-6 overflow-x-auto pb-2"></div>
+      <!-- CHIPS -->
+      <div class="chips" id="chips-container"></div>
 
-      <!-- Description -->
-      <div class="mt-10 max-w-2xl">
-        <h3 class="text-lg font-bold mb-4">L'histoire</h3>
-        <p id="product-description" class="text-on-surface-variant leading-relaxed mb-6 font-body"></p>
-      </div>
+      <!-- DESCRIPTION -->
+      <div class="section-title">L'histoire</div>
+      <p class="description" id="product-description"></p>
 
-      <!-- Vendeur -->
-      <div id="seller-card" class="mt-12 p-6 bg-surface-container-low rounded-lg flex items-center justify-between">
-        <div class="flex items-center gap-4">
-          <div class="skeleton w-14 h-14 rounded-full flex-shrink-0"></div>
-          <div class="flex flex-col gap-2">
-            <div class="skeleton h-4 w-32"></div>
-            <div class="skeleton h-3 w-24"></div>
+      <div class="divider"></div>
+
+      <!-- SELLER -->
+      <div class="seller-card" id="seller-card">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="skeleton" style="width:52px;height:52px;border-radius:50%;flex-shrink:0;"></div>
+          <div>
+            <div class="skeleton" style="width:120px;height:13px;border-radius:3px;margin-bottom:8px;"></div>
+            <div class="skeleton" style="width:80px;height:10px;border-radius:3px;"></div>
           </div>
         </div>
       </div>
 
-      <!-- Avis -->
-      <div id="reviews-section" class="mt-16" style="display:none;">
-        <h2 class="text-2xl font-bold mb-6">Avis clients <span id="reviews-count" class="text-base font-normal text-on-surface-variant"></span></h2>
-        <div id="reviews-list" class="flex flex-col gap-4"></div>
+      <!-- REVIEWS -->
+      <div class="reviews-section" id="reviews-section" style="display:none;">
+        <div class="divider"></div>
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:24px;">
+          <div class="section-title" style="margin-bottom:0;">Avis clients</div>
+          <span id="reviews-count" style="font-size:12px;color:var(--fog);"></span>
+        </div>
+        <div id="reviews-list"></div>
       </div>
 
-      <!-- Produits liés -->
-      <div class="mt-16">
-        <div class="flex justify-between items-end mb-8">
-          <h2 class="text-2xl font-bold">Vous aimerez aussi</h2>
-          <a class="text-xs font-bold uppercase tracking-widest text-primary border-b border-primary/20 pb-1" href="boutique.html">Voir la collection</a>
+      <!-- RELATED -->
+      <div class="related-section" id="related-section" style="display:none;">
+        <div class="divider"></div>
+        <div class="related-header">
+          <div class="section-title" style="margin-bottom:0;">Vous aimerez aussi</div>
+          <a href="boutique.html" style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--fire);text-decoration:none;">Voir tout</a>
         </div>
-        <div id="related-products" class="grid grid-cols-2 gap-6"></div>
+        <div class="related-grid" id="related-products"></div>
       </div>
-    </section>
+
+    </div>
   </div>
 
-  <!-- Erreur -->
-  <div id="error-state" style="display:none;" class="flex flex-col items-center justify-center py-24 px-6 text-center">
-    <span class="material-symbols-outlined text-5xl text-outline mb-4">search_off</span>
-    <h2 class="text-xl font-bold mb-2">Produit introuvable</h2>
-    <p class="text-on-surface-variant text-sm">Ce produit n'existe pas ou a été retiré.</p>
-    <a href="boutique.html" class="mt-6 px-6 py-2 rounded-full border border-outline-variant text-sm font-bold hover:bg-surface-container-high transition-colors">Retour à la boutique</a>
+  <!-- ERROR -->
+  <div class="error-state" id="error-state">
+    <span class="material-symbols-outlined">search_off</span>
+    <div class="error-title">Produit introuvable</div>
+    <div class="error-sub">Ce produit n'existe pas ou a été retiré.</div>
+    <a href="boutique.html" class="btn-back">
+      <span class="material-symbols-outlined" style="font-size:16px;">arrow_back</span>
+      Retour à la boutique
+    </a>
   </div>
 
 </main>
 
-<!-- Barre action fixe -->
-<div class="fixed bottom-0 left-0 w-full bg-surface/80 backdrop-blur-xl px-6 py-6 z-50">
-  <div class="max-w-screen-xl mx-auto flex items-center gap-4">
-    <button class="w-14 h-14 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface-container-low transition-colors active:scale-95">
-      <span class="material-symbols-outlined text-on-surface-variant">favorite</span>
-    </button>
-    <button onclick="addToCart()" class="flex-1 h-14 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-xl font-bold text-sm tracking-widest uppercase shadow-lg shadow-primary/20 active:scale-[0.98] transition-all">
-      Add to cart
-    </button>
-  </div>
+<!-- BOTTOM BAR -->
+<div class="bottom-bar">
+  <button class="btn-wish" id="btn-wish" onclick="toggleWish()">
+    <span class="material-symbols-outlined">favorite</span>
+  </button>
+  <button class="btn-cart" onclick="addToCart()">
+    <span class="material-symbols-outlined" style="font-size:18px;">shopping_bag</span>
+    Ajouter au panier
+  </button>
 </div>
 
-<!-- ═══════════════════════
-     SCRIPT SUPABASE
-════════════════════════ -->
 <script>
-  // ─── CONFIG ─────────────────────────────────
-  // Remplace par tes vraies clés (ou utilise ton js/config.js)
-  const SUPABASE_URL  = 'https://aakxoydznmybstfozjte.supabase.co'
-  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
-  // ─────────────────────────────────────────────
+// ── CURSOR ────────────────────────────────────
+const cur = document.getElementById('cursor'), ring = document.getElementById('cursor-ring')
+document.addEventListener('mousemove', e => {
+  cur.style.left = e.clientX + 'px'; cur.style.top = e.clientY + 'px'
+  ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px'
+})
 
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON)
-  let currentProduct = null
+// ── SUPABASE ──────────────────────────────────
+const SUPABASE_URL  = 'https://aakxoydznmybstfozjte.supabase.co'
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON)
 
-  const $ = id => document.getElementById(id)
+let currentProduct = null
+const $ = id => document.getElementById(id)
 
-  function getProductId() {
-    return new URLSearchParams(window.location.search).get('id')
-  }
+// ── UTILS ─────────────────────────────────────
+function getProductId() { return new URLSearchParams(window.location.search).get('id') }
+function formatPrice(amount, currency = 'MAD') {
+  return new Intl.NumberFormat('fr-FR', { style:'currency', currency }).format(amount)
+}
+function showToast(msg, type = '') {
+  const t = $('toast')
+  t.textContent = msg
+  t.className = type ? `show ${type}` : 'show'
+  setTimeout(() => t.className = '', 3000)
+}
+function getImages(product) {
+  if (Array.isArray(product.images) && product.images.length) return product.images
+  if (product.image_url) return [product.image_url]
+  return []
+}
 
-  function formatPrice(amount, currency = 'MAD') {
-    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency }).format(amount)
-  }
-
-  function showToast(msg) {
-    const t = $('toast')
-    t.textContent = msg
-    t.classList.add('show')
-    setTimeout(() => t.classList.remove('show'), 3000)
-  }
-
-  // ── Panier ──────────────────────────────────
-  function getCart() { return [] } // plus utilisé
-function saveCart() {}           // plus utilisé
-
+// ── CART ──────────────────────────────────────
 async function updateBadge() {
   if (typeof Cart === 'undefined') return
   await Cart.updateBadge('cart-badge')
+  $('cart-badge').classList.toggle('show', parseInt($('cart-badge').textContent) > 0)
 }
-
 async function addToCart() {
   if (!currentProduct) return
-  if (typeof Cart === 'undefined') {
-    showToast('Erreur : panier non disponible'); return
-  }
-  const result = await Cart.add(
-    currentProduct.id,
-    currentProduct.name,
-    currentProduct.price,
-    currentProduct.image_url || '',
-    currentProduct.currency || 'MAD'
-  )
-  if (!result.success && result.error === 'not_logged_in') {
-    showToast('Connecte-toi pour ajouter au panier')
-    setTimeout(() => window.location.href = 'compte.html', 1500)
+  if (typeof Cart === 'undefined') { showToast('Panier non disponible', 'ko'); return }
+  const r = await Cart.add(currentProduct.id, currentProduct.name, currentProduct.price, currentProduct.image_url || '', currentProduct.currency || 'MAD')
+  if (!r.success && r.error === 'not_logged_in') {
+    showToast('Connecte-toi pour ajouter au panier', 'ko')
+    setTimeout(() => window.location.href = 'login.html', 1500)
     return
   }
-  showToast(result.success ? `« ${currentProduct.name} » ajouté au panier` : result.message)
-  if (result.success) updateBadge()
+  showToast(r.success ? `« ${currentProduct.name} » ajouté au panier` : r.message, r.success ? 'ok' : 'ko')
+  if (r.success) updateBadge()
 }
-  // ── Supabase fetch ───────────────────────────
-  async function loadProduct(id) {
-    const { data } = await sb.from('products').select('*').eq('id', id).single()
-    return data
+
+// ── WISHLIST ──────────────────────────────────
+function toggleWish() {
+  const btn = $('btn-wish')
+  btn.classList.toggle('active')
+}
+
+// ── GALLERY ───────────────────────────────────
+function renderGallery(product) {
+  const imgs = getImages(product)
+  if (!imgs.length) return
+  $('main-img').src = imgs[0]
+  $('main-img').alt = product.name
+  const col = $('thumbs-col')
+  col.innerHTML = ''
+  for (let i = 1; i < Math.min(imgs.length, 3); i++) {
+    const isLast = i === 2 && imgs.length > 3
+    const div = document.createElement('div')
+    div.className = 'thumb'
+    div.innerHTML = `<img src="${imgs[i]}" alt="Photo ${i+1}"/>${isLast ? `<div class="thumb-more">+${imgs.length-3}</div>` : ''}`
+    div.addEventListener('click', () => { $('main-img').src = imgs[i] })
+    col.appendChild(div)
   }
-
-  async function loadSeller(sellerId) {
-    const { data } = await sb.from('users').select('id, full_name, avatar_url, created_at, country').eq('id', sellerId).single()
-    return data
+  if (imgs.length === 1) {
+    const div = document.createElement('div')
+    div.className = 'thumb'
+    div.innerHTML = `<img src="${imgs[0]}" alt="${product.name}" style="opacity:.5;filter:grayscale(30%)"/>`
+    col.appendChild(div)
   }
+}
 
-  async function loadReviews(productId) {
-    const { data } = await sb.from('reviews').select('*').eq('product_id', productId).eq('status', 'approved').order('created_at', { ascending: false })
-    return data || []
-  }
+// ── RENDER PRODUCT ────────────────────────────
+function renderProduct(product) {
+  currentProduct = product
+  renderGallery(product)
+  $('origin-badge').textContent = product.country ? `Produit du ${product.country}` : ''
+  $('product-category').textContent = product.category || 'Collection'
+  $('product-title').textContent = product.name
+  $('product-price').textContent = formatPrice(product.price, product.currency || 'MAD')
+  $('product-description').textContent = product.description || ''
+  document.title = `${product.name} — WennaShop`
 
-  async function loadRelated(category, excludeId) {
-    const { data } = await sb.from('products').select('id, name, price, images, image_url, category, country, currency').eq('category', category).neq('id', excludeId).limit(4)
-    return data || []
-  }
+  const chips = []
+  if (product.origin || product.country) chips.push({ icon:'location_on', label:`Origine : ${product.origin || product.country}` })
+  if (product.tag1) chips.push({ icon:'eco', label:product.tag1 })
+  if (product.tag2) chips.push({ icon:'filter_vintage', label:product.tag2 })
+  if (!chips.length) chips.push({ icon:'eco', label:'100% Naturel' }, { icon:'verified', label:'Artisanat authentique' })
 
-  // ── Rendus ───────────────────────────────────
-  function getImages(product) {
-    if (Array.isArray(product.images) && product.images.length) return product.images
-    if (product.image_url) return [product.image_url]
-    return []
-  }
+  $('chips-container').innerHTML = chips.map(c => `
+    <div class="chip">
+      <span class="material-symbols-outlined">${c.icon}</span>
+      <span>${c.label}</span>
+    </div>`).join('')
 
-  function renderGallery(product) {
-    const imgs = getImages(product)
-    if (!imgs.length) return
-    $('main-img').src = imgs[0]
-    $('main-img').alt = product.name
+  $('skeleton-section').style.display = 'none'
+  $('product-section').style.display = 'block'
+}
 
-    const col = $('thumbs-col')
-    col.innerHTML = ''
-    for (let i = 1; i < Math.min(imgs.length, 3); i++) {
-      const isLast = i === 2 && imgs.length > 3
-      const div = document.createElement('div')
-      div.className = 'flex-1 rounded-lg overflow-hidden relative cursor-pointer'
-      div.innerHTML = `<img src="${imgs[i]}" alt="Photo ${i+1}" class="w-full h-full object-cover" />${isLast ? `<div class="absolute inset-0 bg-on-surface/20 flex items-center justify-center"><span class="text-white text-xs font-medium">+${imgs.length - 3} Photos</span></div>` : ''}`
-      div.addEventListener('click', () => $('main-img').src = imgs[i])
-      col.appendChild(div)
-    }
-    // Si une seule miniature on duplique l'affichage avec une teinte
-    if (imgs.length === 1) {
-      const div = document.createElement('div')
-      div.className = 'flex-1 rounded-lg overflow-hidden'
-      div.innerHTML = `<img src="${imgs[0]}" alt="${product.name}" class="w-full h-full object-cover opacity-60" />`
-      col.appendChild(div)
-    }
-  }
-
-  function renderProduct(product) {
-    currentProduct = product
-    renderGallery(product)
-
-    $('origin-badge').textContent     = product.country ? `Product of ${product.country}` : ''
-    $('product-category').textContent = product.category || 'Collection'
-    $('product-title').textContent    = product.name
-    $('product-price').textContent    = formatPrice(product.price, product.currency || 'MAD')
-    $('product-description').textContent = product.description || ''
-
-    // Chips
-    const chips = []
-    if (product.origin || product.country) chips.push({ icon: 'location_on', label: `Origine : ${product.origin || product.country}` })
-    if (product.tag1)  chips.push({ icon: 'eco',            label: product.tag1 })
-    if (product.tag2)  chips.push({ icon: 'filter_vintage', label: product.tag2 })
-    if (!chips.length) chips.push({ icon: 'eco', label: '100% Naturel' }, { icon: 'verified', label: 'Artisanat authentique' })
-
-    $('chips-container').innerHTML = chips.map(c => `
-      <div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full border border-outline-variant/15 whitespace-nowrap">
-        <span class="material-symbols-outlined text-[18px]">${c.icon}</span>
-        <span class="text-xs font-medium">${c.label}</span>
-      </div>`).join('')
-
-    $('skeleton-section').style.display = 'none'
-    $('product-section').style.display  = 'block'
-  }
-
-  function renderSeller(seller) {
-    if (!seller) { $('seller-card').innerHTML = '<p class="text-sm text-on-surface-variant">Vendeur non disponible</p>'; return }
-    const initial = (seller.full_name || 'V').charAt(0).toUpperCase()
-    const avatar  = seller.avatar_url
-      ? `<img src="${seller.avatar_url}" alt="${seller.full_name}" class="w-full h-full object-cover" />`
-      : `<div class="w-full h-full flex items-center justify-center bg-primary-fixed text-primary font-bold text-xl">${initial}</div>`
-    const since   = seller.created_at ? new Date(seller.created_at).getFullYear() : null
-    $('seller-card').innerHTML = `
-      <div class="flex items-center gap-4">
-        <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-primary/20">${avatar}</div>
-        <div>
-          <h4 class="font-bold text-sm">${seller.full_name || 'Vendeur'}</h4>
-          <p class="text-[11px] text-on-surface-variant uppercase tracking-wider">Top Rated Seller${seller.country ? ' · ' + seller.country : ''}${since ? ' · Depuis ' + since : ''}</p>
-        </div>
+// ── RENDER SELLER ─────────────────────────────
+function renderSeller(seller) {
+  if (!seller) { $('seller-card').innerHTML = '<span style="font-size:13px;color:var(--fog);">Vendeur non disponible</span>'; return }
+  const initial = (seller.full_name || 'V').charAt(0).toUpperCase()
+  const avatar = seller.avatar_url
+    ? `<img src="${seller.avatar_url}" alt="${seller.full_name}"/>`
+    : initial
+  const since = seller.created_at ? new Date(seller.created_at).getFullYear() : null
+  $('seller-card').innerHTML = `
+    <div style="display:flex;align-items:center;gap:14px;">
+      <div class="seller-av">${avatar}</div>
+      <div>
+        <div class="seller-name">${seller.full_name || 'Vendeur'}</div>
+        <div class="seller-meta">Vendeur certifié${seller.country ? ' · ' + seller.country : ''}${since ? ' · Depuis ' + since : ''}</div>
       </div>
-      <button class="px-5 py-2 rounded-full border border-outline-variant text-xs font-bold hover:bg-surface-container-high transition-colors">Voir la boutique</button>`
-  }
+    </div>
+    <button class="btn-seller">Voir la boutique</button>`
+}
 
-  function renderReviews(reviews) {
-    if (!reviews.length) return
-    const avg = reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviews.length
-    $('rating-row').style.display  = 'flex'
-    $('avg-rating').textContent    = avg.toFixed(1)
-    $('reviews-count').textContent = `(${reviews.length} avis)`
-    $('reviews-section').style.display = 'block'
-    $('reviews-list').innerHTML = reviews.map(r => {
-      const date  = r.created_at ? new Date(r.created_at).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long' }) : ''
-      const stars = '★'.repeat(Math.round(r.rating || 0)) + '☆'.repeat(5 - Math.round(r.rating || 0))
-      return `
-        <div class="p-5 bg-surface-container-low rounded-lg border border-outline-variant/20">
-          <div class="flex justify-between items-start mb-2">
-            <div>
-              <span class="font-semibold text-sm">${r.reviewer_name || 'Acheteur anonyme'}</span>
-              <div class="text-tertiary text-xs mt-0.5">${stars}</div>
-            </div>
-            <span class="text-[11px] text-on-surface-variant">${date}</span>
+// ── RENDER REVIEWS ────────────────────────────
+function renderReviews(reviews) {
+  if (!reviews.length) return
+  const avg = reviews.reduce((s,r) => s + (r.rating||0), 0) / reviews.length
+  $('rating-row').style.display = 'flex'
+  $('avg-rating').textContent = avg.toFixed(1)
+  $('reviews-count').textContent = `${reviews.length} avis`
+  $('reviews-section').style.display = 'block'
+  $('reviews-list').innerHTML = reviews.map(r => {
+    const date = r.created_at ? new Date(r.created_at).toLocaleDateString('fr-FR',{year:'numeric',month:'long'}) : ''
+    const stars = '★'.repeat(Math.round(r.rating||0)) + '☆'.repeat(5-Math.round(r.rating||0))
+    return `
+      <div class="review-card">
+        <div class="review-header">
+          <div>
+            <div class="reviewer">${r.reviewer_name || 'Acheteur anonyme'}</div>
+            <div class="stars">${stars}</div>
           </div>
-          <p class="text-sm text-on-surface-variant leading-relaxed">${r.comment || ''}</p>
-        </div>`
-    }).join('')
+          <div class="review-date">${date}</div>
+        </div>
+        <div class="review-text">${r.comment || ''}</div>
+      </div>`
+  }).join('')
+}
+
+// ── RENDER RELATED ────────────────────────────
+function renderRelated(products) {
+  if (!products.length) return
+  $('related-section').style.display = 'block'
+  $('related-products').innerHTML = products.slice(0,4).map(p => {
+    const imgs = getImages(p)
+    return `
+      <a href="detail_produit.html?id=${p.id}" class="related-card">
+        <div class="related-img">
+          ${imgs[0] ? `<img src="${imgs[0]}" alt="${p.name}"/>` : ''}
+        </div>
+        <div class="related-country">${p.country || ''}</div>
+        <div class="related-name">${p.name}</div>
+        <div class="related-price">${formatPrice(p.price, p.currency || 'MAD')}</div>
+      </a>`
+  }).join('')
+}
+
+// ── FETCH ─────────────────────────────────────
+async function loadProduct(id) {
+  const { data } = await sb.from('products').select('*').eq('id',id).single()
+  return data
+}
+async function loadSeller(sellerId) {
+  const { data } = await sb.from('users').select('id,full_name,avatar_url,created_at,country').eq('id',sellerId).single()
+  return data
+}
+async function loadReviews(productId) {
+  const { data } = await sb.from('reviews').select('*').eq('product_id',productId).eq('status','approved').order('created_at',{ascending:false})
+  return data || []
+}
+async function loadRelated(category, excludeId) {
+  const { data } = await sb.from('products').select('id,name,price,images,image_url,category,country,currency').eq('category',category).neq('id',excludeId).limit(4)
+  return data || []
+}
+
+// ── INIT ──────────────────────────────────────
+async function init() {
+  updateBadge()
+  const id = getProductId()
+  if (!id) {
+    $('skeleton-section').style.display = 'none'
+    $('error-state').style.display = 'flex'
+    return
   }
-
-  function renderRelated(products) {
-    if (!products.length) return
-    $('related-products').innerHTML = products.slice(0, 4).map(p => {
-      const imgs = getImages(p)
-      return `
-        <a href="detail_produit.html?id=${p.id}" class="group">
-          <div class="aspect-[4/5] bg-surface-container-low rounded-lg overflow-hidden mb-4">
-            ${imgs[0] ? `<img src="${imgs[0]}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />` : '<div class="w-full h-full bg-surface-container-high"></div>'}
-          </div>
-          <span class="text-[10px] font-bold tracking-widest uppercase text-tertiary">${p.country || ''}</span>
-          <h4 class="font-headline font-bold text-base mt-1">${p.name}</h4>
-          <p class="text-sm font-medium text-on-surface-variant">${formatPrice(p.price, p.currency || 'MAD')}</p>
-        </a>`
-    }).join('')
+  const [product, reviews] = await Promise.all([loadProduct(id), loadReviews(id)])
+  if (!product) {
+    $('skeleton-section').style.display = 'none'
+    $('error-state').style.display = 'flex'
+    return
   }
+  renderProduct(product)
+  renderReviews(reviews)
+  if (product.seller_id) loadSeller(product.seller_id).then(renderSeller)
+  if (product.category)  loadRelated(product.category, id).then(renderRelated)
+}
 
-  // ── Init ─────────────────────────────────────
-  async function init() {
-    updateBadge()
-    const id = getProductId()
-    if (!id) {
-      $('skeleton-section').style.display = 'none'
-      $('error-state').style.display = 'block'
-      return
-    }
-
-    const [product, reviews] = await Promise.all([loadProduct(id), loadReviews(id)])
-
-    if (!product) {
-      $('skeleton-section').style.display = 'none'
-      $('error-state').style.display = 'block'
-      return
-    }
-
-    renderProduct(product)
-    renderReviews(reviews)
-    if (product.seller_id) loadSeller(product.seller_id).then(renderSeller)
-    if (product.category)  loadRelated(product.category, id).then(renderRelated)
-  }
-
-  document.addEventListener('DOMContentLoaded', init)
+document.addEventListener('DOMContentLoaded', init)
 </script>
-
 </body>
 </html>
