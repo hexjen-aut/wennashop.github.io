@@ -475,11 +475,16 @@ async function handleInscription() {
     if (authErr) throw authErr
     if (authData?.user) {
       const { error: profileErr } = await db.from('users').upsert({
-        id: authData.user.id, email, first_name:prenom, last_name:nom,
-        full_name:`${prenom} ${nom}`, country:selectedCountry, role:selectedRole,
-        status: selectedRole === 'artisan' ? 'pending' : 'active',
+        auth_id:    authData.user.id,
+        email,
+        first_name: prenom,
+        last_name:  nom,
+        full_name:  `${prenom} ${nom}`,
+        country:    selectedCountry,
+        role:       selectedRole,
+        status:     selectedRole === 'artisan' ? 'pending' : 'active',
         created_at: new Date().toISOString()
-      }, { onConflict:'id' })
+      }, { onConflict: 'email' })
       if (profileErr) console.warn('Profile insert warning:', profileErr.message)
     }
     toast(selectedRole === 'artisan' ? 'Compte créé ! Vérifiez votre email puis attendez validation. ✓' : 'Compte créé ! Vérifiez votre email ✓', 'ok')
