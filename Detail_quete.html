@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Détail Quête — WennaShop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <style>
+    :root {
+      --green: #1a6b3c; --green-light: #2d9155; --green-pale: #e8f5ee;
+      --gold: #c9921a; --gold-light: #f5c842; --gold-pale: #fdf6e3;
+      --dark: #111a14; --text: #2c3e31; --muted: #6b7c70;
+      --border: #d4e0d8; --bg: #f7faf8; --white: #ffffff;
+      --radius: 12px; --shadow: 0 2px 16px rgba(26,107,60,.08);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
+
+    nav {
+      background: var(--white); border-bottom: 1px solid var(--border);
+      padding: 0 2rem; height: 64px; display: flex; align-items: center;
+      justify-content: space-between; position: sticky; top: 0; z-index: 100;
+    }
+    .nav-logo { font-family: 'Noto Serif', serif; font-size: 1.4rem; font-weight: 700; color: var(--green); text-decoration: none; }
+    .nav-back {
+      display: flex; align-items: center; gap: .4rem;
+      color: var(--muted); text-decoration: none; font-size: .88rem;
+      transition: color .2s;
+    }
+    .nav-back:hover { color: var(--green); }
+
+    .page-wrap {
+      max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem;
+      display: grid; grid-template-columns: 1fr 340px; gap: 2rem; align-items: start;
+    }
+
+    /* ── LEFT: QUEST DETAIL ── */
+    .quest-main {}
+
+    .quest-header {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.8rem; margin-bottom: 1.5rem;
+    }
+    .quest-badges { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .badge {
+      padding: .25rem .65rem; border-radius: 6px;
+      font-size: .72rem; font-weight: 600;
+    }
+    .badge-open { background: var(--green-pale); color: var(--green); }
+    .badge-resolved { background: #e8f5e9; color: #2e7d32; }
+    .badge-expired { background: #fafafa; color: var(--muted); border: 1px solid var(--border); }
+    .badge-category { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
+    .badge-country { background: #e8eaf6; color: #3949ab; }
+
+    .quest-title {
+      font-family: 'Noto Serif', serif; font-size: 1.6rem;
+      font-weight: 700; line-height: 1.3; margin-bottom: .8rem;
+    }
+    .quest-desc { color: var(--muted); line-height: 1.7; margin-bottom: 1.5rem; }
+
+    .quest-info-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1rem; background: var(--bg); border-radius: 10px; padding: 1rem;
+    }
+    .info-item .lbl { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: .25rem; }
+    .info-item .val { font-weight: 600; font-size: .92rem; }
+    .info-item .val.reward { color: var(--gold); font-family: 'Noto Serif', serif; font-size: 1.1rem; }
+
+    /* ── PROPOSALS ── */
+    .proposals-section {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.5rem;
+    }
+    .section-title {
+      font-family: 'Noto Serif', serif; font-size: 1.1rem;
+      margin-bottom: 1.2rem; display: flex; align-items: center;
+      justify-content: space-between;
+    }
+    .proposals-count {
+      background: var(--green-pale); color: var(--green);
+      border-radius: 20px; padding: .2rem .7rem; font-size: .78rem; font-weight: 600;
+    }
+
+    .proposal-card {
+      border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem;
+      margin-bottom: .9rem; transition: all .2s; position: relative;
+    }
+    .proposal-card:hover { border-color: var(--green); }
+    .proposal-card.selected {
+      border-color: var(--gold); background: var(--gold-pale);
+    }
+    .proposal-card.selected::before {
+      content: '✓ Proposition choisie';
+      position: absolute; top: -10px; left: 12px;
+      background: var(--gold); color: var(--white);
+      padding: .15rem .7rem; border-radius: 20px; font-size: .72rem; font-weight: 700;
+    }
+
+    .proposal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: .7rem; }
+    .hunter-info { display: flex; align-items: center; gap: .6rem; }
+    .hunter-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--green-pale); display: flex; align-items: center;
+      justify-content: center; color: var(--green); font-weight: 700; font-size: .9rem;
+      flex-shrink: 0;
+    }
+    .hunter-name { font-weight: 600; font-size: .9rem; }
+    .proposal-date { font-size: .75rem; color: var(--muted); margin-top: .1rem; }
+    .proposal-price {
+      font-family: 'Noto Serif', serif; font-size: 1.1rem;
+      font-weight: 700; color: var(--green);
+    }
+
+    .proposal-desc { font-size: .87rem; color: var(--muted); line-height: 1.5; margin-bottom: .8rem; }
+
+    .proposal-images {
+      display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .8rem;
+    }
+    .proposal-images img {
+      width: 70px; height: 70px; object-fit: cover;
+      border-radius: 8px; border: 1px solid var(--border);
+    }
+
+    .proposal-actions { display: flex; gap: .6rem; }
+    .btn-select {
+      background: var(--green); color: var(--white); border: none;
+      padding: .55rem 1.2rem; border-radius: 8px; font-size: .84rem;
+      font-weight: 600; cursor: pointer; transition: all .2s;
+      display: flex; align-items: center; gap: .4rem;
+    }
+    .btn-select:hover { background: var(--green-light); }
+    .btn-reject {
+      background: transparent; color: var(--muted); border: 1px solid var(--border);
+      padding: .55rem 1rem; border-radius: 8px; font-size: .84rem;
+      cursor: pointer; transition: all .2s;
+    }
+    .btn-reject:hover { border-color: #e53935; color: #e53935; }
+
+    .no-proposals {
+      text-align: center; padding: 2.5rem 1rem; color: var(--muted);
+    }
+    .no-proposals .material-symbols-outlined { font-size: 2.5rem; opacity: .3; display: block; margin-bottom: .5rem; }
+
+    /* ── RIGHT: SIDEBAR ── */
+    .quest-sidebar {}
+
+    .reward-card {
+      background: var(--dark); color: var(--white); border-radius: var(--radius);
+      padding: 1.6rem; margin-bottom: 1.2rem; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .reward-card::before {
+      content: '';
+      position: absolute; top: -40px; right: -40px;
+      width: 150px; height: 150px;
+      background: radial-gradient(circle, rgba(201,146,26,.25) 0%, transparent 70%);
+    }
+    .reward-card .label {
+      font-size: .78rem; text-transform: uppercase; letter-spacing: .06em;
+      color: rgba(255,255,255,.5); margin-bottom: .6rem;
+    }
+    .reward-card .amount {
+      font-family: 'Noto Serif', serif; font-size: 2rem; font-weight: 700;
+      color: var(--gold-light); margin-bottom: .2rem;
+    }
+    .reward-card .sublabel { font-size: .78rem; color: rgba(255,255,255,.5); }
+
+    .btn-propose {
+      width: 100%; background: var(--gold); color: var(--white); border: none;
+      padding: .85rem; border-radius: 10px; font-size: .95rem; font-weight: 700;
+      cursor: pointer; transition: all .2s; display: flex;
+      align-items: center; justify-content: center; gap: .5rem; margin-bottom: .6rem;
+    }
+    .btn-propose:hover { background: #b5821a; transform: translateY(-1px); }
+    .btn-propose:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+    .sidebar-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.2rem; margin-bottom: 1rem;
+    }
+    .sidebar-card h4 {
+      font-size: .78rem; text-transform: uppercase; letter-spacing: .05em;
+      color: var(--muted); margin-bottom: .9rem;
+    }
+    .timeline-item {
+      display: flex; align-items: flex-start; gap: .8rem;
+      margin-bottom: .7rem; font-size: .84rem;
+    }
+    .timeline-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--green); margin-top: 4px; flex-shrink: 0;
+    }
+    .timeline-dot.inactive { background: var(--border); }
+
+    .expiry-bar { margin-top: .8rem; }
+    .expiry-label { display: flex; justify-content: space-between; font-size: .78rem; margin-bottom: .3rem; }
+    .expiry-label span:last-child { color: var(--muted); }
+    .bar-track {
+      height: 6px; background: var(--border); border-radius: 10px; overflow: hidden;
+    }
+    .bar-fill { height: 100%; background: var(--green); border-radius: 10px; transition: width .5s; }
+    .bar-fill.urgent { background: #e65100; }
+
+    /* ── PROPOSE MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.55);
+      backdrop-filter: blur(4px); z-index: 999; display: flex;
+      align-items: center; justify-content: center; padding: 1rem;
+      opacity: 0; pointer-events: none; transition: opacity .25s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--white); border-radius: 16px; width: 100%;
+      max-width: 500px; max-height: 90vh; overflow-y: auto;
+      padding: 2rem; transform: translateY(20px); transition: transform .25s;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.4rem; }
+    .modal-header h2 { font-family: 'Noto Serif', serif; font-size: 1.2rem; }
+    .btn-close { background: var(--bg); border: none; border-radius: 8px; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--muted); }
+    .btn-close:hover { background: var(--border); }
+    .form-group { margin-bottom: 1.1rem; }
+    .form-group label { display: block; font-size: .85rem; font-weight: 600; margin-bottom: .4rem; }
+    .form-group input, .form-group textarea {
+      width: 100%; padding: .65rem .9rem; border: 1px solid var(--border);
+      border-radius: 10px; font-size: .9rem; font-family: 'Inter', sans-serif;
+      background: var(--bg); color: var(--text); outline: none; transition: border-color .2s;
+    }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--green); background: var(--white); }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+    .btn-submit-proposal {
+      width: 100%; background: var(--gold); color: var(--white); border: none;
+      padding: .85rem; border-radius: 10px; font-size: .95rem; font-weight: 700;
+      cursor: pointer; transition: all .2s; display: flex;
+      align-items: center; justify-content: center; gap: .5rem;
+    }
+    .btn-submit-proposal:hover { background: #b5821a; }
+    .btn-submit-proposal:disabled { opacity: .6; cursor: not-allowed; }
+
+    /* ── TOAST ── */
+    .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--dark); color: var(--white); padding: .9rem 1.4rem; border-radius: 10px; font-size: .88rem; z-index: 9999; transform: translateY(100px); opacity: 0; transition: all .3s; max-width: 320px; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-left: 4px solid var(--green-light); }
+    .toast.error { border-left: 4px solid #e53935; }
+
+    @media (max-width: 768px) {
+      .page-wrap { grid-template-columns: 1fr; }
+      .quest-info-grid { grid-template-columns: 1fr 1fr; }
+      nav { padding: 0 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Wenna</a>
+  <a href="quetes.html" class="nav-back">
+    <span class="material-symbols-outlined">arrow_back</span>
+    Toutes les quêtes
+  </a>
+</nav>
+
+<div class="page-wrap" id="pageWrap" style="display:none">
+
+  <!-- LEFT -->
+  <div class="quest-main">
+
+    <!-- En-tête quête -->
+    <div class="quest-header">
+      <div class="quest-badges" id="questBadges"></div>
+      <h1 class="quest-title" id="questTitle">Chargement…</h1>
+      <p class="quest-desc" id="questDesc"></p>
+      <div class="quest-info-grid">
+        <div class="info-item">
+          <div class="lbl">Budget produit</div>
+          <div class="val" id="questBudget">—</div>
+        </div>
+        <div class="info-item">
+          <div class="lbl">Récompense</div>
+          <div class="val reward" id="questReward">—</div>
+        </div>
+        <div class="info-item">
+          <div class="lbl">Durée</div>
+          <div class="val" id="questDuration">—</div>
+        </div>
+        <div class="info-item">
+          <div class="lbl">Expire le</div>
+          <div class="val" id="questExpires">—</div>
+        </div>
+        <div class="info-item">
+          <div class="lbl">Postée le</div>
+          <div class="val" id="questCreated">—</div>
+        </div>
+        <div class="info-item">
+          <div class="lbl">Pays cible</div>
+          <div class="val" id="questCountry">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Propositions -->
+    <div class="proposals-section">
+      <div class="section-title">
+        Propositions des chasseurs
+        <span class="proposals-count" id="proposalsCount">0</span>
+      </div>
+      <div id="proposalsList"></div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT -->
+  <div class="quest-sidebar">
+
+    <div class="reward-card">
+      <div class="label">Récompense du chasseur</div>
+      <div class="amount" id="sideReward">—</div>
+      <div class="sublabel">si votre proposition est choisie</div>
+    </div>
+
+    <button class="btn-propose" id="btnPropose" onclick="openProposeModal()">
+      <span class="material-symbols-outlined">rocket_launch</span>
+      Je propose ce produit
+    </button>
+
+    <div class="sidebar-card">
+      <h4>Comment ça marche</h4>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div>L'acheteur décrit le produit recherché</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div>Vous proposez le produit avec prix + photos</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div>L'acheteur choisit la meilleure offre</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div>Livraison + récompense versée automatiquement</div>
+      </div>
+    </div>
+
+    <div class="sidebar-card">
+      <h4>Temps restant</h4>
+      <div class="expiry-bar">
+        <div class="expiry-label">
+          <span id="daysLeft">—</span>
+          <span id="daysTotal">—</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill" id="barFill" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Loading state -->
+<div id="loadingState" style="text-align:center;padding:4rem;color:var(--muted)">
+  <span class="material-symbols-outlined" style="font-size:2rem;display:block;margin-bottom:.5rem;opacity:.3">hourglass_empty</span>
+  Chargement de la quête…
+</div>
+
+<!-- PROPOSE MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Proposer ce produit</h2>
+      <button class="btn-close" onclick="closeModal()"><span class="material-symbols-outlined">close</span></button>
+    </div>
+
+    <div class="form-group">
+      <label>Prix proposé (FCFA) *</label>
+      <input type="number" id="propPrice" placeholder="ex: 22000" min="100"/>
+    </div>
+    <div class="form-group">
+      <label>Description de votre offre *</label>
+      <textarea id="propDesc" placeholder="Décrivez précisément le produit, l'état, les caractéristiques…"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Lien ou référence produit <span style="font-weight:400;color:var(--muted)">(facultatif)</span></label>
+      <input type="url" id="propUrl" placeholder="https://…"/>
+    </div>
+    <div class="form-group">
+      <label>Délai de livraison estimé (jours)</label>
+      <input type="number" id="propDelivery" placeholder="ex: 5" min="1"/>
+    </div>
+
+    <button class="btn-submit-proposal" id="propSubmitBtn" onclick="submitProposal()">
+      <span class="material-symbols-outlined">send</span>
+      Envoyer ma proposition
+    </button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  let questId = null;
+  let quest = null;
+  let currentUser = null;
+  let isBuyer = false;
+  let hasProposed = false;
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const params = new URLSearchParams(location.search);
+    questId = params.get('id');
+    if (!questId) { location.href = 'quetes.html'; return; }
+
+    const { data: { session } } = await db.auth.getSession();
+    currentUser = session?.user || null;
+
+    await loadQuest();
+    await loadProposals();
+  });
+
+  async function loadQuest() {
+    const { data, error } = await db
+      .from('quests')
+      .select('*, categories(name)')
+      .eq('id', questId)
+      .single();
+
+    if (error || !data) {
+      document.getElementById('loadingState').innerHTML = '<p style="color:red">Quête introuvable.</p>';
+      return;
+    }
+
+    quest = data;
+    isBuyer = currentUser?.id === quest.buyer_id;
+
+    // Mettre à jour l'UI
+    document.title = quest.title + ' — WennaShop';
+    document.getElementById('questTitle').textContent = quest.title;
+    document.getElementById('questDesc').textContent = quest.description || 'Aucune description fournie.';
+    document.getElementById('questBudget').textContent = formatAmount(quest.product_budget, quest.currency);
+    document.getElementById('questReward').textContent = formatAmount(quest.reward_amount, quest.currency);
+    document.getElementById('sideReward').textContent = formatAmount(quest.reward_amount, quest.currency);
+    document.getElementById('questDuration').textContent = quest.duration_days + ' jours';
+    document.getElementById('questExpires').textContent = formatDate(quest.expires_at);
+    document.getElementById('questCreated').textContent = formatDate(quest.created_at);
+    document.getElementById('questCountry').textContent = quest.country_target || 'Non précisé';
+
+    // Badges
+    const badgesEl = document.getElementById('questBadges');
+    const statusBadge = { open: 'badge-open', resolved: 'badge-resolved', expired: 'badge-expired' };
+    const statusLabel = { open: 'Ouverte', resolved: 'Résolue', expired: 'Expirée' };
+    badgesEl.innerHTML = `
+      <span class="badge ${statusBadge[quest.status] || 'badge-expired'}">${statusLabel[quest.status] || quest.status}</span>
+      ${quest.categories?.name ? `<span class="badge badge-category">${quest.categories.name}</span>` : ''}
+      ${quest.country_target ? `<span class="badge badge-country">${quest.country_target}</span>` : ''}
+    `;
+
+    // Barre de progression du temps
+    const totalMs = quest.duration_days * 86400000;
+    const elapsedMs = Date.now() - new Date(quest.created_at).getTime();
+    const pct = Math.min(100, Math.round(elapsedMs / totalMs * 100));
+    const daysLeft = Math.max(0, Math.ceil((new Date(quest.expires_at) - Date.now()) / 86400000));
+    document.getElementById('daysLeft').textContent = daysLeft + 'j restants';
+    document.getElementById('daysTotal').textContent = quest.duration_days + 'j total';
+    const fill = document.getElementById('barFill');
+    fill.style.width = pct + '%';
+    if (daysLeft <= 1) fill.classList.add('urgent');
+
+    // Bouton proposer
+    const btn = document.getElementById('btnPropose');
+    if (quest.status !== 'open') {
+      btn.disabled = true;
+      btn.textContent = quest.status === 'resolved' ? 'Quête résolue' : 'Quête expirée';
+    } else if (isBuyer) {
+      btn.disabled = true;
+      btn.textContent = 'Vous êtes l\'auteur de cette quête';
+    }
+
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('pageWrap').style.display = 'grid';
+  }
+
+  async function loadProposals() {
+    const { data, error } = await db
+      .from('quest_proposals')
+      .select('*, profiles(full_name, avatar_url)')
+      .eq('quest_id', questId)
+      .order('created_at', { ascending: false });
+
+    if (error) return;
+
+    const proposals = data || [];
+    document.getElementById('proposalsCount').textContent = proposals.length;
+
+    // Vérifier si user a déjà proposé
+    hasProposed = proposals.some(p => p.hunter_id === currentUser?.id);
+    if (hasProposed) {
+      const btn = document.getElementById('btnPropose');
+      if (!btn.disabled) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="material-symbols-outlined">check_circle</span> Proposition envoyée';
+      }
+    }
+
+    const list = document.getElementById('proposalsList');
+    if (proposals.length === 0) {
+      list.innerHTML = `
+        <div class="no-proposals">
+          <span class="material-symbols-outlined">search</span>
+          Aucune proposition pour l'instant. Soyez le premier chasseur !
+        </div>`;
+      return;
+    }
+
+    // Afficher selon rôle : acheteur voit tout, chasseur voit juste la sienne + le nb d'autres
+    const canSeeAll = isBuyer || quest.status === 'resolved';
+    const visibleProposals = canSeeAll ? proposals : proposals.filter(p => p.hunter_id === currentUser?.id);
+
+    list.innerHTML = visibleProposals.map(p => {
+      const isSelected = quest.winning_proposal_id === p.id;
+      const initial = (p.profiles?.full_name || 'U')[0].toUpperCase();
+      const name = p.profiles?.full_name || 'Chasseur anonyme';
+      const showActions = isBuyer && quest.status === 'open' && !quest.winning_proposal_id;
+
+      return `
+        <div class="proposal-card ${isSelected ? 'selected' : ''}">
+          <div class="proposal-header">
+            <div class="hunter-info">
+              <div class="hunter-avatar">${initial}</div>
+              <div>
+                <div class="hunter-name">${escHtml(name)}</div>
+                <div class="proposal-date">${formatDate(p.created_at)}</div>
+              </div>
+            </div>
+            <div class="proposal-price">${formatAmount(p.proposed_price, quest.currency)}</div>
+          </div>
+          <p class="proposal-desc">${escHtml(p.description)}</p>
+          ${p.product_url ? `<div style="margin-bottom:.7rem;font-size:.82rem"><a href="${p.product_url}" target="_blank" rel="noopener" style="color:var(--green)">Voir le produit →</a></div>` : ''}
+          ${p.delivery_days ? `<div style="font-size:.8rem;color:var(--muted);margin-bottom:.7rem">Livraison estimée : ${p.delivery_days} jour${p.delivery_days > 1 ? 's' : ''}</div>` : ''}
+          ${showActions ? `
+            <div class="proposal-actions">
+              <button class="btn-select" onclick="selectProposal('${p.id}')">
+                <span class="material-symbols-outlined" style="font-size:16px">check</span>
+                Choisir cette offre
+              </button>
+              <button class="btn-reject" onclick="rejectProposal('${p.id}')">Refuser</button>
+            </div>` : ''}
+        </div>`;
+    }).join('');
+
+    if (!canSeeAll && proposals.length > 1) {
+      const others = proposals.length - visibleProposals.length;
+      if (others > 0) {
+        list.innerHTML += `<p style="text-align:center;font-size:.82rem;color:var(--muted);padding:.8rem">+${others} autre${others > 1 ? 's' : ''} proposition${others > 1 ? 's' : ''} en cours d'évaluation.</p>`;
+      }
+    }
+  }
+
+  async function selectProposal(proposalId) {
+    if (!confirm('Choisir cette proposition ? Les fonds seront transférés au chasseur.')) return;
+
+    const { error } = await db
+      .from('quests')
+      .update({
+        winning_proposal_id: proposalId,
+        status: 'resolved',
+        resolved_at: new Date().toISOString()
+      })
+      .eq('id', questId)
+      .eq('buyer_id', currentUser.id);
+
+    if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+
+    // Marquer la proposition comme sélectionnée
+    await db.from('quest_proposals')
+      .update({ status: 'selected' })
+      .eq('id', proposalId);
+
+    showToast('Félicitations ! La quête est résolue.', 'success');
+    await loadQuest();
+    await loadProposals();
+  }
+
+  async function rejectProposal(proposalId) {
+    await db.from('quest_proposals')
+      .update({ status: 'rejected' })
+      .eq('id', proposalId)
+      .eq('quest_id', questId);
+    showToast('Proposition refusée.', 'success');
+    await loadProposals();
+  }
+
+  // ── MODAL PROPOSITION ──
+  function openProposeModal() {
+    if (!currentUser) {
+      showToast('Connectez-vous pour proposer.', 'error');
+      setTimeout(() => location.href = 'login.html', 1500);
+      return;
+    }
+    document.getElementById('modalOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function closeModalOutside(e) {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+  }
+
+  async function submitProposal() {
+    const price = parseFloat(document.getElementById('propPrice').value);
+    const desc = document.getElementById('propDesc').value.trim();
+    const url = document.getElementById('propUrl').value.trim();
+    const delivery = parseInt(document.getElementById('propDelivery').value) || null;
+
+    if (!price || price < 100) return showToast('Prix invalide.', 'error');
+    if (!desc) return showToast('Décrivez votre offre.', 'error');
+
+    const btn = document.getElementById('propSubmitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Envoi…';
+
+    const { error } = await db.from('quest_proposals').insert({
+      quest_id:       questId,
+      hunter_id:      currentUser.id,
+      proposed_price: price,
+      description:    desc,
+      product_url:    url || null,
+      delivery_days:  delivery
+    });
+
+    btn.disabled = false;
+    btn.innerHTML = '<span class="material-symbols-outlined">send</span> Envoyer ma proposition';
+
+    if (error) {
+      if (error.code === '23505') showToast('Vous avez déjà proposé sur cette quête.', 'error');
+      else showToast('Erreur : ' + error.message, 'error');
+      return;
+    }
+
+    showToast('Proposition envoyée ! L\'acheteur va la consulter.', 'success');
+    closeModal();
+    await loadProposals();
+  }
+
+  // ── UTILS ──
+  function formatAmount(n, currency) {
+    return Number(n).toLocaleString('fr-FR') + ' ' + (currency || 'FCFA');
+  }
+
+  function formatDate(d) {
+    return new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  function escHtml(str) {
+    return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `toast show ${type}`;
+    setTimeout(() => t.className = 'toast', 3500);
+  }
+</script>
+</body>
+</html>
