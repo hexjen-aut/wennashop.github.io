@@ -169,7 +169,7 @@
     <a href="boutique.html">Boutique</a>
     <a href="quetes.html" class="active">Quêtes</a>
     <a href="dashboard-vendeur.html">Vendre</a>
-    <a href="login.html" class="btn-nav">Mon compte</a>
+    <a href="compte.html" class="btn-nav">Mon compte</a>
   </div>
 </nav>
 
@@ -473,7 +473,7 @@ function resetFilters() {
 
 // MODAL
 function openModal() {
-  if (!currentUser) { showToast('Connectez-vous pour poster une quête.','error'); setTimeout(()=>location.href='login.html',1500); return }
+  if (!currentUser) { showToast('Connectez-vous pour poster une quête.','error'); setTimeout(()=>location.href='index.html',1500); return }
   document.getElementById('modalOverlay').classList.add('open')
   document.body.style.overflow='hidden'
 }
