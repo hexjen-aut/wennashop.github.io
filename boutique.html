@@ -52,6 +52,50 @@
     .page-title{font-family:'Cormorant Garamond',serif;font-size:clamp(32px,4vw,52px);font-weight:700;font-style:italic;line-height:.95;letter-spacing:-2px;margin-bottom:8px;}
     .page-sub{font-size:12px;color:#444;max-width:400px;line-height:1.6;}
 
+    /* ══════════════════════════════════════
+       SECTION QUÊTES — entre hero et toolbar
+    ══════════════════════════════════════ */
+    .quetes-strip{background:var(--coal);border-bottom:1px solid rgba(208,166,0,.15);padding:20px 40px;position:relative;overflow:hidden;}
+    .quetes-strip::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(208,166,0,.04) 0%,transparent 60%);pointer-events:none;}
+
+    .quetes-strip-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+    .quetes-strip-label{display:flex;align-items:center;gap:10px;}
+    .quetes-strip-label .qs-icon{width:28px;height:28px;background:rgba(208,166,0,.12);border:1px solid rgba(208,166,0,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .quetes-strip-label .qs-icon .material-symbols-outlined{font-size:14px;color:var(--gold);}
+    .quetes-strip-label .qs-title{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);}
+    .quetes-strip-label .qs-sub{font-size:10px;color:#444;margin-top:1px;}
+
+    .quetes-strip-cta{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(208,166,0,.3);background:transparent;color:var(--gold);padding:6px 16px;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s;white-space:nowrap;font-family:'DM Sans',sans-serif;flex-shrink:0;}
+    .quetes-strip-cta:hover{background:rgba(208,166,0,.1);border-color:rgba(208,166,0,.6);}
+    .quetes-strip-cta .material-symbols-outlined{font-size:13px;}
+
+    /* Grille des 3 quêtes */
+    .quetes-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;}
+    @media(max-width:900px){.quetes-cards{grid-template-columns:1fr 1fr;}}
+    @media(max-width:600px){.quetes-cards{grid-template-columns:1fr;}}
+
+    .qcard{background:var(--slate);border-left:2px solid transparent;padding:14px 16px;text-decoration:none;color:inherit;transition:all .2s;display:flex;flex-direction:column;gap:8px;position:relative;}
+    .qcard:hover{border-left-color:var(--gold);background:var(--smoke);}
+
+    .qcard-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+    .qcard-title{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:700;font-style:italic;line-height:1.2;flex:1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .qcard-reward{background:rgba(208,166,0,.1);border:1px solid rgba(208,166,0,.2);padding:3px 8px;flex-shrink:0;text-align:right;}
+    .qcard-reward-lbl{font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);line-height:1;}
+    .qcard-reward-val{font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:700;font-style:italic;color:var(--gold);line-height:1.2;}
+
+    .qcard-bottom{display:flex;align-items:center;gap:12px;}
+    .qcard-meta{display:flex;align-items:center;gap:4px;font-size:10px;color:#444;}
+    .qcard-meta .material-symbols-outlined{font-size:12px;color:#333;}
+    .qcard-country{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#333;padding:2px 6px;border:1px solid var(--border);}
+
+    /* Skeleton quêtes */
+    .qs-skel{background:linear-gradient(90deg,var(--slate) 25%,var(--smoke) 50%,var(--slate) 75%);background-size:600px 100%;animation:shim 1.5s infinite;}
+    .qcard-sk{background:var(--slate);padding:14px 16px;display:flex;flex-direction:column;gap:8px;}
+    @keyframes shim{0%{background-position:-600px 0}100%{background-position:600px 0}}
+
+    /* Message vide quêtes */
+    .quetes-empty{grid-column:1/-1;padding:20px;text-align:center;font-size:11px;color:#333;letter-spacing:1px;}
+
     /* TOOLBAR */
     .toolbar{display:flex;align-items:center;justify-content:space-between;padding:12px 40px;border-bottom:1px solid var(--border);gap:12px;flex-wrap:wrap;}
     .cats-scroll{display:flex;gap:4px;overflow-x:auto;flex:1;}
@@ -59,7 +103,6 @@
     .cat-btn{flex-shrink:0;padding:5px 14px;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;border:1px solid var(--border);background:transparent;color:var(--fog);transition:all .2s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
     .cat-btn:hover,.cat-btn.active{background:var(--fire);border-color:var(--fire);color:#fff;}
 
-    /* QUETE BTN */
     .btn-quete{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(208,166,0,.35);background:rgba(208,166,0,.06);color:var(--gold);padding:5px 14px;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s;white-space:nowrap;font-family:'DM Sans',sans-serif;flex-shrink:0;}
     .btn-quete:hover{background:rgba(208,166,0,.12);border-color:rgba(208,166,0,.6);}
     .btn-quete .material-symbols-outlined{font-size:14px;}
@@ -103,56 +146,44 @@
     /* PRODUCTS AREA */
     .products-area{flex:1;padding:20px 24px;}
 
-    /* ── PRODUCT CARDS — moitié plus petites ── */
     .prod-grid{display:grid;gap:2px;}
-    .prod-grid.cols-4{grid-template-columns:repeat(6,1fr);}   /* 6 cols = ~moitié de la taille d'avant */
-    .prod-grid.cols-3{grid-template-columns:repeat(4,1fr);}   /* 4 cols */
+    .prod-grid.cols-4{grid-template-columns:repeat(6,1fr);}
+    .prod-grid.cols-3{grid-template-columns:repeat(4,1fr);}
     .prod-grid.list-view{grid-template-columns:1fr;gap:1px;}
 
     .prod-card{background:var(--slate);position:relative;overflow:hidden;transition:transform .35s cubic-bezier(.22,1,.36,1);}
     .prod-card:hover{transform:translateY(-2px);z-index:2;}
-
-    /* Ratio 1/1 compact */
     .prod-img{aspect-ratio:1/1;overflow:hidden;position:relative;}
     .prod-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.22,1,.36,1);}
     .prod-card:hover .prod-img img{transform:scale(1.06);}
-
     .prod-add{position:absolute;bottom:5px;right:5px;width:24px;height:24px;background:var(--fire);display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.8);transition:opacity .2s,transform .2s;border:none;color:#fff;}
     .prod-card:hover .prod-add{opacity:1;transform:scale(1);}
     .prod-add .material-symbols-outlined{font-size:13px;}
-
     .prod-badge{position:absolute;top:5px;left:5px;background:rgba(8,8,8,.75);border:1px solid rgba(255,255,255,.08);padding:2px 6px;font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:#999;}
     .prod-rare{position:absolute;top:5px;right:5px;background:var(--fire);padding:2px 6px;font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:#fff;}
-
     .prod-info{padding:8px 9px 10px;}
     .prod-cat{font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:#444;margin-bottom:2px;}
     .prod-name{font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:600;line-height:1.2;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .prod-ft{display:flex;align-items:center;justify-content:space-between;}
     .prod-price{font-size:11px;font-weight:500;color:var(--fire);}
 
-    /* LIST VIEW */
     .prod-grid.list-view .prod-card{display:flex;flex-direction:row;}
     .prod-grid.list-view .prod-img{aspect-ratio:1/1;width:80px;flex-shrink:0;}
     .prod-grid.list-view .prod-info{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10px 14px;}
     .prod-grid.list-view .prod-add{position:static;opacity:1;transform:none;width:24px;height:24px;margin-top:6px;align-self:flex-start;}
 
-    /* NO RESULTS */
     .no-results{padding:48px 32px;text-align:center;}
     .no-results-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-style:italic;color:#444;margin-bottom:8px;}
     .no-results-sub{font-size:11px;color:#333;}
 
-    /* PAGINATION */
     .pagination{display:flex;justify-content:center;gap:4px;padding:24px 0 12px;}
     .page-btn{width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;border:1px solid var(--border);background:transparent;color:var(--fog);transition:all .15s;}
     .page-btn:hover{border-color:var(--fire);color:var(--fire);}
     .page-btn.active{background:var(--fire);border-color:var(--fire);color:#fff;}
     .page-btn:disabled{opacity:.3;pointer-events:none;}
 
-    /* SKELETON */
     .skel{background:linear-gradient(90deg,var(--slate) 25%,var(--smoke) 50%,var(--slate) 75%);background-size:600px 100%;animation:shim 1.5s infinite;}
-    @keyframes shim{0%{background-position:-600px 0}100%{background-position:600px 0}}
 
-    /* SEARCH OVERLAY */
     .srch-ov{position:fixed;inset:0;z-index:200;background:rgba(8,8,8,.95);backdrop-filter:blur(20px);display:flex;align-items:flex-start;justify-content:center;padding-top:120px;opacity:0;pointer-events:none;transition:opacity .25s;}
     .srch-ov.open{opacity:1;pointer-events:all;}
     .srch-box{width:100%;max-width:600px;border-bottom:2px solid var(--fire);display:flex;align-items:center;gap:14px;padding-bottom:14px;transform:translateY(-16px);transition:transform .3s;}
@@ -160,18 +191,15 @@
     .srch-inp{flex:1;background:none;border:none;outline:none;font-family:'Cormorant Garamond',serif;font-size:30px;font-style:italic;color:var(--snow);}
     .srch-inp::placeholder{color:#222;}
 
-    /* TOAST */
     #toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(8px);z-index:300;background:var(--slate);border:1px solid var(--border-fire);color:var(--snow);padding:10px 20px;font-size:11px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;white-space:nowrap;}
     #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-    /* BOTTOM NAV */
     .bnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(8,8,8,.96);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:10px 0 20px;}
     .bnav-inner{display:flex;justify-content:space-around;}
     .bnav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#555;text-decoration:none;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;transition:color .2s;}
     .bnav-item.active,.bnav-item:hover{color:var(--fire);}
     .bnav-item.gold{color:var(--gold)!important;}
 
-    /* REVEAL */
     .reveal{opacity:0;transform:translateY(16px);transition:opacity .5s cubic-bezier(.22,1,.36,1),transform .5s cubic-bezier(.22,1,.36,1);}
     .reveal.vis{opacity:1;transform:translateY(0);}
 
@@ -184,10 +212,129 @@
       .products-area{padding:12px 8px;}
       .prod-grid.cols-4{grid-template-columns:repeat(3,1fr);}
       .prod-grid.cols-3{grid-template-columns:repeat(2,1fr);}
+      .quetes-strip{padding:16px 20px;}
     }
     @media(max-width:480px){
       .prod-grid.cols-4,.prod-grid.cols-3{grid-template-columns:repeat(2,1fr);}
     }
+
+    /* ══════════════════════════════════════
+       MODAL QUÊTES — popup 10s
+    ══════════════════════════════════════ */
+    .qmodal-overlay{
+      position:fixed;inset:0;z-index:500;
+      background:rgba(8,8,8,.82);backdrop-filter:blur(16px);
+      display:flex;align-items:center;justify-content:center;padding:24px;
+      opacity:0;pointer-events:none;transition:opacity .3s;
+    }
+    .qmodal-overlay.open{opacity:1;pointer-events:all;}
+
+    .qmodal{
+      background:var(--coal);border:1px solid rgba(208,166,0,.2);
+      width:100%;max-width:520px;max-height:88vh;overflow-y:auto;
+      transform:translateY(20px) scale(.98);transition:transform .35s cubic-bezier(.22,1,.36,1);
+      position:relative;
+    }
+    .qmodal-overlay.open .qmodal{transform:translateY(0) scale(1);}
+
+    /* Barre déco dorée en haut */
+    .qmodal::before{
+      content:'';position:absolute;top:0;left:0;right:0;height:2px;
+      background:linear-gradient(90deg,transparent,var(--gold),transparent);
+    }
+
+    .qmodal-head{
+      padding:20px 24px 16px;
+      display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+      border-bottom:1px solid var(--border);
+    }
+    .qmodal-head-left{}
+    .qmodal-eyebrow{
+      font-size:8px;letter-spacing:3px;text-transform:uppercase;
+      color:var(--gold);margin-bottom:4px;
+    }
+    .qmodal-title{
+      font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;font-style:italic;
+      line-height:1.1;
+    }
+    .qmodal-sub{font-size:11px;color:#444;margin-top:2px;}
+
+    .qmodal-close{
+      background:none;border:1px solid var(--border);color:#555;
+      width:28px;height:28px;display:flex;align-items:center;justify-content:center;
+      flex-shrink:0;transition:all .2s;
+    }
+    .qmodal-close:hover{border-color:var(--border-fire);color:var(--fire);}
+    .qmodal-close .material-symbols-outlined{font-size:15px;}
+
+    /* Countdown bar */
+    .qmodal-countdown-bar{height:2px;background:var(--border);position:relative;overflow:hidden;}
+    .qmodal-countdown-fill{
+      position:absolute;top:0;left:0;height:100%;
+      background:var(--gold);width:100%;
+      animation:qbar-drain 10s linear forwards;
+    }
+    @keyframes qbar-drain{from{width:100%}to{width:0%}}
+
+    .qmodal-body{padding:16px 24px 20px;display:flex;flex-direction:column;gap:2px;}
+
+    /* Card quête dans le modal */
+    .qm-card{
+      background:var(--slate);border-left:2px solid transparent;
+      padding:14px 16px;text-decoration:none;color:inherit;
+      transition:all .2s;display:flex;flex-direction:column;gap:8px;
+    }
+    .qm-card:hover{border-left-color:var(--gold);background:var(--smoke);}
+    .qm-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+    .qm-title{
+      font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;font-style:italic;
+      line-height:1.2;flex:1;
+    }
+    .qm-reward{
+      background:rgba(208,166,0,.1);border:1px solid rgba(208,166,0,.2);
+      padding:4px 10px;flex-shrink:0;text-align:right;
+    }
+    .qm-reward-lbl{font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);}
+    .qm-reward-val{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:700;font-style:italic;color:var(--gold);}
+    .qm-meta{display:flex;align-items:center;gap:12px;}
+    .qm-meta-item{display:flex;align-items:center;gap:4px;font-size:10px;color:#444;}
+    .qm-meta-item .material-symbols-outlined{font-size:12px;color:#333;}
+    .qm-country{font-size:9px;letter-spacing:1px;color:#333;padding:2px 6px;border:1px solid var(--border);}
+
+    .qm-empty{padding:32px;text-align:center;font-size:11px;color:#333;letter-spacing:1px;}
+
+    .qmodal-footer{
+      padding:0 24px 20px;display:flex;gap:8px;
+    }
+    .qm-btn-full{
+      flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
+      background:rgba(208,166,0,.1);border:1px solid rgba(208,166,0,.3);
+      color:var(--gold);padding:11px;font-size:9px;font-weight:500;
+      letter-spacing:2px;text-transform:uppercase;text-decoration:none;
+      transition:all .2s;font-family:'DM Sans',sans-serif;
+    }
+    .qm-btn-full:hover{background:rgba(208,166,0,.18);border-color:rgba(208,166,0,.6);}
+    .qm-btn-full .material-symbols-outlined{font-size:14px;}
+    .qm-btn-post{
+      display:flex;align-items:center;justify-content:center;gap:8px;
+      background:var(--fire);border:none;
+      color:#fff;padding:11px 20px;font-size:9px;font-weight:500;
+      letter-spacing:2px;text-transform:uppercase;text-decoration:none;
+      transition:background .2s;font-family:'DM Sans',sans-serif;
+      clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));
+    }
+    .qm-btn-post:hover{background:var(--ember);}
+
+    /* Checkbox "ne plus afficher aujourd'hui" */
+    .qmodal-dismiss{
+      padding:0 24px 16px;display:flex;align-items:center;gap:8px;
+    }
+    .qmodal-dismiss input[type=checkbox]{width:12px;height:12px;accent-color:var(--gold);}
+    .qmodal-dismiss label{font-size:10px;color:#444;letter-spacing:.5px;}
+
+    /* Skeleton dans le modal */
+    .qm-skel{background:linear-gradient(90deg,var(--slate) 25%,var(--smoke) 50%,var(--slate) 75%);background-size:600px 100%;animation:shim 1.5s infinite;}
+    .qm-card-sk{background:var(--slate);padding:14px 16px;display:flex;flex-direction:column;gap:8px;}
   </style>
 </head>
 <body>
@@ -237,6 +384,32 @@
   <p class="page-sub">Sélection curatée d'artisans du Gabon et du Maroc. <span id="total-label" style="color:var(--fire);"></span></p>
 </div>
 
+<!-- ══════════════════════════════════════════════
+     SECTION QUÊTES — live depuis Supabase
+══════════════════════════════════════════════ -->
+<div class="quetes-strip reveal">
+  <div class="quetes-strip-head">
+    <div class="quetes-strip-label">
+      <div class="qs-icon"><span class="material-symbols-outlined">search</span></div>
+      <div>
+        <div class="qs-title">Quêtes ouvertes</div>
+        <div class="qs-sub">Produits recherchés par la communauté · Devenez chasseur</div>
+      </div>
+    </div>
+    <a href="quetes.html" class="quetes-strip-cta">
+      Voir toutes
+      <span class="material-symbols-outlined" style="font-size:12px;">arrow_forward</span>
+    </a>
+  </div>
+
+  <div class="quetes-cards" id="quetes-cards">
+    <!-- Skeletons -->
+    <div class="qcard-sk"><div class="qs-skel" style="height:14px;width:70%;border-radius:2px;"></div><div class="qs-skel" style="height:10px;width:50%;border-radius:2px;margin-top:6px;"></div></div>
+    <div class="qcard-sk"><div class="qs-skel" style="height:14px;width:60%;border-radius:2px;"></div><div class="qs-skel" style="height:10px;width:45%;border-radius:2px;margin-top:6px;"></div></div>
+    <div class="qcard-sk"><div class="qs-skel" style="height:14px;width:75%;border-radius:2px;"></div><div class="qs-skel" style="height:10px;width:55%;border-radius:2px;margin-top:6px;"></div></div>
+  </div>
+</div>
+
 <!-- ACTIVE FILTERS -->
 <div class="active-filters" id="active-filters"></div>
 
@@ -245,7 +418,6 @@
   <div class="cats-scroll" id="cats-scroll">
     <button class="cat-btn active" data-id="">Tout</button>
   </div>
-  <!-- BOUTON QUÊTE -->
   <a href="quetes.html" class="btn-quete">
     <span class="material-symbols-outlined">search</span>
     Quêtes
@@ -309,7 +481,6 @@
   <!-- PRODUITS -->
   <div class="products-area">
     <div class="prod-grid cols-4" id="prod-grid">
-      <!-- Skeletons : 12 cards -->
       <div class="prod-card"><div class="prod-img skel"></div><div class="prod-info"><div class="skel" style="height:7px;width:55%;margin-bottom:5px;"></div><div class="skel" style="height:11px;width:80%;margin-bottom:6px;"></div><div class="skel" style="height:9px;width:40%;"></div></div></div>
       <div class="prod-card"><div class="prod-img skel"></div><div class="prod-info"><div class="skel" style="height:7px;width:55%;margin-bottom:5px;"></div><div class="skel" style="height:11px;width:80%;margin-bottom:6px;"></div><div class="skel" style="height:9px;width:40%;"></div></div></div>
       <div class="prod-card"><div class="prod-img skel"></div><div class="prod-info"><div class="skel" style="height:7px;width:55%;margin-bottom:5px;"></div><div class="skel" style="height:11px;width:80%;margin-bottom:6px;"></div><div class="skel" style="height:9px;width:40%;"></div></div></div>
@@ -335,6 +506,41 @@
     <a href="compte.html" class="bnav-item"><span class="material-symbols-outlined">person</span><span>Profil</span></a>
   </div>
 </nav>
+
+<!-- MODAL QUÊTES -->
+<div class="qmodal-overlay" id="qmodalOverlay" onclick="closeQModal(event)">
+  <div class="qmodal" onclick="event.stopPropagation()">
+    <div class="qmodal-countdown-bar"><div class="qmodal-countdown-fill" id="qCountdownFill"></div></div>
+    <div class="qmodal-head">
+      <div class="qmodal-head-left">
+        <div class="qmodal-eyebrow">Quêtes · Communauté</div>
+        <div class="qmodal-title" id="qmodal-title">Produits recherchés</div>
+        <div class="qmodal-sub" id="qmodal-sub">Des chasseurs attendent votre aide</div>
+      </div>
+      <button class="qmodal-close" onclick="dismissQModal()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="qmodal-body" id="qmodal-body">
+      <div class="qm-card-sk"><div class="qm-skel" style="height:14px;width:65%;border-radius:2px;"></div><div class="qm-skel" style="height:10px;width:45%;border-radius:2px;margin-top:6px;"></div></div>
+      <div class="qm-card-sk"><div class="qm-skel" style="height:14px;width:75%;border-radius:2px;"></div><div class="qm-skel" style="height:10px;width:50%;border-radius:2px;margin-top:6px;"></div></div>
+      <div class="qm-card-sk"><div class="qm-skel" style="height:14px;width:55%;border-radius:2px;"></div><div class="qm-skel" style="height:10px;width:40%;border-radius:2px;margin-top:6px;"></div></div>
+    </div>
+    <div class="qmodal-footer">
+      <a href="quetes.html" class="qm-btn-full">
+        <span class="material-symbols-outlined">list</span>
+        Toutes les quêtes
+      </a>
+      <a href="quetes.html#poster" class="qm-btn-post">
+        Poster une quête
+      </a>
+    </div>
+    <div class="qmodal-dismiss">
+      <input type="checkbox" id="qDismissCheck" onchange="handleDismissCheck(this)"/>
+      <label for="qDismissCheck">Ne plus afficher aujourd'hui</label>
+    </div>
+  </div>
+</div>
 
 <!-- SEARCH OVERLAY -->
 <div class="srch-ov" id="srchOv">
@@ -369,11 +575,12 @@ document.querySelectorAll('.reveal').forEach(el=>rObs.observe(el))
 
 /* ─── UTILS ──────────────────────────────────── */
 function showToast(msg,d=3000){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),d)}
-
 function fmtPrice(n,cur='MAD'){
   try{return new Intl.NumberFormat('fr-FR',{style:'currency',currency:cur,minimumFractionDigits:0}).format(n)}
   catch{return Number(n).toFixed(0)+' '+cur}
 }
+function fmtFcfa(n){return Number(n).toLocaleString('fr-FR')+' FCFA'}
+function daysLeft(d){return Math.max(0,Math.ceil((new Date(d)-new Date())/86400000))}
 
 /* ─── CART ───────────────────────────────────── */
 async function updateCartBadge(){if(typeof Cart!=='undefined')await Cart.updateBadge('cart-badge')}
@@ -392,8 +599,168 @@ function handleSearchKey(e){if(e.key==='Escape')closeSearch()}
 document.getElementById('srchOv').addEventListener('click',e=>{if(e.target===e.currentTarget)closeSearch()})
 document.addEventListener('keydown',e=>{if((e.key==='/'||(e.ctrlKey&&e.key==='k'))&&document.activeElement.tagName!=='INPUT'){e.preventDefault();openSearch()}})
 
-/* ─── STATE ──────────────────────────────────── */
-const PAGE_SIZE=24 // 6 cols × 4 lignes
+/* ─── QUÊTES STRIP — live Supabase ───────────── */
+async function loadQuetesStrip(){
+  if(typeof db==='undefined')return
+  try{
+    const {data,error}=await db.from('quests')
+      .select('id,title,reward_amount,country_target,expires_at,quest_proposals(count)')
+      .eq('status','open')
+      .order('created_at',{ascending:false})
+      .limit(3)
+
+    const container=document.getElementById('quetes-cards')
+    if(error||!data||!data.length){
+      container.innerHTML=`<div class="quetes-empty">Aucune quête ouverte pour le moment — <a href="quetes.html" style="color:var(--gold);">soyez le premier</a></div>`
+      return
+    }
+    container.innerHTML=data.map(q=>{
+      const proposals=q.quest_proposals?.[0]?.count||0
+      const exp=daysLeft(q.expires_at)
+      const esc=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      return `<a class="qcard" href="detail_quete.html?id=${q.id}">
+        <div class="qcard-top">
+          <div class="qcard-title">${esc(q.title)}</div>
+          <div class="qcard-reward">
+            <div class="qcard-reward-lbl">Récompense</div>
+            <div class="qcard-reward-val">${fmtFcfa(q.reward_amount)}</div>
+          </div>
+        </div>
+        <div class="qcard-bottom">
+          <span class="qcard-meta">
+            <span class="material-symbols-outlined">group</span>
+            ${proposals} prop.
+          </span>
+          <span class="qcard-meta">
+            <span class="material-symbols-outlined">schedule</span>
+            ${exp<=1?'<span style="color:var(--fire)">Demain</span>':exp+'j'}
+          </span>
+          ${q.country_target?`<span class="qcard-country">${q.country_target}</span>`:''}
+        </div>
+      </a>`
+    }).join('')
+  }catch(e){
+    document.getElementById('quetes-cards').innerHTML=`<div class="quetes-empty">Impossible de charger les quêtes.</div>`
+  }
+}
+
+/* ─── MODAL QUÊTES — 10s, 1x/jour ───────────── */
+const QMODAL_KEY = 'wenna_qmodal_dismissed'
+
+function shouldShowQModal(){
+  const stored = localStorage.getItem(QMODAL_KEY)
+  if(!stored) return true
+  const dismissedAt = new Date(stored)
+  const now = new Date()
+  // Même jour calendaire → ne pas montrer
+  return dismissedAt.toDateString() !== now.toDateString()
+}
+
+function openQModal(){
+  const overlay = document.getElementById('qmodalOverlay')
+  overlay.classList.add('open')
+  document.body.style.overflow = 'hidden'
+  // Relancer l'animation de la barre countdown
+  const fill = document.getElementById('qCountdownFill')
+  fill.style.animation = 'none'
+  fill.offsetHeight // reflow
+  fill.style.animation = ''
+}
+
+function dismissQModal(){
+  document.getElementById('qmodalOverlay').classList.remove('open')
+  document.body.style.overflow = ''
+}
+
+function closeQModal(e){
+  if(e.target === document.getElementById('qmodalOverlay')) dismissQModal()
+}
+
+function handleDismissCheck(cb){
+  if(cb.checked){
+    localStorage.setItem(QMODAL_KEY, new Date().toISOString())
+    dismissQModal()
+  }
+}
+
+async function loadQModalQuests(){
+  if(typeof db === 'undefined') return
+  try{
+    // Récupérer le nom de la catégorie active
+    const activeCatBtn = document.querySelector('.cat-btn.active')
+    const catId = activeCatBtn?.dataset.id || ''
+    const catName = catId ? (activeCatBtn?.textContent || '') : ''
+
+    // Titre dynamique selon catégorie
+    const titleEl = document.getElementById('qmodal-title')
+    const subEl   = document.getElementById('qmodal-sub')
+    if(catName){
+      titleEl.textContent = `Quêtes · ${catName}`
+      subEl.textContent   = `Produits "${catName}" recherchés par la communauté`
+    } else {
+      titleEl.textContent = 'Produits recherchés'
+      subEl.textContent   = 'Des chasseurs attendent votre aide'
+    }
+
+    let q = db.from('quests')
+      .select('id,title,reward_amount,country_target,expires_at,category_id,quest_proposals(count)')
+      .eq('status','open')
+      .order('created_at',{ascending:false})
+      .limit(4)
+
+    if(catId) q = q.eq('category_id', catId)
+
+    const {data, error} = await q
+    const body = document.getElementById('qmodal-body')
+
+    if(error || !data || !data.length){
+      body.innerHTML = `<div class="qm-empty">Aucune quête${catName?' pour "'+catName+'"':''} — <a href="quetes.html" style="color:var(--gold);">voir toutes</a></div>`
+      return
+    }
+
+    body.innerHTML = data.map(q => {
+      const proposals = q.quest_proposals?.[0]?.count || 0
+      const exp = daysLeft(q.expires_at)
+      const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      return `<a class="qm-card" href="detail_quete.html?id=${q.id}">
+        <div class="qm-card-top">
+          <div class="qm-title">${esc(q.title)}</div>
+          <div class="qm-reward">
+            <div class="qm-reward-lbl">Récompense</div>
+            <div class="qm-reward-val">${fmtFcfa(q.reward_amount)}</div>
+          </div>
+        </div>
+        <div class="qm-meta">
+          <span class="qm-meta-item">
+            <span class="material-symbols-outlined">group</span>${proposals} prop.
+          </span>
+          <span class="qm-meta-item">
+            <span class="material-symbols-outlined">schedule</span>
+            ${exp <= 1 ? '<span style="color:var(--fire)">Demain</span>' : exp+'j'}
+          </span>
+          ${q.country_target ? `<span class="qm-country">${q.country_target}</span>` : ''}
+        </div>
+      </a>`
+    }).join('')
+  }catch(e){
+    document.getElementById('qmodal-body').innerHTML = `<div class="qm-empty">Impossible de charger les quêtes.</div>`
+  }
+}
+
+function scheduleQModal(){
+  if(!shouldShowQModal()) return
+  setTimeout(async () => {
+    await loadQModalQuests()
+    openQModal()
+    // Fermeture auto après 30s si pas d'interaction
+    setTimeout(()=>{
+      if(document.getElementById('qmodalOverlay').classList.contains('open')) dismissQModal()
+    }, 30000)
+  }, 10000) // 10 secondes
+}
+
+
+const PAGE_SIZE=24
 let state={page:1,total:0,search:'',catId:'',pays:null,priceMin:0,priceMax:100000,stockOnly:false,sort:'created_at:desc',view:'grid4',debounce:null}
 
 function readURLParams(){
@@ -549,7 +916,13 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(state.pays==='Gabon')document.getElementById('f-gabon').checked=true
   if(state.pays==='Maroc')document.getElementById('f-maroc').checked=true
   function waitForDb(n=0){
-    if(typeof db!=='undefined'){loadCategories();loadProducts();renderActiveFilters()}
+    if(typeof db!=='undefined'){
+      loadCategories()
+      loadProducts()
+      loadQuetesStrip()  // ← chargement quêtes
+      renderActiveFilters()
+      scheduleQModal()   // ← modal 10s
+    }
     else if(n<20)setTimeout(()=>waitForDb(n+1),100)
     else document.getElementById('prod-grid').innerHTML=`<div style="padding:40px;text-align:center;color:#555;grid-column:1/-1;font-size:10px;letter-spacing:2px;text-transform:uppercase;">Configuration Supabase manquante.</div>`
   }
