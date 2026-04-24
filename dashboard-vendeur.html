@@ -120,15 +120,19 @@
     .chart-bar-fill{position:absolute;inset-x:0;bottom:0;background:var(--fire);}
     .chart-lbl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#444;}
     .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
     .form-group{display:flex;flex-direction:column;gap:6px;}
     .form-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#555;}
     .inp-full{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--snow);padding:12px 16px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
     .inp-full:focus{border-color:var(--border-fire);}
     .inp-full::placeholder{color:#333;}
     textarea.inp-full{resize:none;}
+    .section-divider{border:none;border-top:1px solid var(--border);margin:8px 0;}
+    .section-label{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--fire);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+    .section-label::before{content:'';display:block;width:16px;height:1px;background:var(--fire);}
     .modal-ov{position:fixed;inset:0;z-index:200;background:rgba(8,8,8,.88);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;padding:24px;}
     .modal-ov.hidden{display:none;}
-    .modal-box{background:var(--coal);border:1px solid var(--border);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;}
+    .modal-box{background:var(--coal);border:1px solid var(--border);width:100%;max-width:620px;max-height:90vh;overflow-y:auto;}
     .modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--coal);z-index:10;}
     .modal-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;font-style:italic;}
     .modal-close{background:none;border:none;color:#555;cursor:pointer;transition:color .2s;}
@@ -143,23 +147,40 @@
     .eyebrow{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--fire);display:flex;align-items:center;gap:12px;}
     .eyebrow::before{content:'';display:block;width:20px;height:1px;background:var(--fire);}
 
-    /* IMAGE UPLOAD */
-    .upload-zone{border:1px dashed rgba(255,107,43,.3);background:rgba(255,107,43,.03);padding:24px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
-    .upload-zone:hover{border-color:rgba(255,107,43,.6);background:rgba(255,107,43,.06);}
-    .upload-zone.dragover{border-color:var(--fire);background:rgba(255,107,43,.1);}
-    .upload-icon{font-size:32px;color:rgba(255,107,43,.35);margin-bottom:8px;}
-    .upload-label{font-size:11px;color:#666;letter-spacing:1px;}
-    .upload-hint{font-size:10px;color:#444;margin-top:4px;}
-    .upload-preview{width:100%;max-height:140px;object-fit:cover;display:none;margin-bottom:12px;}
-    .upload-progress-wrap{display:none;margin-top:12px;}
-    .upload-bar-bg{height:2px;background:rgba(255,107,43,.15);width:100%;}
-    .upload-bar-fill{height:2px;background:var(--fire);width:0%;transition:width .3s;}
-    .upload-status{font-size:10px;color:var(--fire);letter-spacing:1px;margin-top:6px;display:block;}
-    .upload-change{position:absolute;top:8px;right:8px;background:rgba(8,8,8,.7);border:1px solid var(--border);color:#888;font-size:9px;letter-spacing:1px;padding:4px 8px;cursor:pointer;font-family:'DM Sans',sans-serif;display:none;}
-    .upload-change:hover{color:var(--snow);}
-    .url-toggle{margin-top:8px;text-align:right;}
+    /* ═══ MULTI-IMAGE UPLOAD ═══ */
+    .images-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+    .img-slot{position:relative;aspect-ratio:1;border:1px dashed rgba(255,107,43,.25);background:rgba(255,107,43,.03);cursor:pointer;transition:all .2s;overflow:hidden;}
+    .img-slot:hover{border-color:rgba(255,107,43,.5);background:rgba(255,107,43,.06);}
+    .img-slot.filled{border-style:solid;border-color:rgba(255,107,43,.3);}
+    .img-slot.primary{border-color:var(--fire);border-width:2px;}
+    .img-slot-inner{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;}
+    .img-slot img{width:100%;height:100%;object-fit:cover;display:none;}
+    .img-slot.filled img{display:block;}
+    .img-slot.filled .img-slot-inner{display:none;}
+    .img-slot-add-icon{font-size:22px;color:rgba(255,107,43,.3);}
+    .img-slot-add-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#444;}
+    .img-slot-actions{position:absolute;inset:0;background:rgba(8,8,8,.75);display:none;flex-direction:column;align-items:center;justify-content:center;gap:6px;}
+    .img-slot.filled:hover .img-slot-actions{display:flex;}
+    .img-slot-btn{background:none;border:1px solid rgba(255,255,255,.15);color:#ddd;font-size:9px;letter-spacing:1px;padding:4px 10px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;width:80%;}
+    .img-slot-btn:hover{border-color:var(--fire);color:var(--fire);}
+    .img-slot-btn.del{border-color:rgba(239,68,68,.3);color:#ef4444;}
+    .img-slot-btn.del:hover{border-color:#ef4444;background:rgba(239,68,68,.1);}
+    .primary-badge{position:absolute;top:4px;left:4px;background:var(--fire);color:#fff;font-size:8px;letter-spacing:1px;padding:2px 6px;text-transform:uppercase;}
+    .img-progress{position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--fire);transform-origin:left;transform:scaleX(0);transition:transform .3s;}
+    .upload-hint-row{display:flex;align-items:center;justify-content:space-between;margin-top:8px;}
+    .upload-hint-text{font-size:10px;color:#444;letter-spacing:1px;}
     .url-toggle-btn{background:none;border:none;color:#444;font-size:10px;letter-spacing:1px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:color .2s;}
     .url-toggle-btn:hover{color:#888;}
+
+    /* ═══ TAGS INPUT ═══ */
+    .tags-wrap{display:flex;flex-wrap:wrap;gap:6px;min-height:44px;background:rgba(255,255,255,.04);border:1px solid var(--border);padding:8px 12px;cursor:text;transition:border-color .2s;}
+    .tags-wrap:focus-within{border-color:var(--border-fire);}
+    .tag-chip{display:inline-flex;align-items:center;gap:5px;background:rgba(255,107,43,.12);border:1px solid rgba(255,107,43,.2);color:var(--fire);font-size:11px;padding:3px 8px;letter-spacing:.5px;}
+    .tag-chip button{background:none;border:none;color:var(--fire);cursor:pointer;font-size:13px;line-height:1;padding:0;opacity:.6;}
+    .tag-chip button:hover{opacity:1;}
+    #tags-input{background:transparent;border:none;outline:none;color:var(--snow);font-size:12px;font-family:'DM Sans',sans-serif;min-width:100px;flex:1;}
+
+    .form-hint{font-size:10px;color:#555;letter-spacing:.5px;margin-top:4px;}
 
     @media(max-width:1023px){
       #sidebar{transform:translateX(-100%);}
@@ -170,7 +191,9 @@
       .stat-grid{grid-template-columns:repeat(2,1fr);}
       .two-col{grid-template-columns:1fr;}
       .form-grid{grid-template-columns:1fr;}
+      .form-grid-3{grid-template-columns:1fr 1fr;}
       .toolbar{flex-direction:column;align-items:flex-start;}
+      .images-grid{grid-template-columns:repeat(3,1fr);}
       #menu-btn{display:block!important;}
     }
   </style>
@@ -228,6 +251,9 @@
   <div class="sb-footer">
     <a href="boutique.html" class="nav-item">
       <span class="nav-icon material-symbols-outlined">storefront</span>Voir la boutique
+    </a>
+    <a href="requetes.html" class="nav-item">
+      <span class="nav-icon material-symbols-outlined">support_agent</span>Requêtes
     </a>
     <button onclick="logout()" class="nav-item nav-danger">
       <span class="material-symbols-outlined" style="font-size:18px">logout</span>Déconnexion
@@ -445,7 +471,9 @@
   </main>
 </div>
 
-<!-- MODAL PRODUIT -->
+<!-- ═══════════════════════════════════════════════════════════
+     MODAL PRODUIT — multi-images + caractéristiques
+═══════════════════════════════════════════════════════════ -->
 <div id="modal-overlay" class="modal-ov hidden">
   <div class="modal-box" onclick="event.stopPropagation()">
     <div class="modal-head">
@@ -455,12 +483,23 @@
     <form id="product-form" onsubmit="saveProduct(event)">
       <div class="modal-body" style="display:flex;flex-direction:column;gap:18px;">
         <input type="hidden" id="product-id"/>
+
+        <!-- ── Infos de base ── -->
+        <div class="section-label">Informations de base</div>
         <div class="form-group"><label class="form-label">Nom du produit *</label><input id="product-name" type="text" required class="inp-full"/></div>
-        <div class="form-group"><label class="form-label">Description</label><textarea id="product-description" rows="3" class="inp-full"></textarea></div>
+        <div class="form-group"><label class="form-label">Description</label><textarea id="product-description" rows="3" class="inp-full" placeholder="Décrivez votre produit en détail…"></textarea></div>
         <div class="form-grid">
           <div class="form-group"><label class="form-label">Prix (MAD) *</label><input id="product-price" type="number" step="0.01" min="0" required class="inp-full"/></div>
-          <div class="form-group"><label class="form-label">Stock *</label><input id="product-stock" type="number" min="0" required class="inp-full"/></div>
+          <div class="form-group"><label class="form-label">Prix promotionnel (MAD)</label><input id="product-compare-price" type="number" step="0.01" min="0" class="inp-full" placeholder="Prix avant remise"/></div>
         </div>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Stock *</label><input id="product-stock" type="number" min="0" required class="inp-full"/></div>
+          <div class="form-group"><label class="form-label">SKU / Référence</label><input id="product-sku" type="text" class="inp-full" placeholder="Ex: WSH-2024-001"/></div>
+        </div>
+
+        <hr class="section-divider"/>
+        <!-- ── Localisation ── -->
+        <div class="section-label">Localisation</div>
         <div class="form-grid">
           <div class="form-group"><label class="form-label">Pays *</label>
             <select id="product-country" class="inp-full sel-dark" style="appearance:none;">
@@ -473,38 +512,50 @@
           <select id="product-category" class="inp-full sel-dark" style="appearance:none;"><option value="">Sélectionner...</option></select>
         </div>
 
-        <!-- ═══ IMAGE UPLOAD (remplace le champ URL) ═══ -->
-        <div class="form-group">
-          <label class="form-label">Photo du produit</label>
-          <!-- Zone de drop / clic -->
-          <div class="upload-zone" id="upload-zone"
-            onclick="document.getElementById('product-image-file').click()"
-            ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
-            <img id="upload-preview" class="upload-preview" src="" alt="Aperçu"/>
-            <button type="button" class="upload-change" id="upload-change-btn" onclick="event.stopPropagation();resetUpload()">Changer</button>
-            <div id="upload-placeholder">
-              <span class="material-symbols-outlined upload-icon">cloud_upload</span>
-              <div class="upload-label">Appuyer pour choisir une photo</div>
-              <div class="upload-hint">JPG · PNG · WEBP — max 5 Mo</div>
-            </div>
-            <div class="upload-progress-wrap" id="upload-progress-wrap">
-              <div class="upload-bar-bg"><div class="upload-bar-fill" id="upload-bar-fill"></div></div>
-              <span class="upload-status" id="upload-status">Envoi en cours…</span>
-            </div>
-          </div>
-          <!-- Input file caché -->
-          <input id="product-image-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none;" onchange="handleImageUpload(this.files[0])"/>
-          <!-- Champ hidden qui stocke l'URL finale -->
-          <input id="product-image" type="hidden"/>
-          <!-- Lien discret pour entrer une URL à la main -->
-          <div class="url-toggle">
-            <button type="button" class="url-toggle-btn" onclick="toggleUrlInput()">Ou entrer une URL directement</button>
-          </div>
-          <input id="product-image-url-manual" type="url" placeholder="https://…" class="inp-full" style="display:none;margin-top:8px;"
-            oninput="document.getElementById('product-image').value=this.value;showManualPreview(this.value)"/>
+        <hr class="section-divider"/>
+        <!-- ── Caractéristiques physiques ── -->
+        <div class="section-label">Caractéristiques physiques</div>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Marque / Artisan</label><input id="product-brand" type="text" class="inp-full" placeholder="Ex: Argania Bio"/></div>
+          <div class="form-group"><label class="form-label">Matériaux</label><input id="product-material" type="text" class="inp-full" placeholder="Ex: Cuir, Bois d'ébène…"/></div>
         </div>
-        <!-- ══════════════════════════════════════════ -->
+        <div class="form-grid-3">
+          <div class="form-group"><label class="form-label">Poids (g)</label><input id="product-weight" type="number" min="0" step="1" class="inp-full" placeholder="Ex: 250"/></div>
+          <div class="form-group"><label class="form-label">Dimensions</label><input id="product-dimensions" type="text" class="inp-full" placeholder="L × l × H cm"/></div>
+          <div class="form-group"><label class="form-label">Garantie</label><input id="product-warranty" type="text" class="inp-full" placeholder="Ex: 6 mois"/></div>
+        </div>
+        <div class="form-group"><label class="form-label">Délai de livraison (jours)</label><input id="product-delivery" type="number" min="1" max="90" class="inp-full" placeholder="Ex: 5"/><p class="form-hint">Délai estimé depuis votre ville vers le client</p></div>
 
+        <hr class="section-divider"/>
+        <!-- ── Tags ── -->
+        <div class="section-label">Tags</div>
+        <div class="form-group">
+          <label class="form-label">Mots-clés</label>
+          <div class="tags-wrap" id="tags-wrap" onclick="document.getElementById('tags-input').focus()">
+            <div id="tags-chips"></div>
+            <input id="tags-input" placeholder="Ajouter un tag, appuyer sur Entrée…" autocomplete="off"/>
+          </div>
+          <p class="form-hint">Ex : artisanal, bio, exclusif, gabon, maroc</p>
+        </div>
+
+        <hr class="section-divider"/>
+        <!-- ── Photos multiples ── -->
+        <div class="section-label">Photos du produit <span style="font-size:9px;color:#555;font-weight:400;letter-spacing:1px;">(max 5 — JPG, PNG, WEBP)</span></div>
+        <div class="images-grid" id="images-grid">
+          <!-- 5 slots générés par JS -->
+        </div>
+        <div class="upload-hint-row">
+          <span class="upload-hint-text">La 1ère image est la photo principale</span>
+          <button type="button" class="url-toggle-btn" onclick="toggleUrlInput()">Ou entrer une URL</button>
+        </div>
+        <input id="product-image-url-manual" type="url" placeholder="https://…" class="inp-full" style="display:none;"
+          oninput="addManualUrl(this.value)"/>
+        <!-- Input file caché — multiple -->
+        <input id="product-image-file" type="file" accept="image/jpeg,image/png,image/webp" multiple style="display:none;" onchange="handleMultiUpload(this.files)"/>
+
+        <hr class="section-divider"/>
+        <!-- ── Statut ── -->
+        <div class="section-label">Publication</div>
         <div class="form-group"><label class="form-label">Statut</label>
           <select id="product-status" class="inp-full sel-dark" style="appearance:none;">
             <option value="pending">En attente de validation</option>
@@ -567,7 +618,10 @@
 <script>
 function getDb(){return window.db}
 
-let currentSeller=null,allProducts=[],prodPage=1,currentOrderId=null,productToDelete=null,categories=[]
+const MAX_IMAGES = 5
+let currentSeller=null, allProducts=[], prodPage=1, currentOrderId=null, productToDelete=null, categories=[]
+let productImages = [] // [{url, file, uploading, slot}] – état des images courantes
+let currentTags = []
 const PROD_PER_PAGE=10
 
 // ── UTILS ──────────────────────────────────────────────────────────────────
@@ -589,98 +643,6 @@ function statusBadge(s){
 function starsHtml(rating){
   const n=Math.round(rating||0)
   return Array.from({length:5},(_,i)=>`<span class="material-symbols-outlined ${i<n?'icon-fill':''}" style="font-size:16px;color:${i<n?'var(--fire)':'#333'}">star</span>`).join('')
-}
-
-// ── IMAGE UPLOAD ────────────────────────────────────────────────────────────
-let urlInputVisible = false
-
-function onDragOver(e){e.preventDefault();document.getElementById('upload-zone').classList.add('dragover')}
-function onDragLeave(){document.getElementById('upload-zone').classList.remove('dragover')}
-function onDrop(e){
-  e.preventDefault()
-  document.getElementById('upload-zone').classList.remove('dragover')
-  const file=e.dataTransfer.files[0]
-  if(file)handleImageUpload(file)
-}
-
-async function handleImageUpload(file){
-  if(!file)return
-  if(!file.type.startsWith('image/')){showToast('Fichier non supporté — JPG, PNG ou WEBP uniquement','error');return}
-  if(file.size>5*1024*1024){showToast('Image trop lourde — max 5 Mo','error');return}
-
-  const db=getDb()
-  if(!db){showToast('Connexion Supabase non disponible','error');return}
-
-  // Aperçu local immédiat
-  const reader=new FileReader()
-  reader.onload=e=>{
-    const prev=document.getElementById('upload-preview')
-    prev.src=e.target.result
-    prev.style.display='block'
-    document.getElementById('upload-placeholder').style.display='none'
-    document.getElementById('upload-change-btn').style.display='block'
-  }
-  reader.readAsDataURL(file)
-
-  // Progress UI
-  document.getElementById('upload-progress-wrap').style.display='block'
-  document.getElementById('upload-bar-fill').style.width='0%'
-  document.getElementById('upload-status').textContent='Envoi en cours…'
-
-  // Fake progress animation
-  let prog=0
-  const interval=setInterval(()=>{
-    prog=Math.min(prog+8,85)
-    document.getElementById('upload-bar-fill').style.width=prog+'%'
-  },120)
-
-  try{
-    const ext=file.name.split('.').pop().toLowerCase()||'jpg'
-    const filename=`products/${currentSeller?.id||'anon'}/${Date.now()}.${ext}`
-    const {data,error}=await db.storage.from('products').upload(filename,file,{cacheControl:'3600',upsert:true,contentType:file.type})
-    clearInterval(interval)
-    if(error)throw error
-
-    document.getElementById('upload-bar-fill').style.width='100%'
-    document.getElementById('upload-status').textContent='Image envoyée ✓'
-
-    const {data:{publicUrl}}=db.storage.from('products').getPublicUrl(filename)
-    document.getElementById('product-image').value=publicUrl
-    setTimeout(()=>document.getElementById('upload-progress-wrap').style.display='none',1500)
-  }catch(err){
-    clearInterval(interval)
-    document.getElementById('upload-status').textContent='Erreur : '+err.message
-    document.getElementById('upload-bar-fill').style.background='#ef4444'
-    showToast('Erreur upload : '+err.message,'error')
-  }
-}
-
-function resetUpload(){
-  document.getElementById('product-image').value=''
-  document.getElementById('product-image-file').value=''
-  const prev=document.getElementById('upload-preview')
-  prev.src='';prev.style.display='none'
-  document.getElementById('upload-placeholder').style.display='block'
-  document.getElementById('upload-change-btn').style.display='none'
-  document.getElementById('upload-progress-wrap').style.display='none'
-  document.getElementById('upload-bar-fill').style.width='0%'
-  document.getElementById('upload-bar-fill').style.background='var(--fire)'
-}
-
-function toggleUrlInput(){
-  urlInputVisible=!urlInputVisible
-  const inp=document.getElementById('product-image-url-manual')
-  inp.style.display=urlInputVisible?'block':'none'
-  if(!urlInputVisible)inp.value=''
-}
-
-function showManualPreview(url){
-  if(!url)return
-  const prev=document.getElementById('upload-preview')
-  prev.src=url
-  prev.style.display='block'
-  document.getElementById('upload-placeholder').style.display='none'
-  document.getElementById('upload-change-btn').style.display='block'
 }
 
 // ── NAV ─────────────────────────────────────────────────────────────────────
@@ -711,6 +673,200 @@ function checkMobile(){
   const btn=document.getElementById('menu-btn');if(btn)btn.style.display=m?'block':'none'
 }
 window.addEventListener('resize',checkMobile);checkMobile()
+
+// ── TAGS ────────────────────────────────────────────────────────────────────
+function initTagsInput(){
+  const input=document.getElementById('tags-input')
+  input.addEventListener('keydown',e=>{
+    if((e.key==='Enter'||e.key===',')&&input.value.trim()){
+      e.preventDefault()
+      addTag(input.value.trim().replace(/,/g,''))
+      input.value=''
+    } else if(e.key==='Backspace'&&!input.value&&currentTags.length){
+      removeTag(currentTags.length-1)
+    }
+  })
+}
+function addTag(tag){
+  tag=tag.toLowerCase().replace(/\s+/g,'-')
+  if(!tag||currentTags.includes(tag)||currentTags.length>=10)return
+  currentTags.push(tag)
+  renderTags()
+}
+function removeTag(i){currentTags.splice(i,1);renderTags()}
+function renderTags(){
+  document.getElementById('tags-chips').innerHTML=currentTags.map((t,i)=>
+    `<span class="tag-chip">${t}<button type="button" onclick="removeTag(${i})">×</button></span>`
+  ).join('')
+}
+function setTags(arr){currentTags=arr||[];renderTags()}
+
+// ── MULTI-IMAGE GRID ────────────────────────────────────────────────────────
+function initImagesGrid(){
+  productImages=[]
+  const grid=document.getElementById('images-grid')
+  grid.innerHTML=''
+  for(let i=0;i<MAX_IMAGES;i++){
+    const slot=document.createElement('div')
+    slot.className='img-slot'
+    slot.id='img-slot-'+i
+    slot.innerHTML=`
+      <div class="img-slot-inner">
+        <span class="material-symbols-outlined img-slot-add-icon">add_photo_alternate</span>
+        <span class="img-slot-add-label">${i===0?'Principale':'Photo '+(i+1)}</span>
+      </div>
+      <img src="" alt=""/>
+      ${i===0?'<span class="primary-badge">Principale</span>':''}
+      <div class="img-slot-actions">
+        <button type="button" class="img-slot-btn" onclick="setMainImage(${i})">Principale</button>
+        <button type="button" class="img-slot-btn del" onclick="removeSlotImage(${i})">Supprimer</button>
+      </div>
+      <div class="img-progress" id="img-prog-${i}"></div>`
+    slot.addEventListener('click',e=>{
+      if(e.target.closest('.img-slot-actions'))return
+      if(!slot.classList.contains('filled')) triggerSlotUpload(i)
+    })
+    grid.appendChild(slot)
+    productImages.push(null)
+  }
+}
+
+function triggerSlotUpload(slotIndex){
+  const fi=document.getElementById('product-image-file')
+  fi._targetSlot=slotIndex
+  fi.click()
+}
+
+async function handleMultiUpload(files){
+  const fi=document.getElementById('product-image-file')
+  const startSlot=fi._targetSlot!==undefined?fi._targetSlot:findNextEmptySlot()
+  const db=getDb()
+  if(!db){showToast('Connexion Supabase non disponible','error');return}
+
+  const arr=Array.from(files).slice(0, MAX_IMAGES - startSlot)
+  for(let i=0;i<arr.length;i++){
+    const slot=startSlot+i
+    if(slot>=MAX_IMAGES)break
+    await uploadToSlot(arr[i],slot)
+  }
+  fi.value=''
+  fi._targetSlot=undefined
+}
+
+async function uploadToSlot(file,slot){
+  if(!file.type.startsWith('image/')){showToast('Fichier non supporté','error');return}
+  if(file.size>5*1024*1024){showToast('Image trop lourde — max 5 Mo','error');return}
+
+  // Aperçu local immédiat
+  const reader=new FileReader()
+  reader.onload=e=>setSlotImage(slot,e.target.result,true)
+  reader.readAsDataURL(file)
+
+  // Barre de progression
+  const progEl=document.getElementById('img-prog-'+slot)
+  progEl.style.transform='scaleX(0)'
+  let prog=0
+  const iv=setInterval(()=>{prog=Math.min(prog+0.08,0.85);progEl.style.transform=`scaleX(${prog})`;},120)
+
+  try{
+    const db=getDb()
+    const ext=file.name.split('.').pop().toLowerCase()||'jpg'
+    const filename=`products/${currentSeller?.id||'anon'}/${Date.now()}-${slot}.${ext}`
+    const {data,error}=await db.storage.from('products').upload(filename,file,{cacheControl:'3600',upsert:true,contentType:file.type})
+    clearInterval(iv)
+    if(error)throw error
+    progEl.style.transform='scaleX(1)'
+    const {data:{publicUrl}}=db.storage.from('products').getPublicUrl(filename)
+    setSlotImage(slot,publicUrl,false)
+    setTimeout(()=>{progEl.style.transform='scaleX(0)'},1200)
+  }catch(err){
+    clearInterval(iv)
+    progEl.style.background='#ef4444'
+    progEl.style.transform='scaleX(1)'
+    showToast('Erreur upload slot '+slot+': '+err.message,'error')
+    setTimeout(()=>{progEl.style.transform='scaleX(0)';progEl.style.background='var(--fire)'},2000)
+  }
+}
+
+function setSlotImage(slot,url,isLocal){
+  const el=document.getElementById('img-slot-'+slot)
+  el.querySelector('img').src=url
+  el.classList.add('filled')
+  if(slot===0)el.classList.add('primary')
+  productImages[slot]=url
+}
+
+function setMainImage(slot){
+  if(slot===0||!productImages[slot])return
+  // Swap images[0] et images[slot]
+  const tmp=productImages[0]
+  productImages[0]=productImages[slot]
+  productImages[slot]=tmp
+  // Mise à jour des slots visuels
+  for(let i=0;i<MAX_IMAGES;i++){
+    const el=document.getElementById('img-slot-'+i)
+    if(productImages[i]){
+      el.querySelector('img').src=productImages[i]
+      el.classList.add('filled')
+    } else {
+      el.querySelector('img').src=''
+      el.classList.remove('filled')
+    }
+  }
+  showToast('Image principale mise à jour','success')
+}
+
+function removeSlotImage(slot){
+  productImages[slot]=null
+  const el=document.getElementById('img-slot-'+slot)
+  el.querySelector('img').src=''
+  el.classList.remove('filled','primary')
+  // Compacter : remonter les images suivantes
+  productImages=productImages.filter(u=>u!==null)
+  while(productImages.length<MAX_IMAGES)productImages.push(null)
+  for(let i=0;i<MAX_IMAGES;i++){
+    const s=document.getElementById('img-slot-'+i)
+    if(productImages[i]){
+      s.querySelector('img').src=productImages[i]
+      s.classList.add('filled')
+      if(i===0)s.classList.add('primary')
+      else s.classList.remove('primary')
+    } else {
+      s.querySelector('img').src=''
+      s.classList.remove('filled','primary')
+    }
+  }
+}
+
+function findNextEmptySlot(){
+  return productImages.findIndex(u=>!u)
+}
+
+function toggleUrlInput(){
+  const inp=document.getElementById('product-image-url-manual')
+  inp.style.display=inp.style.display==='none'||!inp.style.display?'block':'none'
+}
+function addManualUrl(url){
+  if(!url)return
+  const slot=findNextEmptySlot()
+  if(slot<0){showToast('5 images maximum','error');return}
+  setSlotImage(slot,url,false)
+  document.getElementById('product-image-url-manual').value=''
+  document.getElementById('product-image-url-manual').style.display='none'
+}
+
+// Chargement des images existantes d'un produit
+async function loadProductImages(productId){
+  const db=getDb()
+  if(!productId)return
+  const {data}=await db.from('product_images').select('url,position').eq('product_id',productId).order('position')
+  if(!data?.length)return
+  data.forEach((img,i)=>{
+    if(i<MAX_IMAGES&&img.url){
+      setSlotImage(i,img.url,false)
+    }
+  })
+}
 
 // ── AUTH ─────────────────────────────────────────────────────────────────────
 async function initAuth(){
@@ -745,6 +901,7 @@ async function initAuth(){
     document.getElementById('page-date').textContent=new Date().toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'})
     await loadCategories()
     await loadOverview()
+    initTagsInput()
     hideInitScreen()
   }catch(e){console.error('[WennaShop] initAuth:',e);hideInitScreen();showToast('Erreur : '+e.message,'error')}
 }
@@ -883,51 +1040,92 @@ function renderProductsTable(data){
 function changeProdPage(dir){prodPage+=dir;filterProducts()}
 
 function openProductModal(p=null){
-  resetUpload()
+  initImagesGrid()
+  setTags([])
   document.getElementById('product-id').value=p?.id||''
   document.getElementById('product-name').value=p?.name||''
   document.getElementById('product-description').value=p?.description||''
   document.getElementById('product-price').value=p?.price||''
+  document.getElementById('product-compare-price').value=p?.compare_price||''
   document.getElementById('product-stock').value=p?.stock??''
+  document.getElementById('product-sku').value=p?.sku||''
   document.getElementById('product-country').value=p?.country||'Maroc'
   document.getElementById('product-city').value=p?.origin_city||''
-  document.getElementById('product-image').value=p?.image_url||''
   document.getElementById('product-status').value=p?.status||'pending'
   document.getElementById('product-category').value=p?.category_id||''
+  document.getElementById('product-brand').value=p?.brand||''
+  document.getElementById('product-material').value=p?.material||''
+  document.getElementById('product-weight').value=p?.weight||''
+  document.getElementById('product-dimensions').value=p?.dimensions||''
+  document.getElementById('product-warranty').value=p?.warranty||''
+  document.getElementById('product-delivery').value=p?.delivery_days||''
+  if(p?.tags)setTags(Array.isArray(p.tags)?p.tags:p.tags)
   document.getElementById('modal-title').textContent=p?'Modifier le produit':'Nouveau produit'
   document.getElementById('modal-submit-btn').textContent=p?'Enregistrer':'Créer'
-  // Afficher l'image existante si édition
-  if(p?.image_url){
-    const prev=document.getElementById('upload-preview')
-    prev.src=p.image_url;prev.style.display='block'
-    document.getElementById('upload-placeholder').style.display='none'
-    document.getElementById('upload-change-btn').style.display='block'
-  }
+  // Charger les images existantes
+  if(p?.id) loadProductImages(p.id)
+  else if(p?.image_url) setSlotImage(0,p.image_url,false)
   document.getElementById('modal-overlay').classList.remove('hidden')
 }
 function closeProductModal(){document.getElementById('modal-overlay').classList.add('hidden')}
-function editProduct(id){const p=allProducts.find(p=>p.id===id);if(p)openProductModal(p)}
+
+async function editProduct(id){
+  const db=getDb()
+  // Recharger depuis Supabase pour avoir toutes les colonnes (incl. nouvelles)
+  const {data:p}=await db.from('products').select('*').eq('id',id).single()
+  if(p) openProductModal(p)
+}
 
 async function saveProduct(e){
   const db=getDb();e.preventDefault()
   const btn=document.getElementById('modal-submit-btn');btn.disabled=true;btn.textContent='Enregistrement...'
   const id=document.getElementById('product-id').value
+
+  // Image principale = premier slot non null
+  const mainImageUrl=productImages.find(u=>u)||null
+
   const payload={
-    name:        document.getElementById('product-name').value.trim(),
-    description: document.getElementById('product-description').value.trim(),
-    price:       parseFloat(document.getElementById('product-price').value),
-    stock:       parseInt(document.getElementById('product-stock').value),
-    country:     document.getElementById('product-country').value,
-    origin_city: document.getElementById('product-city').value.trim()||null,
-    image_url:   document.getElementById('product-image').value.trim()||null,
-    status:      document.getElementById('product-status').value,
-    category_id: document.getElementById('product-category').value||null,
-    seller_id:   currentSeller.id,
-    updated_at:  new Date().toISOString()
+    name:         document.getElementById('product-name').value.trim(),
+    description:  document.getElementById('product-description').value.trim(),
+    price:        parseFloat(document.getElementById('product-price').value),
+    compare_price:parseFloat(document.getElementById('product-compare-price').value)||null,
+    stock:        parseInt(document.getElementById('product-stock').value),
+    sku:          document.getElementById('product-sku').value.trim()||null,
+    country:      document.getElementById('product-country').value,
+    origin_city:  document.getElementById('product-city').value.trim()||null,
+    image_url:    mainImageUrl,
+    status:       document.getElementById('product-status').value,
+    category_id:  document.getElementById('product-category').value||null,
+    seller_id:    currentSeller.id,
+    brand:        document.getElementById('product-brand').value.trim()||null,
+    material:     document.getElementById('product-material').value.trim()||null,
+    weight:       parseFloat(document.getElementById('product-weight').value)||null,
+    dimensions:   document.getElementById('product-dimensions').value.trim()||null,
+    warranty:     document.getElementById('product-warranty').value.trim()||null,
+    delivery_days:parseInt(document.getElementById('product-delivery').value)||null,
+    tags:         currentTags.length?currentTags:null,
+    updated_at:   new Date().toISOString()
   }
-  let error
-  if(id){({error}=await db.from('products').update(payload).eq('id',id))}
-  else{payload.created_at=new Date().toISOString();({error}=await db.from('products').insert(payload))}
+
+  let error, savedId=id
+  if(id){
+    ({error}=await db.from('products').update(payload).eq('id',id))
+  } else {
+    payload.created_at=new Date().toISOString()
+    const {data:inserted,error:insertErr}=await db.from('products').insert(payload).select('id').single()
+    error=insertErr
+    if(inserted)savedId=inserted.id
+  }
+
+  // Sauvegarder les images secondaires dans product_images
+  if(!error && savedId){
+    await db.from('product_images').delete().eq('product_id',savedId)
+    const imgRows=productImages
+      .filter(u=>u)
+      .map((url,pos)=>({product_id:savedId,url,position:pos}))
+    if(imgRows.length>0)await db.from('product_images').insert(imgRows)
+  }
+
   btn.disabled=false;btn.textContent='Enregistrer'
   if(error)showToast('Erreur : '+error.message,'error')
   else{showToast(id?'Produit mis à jour !':'Produit créé !','success');closeProductModal();loadProducts();loadOverview()}
