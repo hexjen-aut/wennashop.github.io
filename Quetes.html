@@ -340,7 +340,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 })
 
 async function checkAuth() {
-  const { data: { session } } = await db.auth.getSession()
+  const { data: { session } } = await supabase.auth.getSession()
   currentUser = session?.user || null
 }
 
@@ -508,7 +508,7 @@ async function submitQuest() {
   if (!reward||reward<500) return showToast('Récompense minimum : 500 FCFA.','error')
   const btn=document.getElementById('submitBtn')
   btn.disabled=true; btn.innerHTML='<span class="material-symbols-outlined" style="animation:spin 1s linear infinite;font-size:16px;">progress_activity</span> Publication…'
-  const {data,error}=await db.from('quests').insert({
+  const {data,error}=await supabase.from('quests').insert({
     buyer_id:currentUser.id, title, description:desc||null, category_id:catId,
     country_target:country, product_budget:budget, reward_amount:reward,
     duration_days:duration, currency:'FCFA', escrow_locked:false
