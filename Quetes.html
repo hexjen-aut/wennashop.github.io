@@ -7,23 +7,21 @@
   <meta name="description" content="Trouvez le produit que vous cherchez ou gagnez une récompense en chassant pour les autres."/>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase.config.js"></script>
+  <script src="js/config.js"></script>
   <style>
     :root{
       --fire:#FF6B2B;--ember:#E85A1A;--ink:#080808;--coal:#111111;--slate:#1A1A1A;
       --smoke:#242424;--fog:#888;--snow:#f0ece6;--border:rgba(255,255,255,.07);
-      --border-fire:rgba(255,107,43,.25);--gold:#d0a600;--gold-dim:rgba(208,166,0,.15);
+      --border-fire:rgba(255,107,43,.25);--gold:#d0a600;
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     html{scroll-behavior:smooth;}
-    body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);min-height:100dvh;overflow-x:hidden;}
+    body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);min-height:100dvh;overflow-x:hidden;padding-bottom:80px;}
     .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24;font-size:20px;line-height:1;}
-    ::-webkit-scrollbar{width:4px;}
-    ::-webkit-scrollbar-track{background:var(--coal);}
-    ::-webkit-scrollbar-thumb{background:rgba(255,107,43,.3);}
+    ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--coal);}::-webkit-scrollbar-thumb{background:rgba(255,107,43,.3);}
 
     /* NAV */
-    nav{position:sticky;top:0;z-index:100;background:rgba(8,8,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;}
+    nav{position:sticky;top:0;z-index:100;background:rgba(8,8,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
     .nav-logo{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;font-style:italic;color:var(--snow);text-decoration:none;letter-spacing:-.5px;}
     .nav-logo b{color:var(--fire);}
     .nav-links{display:flex;gap:28px;align-items:center;}
@@ -32,12 +30,12 @@
     .nav-links a.active{color:var(--fire);}
     .btn-nav{background:var(--fire)!important;color:#fff!important;padding:8px 18px;font-size:9px!important;clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));}
     .btn-nav:hover{background:var(--ember)!important;}
-    @media(max-width:768px){nav{padding:14px 20px;}.nav-links{gap:16px;}.nav-links a{font-size:9px;letter-spacing:1px;}}
+    @media(max-width:768px){nav{padding:14px 20px;}.nav-links a:not(.btn-nav):not(.active){display:none;}}
 
     /* HERO */
-    .hero{background:var(--coal);border-bottom:1px solid var(--border);padding:64px 32px 48px;text-align:center;position:relative;overflow:hidden;}
-    .hero::before{content:'';position:absolute;top:-80px;right:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(255,107,43,.08) 0%,transparent 70%);pointer-events:none;}
-    .hero::after{content:'';position:absolute;bottom:-60px;left:-60px;width:240px;height:240px;background:radial-gradient(circle,rgba(208,166,0,.06) 0%,transparent 70%);pointer-events:none;}
+    .hero{background:var(--coal);border-bottom:1px solid var(--border);padding:64px 40px 48px;text-align:center;position:relative;overflow:hidden;}
+    .hero::before{content:'';position:absolute;top:-80px;right:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(255,107,43,.07) 0%,transparent 70%);pointer-events:none;}
+    .hero::after{content:'';position:absolute;bottom:-60px;left:-60px;width:240px;height:240px;background:radial-gradient(circle,rgba(208,166,0,.05) 0%,transparent 70%);pointer-events:none;}
     .hero-deco{position:absolute;top:-20px;right:40px;font-family:'Cormorant Garamond',serif;font-size:240px;font-style:italic;font-weight:700;color:rgba(255,107,43,.03);line-height:1;pointer-events:none;user-select:none;}
     .hero-eyebrow{display:inline-flex;align-items:center;gap:10px;background:rgba(208,166,0,.1);border:1px solid rgba(208,166,0,.25);color:var(--gold);padding:6px 16px;font-size:9px;font-weight:500;letter-spacing:3px;text-transform:uppercase;margin-bottom:20px;}
     .hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,5vw,64px);font-weight:700;font-style:italic;line-height:1.05;letter-spacing:-1px;margin-bottom:16px;}
@@ -49,59 +47,63 @@
     .btn-ghost{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border-fire);color:var(--fire);background:transparent;padding:12px 24px;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
     .btn-ghost:hover{background:rgba(255,107,43,.08);}
 
-    /* STATS BAR */
-    .stats-bar{background:var(--slate);border-bottom:1px solid var(--border);padding:20px 32px;display:flex;gap:0;justify-content:center;}
-    .stat-item{text-align:center;padding:0 32px;border-right:1px solid var(--border);}
+    /* STATS */
+    .stats-bar{background:var(--slate);border-bottom:1px solid var(--border);padding:20px 40px;display:flex;gap:0;justify-content:center;flex-wrap:wrap;}
+    .stat-item{text-align:center;padding:12px 32px;border-right:1px solid var(--border);}
     .stat-item:last-child{border-right:none;}
     .stat-val{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;font-style:italic;color:var(--fire);line-height:1;}
     .stat-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#444;margin-top:4px;}
-    @media(max-width:600px){.stats-bar{flex-wrap:wrap;}.stat-item{border-right:none;border-bottom:1px solid var(--border);width:50%;padding:16px;}.stat-item:nth-child(even){border-left:1px solid var(--border);}.stat-item:last-child,.stat-item:nth-last-child(2){border-bottom:none;}}
+    @media(max-width:600px){.stat-item{border-right:none;width:50%;}.stat-item:nth-child(odd){border-right:1px solid var(--border);}}
 
     /* LAYOUT */
-    .main-layout{max-width:1200px;margin:0 auto;padding:32px 24px;display:grid;grid-template-columns:240px 1fr;gap:24px;align-items:start;}
+    .main-layout{max-width:1200px;margin:0 auto;padding:32px 24px;display:grid;grid-template-columns:220px 1fr;gap:24px;align-items:start;}
     @media(max-width:900px){.main-layout{grid-template-columns:1fr;}}
 
     /* SIDEBAR */
-    .sidebar{background:var(--coal);border:1px solid var(--border);padding:20px;position:sticky;top:80px;}
+    .sidebar{background:var(--coal);border:1px solid var(--border);padding:20px;position:sticky;top:72px;}
     .sidebar-title{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--fire);display:flex;align-items:center;gap:10px;margin-bottom:20px;}
     .sidebar-title::before{content:'';display:block;width:16px;height:1px;background:var(--fire);}
     .filter-group{margin-bottom:20px;}
     .filter-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:8px;display:block;}
-    .filter-input{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--snow);padding:9px 12px;font-size:12px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
-    .filter-input:focus{border-color:var(--border-fire);}
+    .filter-input{width:100%;background:rgba(255,255,255,.04);border:none;border-bottom:1px solid var(--border);color:var(--snow);padding:10px 12px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
+    .filter-input:focus{border-bottom-color:var(--fire);}
     .filter-input::placeholder{color:#333;}
+    .filter-select{width:100%;background:rgba(255,255,255,.04);border:none;border-bottom:1px solid var(--border);color:var(--snow);padding:10px 12px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;appearance:none;cursor:pointer;transition:border-color .2s;}
+    .filter-select:focus{border-bottom-color:var(--fire);}
+    .filter-select option{background:var(--slate);}
     .chip-group{display:flex;flex-wrap:wrap;gap:6px;}
     .chip{padding:5px 12px;border:1px solid var(--border);color:#555;font-size:10px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .18s;background:transparent;letter-spacing:1px;}
     .chip:hover{border-color:var(--border-fire);color:var(--fire);}
-    .chip.active{border-color:var(--fire);background:rgba(255,107,43,.1);color:var(--fire);}
+    .chip.active{border-color:var(--fire);background:rgba(255,107,43,.08);color:var(--fire);}
     .btn-reset{width:100%;padding:9px;border:1px solid var(--border);background:transparent;color:#555;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;margin-top:8px;}
     .btn-reset:hover{border-color:var(--border-fire);color:var(--fire);}
 
     /* CONTENT */
     .content-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
     .content-count{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;font-style:italic;}
-    .sort-select{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--snow);padding:8px 30px 8px 12px;font-size:11px;font-family:'DM Sans',sans-serif;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;cursor:pointer;}
-    .sort-select:focus{border-color:var(--border-fire);}
+    .sort-select{background:rgba(255,255,255,.04);border:none;border-bottom:1px solid var(--border);color:var(--snow);padding:8px 12px;font-size:11px;font-family:'DM Sans',sans-serif;outline:none;appearance:none;cursor:pointer;transition:border-color .2s;}
+    .sort-select:focus{border-bottom-color:var(--fire);}
     .sort-select option{background:var(--slate);}
 
     /* QUEST CARDS */
     .quests-grid{display:flex;flex-direction:column;gap:2px;}
-    .quest-card{background:var(--slate);border-left:2px solid transparent;padding:22px 24px;cursor:pointer;transition:all .2s;text-decoration:none;display:block;color:inherit;position:relative;}
+    .quest-card{background:var(--slate);border-left:2px solid transparent;padding:22px 24px;cursor:pointer;transition:all .2s;text-decoration:none;display:block;color:inherit;}
     .quest-card:hover{border-left-color:var(--fire);background:var(--smoke);}
     .quest-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:10px;}
     .quest-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;font-style:italic;line-height:1.2;flex:1;}
     .quest-badges{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;}
     .badge{padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
-    .badge-open{background:#0a2010;color:#73dc84;}
-    .badge-hot{background:rgba(230,81,0,.15);color:#ff7043;}
-    .badge-category{background:rgba(255,255,255,.05);color:#666;border:1px solid var(--border);}
-    .badge-country{background:rgba(78,98,255,.1);color:#818cf8;border:1px solid rgba(78,98,255,.2);}
+    .badge-open{background:rgba(115,220,132,.1);color:#73dc84;border:1px solid rgba(115,220,132,.2);}
+    .badge-hot{background:rgba(255,107,43,.1);color:var(--fire);}
+    .badge-category{background:rgba(255,255,255,.04);color:#555;border:1px solid var(--border);}
+    .badge-country{background:rgba(78,98,255,.08);color:#818cf8;border:1px solid rgba(78,98,255,.15);}
     .quest-desc{font-size:13px;color:#666;line-height:1.6;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
     .quest-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
     .quest-meta{display:flex;gap:20px;align-items:center;flex-wrap:wrap;}
     .meta-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#555;}
     .meta-item .material-symbols-outlined{font-size:15px;}
-    .reward-box{background:rgba(208,166,0,.08);border:1px solid rgba(208,166,0,.2);padding:8px 16px;text-align:right;}
+    .meta-urgent{color:var(--fire)!important;}
+    .reward-box{background:rgba(208,166,0,.07);border:1px solid rgba(208,166,0,.2);padding:8px 16px;text-align:right;flex-shrink:0;}
     .reward-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:2px;}
     .reward-amount{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;font-style:italic;color:var(--gold);}
 
@@ -120,22 +122,23 @@
     /* MODAL */
     .modal-overlay{position:fixed;inset:0;background:rgba(8,8,8,.88);backdrop-filter:blur(14px);z-index:999;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .25s;}
     .modal-overlay.open{opacity:1;pointer-events:all;}
-    .modal-box{background:var(--coal);border:1px solid var(--border);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;transform:translateY(16px);transition:transform .25s;}
+    .modal-box{background:var(--coal);border:1px solid var(--border);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;transform:translateY(16px);transition:transform .25s;position:relative;}
+    .modal-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--fire),transparent);}
     .modal-overlay.open .modal-box{transform:translateY(0);}
     .modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--coal);z-index:10;}
     .modal-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;font-style:italic;}
-    .modal-close{background:none;border:none;color:#555;cursor:pointer;transition:color .2s;display:flex;align-items:center;}
-    .modal-close:hover{color:var(--snow);}
+    .modal-close{background:none;border:1px solid var(--border);color:#555;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;}
+    .modal-close:hover{border-color:var(--border-fire);color:var(--fire);}
+    .modal-close .material-symbols-outlined{font-size:16px;}
     .modal-body{padding:24px;display:flex;flex-direction:column;gap:16px;}
     .form-group{display:flex;flex-direction:column;gap:6px;}
     .form-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#555;}
     .form-label span{color:#333;letter-spacing:0;text-transform:none;font-size:10px;}
-    .inp-full{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--snow);padding:12px 14px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
-    .inp-full:focus{border-color:var(--border-fire);}
+    .inp-full{width:100%;background:rgba(255,255,255,.04);border:none;border-bottom:1px solid var(--border);color:var(--snow);padding:12px 14px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
+    .inp-full:focus{border-bottom-color:var(--fire);}
     .inp-full::placeholder{color:#333;}
     textarea.inp-full{resize:vertical;min-height:80px;}
     .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-    @media(max-width:480px){.form-row{grid-template-columns:1fr;}}
 
     /* BUDGET PREVIEW */
     .budget-preview{background:rgba(208,166,0,.06);border:1px solid rgba(208,166,0,.2);padding:16px;display:none;}
@@ -155,7 +158,16 @@
     #toast.success{border-color:rgba(115,220,132,.4);background:#0a1f0e;}
     #toast.error{border-color:rgba(186,26,26,.4);background:#1f0a0a;}
 
+    /* BOTTOM NAV */
+    .bnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:40;background:rgba(8,8,8,.95);backdrop-filter:blur(20px);border-top:1px solid var(--border-fire);padding:10px 0 22px;}
+    .bnav-inner{display:flex;justify-content:space-around;}
+    .bnav-item{display:flex;flex-direction:column;align-items:center;gap:4px;color:#555;text-decoration:none;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;transition:color .2s;}
+    .bnav-item.active,.bnav-item:hover{color:var(--fire);}
+    @media(max-width:768px){.bnav{display:block;}}
+
     @keyframes spin{to{transform:rotate(360deg);}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+    .anim-up{animation:fadeUp .6s cubic-bezier(.22,1,.36,1) forwards;}
   </style>
 </head>
 <body>
@@ -174,11 +186,11 @@
 </nav>
 
 <!-- HERO -->
-<section class="hero">
+<section class="hero anim-up">
   <div class="hero-deco">Q</div>
   <div class="hero-eyebrow">
     <span class="material-symbols-outlined" style="font-size:13px;">search</span>
-    Système de chasse
+    Système de chasse · Nouveau
   </div>
   <h1>Vous cherchez,<br/><span>on trouve.</span></h1>
   <p>Publiez une quête pour un produit introuvable. Des chasseurs du Gabon et du Maroc le dénichent pour vous. Le meilleur gagne la récompense.</p>
@@ -197,7 +209,7 @@
 <div class="stats-bar">
   <div class="stat-item"><div class="stat-val" id="statOpen">—</div><div class="stat-lbl">Quêtes ouvertes</div></div>
   <div class="stat-item"><div class="stat-val" id="statResolved">—</div><div class="stat-lbl">Quêtes résolues</div></div>
-  <div class="stat-item"><div class="stat-val" id="statRewards">—</div><div class="stat-lbl">Récompenses distribuées</div></div>
+  <div class="stat-item"><div class="stat-val" id="statRewards">—</div><div class="stat-lbl">Récompenses versées</div></div>
   <div class="stat-item"><div class="stat-val" id="statHunters">—</div><div class="stat-lbl">Chasseurs actifs</div></div>
 </div>
 
@@ -210,7 +222,7 @@
 
     <div class="filter-group">
       <span class="filter-label">Recherche</span>
-      <input type="text" id="searchInput" placeholder="ex: tissu wax, bijoux..." class="filter-input" oninput="applyFilters()"/>
+      <input type="text" id="searchInput" placeholder="tissu wax, bijoux…" class="filter-input" oninput="applyFilters()"/>
     </div>
 
     <div class="filter-group">
@@ -239,7 +251,7 @@
   </aside>
 
   <!-- CONTENT -->
-  <div class="content-area" id="questsSection">
+  <div id="questsSection">
     <div class="content-header">
       <div class="content-count" id="questsCount">Chargement…</div>
       <select class="sort-select" id="sortSelect" onchange="applyFilters()">
@@ -278,32 +290,32 @@
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Catégorie</label>
-          <select id="questCategory" class="inp-full" style="appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 10px center;background-color:rgba(255,255,255,.04);padding-right:28px;">
+          <select id="questCategory" class="inp-full" style="appearance:none;cursor:pointer;">
             <option value="">Sélectionner…</option>
           </select>
         </div>
         <div class="form-group">
           <label class="form-label">Pays cible</label>
-          <select id="questCountry" class="inp-full" style="appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 10px center;background-color:rgba(255,255,255,.04);padding-right:28px;">
+          <select id="questCountry" class="inp-full" style="appearance:none;cursor:pointer;">
             <option value="Les deux">Les deux</option>
-            <option value="Gabon">🇬🇦 Gabon</option>
-            <option value="Maroc">🇲🇦 Maroc</option>
+            <option value="Gabon">Gabon</option>
+            <option value="Maroc">Maroc</option>
           </select>
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Budget produit (FCFA) <span>*</span></label>
-          <input type="number" id="questBudget" class="inp-full" placeholder="ex: 25000" min="1000" oninput="updateBudgetPreview()"/>
+          <input type="number" id="questBudget" class="inp-full" placeholder="25000" min="1000" oninput="updateBudgetPreview()"/>
         </div>
         <div class="form-group">
           <label class="form-label">Récompense chasseur (FCFA) <span>*</span></label>
-          <input type="number" id="questReward" class="inp-full" placeholder="ex: 2500" min="500" oninput="updateBudgetPreview()"/>
+          <input type="number" id="questReward" class="inp-full" placeholder="2500" min="500" oninput="updateBudgetPreview()"/>
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Durée de la quête</label>
-        <select id="questDuration" class="inp-full" style="appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 10px center;background-color:rgba(255,255,255,.04);padding-right:28px;">
+        <label class="form-label">Durée</label>
+        <select id="questDuration" class="inp-full" style="appearance:none;cursor:pointer;">
           <option value="3">3 jours — urgent</option>
           <option value="7" selected>7 jours — standard</option>
           <option value="14">14 jours — flexible</option>
@@ -322,34 +334,55 @@
         <span class="material-symbols-outlined" style="font-size:16px;">lock</span>
         Publier et bloquer les fonds
       </button>
-      <p class="modal-hint">Les fonds sont débloqués si aucun chasseur ne répond dans le délai.</p>
+      <p class="modal-hint">Fonds remboursés si aucune réponse dans le délai imparti.</p>
     </div>
   </div>
 </div>
 
+<!-- BOTTOM NAV -->
+<nav class="bnav">
+  <div class="bnav-inner">
+    <a href="index.html" class="bnav-item"><span class="material-symbols-outlined">home</span><span>Accueil</span></a>
+    <a href="boutique.html" class="bnav-item"><span class="material-symbols-outlined">storefront</span><span>Boutique</span></a>
+    <a href="quetes.html" class="bnav-item active"><span class="material-symbols-outlined">search</span><span>Quêtes</span></a>
+    <a href="compte.html" class="bnav-item"><span class="material-symbols-outlined">person</span><span>Profil</span></a>
+  </div>
+</nav>
+
 <script>
+// ── RÈGLE CRITIQUE : utilise toujours window.db depuis js/config.js
+function getSb() { return window.db }
+
 let allQuests = [], categories = [], currentUser = null
 let activeCategory = 'all', activeCountry = 'all'
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Attendre que db soit disponible (chargé par js/config.js)
+  await waitForDb()
   await checkAuth()
-  await loadCategories()
-  await loadQuests()
-  await loadStats()
+  await Promise.all([loadCategories(), loadQuests(), loadStats()])
 })
+
+function waitForDb(n = 0) {
+  return new Promise((resolve, reject) => {
+    const check = (attempt) => {
+      if (typeof db !== 'undefined') return resolve()
+      if (attempt >= 30) return reject(new Error('Supabase non disponible'))
+      setTimeout(() => check(attempt + 1), 100)
+    }
+    check(n)
+  })
+}
 
 async function checkAuth() {
   try {
-    const { data: { session } } = await db.auth.getSession()
+    const { data: { session } } = await getSb().auth.getSession()
     currentUser = session?.user || null
-  } catch(e) {
-    console.error('[WennaShop] checkAuth error:', e)
-    currentUser = null
-  }
+  } catch(e) { currentUser = null }
 }
 
 async function loadCategories() {
-  const { data } = await db.from('categories').select('id, name').order('name')
+  const { data } = await getSb().from('categories').select('id, name').order('name')
   categories = data || []
   const chips = document.getElementById('categoryChips')
   categories.forEach(cat => {
@@ -364,12 +397,19 @@ async function loadCategories() {
 }
 
 async function loadQuests() {
-  const { data, error } = await db.from('quests').select(`
-    id, title, description, country_target, product_budget, reward_amount, currency,
-    duration_days, expires_at, status, created_at, categories(name), quest_proposals(count)
-  `).eq('status', 'open').order('created_at', { ascending: false })
+  const { data, error } = await getSb()
+    .from('quests')
+    .select(`id, title, description, country_target, product_budget, reward_amount,
+             currency, duration_days, expires_at, status, created_at, category_id,
+             categories(name), quest_proposals(count)`)
+    .eq('status', 'open')
+    .order('created_at', { ascending: false })
 
-  if (error) { showEmpty('Erreur de chargement. Réessayez.'); return }
+  if (error) {
+    console.error('[WennaShop] loadQuests error:', error)
+    showEmpty('Erreur de chargement. Vérifiez votre connexion.')
+    return
+  }
   allQuests = data || []
   renderQuests(allQuests)
 }
@@ -377,7 +417,9 @@ async function loadQuests() {
 function renderQuests(quests) {
   const grid = document.getElementById('questsGrid')
   const count = document.getElementById('questsCount')
-  count.textContent = quests.length === 0 ? 'Aucune quête' : `${quests.length} quête${quests.length > 1 ? 's' : ''} ouverte${quests.length > 1 ? 's' : ''}`
+  count.textContent = quests.length === 0
+    ? 'Aucune quête'
+    : `${quests.length} quête${quests.length > 1 ? 's' : ''} ouverte${quests.length > 1 ? 's' : ''}`
 
   if (!quests.length) {
     grid.innerHTML = `<div class="empty-state"><span class="material-symbols-outlined">search_off</span><div class="empty-title">Aucune quête pour le moment</div><div class="empty-sub">Soyez le premier à poster une quête !</div></div>`
@@ -395,7 +437,7 @@ function renderQuests(quests) {
         <div class="quest-card-header">
           <div class="quest-title">${esc(q.title)}</div>
           <div class="quest-badges">
-            ${hot ? '<span class="badge badge-hot">Populaire</span>' : ''}
+            ${hot ? '<span class="badge badge-hot">🔥 Populaire</span>' : ''}
             ${cat ? `<span class="badge badge-category">${cat}</span>` : ''}
             ${q.country_target ? `<span class="badge badge-country">${q.country_target}</span>` : ''}
           </div>
@@ -407,18 +449,18 @@ function renderQuests(quests) {
               <span class="material-symbols-outlined">group</span>
               ${proposals} proposition${proposals !== 1 ? 's' : ''}
             </span>
-            <span class="meta-item">
+            <span class="meta-item${exp <= 1 ? ' meta-urgent' : ''}">
               <span class="material-symbols-outlined">schedule</span>
-              ${exp <= 1 ? '<span style="color:var(--fire)">Expire demain</span>' : `${exp}j restants`}
+              ${exp <= 1 ? '<strong>Expire demain</strong>' : `${exp}j restants`}
             </span>
             <span class="meta-item">
               <span class="material-symbols-outlined">payments</span>
-              Budget ${fmt(q.product_budget, q.currency)}
+              Budget ${fmt(q.product_budget)} ${q.currency}
             </span>
           </div>
           <div class="reward-box">
             <div class="reward-label">Récompense</div>
-            <div class="reward-amount">${fmt(q.reward_amount, q.currency)}</div>
+            <div class="reward-amount">${fmt(q.reward_amount)} <span style="font-size:.7em;font-style:normal;">${q.currency}</span></div>
           </div>
         </div>
       </a>`
@@ -426,26 +468,29 @@ function renderQuests(quests) {
 }
 
 async function loadStats() {
-  const [open, resolved, proposals] = await Promise.all([
-    db.from('quests').select('id', { count:'exact', head:true }).eq('status','open'),
-    db.from('quests').select('id', { count:'exact', head:true }).eq('status','resolved'),
-    db.from('quest_proposals').select('hunter_id', { count:'exact', head:true })
-  ])
-  document.getElementById('statOpen').textContent = open.count ?? 0
-  document.getElementById('statResolved').textContent = resolved.count ?? 0
-  document.getElementById('statHunters').textContent = proposals.count ?? 0
-  const { data: rd } = await db.from('quests').select('reward_amount').eq('status','resolved')
-  const tot = (rd||[]).reduce((s,r)=>s+(r.reward_amount||0),0)
-  document.getElementById('statRewards').textContent = tot > 0 ? fmt(tot,'FCFA') : '0'
+  try {
+    const sb = getSb()
+    const [open, resolved, props] = await Promise.all([
+      sb.from('quests').select('id', { count: 'exact', head: true }).eq('status', 'open'),
+      sb.from('quests').select('id', { count: 'exact', head: true }).eq('status', 'resolved'),
+      sb.from('quest_proposals').select('hunter_id', { count: 'exact', head: true })
+    ])
+    document.getElementById('statOpen').textContent = open.count ?? 0
+    document.getElementById('statResolved').textContent = resolved.count ?? 0
+    document.getElementById('statHunters').textContent = props.count ?? 0
+    const { data: rd } = await sb.from('quests').select('reward_amount').eq('status', 'resolved')
+    const tot = (rd || []).reduce((s, r) => s + Number(r.reward_amount || 0), 0)
+    document.getElementById('statRewards').textContent = tot > 0 ? fmt(tot) + ' FCFA' : '0'
+  } catch(e) { console.error('[WennaShop] loadStats:', e) }
 }
 
 // FILTRES
 function selectCat(el) {
-  document.querySelectorAll('#categoryChips .chip').forEach(c=>c.classList.remove('active'))
+  document.querySelectorAll('#categoryChips .chip').forEach(c => c.classList.remove('active'))
   el.classList.add('active'); activeCategory = el.dataset.cat; applyFilters()
 }
 function selectCountry(el) {
-  document.querySelectorAll('[data-country]').forEach(c=>c.classList.remove('active'))
+  document.querySelectorAll('[data-country]').forEach(c => c.classList.remove('active'))
   el.classList.add('active'); activeCountry = el.dataset.country; applyFilters()
 }
 function applyFilters() {
@@ -456,20 +501,20 @@ function applyFilters() {
     if (activeCategory !== 'all' && q.category_id !== activeCategory) return false
     if (activeCountry !== 'all' && q.country_target !== activeCountry) return false
     if (q.reward_amount < rewardMin) return false
-    if (search && !q.title.toLowerCase().includes(search) && !(q.description||'').toLowerCase().includes(search)) return false
+    if (search && !q.title.toLowerCase().includes(search) && !(q.description || '').toLowerCase().includes(search)) return false
     return true
   })
-  if (sort === 'reward_desc') filtered.sort((a,b)=>b.reward_amount-a.reward_amount)
-  else if (sort === 'expires_asc') filtered.sort((a,b)=>new Date(a.expires_at)-new Date(b.expires_at))
-  else filtered.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))
+  if (sort === 'reward_desc') filtered.sort((a, b) => b.reward_amount - a.reward_amount)
+  else if (sort === 'expires_asc') filtered.sort((a, b) => new Date(a.expires_at) - new Date(b.expires_at))
+  else filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
   renderQuests(filtered)
 }
 function resetFilters() {
-  document.getElementById('searchInput').value=''
-  document.getElementById('rewardMin').value=''
-  document.getElementById('sortSelect').value='created_at_desc'
-  activeCategory='all'; activeCountry='all'
-  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'))
+  document.getElementById('searchInput').value = ''
+  document.getElementById('rewardMin').value = ''
+  document.getElementById('sortSelect').value = 'created_at_desc'
+  activeCategory = 'all'; activeCountry = 'all'
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'))
   document.querySelector('[data-cat="all"]').classList.add('active')
   document.querySelector('[data-country="all"]').classList.add('active')
   renderQuests(allQuests)
@@ -478,65 +523,81 @@ function resetFilters() {
 // MODAL
 function openModal() {
   if (!currentUser) {
-    showToast('Connectez-vous pour poster une quête.','error')
-    setTimeout(()=>location.href='index.html',1500)
+    showToast('Connectez-vous pour poster une quête.', 'error')
+    setTimeout(() => location.href = 'index.html', 1500)
     return
   }
   document.getElementById('modalOverlay').classList.add('open')
-  document.body.style.overflow='hidden'
+  document.body.style.overflow = 'hidden'
 }
 function closeModal() {
   document.getElementById('modalOverlay').classList.remove('open')
-  document.body.style.overflow=''
+  document.body.style.overflow = ''
 }
-function closeModalOutside(e) { if (e.target===document.getElementById('modalOverlay')) closeModal() }
+function closeModalOutside(e) { if (e.target === document.getElementById('modalOverlay')) closeModal() }
 
 function updateBudgetPreview() {
-  const budget = parseFloat(document.getElementById('questBudget').value)||0
-  const reward = parseFloat(document.getElementById('questReward').value)||0
+  const budget = parseFloat(document.getElementById('questBudget').value) || 0
+  const reward = parseFloat(document.getElementById('questReward').value) || 0
   const prev = document.getElementById('budgetPreview')
-  if (budget>0||reward>0) {
-    prev.style.display='block'
-    document.getElementById('prevBudget').textContent=fmt(budget,'FCFA')
-    document.getElementById('prevReward').textContent=fmt(reward,'FCFA')
-    document.getElementById('prevTotal').textContent=fmt(budget+reward+500,'FCFA')
-  } else { prev.style.display='none' }
+  if (budget > 0 || reward > 0) {
+    prev.style.display = 'block'
+    document.getElementById('prevBudget').textContent = fmt(budget) + ' FCFA'
+    document.getElementById('prevReward').textContent = fmt(reward) + ' FCFA'
+    document.getElementById('prevTotal').textContent = fmt(budget + reward + 500) + ' FCFA'
+  } else { prev.style.display = 'none' }
 }
 
 async function submitQuest() {
-  const title=document.getElementById('questTitle').value.trim()
-  const desc=document.getElementById('questDesc').value.trim()
-  const catId=document.getElementById('questCategory').value||null
-  const country=document.getElementById('questCountry').value
-  const budget=parseFloat(document.getElementById('questBudget').value)
-  const reward=parseFloat(document.getElementById('questReward').value)
-  const duration=parseInt(document.getElementById('questDuration').value)
-  if (!title) return showToast('Le titre est obligatoire.','error')
-  if (!budget||budget<1000) return showToast('Budget minimum : 1 000 FCFA.','error')
-  if (!reward||reward<500) return showToast('Récompense minimum : 500 FCFA.','error')
-  const btn=document.getElementById('submitBtn')
-  btn.disabled=true; btn.innerHTML='<span class="material-symbols-outlined" style="animation:spin 1s linear infinite;font-size:16px;">progress_activity</span> Publication…'
-  const {data,error}=await db.from('quests').insert({
-    buyer_id:currentUser.id, title, description:desc||null, category_id:catId,
-    country_target:country, product_budget:budget, reward_amount:reward,
-    duration_days:duration, currency:'FCFA', escrow_locked:false
-  }).select().single()
-  btn.disabled=false; btn.innerHTML='<span class="material-symbols-outlined" style="font-size:16px;">lock</span> Publier et bloquer les fonds'
-  if (error) { showToast('Erreur : '+error.message,'error'); return }
-  showToast('Quête publiée avec succès !','success')
-  closeModal(); await loadQuests(); await loadStats()
+  const title = document.getElementById('questTitle').value.trim()
+  const desc = document.getElementById('questDesc').value.trim()
+  const catId = document.getElementById('questCategory').value || null
+  const country = document.getElementById('questCountry').value
+  const budget = parseFloat(document.getElementById('questBudget').value)
+  const reward = parseFloat(document.getElementById('questReward').value)
+  const duration = parseInt(document.getElementById('questDuration').value)
+
+  if (!title) return showToast('Le titre est obligatoire.', 'error')
+  if (!budget || budget < 1000) return showToast('Budget minimum : 1 000 FCFA.', 'error')
+  if (!reward || reward < 500) return showToast('Récompense minimum : 500 FCFA.', 'error')
+
+  const btn = document.getElementById('submitBtn')
+  btn.disabled = true
+  btn.innerHTML = '<span class="material-symbols-outlined" style="animation:spin 1s linear infinite;font-size:16px;">progress_activity</span> Publication…'
+
+  const { error } = await getSb().from('quests').insert({
+    buyer_id: currentUser.id,
+    title,
+    description: desc || null,
+    category_id: catId,
+    country_target: country,
+    product_budget: budget,
+    reward_amount: reward,
+    duration_days: duration,
+    currency: 'FCFA',
+    escrow_locked: false
+  })
+
+  btn.disabled = false
+  btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;">lock</span> Publier et bloquer les fonds'
+
+  if (error) { showToast('Erreur : ' + error.message, 'error'); return }
+  showToast('Quête publiée avec succès !', 'success')
+  closeModal()
+  await loadQuests()
+  await loadStats()
 }
 
 // UTILS
-function daysUntil(d) { return Math.max(0,Math.ceil((new Date(d)-new Date())/86400000)) }
-function fmt(n,cur) { return Number(n).toLocaleString('fr-FR')+' '+(cur||'FCFA') }
-function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+function daysUntil(d) { return Math.max(0, Math.ceil((new Date(d) - new Date()) / 86400000)) }
+function fmt(n) { return Number(n).toLocaleString('fr-FR') }
+function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }
 function showEmpty(msg) {
-  document.getElementById('questsGrid').innerHTML=`<div class="empty-state"><span class="material-symbols-outlined">warning</span><div class="empty-title">${msg}</div></div>`
+  document.getElementById('questsGrid').innerHTML = `<div class="empty-state"><span class="material-symbols-outlined">warning</span><div class="empty-title">${msg}</div></div>`
 }
-function showToast(msg,type='success') {
-  const t=document.getElementById('toast'); t.textContent=msg
-  t.className=`show ${type}`; setTimeout(()=>t.className='',3500)
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast'); t.textContent = msg
+  t.className = 'show ' + type; setTimeout(() => t.className = '', 3500)
 }
 </script>
 </body>
