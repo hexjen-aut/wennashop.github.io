@@ -272,7 +272,7 @@
     .qmodal-countdown-fill{
       position:absolute;top:0;left:0;height:100%;
       background:var(--gold);width:100%;
-      animation:qbar-drain 10s linear forwards;
+      animation:qbar-drain 30s linear forwards;
     }
     @keyframes qbar-drain{from{width:100%}to{width:0%}}
 
@@ -537,7 +537,7 @@
     </div>
     <div class="qmodal-dismiss">
       <input type="checkbox" id="qDismissCheck" onchange="handleDismissCheck(this)"/>
-      <label for="qDismissCheck">Ne plus afficher aujourd'hui</label>
+      <label for="qDismissCheck">Fermer et ne plus afficher</label>
     </div>
   </div>
 </div>
@@ -644,17 +644,7 @@ async function loadQuetesStrip(){
   }
 }
 
-/* ─── MODAL QUÊTES — 10s, 1x/jour ───────────── */
-const QMODAL_KEY = 'wenna_qmodal_dismissed'
-
-function shouldShowQModal(){
-  const stored = localStorage.getItem(QMODAL_KEY)
-  if(!stored) return true
-  const dismissedAt = new Date(stored)
-  const now = new Date()
-  // Même jour calendaire → ne pas montrer
-  return dismissedAt.toDateString() !== now.toDateString()
-}
+/* ─── MODAL QUÊTES — 30s, toujours ──────────── */
 
 function openQModal(){
   const overlay = document.getElementById('qmodalOverlay')
@@ -677,10 +667,7 @@ function closeQModal(e){
 }
 
 function handleDismissCheck(cb){
-  if(cb.checked){
-    localStorage.setItem(QMODAL_KEY, new Date().toISOString())
-    dismissQModal()
-  }
+  if(cb.checked) dismissQModal()
 }
 
 async function loadQModalQuests(){
@@ -748,15 +735,14 @@ async function loadQModalQuests(){
 }
 
 function scheduleQModal(){
-  if(!shouldShowQModal()) return
   setTimeout(async () => {
     await loadQModalQuests()
     openQModal()
-    // Fermeture auto après 30s si pas d'interaction
+    // Fermeture auto après 60s si pas d'interaction
     setTimeout(()=>{
       if(document.getElementById('qmodalOverlay').classList.contains('open')) dismissQModal()
-    }, 30000)
-  }, 10000) // 10 secondes
+    }, 60000)
+  }, 30000) // 30 secondes
 }
 
 
