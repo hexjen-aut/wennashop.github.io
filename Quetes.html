@@ -7,7 +7,6 @@
   <meta name="description" content="Trouvez le produit que vous cherchez ou gagnez une récompense en chassant pour les autres."/>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- ✅ FIX 1 : chemin corrigé — supabase.config.js est à la racine -->
   <script src="supabase.config.js"></script>
   <style>
     :root{
@@ -21,7 +20,6 @@
     .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24;font-size:20px;line-height:1;}
     ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--coal);}::-webkit-scrollbar-thumb{background:rgba(255,107,43,.3);}
 
-    /* NAV */
     nav{position:sticky;top:0;z-index:100;background:rgba(8,8,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
     .nav-logo{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;font-style:italic;color:var(--snow);text-decoration:none;letter-spacing:-.5px;}
     .nav-logo b{color:var(--fire);}
@@ -33,7 +31,6 @@
     .btn-nav:hover{background:var(--ember)!important;}
     @media(max-width:768px){nav{padding:14px 20px;}.nav-links a:not(.btn-nav):not(.active){display:none;}}
 
-    /* HERO */
     .hero{background:var(--coal);border-bottom:1px solid var(--border);padding:64px 40px 48px;text-align:center;position:relative;overflow:hidden;}
     .hero::before{content:'';position:absolute;top:-80px;right:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(255,107,43,.07) 0%,transparent 70%);pointer-events:none;}
     .hero::after{content:'';position:absolute;bottom:-60px;left:-60px;width:240px;height:240px;background:radial-gradient(circle,rgba(208,166,0,.05) 0%,transparent 70%);pointer-events:none;}
@@ -48,7 +45,6 @@
     .btn-ghost{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border-fire);color:var(--fire);background:transparent;padding:12px 24px;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
     .btn-ghost:hover{background:rgba(255,107,43,.08);}
 
-    /* STATS */
     .stats-bar{background:var(--slate);border-bottom:1px solid var(--border);padding:20px 40px;display:flex;gap:0;justify-content:center;flex-wrap:wrap;}
     .stat-item{text-align:center;padding:12px 32px;border-right:1px solid var(--border);}
     .stat-item:last-child{border-right:none;}
@@ -56,11 +52,9 @@
     .stat-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#444;margin-top:4px;}
     @media(max-width:600px){.stat-item{border-right:none;width:50%;}.stat-item:nth-child(odd){border-right:1px solid var(--border);}}
 
-    /* LAYOUT */
     .main-layout{max-width:1200px;margin:0 auto;padding:32px 24px;display:grid;grid-template-columns:220px 1fr;gap:24px;align-items:start;}
     @media(max-width:900px){.main-layout{grid-template-columns:1fr;}}
 
-    /* SIDEBAR */
     .sidebar{background:var(--coal);border:1px solid var(--border);padding:20px;position:sticky;top:72px;}
     .sidebar-title{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--fire);display:flex;align-items:center;gap:10px;margin-bottom:20px;}
     .sidebar-title::before{content:'';display:block;width:16px;height:1px;background:var(--fire);}
@@ -76,14 +70,12 @@
     .btn-reset{width:100%;padding:9px;border:1px solid var(--border);background:transparent;color:#555;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;margin-top:8px;}
     .btn-reset:hover{border-color:var(--border-fire);color:var(--fire);}
 
-    /* CONTENT */
     .content-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
     .content-count{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;font-style:italic;}
     .sort-select{background:rgba(255,255,255,.04);border:none;border-bottom:1px solid var(--border);color:var(--snow);padding:8px 12px;font-size:11px;font-family:'DM Sans',sans-serif;outline:none;appearance:none;cursor:pointer;transition:border-color .2s;}
     .sort-select:focus{border-bottom-color:var(--fire);}
     .sort-select option{background:var(--slate);}
 
-    /* QUEST CARDS */
     .quests-grid{display:flex;flex-direction:column;gap:2px;}
     .quest-card{background:var(--slate);border-left:2px solid transparent;padding:22px 24px;cursor:pointer;transition:all .2s;text-decoration:none;display:block;color:inherit;}
     .quest-card:hover{border-left-color:var(--fire);background:var(--smoke);}
@@ -104,19 +96,16 @@
     .reward-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:2px;}
     .reward-amount{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;font-style:italic;color:var(--gold);}
 
-    /* SKELETON */
     @keyframes shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}
     .skeleton{background:linear-gradient(90deg,var(--slate) 25%,var(--smoke) 50%,var(--slate) 75%);background-size:600px 100%;animation:shimmer 1.4s infinite linear;}
     .sk-card{background:var(--slate);padding:22px 24px;margin-bottom:2px;}
     .sk-line{border-radius:2px;margin-bottom:10px;}
 
-    /* EMPTY */
     .empty-state{background:var(--slate);padding:64px 32px;text-align:center;}
     .empty-state .material-symbols-outlined{font-size:48px;color:#333;display:block;margin-bottom:16px;}
     .empty-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;font-style:italic;margin-bottom:8px;}
     .empty-sub{font-size:13px;color:var(--fog);}
 
-    /* MODAL */
     .modal-overlay{position:fixed;inset:0;background:rgba(8,8,8,.88);backdrop-filter:blur(14px);z-index:999;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .25s;}
     .modal-overlay.open{opacity:1;pointer-events:all;}
     .modal-box{background:var(--coal);border:1px solid var(--border);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;transform:translateY(16px);transition:transform .25s;position:relative;}
@@ -137,7 +126,6 @@
     textarea.inp-full{resize:vertical;min-height:80px;}
     .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 
-    /* BUDGET PREVIEW */
     .budget-preview{background:rgba(208,166,0,.06);border:1px solid rgba(208,166,0,.2);padding:16px;display:none;}
     .budget-preview-title{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
     .budget-line{display:flex;justify-content:space-between;font-size:13px;color:var(--fog);margin-bottom:6px;}
@@ -149,13 +137,11 @@
     .btn-submit:disabled{opacity:.5;cursor:not-allowed;}
     .modal-hint{text-align:center;font-size:10px;color:#444;margin-top:10px;letter-spacing:.5px;}
 
-    /* TOAST */
     #toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(10px);z-index:400;background:var(--slate);border:1px solid var(--border-fire);color:var(--snow);padding:12px 24px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
     #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
     #toast.success{border-color:rgba(115,220,132,.4);background:#0a1f0e;}
     #toast.error{border-color:rgba(186,26,26,.4);background:#1f0a0a;}
 
-    /* BOTTOM NAV */
     .bnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:40;background:rgba(8,8,8,.95);backdrop-filter:blur(20px);border-top:1px solid var(--border-fire);padding:10px 0 22px;}
     .bnav-inner{display:flex;justify-content:space-around;}
     .bnav-item{display:flex;flex-direction:column;align-items:center;gap:4px;color:#555;text-decoration:none;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;transition:color .2s;}
@@ -171,9 +157,8 @@
 
 <div id="toast"></div>
 
-<!-- NAV -->
 <nav>
-  <a href="index.html" class="nav-logo">Wenna<b>Shop</b></a>
+  <a href="hero.html" class="nav-logo">Wenna<b>Shop</b></a>
   <div class="nav-links">
     <a href="boutique.html">Boutique</a>
     <a href="quetes.html" class="active">Quêtes</a>
@@ -182,7 +167,6 @@
   </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero anim-up">
   <div class="hero-deco">Q</div>
   <div class="hero-eyebrow">
@@ -202,7 +186,6 @@
   </div>
 </section>
 
-<!-- STATS -->
 <div class="stats-bar">
   <div class="stat-item"><div class="stat-val" id="statOpen">—</div><div class="stat-lbl">Quêtes ouvertes</div></div>
   <div class="stat-item"><div class="stat-val" id="statResolved">—</div><div class="stat-lbl">Quêtes résolues</div></div>
@@ -210,10 +193,7 @@
   <div class="stat-item"><div class="stat-val" id="statHunters">—</div><div class="stat-lbl">Chasseurs actifs</div></div>
 </div>
 
-<!-- MAIN -->
 <div class="main-layout" id="mainLayout">
-
-  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-title">Filtres</div>
     <div class="filter-group">
@@ -242,7 +222,6 @@
     <button class="btn-reset" onclick="resetFilters()">Réinitialiser</button>
   </aside>
 
-  <!-- CONTENT -->
   <div id="questsSection">
     <div class="content-header">
       <div class="content-count" id="questsCount">Chargement…</div>
@@ -330,10 +309,9 @@
   </div>
 </div>
 
-<!-- BOTTOM NAV -->
 <nav class="bnav">
   <div class="bnav-inner">
-    <a href="index.html" class="bnav-item"><span class="material-symbols-outlined">home</span><span>Accueil</span></a>
+    <a href="hero.html" class="bnav-item"><span class="material-symbols-outlined">home</span><span>Accueil</span></a>
     <a href="boutique.html" class="bnav-item"><span class="material-symbols-outlined">storefront</span><span>Boutique</span></a>
     <a href="quetes.html" class="bnav-item active"><span class="material-symbols-outlined">search</span><span>Quêtes</span></a>
     <a href="compte.html" class="bnav-item"><span class="material-symbols-outlined">person</span><span>Profil</span></a>
@@ -341,7 +319,6 @@
 </nav>
 
 <script>
-// ✅ FIX 2 : source unique — window.db depuis supabase.config.js
 function getSb() {
   if (typeof window.db === 'undefined') throw new Error('[WennaShop] window.db non disponible')
   return window.db
@@ -361,7 +338,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 })
 
-// ✅ FIX 3 : waitForDb surveille window.db (cohérent avec getSb)
 function waitForDb(n = 0) {
   return new Promise((resolve, reject) => {
     const check = (attempt) => {
@@ -392,7 +368,7 @@ async function loadCategories() {
   categories.forEach(cat => {
     const c = document.createElement('span')
     c.className = 'chip'
-    c.dataset.cat = String(cat.id) // ✅ FIX 4 : forcer string
+    c.dataset.cat = String(cat.id)
     c.textContent = cat.name
     c.onclick = () => selectCat(c)
     chips.appendChild(c)
@@ -403,12 +379,19 @@ async function loadCategories() {
   })
 }
 
+// ✅ FIX PRINCIPAL : query séparée en 2 étapes
+// Étape 1 : récupérer les quêtes + catégories (sans jointure quest_proposals)
+// Étape 2 : récupérer les counts de proposals séparément
+// → évite que le RLS de quest_proposals bloque tout le résultat
 async function loadQuests() {
+  // Query principale — sans quest_proposals(count) pour éviter le blocage RLS
   const { data, error } = await getSb()
     .from('quests')
-    .select(`id, title, description, country_target, product_budget, reward_amount,
-             currency, duration_days, expires_at, status, created_at, category_id,
-             categories(name), quest_proposals(count)`)
+    .select(`
+      id, title, description, country_target, product_budget, reward_amount,
+      currency, duration_days, expires_at, status, created_at, category_id,
+      categories(name)
+    `)
     .eq('status', 'open')
     .order('created_at', { ascending: false })
 
@@ -417,8 +400,36 @@ async function loadQuests() {
     showEmpty('Erreur de chargement. Vérifiez votre connexion.')
     return
   }
-  // ✅ FIX 4 : normaliser category_id en string pour les filtres
-  allQuests = (data || []).map(q => ({ ...q, category_id: String(q.category_id ?? '') }))
+
+  const quests = (data || []).map(q => ({
+    ...q,
+    category_id: String(q.category_id ?? ''),
+    proposals_count: 0  // valeur par défaut
+  }))
+
+  // Query secondaire : count des proposals par quête (peut échouer sans impact)
+  try {
+    const questIds = quests.map(q => q.id)
+    if (questIds.length > 0) {
+      const { data: propData } = await getSb()
+        .from('quest_proposals')
+        .select('quest_id')
+        .in('quest_id', questIds)
+
+      if (propData) {
+        // Compter par quest_id
+        const countMap = {}
+        propData.forEach(p => {
+          countMap[p.quest_id] = (countMap[p.quest_id] || 0) + 1
+        })
+        quests.forEach(q => { q.proposals_count = countMap[q.id] || 0 })
+      }
+    }
+  } catch(e) {
+    console.warn('[WennaShop] proposals count non disponible (non bloquant):', e)
+  }
+
+  allQuests = quests
   renderQuests(allQuests)
 }
 
@@ -439,7 +450,7 @@ function renderQuests(quests) {
   }
 
   grid.innerHTML = quests.map(q => {
-    const proposals = q.quest_proposals?.[0]?.count || 0
+    const proposals = q.proposals_count || 0
     const exp = daysUntil(q.expires_at)
     const cat = q.categories?.name || ''
     const hot = proposals >= 3
@@ -495,7 +506,6 @@ async function loadStats() {
   } catch(e) { console.error('[WennaShop] loadStats:', e) }
 }
 
-// ── FILTRES ─────────────────────────────────────────
 function selectCat(el) {
   document.querySelectorAll('#categoryChips .chip').forEach(c => c.classList.remove('active'))
   el.classList.add('active')
@@ -516,7 +526,6 @@ function applyFilters() {
   const sort = document.getElementById('sortSelect').value
 
   let filtered = allQuests.filter(q => {
-    // ✅ FIX 4 : string === string garanti
     if (activeCategory !== 'all' && q.category_id !== activeCategory) return false
     if (activeCountry !== 'all' && q.country_target !== activeCountry) return false
     if (q.reward_amount < rewardMin) return false
@@ -543,7 +552,6 @@ function resetFilters() {
   renderQuests(allQuests)
 }
 
-// ── MODAL ───────────────────────────────────────────
 function openModal() {
   if (!currentUser) {
     showToast('Connectez-vous pour poster une quête.', 'error')
@@ -594,11 +602,12 @@ async function submitQuest() {
   btn.disabled = true
   btn.innerHTML = '<span class="material-symbols-outlined" style="animation:spin 1s linear infinite;font-size:16px;">progress_activity</span> Publication…'
 
+  // ✅ buyer_id = auth.uid() directement (pas l'id de la table users)
   const { error } = await getSb().from('quests').insert({
     buyer_id: currentUser.id,
     title,
     description: desc || null,
-    category_id: catId,
+    category_id: catId || null,
     country_target: country,
     product_budget: budget,
     reward_amount: reward,
@@ -617,7 +626,6 @@ async function submitQuest() {
   await loadStats()
 }
 
-// ── UTILS ───────────────────────────────────────────
 function daysUntil(d) { return Math.max(0, Math.ceil((new Date(d) - new Date()) / 86400000)) }
 function fmt(n) { return Number(n).toLocaleString('fr-FR') }
 function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }
