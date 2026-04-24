@@ -7,7 +7,7 @@
   <meta name="description" content="Trouvez le produit que vous cherchez ou gagnez une récompense en chassant pour les autres."/>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/config.js"></script>
+  <script src="supabase.config.js"></script>
   <style>
     :root{
       --fire:#FF6B2B;--ember:#E85A1A;--ink:#080808;--coal:#111111;--slate:#1A1A1A;
@@ -250,7 +250,6 @@
     </div>
 
     <div class="quests-grid" id="questsGrid">
-      <!-- Skeletons -->
       <div class="sk-card"><div class="skeleton sk-line" style="height:20px;width:55%;"></div><div class="skeleton sk-line" style="height:13px;width:85%;"></div><div class="skeleton sk-line" style="height:13px;width:70%;"></div><div class="skeleton sk-line" style="height:32px;width:120px;margin-top:8px;"></div></div>
       <div class="sk-card"><div class="skeleton sk-line" style="height:20px;width:45%;"></div><div class="skeleton sk-line" style="height:13px;width:90%;"></div><div class="skeleton sk-line" style="height:13px;width:65%;"></div><div class="skeleton sk-line" style="height:32px;width:120px;margin-top:8px;"></div></div>
       <div class="sk-card"><div class="skeleton sk-line" style="height:20px;width:60%;"></div><div class="skeleton sk-line" style="height:13px;width:80%;"></div><div class="skeleton sk-line" style="height:13px;width:75%;"></div><div class="skeleton sk-line" style="height:32px;width:120px;margin-top:8px;"></div></div>
@@ -340,8 +339,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 })
 
 async function checkAuth() {
-  const { data: { session } } = await supabase.auth.getSession()
-  currentUser = session?.user || null
+  try {
+    const { data: { session } } = await db.auth.getSession()
+    currentUser = session?.user || null
+  } catch(e) {
+    console.error('[WennaShop] checkAuth error:', e)
+    currentUser = null
+  }
 }
 
 async function loadCategories() {
@@ -473,7 +477,11 @@ function resetFilters() {
 
 // MODAL
 function openModal() {
-  if (!currentUser) { showToast('Connectez-vous pour poster une quête.','error'); setTimeout(()=>location.href='index.html',1500); return }
+  if (!currentUser) {
+    showToast('Connectez-vous pour poster une quête.','error')
+    setTimeout(()=>location.href='index.html',1500)
+    return
+  }
   document.getElementById('modalOverlay').classList.add('open')
   document.body.style.overflow='hidden'
 }
@@ -508,7 +516,7 @@ async function submitQuest() {
   if (!reward||reward<500) return showToast('Récompense minimum : 500 FCFA.','error')
   const btn=document.getElementById('submitBtn')
   btn.disabled=true; btn.innerHTML='<span class="material-symbols-outlined" style="animation:spin 1s linear infinite;font-size:16px;">progress_activity</span> Publication…'
-  const {data,error}=await supabase.from('quests').insert({
+  const {data,error}=await db.from('quests').insert({
     buyer_id:currentUser.id, title, description:desc||null, category_id:catId,
     country_target:country, product_budget:budget, reward_amount:reward,
     duration_days:duration, currency:'FCFA', escrow_locked:false
