@@ -1333,13 +1333,32 @@ function selectIcon(ic){
 }
 
 async function saveCategory() {
-  const name=document.getElementById('c-name').value.trim()
-  if(!name){showToast('Nom requis','error');return}
-  const {error}=await db.from('categories').insert([{name,icon:document.getElementById('c-icon').value.trim()||selectedIcon||'📦',description:document.getElementById('c-desc').value,image_url:document.getElementById('c-img').value||null}])
-  if(error){showToast('Erreur: '+error.message,'error');return}
-  showToast('Catégorie créée ✓'); closeModal('modal-category'); loadCategories()
-}
+  const name = document.getElementById('c-name').value.trim()
+  if (!name) { showToast('Nom requis', 'error'); return }
+  
+  // Génère un slug propre
+  const slug = name.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
 
+  const payload = {
+    name,
+    slug,
+    icon: document.getElementById('c-icon').value.trim() || selectedIcon || '📦',
+    description: document.getElementById('c-desc').value || null,
+    image_url: document.getElementById('c-img').value || null
+  }
+
+  console.log('Insert catégorie:', payload) // debug
+  const { data, error } = await db.from('categories').insert([payload]).select()
+  console.log('Résultat:', data, error)     // debug
+  
+  if (error) { showToast('Erreur: ' + error.message, 'error'); return }
+  showToast('Catégorie créée ✓')
+  closeModal('modal-category')
+  loadCategories()
+}
 async function deleteCategory(id) {
   if(!confirm('Supprimer cette catégorie ?')) return
   await db.from('categories').delete().eq('id',id)
