@@ -17,6 +17,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
 body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);min-height:100dvh;overflow-x:hidden;padding-bottom:84px;}
+.page-wrap{max-width:800px;margin:0 auto;}
 .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24;font-size:22px;line-height:1;}
 .icon-fill{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;}
 ::-webkit-scrollbar{width:4px;}
@@ -30,7 +31,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
 @media(hover:none){#cursor,#cursor-ring{display:none;}*{cursor:auto!important;}}
 
 /* NAV */
-.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(8,8,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;}
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(8,8,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 20px;}
+.nav-inner{max-width:800px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;}
 .nav-logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;font-style:italic;color:var(--snow);text-decoration:none;letter-spacing:-.5px;}
 .nav-logo b{color:var(--fire);}
 .nav-btn{background:none;border:none;color:var(--fog);transition:color .2s;display:flex;align-items:center;}
@@ -135,7 +137,8 @@ main{padding-top:64px;}
 .divider{height:1px;background:var(--border);margin:28px 0;}
 
 /* BOTTOM BAR */
-.bottom-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(8,8,8,.96);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:10px;}
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(8,8,8,.96);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:12px 20px;}
+.bottom-bar-inner{max-width:800px;margin:0 auto;display:flex;align-items:center;gap:10px;}
 .btn-wish{width:46px;height:46px;background:transparent;border:1px solid var(--border);color:var(--fog);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
 .btn-wish:hover{border-color:var(--border-fire);color:var(--fire);}
 .btn-wish.active .material-symbols-outlined{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;color:var(--fire);}
@@ -167,17 +170,20 @@ main{padding-top:64px;}
 <div id="toast"></div>
 
 <nav class="nav">
-  <button class="nav-btn" onclick="history.back()">
-    <span class="material-symbols-outlined" style="font-size:20px;">arrow_back</span>
-  </button>
-  <a href="hero.html" class="nav-logo">Wenna<b>Shop</b></a>
-  <a href="panier.html" class="nav-btn cart-wrap">
-    <span class="material-symbols-outlined" style="font-size:20px;">shopping_bag</span>
-    <span id="cart-badge" class="cart-badge">0</span>
-  </a>
+  <div class="nav-inner">
+    <button class="nav-btn" onclick="history.back()">
+      <span class="material-symbols-outlined" style="font-size:20px;">arrow_back</span>
+    </button>
+    <a href="hero.html" class="nav-logo">Wenna<b>Shop</b></a>
+    <a href="panier.html" class="nav-btn cart-wrap">
+      <span class="material-symbols-outlined" style="font-size:20px;">shopping_bag</span>
+      <span id="cart-badge" class="cart-badge">0</span>
+    </a>
+  </div>
 </nav>
 
 <main>
+<div class="page-wrap">
 
   <!-- SKELETON -->
   <div id="skeleton-section">
@@ -288,17 +294,20 @@ main{padding-top:64px;}
     </a>
   </div>
 
+  </div><!-- /page-wrap -->
 </main>
 
 <!-- BOTTOM BAR -->
 <div class="bottom-bar">
-  <button class="btn-wish" id="btn-wish" onclick="toggleWish()">
-    <span class="material-symbols-outlined" style="font-size:20px;">favorite</span>
-  </button>
-  <button class="btn-cart" onclick="addToCart()">
-    <span class="material-symbols-outlined" style="font-size:17px;">shopping_bag</span>
-    Ajouter au panier
-  </button>
+  <div class="bottom-bar-inner">
+    <button class="btn-wish" id="btn-wish" onclick="toggleWish()">
+      <span class="material-symbols-outlined" style="font-size:20px;">favorite</span>
+    </button>
+    <button class="btn-cart" onclick="addToCart()">
+      <span class="material-symbols-outlined" style="font-size:17px;">shopping_bag</span>
+      Ajouter au panier
+    </button>
+  </div>
 </div>
 
 <script>
