@@ -624,34 +624,59 @@ document.addEventListener('keydown', e => {
 ═══════════════════════════════════════════════ */
 async function loadQuetesStrip() {
   if(typeof db==='undefined') return
+  const container = document.getElementById('quetes-cards')
   try {
-    const {data,error} = await db.from('quests')
-      .select('id,title,reward_amount,country_target,expires_at,quest_proposals(count)')
+    // Requête principale : quêtes ouvertes
+    const {data, error} = await db
+      .from('quests')
+      .select('id,title,reward_amount,country_target,expires_at,currency')
       .eq('status','open')
       .order('created_at',{ascending:false})
       .limit(3)
-    const container = document.getElementById('quetes-cards')
-    if(error||!data||!data.length) {
+
+    if(error) throw new Error(error.message)
+    if(!data||!data.length) {
       container.innerHTML=`<div class="quetes-empty">Aucune quête ouverte — <a href="quetes.html" style="color:var(--gold);">soyez le premier</a></div>`
       return
     }
+
+    // Compter les proposals par quête
+    const ids = data.map(q => q.id)
+    const {data: props} = await db
+      .from('quest_proposals')
+      .select('quest_id')
+      .in('quest_id', ids)
+
+    // Map quest_id → count
+    const proposalCount = {}
+    ;(props||[]).forEach(p => {
+      proposalCount[p.quest_id] = (proposalCount[p.quest_id]||0) + 1
+    })
+
     container.innerHTML = data.map(q => {
-      const proposals = q.quest_proposals?.[0]?.count||0
-      const exp = daysLeft(q.expires_at)
+      const count = proposalCount[q.id] || 0
+      const exp   = daysLeft(q.expires_at)
+      const reward = q.currency === 'XAF'
+        ? fmtFcfa(q.reward_amount)
+        : fmtPrice(q.reward_amount, q.currency||'MAD')
       return `<a class="qcard" href="detail_quete.html?id=${q.id}">
         <div class="qcard-top">
           <div class="qcard-title">${esc(q.title)}</div>
-          <div class="qcard-reward"><div class="qcard-reward-lbl">Récompense</div><div class="qcard-reward-val">${fmtFcfa(q.reward_amount)}</div></div>
+          <div class="qcard-reward">
+            <div class="qcard-reward-lbl">Récompense</div>
+            <div class="qcard-reward-val">${reward}</div>
+          </div>
         </div>
         <div class="qcard-bottom">
-          <span class="qcard-meta"><span class="material-symbols-outlined">group</span>${proposals} prop.</span>
+          <span class="qcard-meta"><span class="material-symbols-outlined">group</span>${count} prop.</span>
           <span class="qcard-meta"><span class="material-symbols-outlined">schedule</span>${exp<=1?'<span style="color:var(--fire)">Demain</span>':exp+'j'}</span>
           ${q.country_target?`<span class="qcard-country">${q.country_target}</span>`:''}
         </div>
       </a>`
     }).join('')
   } catch(e) {
-    document.getElementById('quetes-cards').innerHTML=`<div class="quetes-empty">Impossible de charger les quêtes.</div>`
+    console.error('loadQuetesStrip:', e.message)
+    container.innerHTML=`<div class="quetes-empty">Impossible de charger les quêtes.</div>`
   }
 }
 
@@ -674,37 +699,52 @@ function handleDismissCheck(cb) { if(cb.checked) dismissQModal() }
 
 async function loadQModalQuests() {
   if(typeof db==='undefined') return
+  const body = document.getElementById('qmodal-body')
   try {
     const activeCatBtn = document.querySelector('.cat-btn.active')
-    const catId = activeCatBtn?.dataset.id || ''
+    const catId   = activeCatBtn?.dataset.id || ''
     const catName = catId ? (activeCatBtn?.textContent||'') : ''
     document.getElementById('qmodal-title').textContent = catName ? `Quêtes · ${catName}` : 'Produits recherchés'
-    document.getElementById('qmodal-sub').textContent = catName ? `Produits "${catName}" recherchés par la communauté` : 'Des chasseurs attendent votre aide'
-    let q = db.from('quests').select('id,title,reward_amount,country_target,expires_at,quest_proposals(count)').eq('status','open').order('created_at',{ascending:false}).limit(4)
+    document.getElementById('qmodal-sub').textContent   = catName ? `Produits "${catName}" recherchés par la communauté` : 'Des chasseurs attendent votre aide'
+
+    let q = db.from('quests')
+      .select('id,title,reward_amount,country_target,expires_at,currency')
+      .eq('status','open')
+      .order('created_at',{ascending:false})
+      .limit(4)
     if(catId) q = q.eq('category_id', catId)
-    const {data,error} = await q
-    const body = document.getElementById('qmodal-body')
+    const {data, error} = await q
+
     if(error||!data||!data.length) {
       body.innerHTML=`<div class="qm-empty">Aucune quête${catName?' pour "'+catName+'"':''} — <a href="quetes.html" style="color:var(--gold);">voir toutes</a></div>`
       return
     }
+
+    // Compter proposals séparément
+    const ids = data.map(q => q.id)
+    const {data: props} = await db.from('quest_proposals').select('quest_id').in('quest_id', ids)
+    const proposalCount = {}
+    ;(props||[]).forEach(p => { proposalCount[p.quest_id] = (proposalCount[p.quest_id]||0) + 1 })
+
     body.innerHTML = data.map(q => {
-      const proposals = q.quest_proposals?.[0]?.count||0
-      const exp = daysLeft(q.expires_at)
+      const count  = proposalCount[q.id] || 0
+      const exp    = daysLeft(q.expires_at)
+      const reward = q.currency === 'XAF' ? fmtFcfa(q.reward_amount) : fmtPrice(q.reward_amount, q.currency||'MAD')
       return `<a class="qm-card" href="detail_quete.html?id=${q.id}">
         <div class="qm-card-top">
           <div class="qm-title">${esc(q.title)}</div>
-          <div class="qm-reward"><div class="qm-reward-lbl">Récompense</div><div class="qm-reward-val">${fmtFcfa(q.reward_amount)}</div></div>
+          <div class="qm-reward"><div class="qm-reward-lbl">Récompense</div><div class="qm-reward-val">${reward}</div></div>
         </div>
         <div class="qm-meta">
-          <span class="qm-meta-item"><span class="material-symbols-outlined">group</span>${proposals} prop.</span>
+          <span class="qm-meta-item"><span class="material-symbols-outlined">group</span>${count} prop.</span>
           <span class="qm-meta-item"><span class="material-symbols-outlined">schedule</span>${exp<=1?'<span style="color:var(--fire)">Demain</span>':exp+'j'}</span>
           ${q.country_target?`<span class="qm-country">${q.country_target}</span>`:''}
         </div>
       </a>`
     }).join('')
   } catch(e) {
-    document.getElementById('qmodal-body').innerHTML=`<div class="qm-empty">Impossible de charger les quêtes.</div>`
+    console.error('loadQModalQuests:', e.message)
+    body.innerHTML=`<div class="qm-empty">Impossible de charger les quêtes.</div>`
   }
 }
 
