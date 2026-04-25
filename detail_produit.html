@@ -6,6 +6,7 @@
 <title>Détail Produit — WennaShop</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.config.js"></script>
 <script src="cart.js"></script>
 <style>
 :root{
@@ -15,7 +16,7 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
-body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);min-height:100dvh;overflow-x:hidden;padding-bottom:100px;}
+body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);min-height:100dvh;overflow-x:hidden;padding-bottom:84px;}
 .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24;font-size:22px;line-height:1;}
 .icon-fill{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;}
 ::-webkit-scrollbar{width:4px;}
@@ -24,18 +25,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
 
 /* CURSOR */
 *{cursor:none!important;}
-#cursor{position:fixed;width:10px;height:10px;background:var(--fire);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .1s;}
-#cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(255,107,43,.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .12s ease,top .12s ease;}
+#cursor{position:fixed;width:8px;height:8px;background:var(--fire);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .1s;}
+#cursor-ring{position:fixed;width:28px;height:28px;border:1px solid rgba(255,107,43,.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .12s ease,top .12s ease;}
 @media(hover:none){#cursor,#cursor-ring{display:none;}*{cursor:auto!important;}}
 
 /* NAV */
-.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(8,8,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;}
-.nav-logo{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;font-style:italic;color:var(--snow);text-decoration:none;letter-spacing:-.5px;}
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(8,8,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;font-style:italic;color:var(--snow);text-decoration:none;letter-spacing:-.5px;}
 .nav-logo b{color:var(--fire);}
 .nav-btn{background:none;border:none;color:var(--fog);transition:color .2s;display:flex;align-items:center;}
 .nav-btn:hover{color:var(--snow);}
 .cart-wrap{position:relative;}
-.cart-badge{position:absolute;top:-6px;right:-6px;background:var(--fire);color:#fff;font-size:9px;font-weight:700;width:16px;height:16px;border-radius:50%;display:none;align-items:center;justify-content:center;}
+.cart-badge{position:absolute;top:-5px;right:-5px;background:var(--fire);color:#fff;font-size:9px;font-weight:700;width:15px;height:15px;border-radius:50%;display:none;align-items:center;justify-content:center;}
 .cart-badge.show{display:flex;}
 
 /* SKELETON */
@@ -43,104 +44,120 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
 .skeleton{background:linear-gradient(90deg,var(--slate) 25%,var(--smoke) 50%,var(--slate) 75%);background-size:600px 100%;animation:shimmer 1.4s infinite linear;}
 
 /* TOAST */
-#toast{position:fixed;bottom:120px;left:50%;transform:translateX(-50%) translateY(10px);z-index:400;background:var(--slate);border:1px solid var(--border-fire);color:var(--snow);padding:12px 24px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
+#toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(10px);z-index:400;background:var(--slate);border:1px solid var(--border-fire);color:var(--snow);padding:10px 20px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 #toast.ok{border-color:rgba(115,220,132,.4);background:#0a1f0e;}
 #toast.ko{border-color:rgba(186,26,26,.4);background:#1f0a0a;}
 
-/* MAIN */
-main{padding-top:72px;}
+main{padding-top:64px;}
 
-/* SKELETON LAYOUT */
-.sk-gallery{display:grid;grid-template-columns:1fr 280px;gap:3px;height:580px;padding:3px;}
-@media(max-width:768px){.sk-gallery{grid-template-columns:1fr;height:320px;}.sk-thumbs{display:none;}}
-.sk-thumbs{display:flex;flex-direction:column;gap:3px;}
-.sk-thumb{flex:1;}
-.sk-info{padding:32px 32px 0;}
-.sk-line{height:12px;border-radius:3px;margin-bottom:12px;}
-
-/* GALLERY */
-.gallery{display:grid;grid-template-columns:1fr 280px;gap:3px;height:580px;}
-@media(max-width:768px){.gallery{grid-template-columns:1fr;height:360px;}.thumbs-col{display:none;}}
+/* ── GALERIE ── */
+.gallery{display:grid;grid-template-columns:1fr 200px;gap:2px;height:420px;}
+@media(max-width:768px){
+  .gallery{grid-template-columns:1fr;height:260px;}
+  .thumbs-col{display:none;}
+}
 .main-img-wrap{position:relative;overflow:hidden;background:var(--coal);}
-.main-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease;}
+.main-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease;}
 .main-img-wrap:hover img{transform:scale(1.03);}
-.origin-badge{position:absolute;bottom:20px;left:20px;background:rgba(8,8,8,.85);backdrop-filter:blur(10px);border:1px solid var(--border-fire);color:var(--fire);font-size:9px;font-weight:500;letter-spacing:3px;text-transform:uppercase;padding:6px 14px;}
-.thumbs-col{display:flex;flex-direction:column;gap:3px;}
-.thumb{flex:1;overflow:hidden;background:var(--coal);position:relative;}
+.origin-badge{position:absolute;bottom:14px;left:14px;background:rgba(8,8,8,.85);backdrop-filter:blur(10px);border:1px solid var(--border-fire);color:var(--fire);font-size:8px;font-weight:500;letter-spacing:3px;text-transform:uppercase;padding:5px 12px;}
+.thumbs-col{display:flex;flex-direction:column;gap:2px;}
+.thumb{flex:1;overflow:hidden;background:var(--coal);position:relative;cursor:pointer!important;}
 .thumb img{width:100%;height:100%;object-fit:cover;transition:opacity .2s,transform .4s;}
 .thumb:hover img{opacity:.8;transform:scale(1.04);}
-.thumb-more{position:absolute;inset:0;background:rgba(8,8,8,.6);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--snow);letter-spacing:2px;}
+.thumb-more{position:absolute;inset:0;background:rgba(8,8,8,.6);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--snow);letter-spacing:2px;}
 
-/* CONTENT */
-.content{padding:40px 32px 0;}
-@media(max-width:768px){.content{padding:28px 20px 0;}}
-.eyebrow{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--fire);display:flex;align-items:center;gap:12px;margin-bottom:12px;}
-.eyebrow::before{content:'';display:block;width:20px;height:1px;background:var(--fire);}
-.product-title{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,5vw,60px);font-weight:700;font-style:italic;line-height:1.05;letter-spacing:-1px;margin-bottom:20px;}
-.price-row{display:flex;align-items:baseline;gap:16px;margin-bottom:28px;}
-.price{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:700;font-style:italic;color:var(--fire);}
-.rating{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--fog);}
+/* ── CONTENU ── */
+.content{padding:28px 24px 0;max-width:900px;}
+@media(max-width:768px){.content{padding:20px 16px 0;}}
+
+.eyebrow{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--fire);display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.eyebrow::before{content:'';display:block;width:16px;height:1px;background:var(--fire);}
+
+.product-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,48px);font-weight:700;font-style:italic;line-height:1.05;letter-spacing:-1px;margin-bottom:16px;}
+
+.price-row{display:flex;align-items:baseline;gap:12px;margin-bottom:6px;}
+.price{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;font-style:italic;color:var(--fire);}
+.compare-price{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;font-style:italic;color:#555;text-decoration:line-through;}
+.rating{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--fog);margin-bottom:20px;}
 
 /* CHIPS */
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:36px;}
-.chip{display:flex;align-items:center;gap:8px;background:var(--slate);border:1px solid var(--border);padding:8px 14px;font-size:11px;color:var(--fog);}
-.chip .material-symbols-outlined{font-size:16px;color:var(--fire);}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px;}
+.chip{display:flex;align-items:center;gap:6px;background:var(--slate);border:1px solid var(--border);padding:6px 12px;font-size:10px;color:var(--fog);}
+.chip .material-symbols-outlined{font-size:14px;color:var(--fire);}
+
+/* CARACTÉRISTIQUES */
+.specs-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;margin-bottom:24px;}
+@media(min-width:600px){.specs-grid{grid-template-columns:repeat(3,1fr);}}
+.spec-item{background:var(--slate);padding:12px 16px;}
+.spec-label{font-size:8px;letter-spacing:2.5px;text-transform:uppercase;color:#444;margin-bottom:5px;}
+.spec-value{font-size:13px;font-weight:500;color:var(--snow);}
+
+/* TAGS */
+.tags-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px;}
+.tag{display:inline-block;background:rgba(255,107,43,.08);border:1px solid rgba(255,107,43,.18);color:var(--fire);font-size:10px;padding:3px 10px;letter-spacing:.5px;}
 
 /* DESCRIPTION */
-.section-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;font-style:italic;margin-bottom:14px;}
-.description{font-size:14px;color:#999;line-height:1.8;max-width:640px;margin-bottom:40px;}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;font-style:italic;margin-bottom:10px;}
+.description{font-size:13px;color:#999;line-height:1.8;max-width:600px;margin-bottom:32px;}
 
 /* SELLER */
-.seller-card{background:var(--slate);border:1px solid var(--border);padding:24px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:48px;flex-wrap:wrap;gap:16px;}
-.seller-av{width:52px;height:52px;border-radius:50%;background:rgba(255,107,43,.1);border:1px solid var(--border-fire);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;font-style:italic;color:var(--fire);flex-shrink:0;overflow:hidden;}
+.seller-card{background:var(--slate);border:1px solid var(--border);padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:36px;flex-wrap:wrap;}
+.seller-av{width:44px;height:44px;border-radius:50%;background:rgba(255,107,43,.1);border:1px solid var(--border-fire);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;font-style:italic;color:var(--fire);flex-shrink:0;overflow:hidden;}
 .seller-av img{width:100%;height:100%;object-fit:cover;}
-.seller-name{font-size:14px;font-weight:600;margin-bottom:4px;}
-.seller-meta{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#444;}
-.btn-seller{background:transparent;border:1px solid var(--border-fire);color:var(--fire);padding:9px 18px;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;font-family:'DM Sans',sans-serif;transition:all .2s;white-space:nowrap;}
+.seller-name{font-size:13px;font-weight:600;margin-bottom:3px;}
+.seller-meta{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#444;}
+.btn-seller{background:transparent;border:1px solid var(--border-fire);color:var(--fire);padding:7px 14px;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;font-family:'DM Sans',sans-serif;transition:all .2s;white-space:nowrap;}
 .btn-seller:hover{background:rgba(255,107,43,.08);}
 
 /* REVIEWS */
-.reviews-section{margin-bottom:48px;}
-.review-card{background:var(--slate);border:1px solid var(--border);padding:20px;margin-bottom:2px;}
-.review-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
-.reviewer{font-size:13px;font-weight:600;}
-.review-date{font-size:10px;color:#444;letter-spacing:1px;}
-.stars{color:var(--fire);font-size:13px;margin-bottom:8px;}
-.review-text{font-size:13px;color:#888;line-height:1.7;}
+.reviews-section{margin-bottom:36px;}
+.review-card{background:var(--slate);border:1px solid var(--border);padding:16px;margin-bottom:2px;}
+.review-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+.reviewer{font-size:12px;font-weight:600;}
+.review-date{font-size:9px;color:#444;letter-spacing:1px;}
+.stars{color:var(--fire);font-size:12px;margin-bottom:6px;}
+.review-text{font-size:12px;color:#888;line-height:1.7;}
 
 /* RELATED */
-.related-section{margin-bottom:48px;}
-.related-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:24px;}
-.related-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:3px;}
-@media(min-width:768px){.related-grid{grid-template-columns:repeat(4,1fr);}}
+.related-section{margin-bottom:36px;}
+.related-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px;}
+.related-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;}
+@media(min-width:600px){.related-grid{grid-template-columns:repeat(4,1fr);}}
 .related-card{text-decoration:none;color:inherit;display:block;}
-.related-img{aspect-ratio:4/5;background:var(--coal);overflow:hidden;margin-bottom:12px;}
+.related-img{aspect-ratio:4/5;background:var(--coal);overflow:hidden;margin-bottom:10px;}
 .related-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease;}
 .related-card:hover .related-img img{transform:scale(1.05);}
-.related-country{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--fire);margin-bottom:4px;}
-.related-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;font-style:italic;line-height:1.2;margin-bottom:4px;}
-.related-price{font-size:13px;color:var(--fog);}
+.related-country{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--fire);margin-bottom:3px;}
+.related-name{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;font-style:italic;line-height:1.2;margin-bottom:3px;}
+.related-price{font-size:12px;color:var(--fog);}
 
-/* SECTION DIVIDER */
-.divider{height:1px;background:var(--border);margin:40px 0;}
+.divider{height:1px;background:var(--border);margin:28px 0;}
 
 /* BOTTOM BAR */
-.bottom-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(8,8,8,.96);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;gap:12px;}
-.btn-wish{width:52px;height:52px;background:transparent;border:1px solid var(--border);color:var(--fog);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(8,8,8,.96);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:10px;}
+.btn-wish{width:46px;height:46px;background:transparent;border:1px solid var(--border);color:var(--fog);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
 .btn-wish:hover{border-color:var(--border-fire);color:var(--fire);}
 .btn-wish.active .material-symbols-outlined{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;color:var(--fire);}
-.btn-cart{flex:1;height:52px;background:var(--fire);color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;font-size:10px;font-weight:500;letter-spacing:3px;text-transform:uppercase;border:none;font-family:'DM Sans',sans-serif;transition:background .2s,transform .15s;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));}
+.btn-cart{flex:1;height:46px;background:var(--fire);color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;font-size:10px;font-weight:500;letter-spacing:3px;text-transform:uppercase;border:none;font-family:'DM Sans',sans-serif;transition:background .2s,transform .15s;clip-path:polygon(0 0,calc(100% - 7px) 0,100% 7px,100% 100%,7px 100%,0 calc(100% - 7px));}
 .btn-cart:hover{background:var(--ember);transform:translateY(-1px);}
 .btn-cart:active{transform:translateY(0);}
 
 /* ERROR */
 .error-state{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:40px;}
-.error-state .material-symbols-outlined{font-size:52px;color:#333;margin-bottom:16px;}
-.error-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;font-style:italic;margin-bottom:8px;}
-.error-sub{font-size:13px;color:var(--fog);margin-bottom:24px;}
-.btn-back{display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid var(--border-fire);color:var(--fire);padding:10px 22px;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;text-decoration:none;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.error-state .material-symbols-outlined{font-size:44px;color:#333;margin-bottom:14px;}
+.error-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;font-style:italic;margin-bottom:8px;}
+.error-sub{font-size:13px;color:var(--fog);margin-bottom:20px;}
+.btn-back{display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid var(--border-fire);color:var(--fire);padding:9px 20px;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;text-decoration:none;font-family:'DM Sans',sans-serif;transition:all .2s;}
 .btn-back:hover{background:rgba(255,107,43,.08);}
+
+/* SKELETON LAYOUT */
+.sk-gallery{display:grid;grid-template-columns:1fr 200px;gap:2px;height:420px;}
+@media(max-width:768px){.sk-gallery{grid-template-columns:1fr;height:260px;}.sk-thumbs{display:none;}}
+.sk-thumbs{display:flex;flex-direction:column;gap:2px;}
+.sk-thumb{flex:1;}
+.sk-info{padding:28px 24px 0;}
+.sk-line{height:11px;border-radius:3px;margin-bottom:10px;}
 </style>
 </head>
 <body>
@@ -149,14 +166,13 @@ main{padding-top:72px;}
 <div id="cursor-ring"></div>
 <div id="toast"></div>
 
-<!-- NAV -->
 <nav class="nav">
   <button class="nav-btn" onclick="history.back()">
-    <span class="material-symbols-outlined">arrow_back</span>
+    <span class="material-symbols-outlined" style="font-size:20px;">arrow_back</span>
   </button>
   <a href="index.html" class="nav-logo">Wenna<b>Shop</b></a>
   <a href="panier.html" class="nav-btn cart-wrap">
-    <span class="material-symbols-outlined">shopping_bag</span>
+    <span class="material-symbols-outlined" style="font-size:20px;">shopping_bag</span>
     <span id="cart-badge" class="cart-badge">0</span>
   </a>
 </nav>
@@ -173,17 +189,16 @@ main{padding-top:72px;}
       </div>
     </div>
     <div class="sk-info">
-      <div class="skeleton sk-line" style="width:80px;"></div>
-      <div class="skeleton sk-line" style="width:60%;height:20px;margin-bottom:20px;"></div>
-      <div class="skeleton sk-line" style="width:100px;height:16px;"></div>
-      <div class="skeleton sk-line" style="width:100%;height:80px;margin-top:24px;border-radius:4px;"></div>
+      <div class="skeleton sk-line" style="width:70px;"></div>
+      <div class="skeleton sk-line" style="width:55%;height:18px;margin-bottom:16px;"></div>
+      <div class="skeleton sk-line" style="width:90px;height:14px;"></div>
+      <div class="skeleton sk-line" style="width:100%;height:70px;margin-top:20px;border-radius:3px;"></div>
     </div>
   </div>
 
   <!-- PRODUCT -->
   <div id="product-section" style="display:none;">
 
-    <!-- GALLERY -->
     <div class="gallery">
       <div class="main-img-wrap">
         <img id="main-img" src="" alt=""/>
@@ -195,22 +210,32 @@ main{padding-top:72px;}
     <div class="content">
 
       <!-- TITRE + PRIX -->
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:6px;">
         <div style="flex:1;min-width:0;">
           <div class="eyebrow" id="product-category"></div>
           <h1 class="product-title" id="product-title"></h1>
         </div>
         <div style="text-align:right;flex-shrink:0;">
-          <div class="price" id="product-price"></div>
-          <div class="rating" id="rating-row" style="display:none;justify-content:flex-end;margin-top:4px;">
-            <span class="material-symbols-outlined icon-fill" style="font-size:14px;color:var(--fire);">star</span>
+          <div class="price-row">
+            <div class="price" id="product-price"></div>
+            <div class="compare-price" id="compare-price" style="display:none;"></div>
+          </div>
+          <div class="rating" id="rating-row" style="display:none;">
+            <span class="material-symbols-outlined icon-fill" style="font-size:13px;color:var(--fire);">star</span>
             <span id="avg-rating"></span>
+            <span id="review-count-inline" style="color:#444;"></span>
           </div>
         </div>
       </div>
 
-      <!-- CHIPS -->
+      <!-- CHIPS RAPIDES -->
       <div class="chips" id="chips-container"></div>
+
+      <!-- CARACTÉRISTIQUES PHYSIQUES -->
+      <div class="specs-grid" id="specs-grid" style="display:none;"></div>
+
+      <!-- TAGS -->
+      <div class="tags-row" id="tags-row" style="display:none;"></div>
 
       <!-- DESCRIPTION -->
       <div class="section-title">L'histoire</div>
@@ -220,11 +245,11 @@ main{padding-top:72px;}
 
       <!-- SELLER -->
       <div class="seller-card" id="seller-card">
-        <div style="display:flex;align-items:center;gap:14px;">
-          <div class="skeleton" style="width:52px;height:52px;border-radius:50%;flex-shrink:0;"></div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="skeleton" style="width:44px;height:44px;border-radius:50%;flex-shrink:0;"></div>
           <div>
-            <div class="skeleton" style="width:120px;height:13px;border-radius:3px;margin-bottom:8px;"></div>
-            <div class="skeleton" style="width:80px;height:10px;border-radius:3px;"></div>
+            <div class="skeleton" style="width:110px;height:12px;border-radius:2px;margin-bottom:7px;"></div>
+            <div class="skeleton" style="width:75px;height:9px;border-radius:2px;"></div>
           </div>
         </div>
       </div>
@@ -232,9 +257,9 @@ main{padding-top:72px;}
       <!-- REVIEWS -->
       <div class="reviews-section" id="reviews-section" style="display:none;">
         <div class="divider"></div>
-        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:24px;">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px;">
           <div class="section-title" style="margin-bottom:0;">Avis clients</div>
-          <span id="reviews-count" style="font-size:12px;color:var(--fog);"></span>
+          <span id="reviews-count" style="font-size:11px;color:var(--fog);"></span>
         </div>
         <div id="reviews-list"></div>
       </div>
@@ -244,7 +269,7 @@ main{padding-top:72px;}
         <div class="divider"></div>
         <div class="related-header">
           <div class="section-title" style="margin-bottom:0;">Vous aimerez aussi</div>
-          <a href="boutique.html" style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--fire);text-decoration:none;">Voir tout</a>
+          <a href="boutique.html" style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--fire);text-decoration:none;">Voir tout</a>
         </div>
         <div class="related-grid" id="related-products"></div>
       </div>
@@ -258,7 +283,7 @@ main{padding-top:72px;}
     <div class="error-title">Produit introuvable</div>
     <div class="error-sub">Ce produit n'existe pas ou a été retiré.</div>
     <a href="boutique.html" class="btn-back">
-      <span class="material-symbols-outlined" style="font-size:16px;">arrow_back</span>
+      <span class="material-symbols-outlined" style="font-size:15px;">arrow_back</span>
       Retour à la boutique
     </a>
   </div>
@@ -268,225 +293,234 @@ main{padding-top:72px;}
 <!-- BOTTOM BAR -->
 <div class="bottom-bar">
   <button class="btn-wish" id="btn-wish" onclick="toggleWish()">
-    <span class="material-symbols-outlined">favorite</span>
+    <span class="material-symbols-outlined" style="font-size:20px;">favorite</span>
   </button>
   <button class="btn-cart" onclick="addToCart()">
-    <span class="material-symbols-outlined" style="font-size:18px;">shopping_bag</span>
+    <span class="material-symbols-outlined" style="font-size:17px;">shopping_bag</span>
     Ajouter au panier
   </button>
 </div>
 
 <script>
-// ── CURSOR ────────────────────────────────────
-const cur = document.getElementById('cursor'), ring = document.getElementById('cursor-ring')
-document.addEventListener('mousemove', e => {
-  cur.style.left = e.clientX + 'px'; cur.style.top = e.clientY + 'px'
-  ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px'
+// ── CURSOR ─────────────────────────────────────────────────────────────────
+const cur=document.getElementById('cursor'),ring=document.getElementById('cursor-ring')
+document.addEventListener('mousemove',e=>{
+  cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px'
+  ring.style.left=e.clientX+'px';ring.style.top=e.clientY+'px'
 })
 
-// ── SUPABASE ──────────────────────────────────
-const SUPABASE_URL  = 'https://aakxoydznmybstfozjte.supabase.co'
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON)
+// ── SUPABASE ───────────────────────────────────────────────────────────────
+function getDb(){return window.db}
 
-let currentProduct = null
-const $ = id => document.getElementById(id)
+let currentProduct=null
+const $=id=>document.getElementById(id)
 
-// ── UTILS ─────────────────────────────────────
-function getProductId() { return new URLSearchParams(window.location.search).get('id') }
-function formatPrice(amount, currency = 'MAD') {
-  return new Intl.NumberFormat('fr-FR', { style:'currency', currency }).format(amount)
-}
-function showToast(msg, type = '') {
-  const t = $('toast')
-  t.textContent = msg
-  t.className = type ? `show ${type}` : 'show'
-  setTimeout(() => t.className = '', 3000)
-}
-function getImages(product) {
-  if (Array.isArray(product.images) && product.images.length) return product.images
-  if (product.image_url) return [product.image_url]
-  return []
+// ── UTILS ──────────────────────────────────────────────────────────────────
+function getProductId(){return new URLSearchParams(window.location.search).get('id')}
+function formatPrice(amount,currency='MAD'){return new Intl.NumberFormat('fr-FR',{style:'currency',currency}).format(amount)}
+function showToast(msg,type=''){const t=$('toast');t.textContent=msg;t.className=type?`show ${type}`:'show';setTimeout(()=>t.className='',3000)}
+
+function getImages(product){
+  // Priorité : product_images table > images array > image_url
+  if(product._images&&product._images.length)return product._images.map(i=>i.url)
+  if(Array.isArray(product.images)&&product.images.length)return product.images
+  if(product.image_url)return[product.image_url]
+  return[]
 }
 
-// ── CART ──────────────────────────────────────
-async function updateBadge() {
-  if (typeof Cart === 'undefined') return
+// ── CART ───────────────────────────────────────────────────────────────────
+async function updateBadge(){
+  if(typeof Cart==='undefined')return
   await Cart.updateBadge('cart-badge')
-  $('cart-badge').classList.toggle('show', parseInt($('cart-badge').textContent) > 0)
+  $('cart-badge').classList.toggle('show',parseInt($('cart-badge').textContent)>0)
 }
-async function addToCart() {
-  if (!currentProduct) return
-  if (typeof Cart === 'undefined') { showToast('Panier non disponible', 'ko'); return }
-  const r = await Cart.add(currentProduct.id, currentProduct.name, currentProduct.price, currentProduct.image_url || '', currentProduct.currency || 'MAD')
-  if (!r.success && r.error === 'not_logged_in') {
-    showToast('Connecte-toi pour ajouter au panier', 'ko')
-    setTimeout(() => window.location.href = 'login.html', 1500)
-    return
-  }
-  showToast(r.success ? `« ${currentProduct.name} » ajouté au panier` : r.message, r.success ? 'ok' : 'ko')
-  if (r.success) updateBadge()
+async function addToCart(){
+  if(!currentProduct)return
+  if(typeof Cart==='undefined'){showToast('Panier non disponible','ko');return}
+  const r=await Cart.add(currentProduct.id,currentProduct.name,currentProduct.price,currentProduct.image_url||'',currentProduct.currency||'MAD')
+  if(!r.success&&r.error==='not_logged_in'){showToast('Connecte-toi pour ajouter au panier','ko');setTimeout(()=>window.location.href='login.html',1500);return}
+  showToast(r.success?`« ${currentProduct.name} » ajouté au panier`:r.message,r.success?'ok':'ko')
+  if(r.success)updateBadge()
 }
 
-// ── WISHLIST ──────────────────────────────────
-function toggleWish() {
-  const btn = $('btn-wish')
-  btn.classList.toggle('active')
-}
+// ── WISHLIST ───────────────────────────────────────────────────────────────
+function toggleWish(){$('btn-wish').classList.toggle('active')}
 
-// ── GALLERY ───────────────────────────────────
-function renderGallery(product) {
-  const imgs = getImages(product)
-  if (!imgs.length) return
-  $('main-img').src = imgs[0]
-  $('main-img').alt = product.name
-  const col = $('thumbs-col')
-  col.innerHTML = ''
-  for (let i = 1; i < Math.min(imgs.length, 3); i++) {
-    const isLast = i === 2 && imgs.length > 3
-    const div = document.createElement('div')
-    div.className = 'thumb'
-    div.innerHTML = `<img src="${imgs[i]}" alt="Photo ${i+1}"/>${isLast ? `<div class="thumb-more">+${imgs.length-3}</div>` : ''}`
-    div.addEventListener('click', () => { $('main-img').src = imgs[i] })
+// ── GALLERY ────────────────────────────────────────────────────────────────
+function renderGallery(product){
+  const imgs=getImages(product)
+  if(!imgs.length)return
+  const mainImg=$('main-img')
+  mainImg.src=imgs[0];mainImg.alt=product.name
+  const col=$('thumbs-col')
+  col.innerHTML=''
+  const shown=Math.min(imgs.length,3)
+  for(let i=1;i<shown;i++){
+    const isLast=i===2&&imgs.length>3
+    const div=document.createElement('div')
+    div.className='thumb'
+    div.innerHTML=`<img src="${imgs[i]}" alt="Photo ${i+1}"/>${isLast?`<div class="thumb-more">+${imgs.length-3}</div>`:''}`
+    div.addEventListener('click',()=>{mainImg.src=imgs[i]})
     col.appendChild(div)
   }
-  if (imgs.length === 1) {
-    const div = document.createElement('div')
-    div.className = 'thumb'
-    div.innerHTML = `<img src="${imgs[0]}" alt="${product.name}" style="opacity:.5;filter:grayscale(30%)"/>`
+  // Fallback si 1 seule image
+  if(imgs.length===1){
+    const div=document.createElement('div')
+    div.className='thumb'
+    div.innerHTML=`<img src="${imgs[0]}" alt="${product.name}" style="opacity:.4;filter:grayscale(30%)"/>`
     col.appendChild(div)
   }
 }
 
-// ── RENDER PRODUCT ────────────────────────────
-function renderProduct(product) {
-  currentProduct = product
+// ── RENDER PRODUCT ─────────────────────────────────────────────────────────
+function renderProduct(product){
+  currentProduct=product
   renderGallery(product)
-  $('origin-badge').textContent = product.country ? `Produit du ${product.country}` : ''
-  $('product-category').textContent = product.category || 'Collection'
-  $('product-title').textContent = product.name
-  $('product-price').textContent = formatPrice(product.price, product.currency || 'MAD')
-  $('product-description').textContent = product.description || ''
-  document.title = `${product.name} — WennaShop`
 
-  const chips = []
-  if (product.origin || product.country) chips.push({ icon:'location_on', label:`Origine : ${product.origin || product.country}` })
-  if (product.tag1) chips.push({ icon:'eco', label:product.tag1 })
-  if (product.tag2) chips.push({ icon:'filter_vintage', label:product.tag2 })
-  if (!chips.length) chips.push({ icon:'eco', label:'100% Naturel' }, { icon:'verified', label:'Artisanat authentique' })
+  $('origin-badge').textContent=product.country?`Produit du ${product.country}`:''
+  $('product-category').textContent=product.categories?.name||product.category||'Collection'
+  $('product-title').textContent=product.name
+  $('product-price').textContent=formatPrice(product.price,product.currency||'MAD')
+  document.title=`${product.name} — WennaShop`
 
-  $('chips-container').innerHTML = chips.map(c => `
-    <div class="chip">
-      <span class="material-symbols-outlined">${c.icon}</span>
-      <span>${c.label}</span>
-    </div>`).join('')
+  // Prix barré
+  if(product.compare_price&&product.compare_price>product.price){
+    $('compare-price').textContent=formatPrice(product.compare_price,product.currency||'MAD')
+    $('compare-price').style.display='block'
+  }
 
-  $('skeleton-section').style.display = 'none'
-  $('product-section').style.display = 'block'
+  // Description
+  $('product-description').textContent=product.description||'Aucune description disponible.'
+
+  // Chips rapides
+  const chips=[]
+  if(product.country)chips.push({icon:'location_on',label:`Origine : ${product.origin_city?product.origin_city+', ':''} ${product.country}`})
+  if(product.delivery_days)chips.push({icon:'local_shipping',label:`Livraison : ${product.delivery_days}j`})
+  if(product.warranty)chips.push({icon:'verified_user',label:`Garantie : ${product.warranty}`})
+  if(!chips.length){chips.push({icon:'eco',label:'100% Naturel'},{icon:'verified',label:'Artisanat authentique'})}
+  $('chips-container').innerHTML=chips.map(c=>`<div class="chip"><span class="material-symbols-outlined">${c.icon}</span><span>${c.label}</span></div>`).join('')
+
+  // Caractéristiques physiques
+  const specs=[]
+  if(product.brand)specs.push({label:'Marque',value:product.brand})
+  if(product.material)specs.push({label:'Matière',value:product.material})
+  if(product.weight)specs.push({label:'Poids',value:product.weight+'g'})
+  if(product.dimensions)specs.push({label:'Dimensions',value:product.dimensions})
+  if(product.sku)specs.push({label:'Référence',value:product.sku})
+  if(product.stock!==undefined)specs.push({label:'Stock',value:product.stock>0?`${product.stock} disponibles`:'Rupture'})
+  if(specs.length){
+    $('specs-grid').style.display='grid'
+    $('specs-grid').innerHTML=specs.map(s=>`<div class="spec-item"><div class="spec-label">${s.label}</div><div class="spec-value">${s.value}</div></div>`).join('')
+  }
+
+  // Tags
+  const tags=Array.isArray(product.tags)?product.tags:[]
+  if(tags.length){
+    $('tags-row').style.display='flex'
+    $('tags-row').innerHTML=tags.map(t=>`<span class="tag">${t}</span>`).join('')
+  }
+
+  $('skeleton-section').style.display='none'
+  $('product-section').style.display='block'
 }
 
-// ── RENDER SELLER ─────────────────────────────
-function renderSeller(seller) {
-  if (!seller) { $('seller-card').innerHTML = '<span style="font-size:13px;color:var(--fog);">Vendeur non disponible</span>'; return }
-  const initial = (seller.full_name || 'V').charAt(0).toUpperCase()
-  const avatar = seller.avatar_url
-    ? `<img src="${seller.avatar_url}" alt="${seller.full_name}"/>`
-    : initial
-  const since = seller.created_at ? new Date(seller.created_at).getFullYear() : null
-  $('seller-card').innerHTML = `
-    <div style="display:flex;align-items:center;gap:14px;">
+// ── RENDER SELLER ──────────────────────────────────────────────────────────
+function renderSeller(seller){
+  if(!seller){$('seller-card').innerHTML='<span style="font-size:12px;color:var(--fog);">Vendeur non disponible</span>';return}
+  const initial=(seller.full_name||'V').charAt(0).toUpperCase()
+  const avatar=seller.avatar_url?`<img src="${seller.avatar_url}" alt="${seller.full_name}"/>`:initial
+  const since=seller.created_at?new Date(seller.created_at).getFullYear():null
+  $('seller-card').innerHTML=`
+    <div style="display:flex;align-items:center;gap:12px;">
       <div class="seller-av">${avatar}</div>
       <div>
-        <div class="seller-name">${seller.full_name || 'Vendeur'}</div>
-        <div class="seller-meta">Vendeur certifié${seller.country ? ' · ' + seller.country : ''}${since ? ' · Depuis ' + since : ''}</div>
+        <div class="seller-name">${seller.full_name||'Vendeur'}</div>
+        <div class="seller-meta">Vendeur certifié${seller.country?' · '+seller.country:''}${since?' · Depuis '+since:''}</div>
       </div>
     </div>
     <button class="btn-seller">Voir la boutique</button>`
 }
 
-// ── RENDER REVIEWS ────────────────────────────
-function renderReviews(reviews) {
-  if (!reviews.length) return
-  const avg = reviews.reduce((s,r) => s + (r.rating||0), 0) / reviews.length
-  $('rating-row').style.display = 'flex'
-  $('avg-rating').textContent = avg.toFixed(1)
-  $('reviews-count').textContent = `${reviews.length} avis`
-  $('reviews-section').style.display = 'block'
-  $('reviews-list').innerHTML = reviews.map(r => {
-    const date = r.created_at ? new Date(r.created_at).toLocaleDateString('fr-FR',{year:'numeric',month:'long'}) : ''
-    const stars = '★'.repeat(Math.round(r.rating||0)) + '☆'.repeat(5-Math.round(r.rating||0))
-    return `
-      <div class="review-card">
-        <div class="review-header">
-          <div>
-            <div class="reviewer">${r.reviewer_name || 'Acheteur anonyme'}</div>
-            <div class="stars">${stars}</div>
-          </div>
-          <div class="review-date">${date}</div>
-        </div>
-        <div class="review-text">${r.comment || ''}</div>
-      </div>`
+// ── RENDER REVIEWS ─────────────────────────────────────────────────────────
+function renderReviews(reviews){
+  if(!reviews.length)return
+  const avg=reviews.reduce((s,r)=>s+(r.rating||0),0)/reviews.length
+  $('rating-row').style.display='flex'
+  $('avg-rating').textContent=avg.toFixed(1)
+  $('review-count-inline').textContent=`(${reviews.length})`
+  $('reviews-count').textContent=`${reviews.length} avis`
+  $('reviews-section').style.display='block'
+  $('reviews-list').innerHTML=reviews.map(r=>{
+    const date=r.created_at?new Date(r.created_at).toLocaleDateString('fr-FR',{year:'numeric',month:'long'}):''
+    const stars='★'.repeat(Math.round(r.rating||0))+'☆'.repeat(5-Math.round(r.rating||0))
+    return`<div class="review-card">
+      <div class="review-header">
+        <div><div class="reviewer">${r.reviewer_name||'Acheteur anonyme'}</div><div class="stars">${stars}</div></div>
+        <div class="review-date">${date}</div>
+      </div>
+      <div class="review-text">${r.comment||''}</div>
+    </div>`
   }).join('')
 }
 
-// ── RENDER RELATED ────────────────────────────
-function renderRelated(products) {
-  if (!products.length) return
-  $('related-section').style.display = 'block'
-  $('related-products').innerHTML = products.slice(0,4).map(p => {
-    const imgs = getImages(p)
-    return `
-      <a href="detail_produit.html?id=${p.id}" class="related-card">
-        <div class="related-img">
-          ${imgs[0] ? `<img src="${imgs[0]}" alt="${p.name}"/>` : ''}
-        </div>
-        <div class="related-country">${p.country || ''}</div>
-        <div class="related-name">${p.name}</div>
-        <div class="related-price">${formatPrice(p.price, p.currency || 'MAD')}</div>
-      </a>`
+// ── RENDER RELATED ─────────────────────────────────────────────────────────
+function renderRelated(products){
+  if(!products.length)return
+  $('related-section').style.display='block'
+  $('related-products').innerHTML=products.slice(0,4).map(p=>{
+    const imgs=getImages(p)
+    return`<a href="detail_produit.html?id=${p.id}" class="related-card">
+      <div class="related-img">${imgs[0]?`<img src="${imgs[0]}" alt="${p.name}"/>`:''}</div>
+      <div class="related-country">${p.country||''}</div>
+      <div class="related-name">${p.name}</div>
+      <div class="related-price">${formatPrice(p.price,p.currency||'MAD')}</div>
+    </a>`
   }).join('')
 }
 
-// ── FETCH ─────────────────────────────────────
-async function loadProduct(id) {
-  const { data } = await sb.from('products').select('*').eq('id',id).single()
+// ── FETCH ──────────────────────────────────────────────────────────────────
+async function loadProduct(id){
+  const db=getDb()
+  const {data}=await db.from('products').select('*, categories(name)').eq('id',id).single()
+  if(!data)return null
+  // Charger les images depuis product_images
+  const {data:imgs}=await db.from('product_images').select('url,position').eq('product_id',id).order('position')
+  data._images=imgs||[]
   return data
 }
-async function loadSeller(sellerId) {
-  const { data } = await sb.from('users').select('id,full_name,avatar_url,created_at,country').eq('id',sellerId).single()
+async function loadSeller(sellerId){
+  const db=getDb()
+  const {data}=await db.from('users').select('id,full_name,avatar_url,created_at,country').eq('id',sellerId).single()
   return data
 }
-async function loadReviews(productId) {
-  const { data } = await sb.from('reviews').select('*').eq('product_id',productId).eq('status','approved').order('created_at',{ascending:false})
-  return data || []
+async function loadReviews(productId){
+  const db=getDb()
+  const {data}=await db.from('reviews').select('*').eq('product_id',productId).eq('status','approved').order('created_at',{ascending:false})
+  return data||[]
 }
-async function loadRelated(category, excludeId) {
-  const { data } = await sb.from('products').select('id,name,price,images,image_url,category,country,currency').eq('category',category).neq('id',excludeId).limit(4)
-  return data || []
+async function loadRelated(categoryId,excludeId){
+  const db=getDb()
+  const {data}=await db.from('products').select('id,name,price,image_url,country,currency,category_id').eq('category_id',categoryId).neq('id',excludeId).eq('status','active').limit(4)
+  return data||[]
 }
 
-// ── INIT ──────────────────────────────────────
-async function init() {
+// ── INIT ───────────────────────────────────────────────────────────────────
+async function init(){
   updateBadge()
-  const id = getProductId()
-  if (!id) {
-    $('skeleton-section').style.display = 'none'
-    $('error-state').style.display = 'flex'
-    return
-  }
-  const [product, reviews] = await Promise.all([loadProduct(id), loadReviews(id)])
-  if (!product) {
-    $('skeleton-section').style.display = 'none'
-    $('error-state').style.display = 'flex'
-    return
-  }
+  // Attendre que db soit dispo
+  let tries=0
+  while(!getDb()&&tries++<20)await new Promise(r=>setTimeout(r,100))
+  const id=getProductId()
+  if(!id){$('skeleton-section').style.display='none';$('error-state').style.display='flex';return}
+  const [product,reviews]=await Promise.all([loadProduct(id),loadReviews(id)])
+  if(!product){$('skeleton-section').style.display='none';$('error-state').style.display='flex';return}
   renderProduct(product)
   renderReviews(reviews)
-  if (product.seller_id) loadSeller(product.seller_id).then(renderSeller)
-  if (product.category)  loadRelated(product.category, id).then(renderRelated)
+  if(product.seller_id)loadSeller(product.seller_id).then(renderSeller)
+  if(product.category_id)loadRelated(product.category_id,id).then(renderRelated)
 }
 
-document.addEventListener('DOMContentLoaded', init)
+document.addEventListener('DOMContentLoaded',init)
 </script>
 </body>
 </html>
