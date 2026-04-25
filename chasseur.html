@@ -221,6 +221,32 @@
     .btn-submit:disabled{opacity:.5;cursor:not-allowed;}
     .modal-hint{text-align:center;font-size:10px;color:#444;margin-top:9px;letter-spacing:.5px;}
 
+    /* IMAGE UPLOAD */
+    .upload-zone{border:1px dashed rgba(255,107,43,.3);background:rgba(255,107,43,.02);padding:20px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
+    .upload-zone:hover,.upload-zone.dragover{border-color:var(--fire);background:rgba(255,107,43,.06);}
+    .upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+    .upload-zone-icon{font-size:28px;color:#444;display:block;margin-bottom:8px;}
+    .upload-zone-text{font-size:11px;color:#555;line-height:1.6;}
+    .upload-zone-text b{color:var(--fire);}
+    .upload-previews{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px;}
+    .preview-thumb{position:relative;aspect-ratio:1;background:var(--slate);overflow:hidden;}
+    .preview-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+    .preview-thumb .remove-img{position:absolute;top:3px;right:3px;background:rgba(8,8,8,.8);border:1px solid var(--red-border);color:var(--red);width:20px;height:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .2s;}
+    .preview-thumb:hover .remove-img{opacity:1;}
+    .preview-thumb .remove-img .material-symbols-outlined{font-size:12px;}
+    .preview-uploading{position:absolute;inset:0;background:rgba(8,8,8,.6);display:flex;align-items:center;justify-content:center;}
+    .upload-counter{font-size:9px;color:#555;letter-spacing:2px;text-transform:uppercase;margin-top:8px;text-align:right;}
+    /* Images dans les cards propositions */
+    .prop-images{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+    .prop-img-thumb{width:60px;height:60px;object-fit:cover;cursor:pointer;border:1px solid var(--border);transition:border-color .2s;}
+    .prop-img-thumb:hover{border-color:var(--fire);}
+    /* Lightbox */
+    .lightbox{position:fixed;inset:0;background:rgba(8,8,8,.95);z-index:2000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
+    .lightbox.open{opacity:1;pointer-events:all;}
+    .lightbox img{max-width:90vw;max-height:90vh;object-fit:contain;}
+    .lightbox-close{position:absolute;top:20px;right:20px;background:none;border:1px solid var(--border);color:#555;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+    .lightbox-close:hover{border-color:var(--border-fire);color:var(--fire);}
+
     /* TOAST */
     #toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(10px);z-index:1400;background:var(--slate);border:1px solid var(--border-fire);color:var(--snow);padding:11px 22px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
     #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -450,6 +476,16 @@
         <label class="form-label">Lien ou référence <span>(facultatif)</span></label>
         <input type="text" id="propLink" class="inp-full" placeholder="URL, numéro de référence, boutique…"/>
       </div>
+      <div class="form-group">
+        <label class="form-label">Photos du produit <span>(max 5 · jpg/png/webp)</span></label>
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="imageInput" accept="image/jpeg,image/png,image/webp,image/gif" multiple/>
+          <span class="material-symbols-outlined upload-zone-icon">add_photo_alternate</span>
+          <div class="upload-zone-text">Glissez vos photos ici ou <b>parcourir</b></div>
+        </div>
+        <div class="upload-previews" id="uploadPreviews"></div>
+        <div class="upload-counter" id="uploadCounter">0 / 5 photos</div>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn-submit" id="submitProposalBtn" onclick="submitProposal()">
@@ -459,6 +495,14 @@
       <p class="modal-hint">Le chasseur avec la meilleure proposition gagne la récompense.</p>
     </div>
   </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">
+    <span class="material-symbols-outlined">close</span>
+  </button>
+  <img id="lightboxImg" src="" alt=""/>
 </div>
 
 <nav class="bnav">
@@ -476,6 +520,9 @@
 let allQuests = [], myProposals = [], categories = [], currentUser = null
 let activeCategory = 'all', activeCountry = 'all'
 let currentQuestForModal = null
+let selectedFiles = []  // fichiers sélectionnés pour upload
+const MAX_IMAGES = 5
+const BUCKET = 'quest-proposals'
 
 /* ─── INIT ─── */
 document.addEventListener('DOMContentLoaded', async () => {
@@ -490,6 +537,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setHunterIdentity()
     await Promise.all([loadCategories(), loadQuests(), loadMyProposals()])
     computeKPIs()
+    initUploadZone()
   } catch(e) {
     console.error('[Chasseur] Init error:', e)
     showToast('Erreur de chargement. Vérifiez votre connexion.', 'error')
@@ -693,7 +741,7 @@ function resetFilters() {
 async function loadMyProposals() {
   const { data, error } = await getSb()
     .from('quest_proposals')
-    .select(`id, quest_id, message, estimated_price, link_reference, status, created_at, quests(title, reward_amount, currency)`)
+    .select(`id, quest_id, description, proposed_price, product_url, product_images, status, created_at, quests(title, reward_amount, currency)`)
     .eq('hunter_id', currentUser.id)
     .order('created_at', { ascending: false })
 
@@ -725,6 +773,7 @@ function renderProposals() {
     const questTitle = p.quests?.title || 'Quête supprimée'
     const reward = p.quests?.reward_amount || 0
     const currency = p.quests?.currency || 'FCFA'
+    const images = Array.isArray(p.product_images) && p.product_images.length > 0 ? p.product_images : []
     return `
       <div class="proposal-card status-${p.status}">
         <div class="proposal-head">
@@ -734,21 +783,28 @@ function renderProposals() {
             ${s.label}
           </span>
         </div>
-        ${p.message ? `<div class="proposal-body">${esc(p.message)}</div>` : ''}
+        ${p.description ? `<div class="proposal-body">${esc(p.description)}</div>` : ''}
+        ${images.length > 0 ? `<div class="prop-images">
+          ${images.map(url => `<img class="prop-img-thumb" src="${esc(url)}" alt="photo produit" onclick="openLightbox('${esc(url)}')" loading="lazy"/>`).join('')}
+        </div>` : ''}
         <div class="proposal-footer">
           <div class="proposal-meta">
             <span class="meta-item">
               <span class="material-symbols-outlined">payments</span>
-              Prix estimé : ${p.estimated_price ? fmt(p.estimated_price) + ' FCFA' : 'N/A'}
+              Prix estimé : ${p.proposed_price ? fmt(p.proposed_price) + ' FCFA' : 'N/A'}
             </span>
-            ${p.link_reference ? `<span class="meta-item">
+            ${p.product_url ? `<span class="meta-item">
               <span class="material-symbols-outlined">link</span>
-              <a href="${esc(p.link_reference)}" target="_blank" rel="noopener" style="color:var(--fire);font-size:11px;">Référence</a>
+              <a href="${esc(p.product_url)}" target="_blank" rel="noopener" style="color:var(--fire);font-size:11px;">Référence</a>
             </span>` : ''}
             <span class="meta-item">
               <span class="material-symbols-outlined">calendar_today</span>
               ${formatDate(p.created_at)}
             </span>
+            ${images.length > 0 ? `<span class="meta-item" style="color:var(--fog);">
+              <span class="material-symbols-outlined">photo_library</span>
+              ${images.length} photo${images.length > 1 ? 's' : ''}
+            </span>` : ''}
           </div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
             <div class="reward-box">
@@ -870,6 +926,7 @@ function openModal(quest) {
   document.getElementById('propMessage').value = ''
   document.getElementById('propPrice').value = ''
   document.getElementById('propLink').value = ''
+  resetImageUpload()
   document.getElementById('modalOverlay').classList.add('open')
   document.body.style.overflow = 'hidden'
 }
@@ -897,12 +954,20 @@ async function submitProposal() {
   btn.disabled = true
   btn.innerHTML = '<span class="material-symbols-outlined" style="animation:spin 1s linear infinite;font-size:15px;">progress_activity</span> Envoi…'
 
+  // Upload images → récupérer les URLs publiques
+  let imageUrls = []
+  if (selectedFiles.length > 0) {
+    btn.innerHTML = '<span class="material-symbols-outlined" style="animation:spin 1s linear infinite;font-size:15px;">progress_activity</span> Upload photos…'
+    imageUrls = await uploadImages()
+  }
+
   const { error } = await getSb().from('quest_proposals').insert({
     quest_id: currentQuestForModal.id,
     hunter_id: currentUser.id,
-    message,
-    estimated_price: price,
-    link_reference: link || null,
+    description: message,
+    proposed_price: price,
+    product_url: link || null,
+    product_images: imageUrls.length > 0 ? imageUrls : null,
     status: 'pending'
   })
 
@@ -916,6 +981,117 @@ async function submitProposal() {
   await loadMyProposals()
   computeKPIs()
   renderQuests(allQuests)
+}
+
+/* ─── IMAGE UPLOAD ─── */
+function initUploadZone() {
+  const zone = document.getElementById('uploadZone')
+  const input = document.getElementById('imageInput')
+  if (!zone || !input) return
+
+  input.addEventListener('change', () => handleFiles(input.files))
+
+  zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover') })
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'))
+  zone.addEventListener('drop', (e) => {
+    e.preventDefault()
+    zone.classList.remove('dragover')
+    handleFiles(e.dataTransfer.files)
+  })
+}
+
+function handleFiles(fileList) {
+  const files = Array.from(fileList)
+  const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+  const remaining = MAX_IMAGES - selectedFiles.length
+
+  const valid = files.filter(f => allowed.includes(f.type) && f.size <= 5 * 1024 * 1024)
+  if (valid.length < files.length) showToast('Certains fichiers ignorés (type ou taille > 5MB).', 'error')
+
+  const toAdd = valid.slice(0, remaining)
+  if (valid.length > remaining) showToast(`Maximum ${MAX_IMAGES} photos par proposition.`, 'error')
+
+  toAdd.forEach(file => {
+    selectedFiles.push(file)
+    addPreview(file, selectedFiles.length - 1)
+  })
+  updateCounter()
+}
+
+function addPreview(file, idx) {
+  const previews = document.getElementById('uploadPreviews')
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    const thumb = document.createElement('div')
+    thumb.className = 'preview-thumb'
+    thumb.dataset.idx = idx
+    thumb.innerHTML = `
+      <img src="${e.target.result}" alt="photo ${idx+1}"/>
+      <div class="remove-img" onclick="removeImage(${idx})">
+        <span class="material-symbols-outlined">close</span>
+      </div>`
+    previews.appendChild(thumb)
+  }
+  reader.readAsDataURL(file)
+}
+
+function removeImage(idx) {
+  selectedFiles.splice(idx, 1)
+  rebuildPreviews()
+  updateCounter()
+}
+
+function rebuildPreviews() {
+  const previews = document.getElementById('uploadPreviews')
+  previews.innerHTML = ''
+  selectedFiles.forEach((file, i) => addPreview(file, i))
+}
+
+function updateCounter() {
+  document.getElementById('uploadCounter').textContent = `${selectedFiles.length} / ${MAX_IMAGES} photos`
+  const zone = document.getElementById('uploadZone')
+  if (selectedFiles.length >= MAX_IMAGES) {
+    zone.style.opacity = '.4'
+    zone.style.pointerEvents = 'none'
+  } else {
+    zone.style.opacity = ''
+    zone.style.pointerEvents = ''
+  }
+}
+
+function resetImageUpload() {
+  selectedFiles = []
+  document.getElementById('uploadPreviews').innerHTML = ''
+  document.getElementById('uploadCounter').textContent = '0 / 5 photos'
+  document.getElementById('imageInput').value = ''
+  const zone = document.getElementById('uploadZone')
+  zone.style.opacity = ''
+  zone.style.pointerEvents = ''
+}
+
+async function uploadImages() {
+  const sb = getSb()
+  const urls = []
+  for (const file of selectedFiles) {
+    const ext = file.name.split('.').pop()
+    const path = `${currentUser.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+    const { error } = await sb.storage.from(BUCKET).upload(path, file, { upsert: false })
+    if (error) { console.error('[Chasseur] Upload error:', error); continue }
+    const { data } = sb.storage.from(BUCKET).getPublicUrl(path)
+    if (data?.publicUrl) urls.push(data.publicUrl)
+  }
+  return urls
+}
+
+/* ─── LIGHTBOX ─── */
+function openLightbox(url) {
+  document.getElementById('lightboxImg').src = url
+  document.getElementById('lightbox').classList.add('open')
+  document.body.style.overflow = 'hidden'
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open')
+  document.body.style.overflow = ''
 }
 
 /* ─── TABS ─── */
