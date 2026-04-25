@@ -7,9 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-/* ══════════════════════════════════════
-   TOKENS — Luxury Editorial Dark
-══════════════════════════════════════ */
 :root{
   --fire:#FF6B2B; --ember:#E85A1A;
   --ink:#080808; --coal:#111111; --slate:#1A1A1A; --smoke:#242424;
@@ -32,21 +29,15 @@ body{font-family:var(--f-body);background:var(--ink);color:var(--snow);min-heigh
 ::-webkit-scrollbar-track{background:var(--coal)}
 ::-webkit-scrollbar-thumb{background:var(--slate)}
 ::-webkit-scrollbar-thumb:hover{background:var(--fire)}
-
-/* ICONS */
 .mi{font-family:'Material Symbols Outlined';font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 20;font-size:20px;line-height:1;user-select:none;display:inline-block;vertical-align:middle}
 .mi.f{font-variation-settings:'FILL' 1,'wght' 400}
 .mi.sm{font-size:16px}.mi.lg{font-size:26px}
-
-/* ══ AUTH SCREEN ══ */
 #auth-screen{position:fixed;inset:0;background:var(--ink);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:16px}
 #auth-screen.hidden{display:none}
 .auth-logo{font-family:var(--f-serif);font-size:42px;font-weight:700;font-style:italic;color:var(--snow)}
 .auth-logo b{color:var(--fire)}
 .auth-sub{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--fog)}
 .auth-spinner{width:16px;height:16px;border:2px solid var(--slate);border-top-color:var(--fire);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;margin-right:6px}
-
-/* ══ AUTH GATE — login form ══ */
 #auth-gate{position:fixed;inset:0;background:var(--ink);display:none;align-items:center;justify-content:center;z-index:9998;flex-direction:column;gap:0}
 #auth-gate.show{display:flex}
 .auth-card{background:var(--coal);border:1px solid var(--border);padding:48px 40px;width:100%;max-width:400px;position:relative}
@@ -60,15 +51,11 @@ body{font-family:var(--f-body);background:var(--ink);color:var(--snow);min-heigh
 .btn-auth{width:100%;background:var(--fire);color:#fff;border:none;padding:14px;font-size:10px;font-weight:500;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:background .2s;font-family:var(--f-body);clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))}
 .btn-auth:hover{background:var(--ember)}
 .btn-auth:disabled{opacity:.5;cursor:not-allowed}
-
-/* ══ SIDEBAR ══ */
 .sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--coal);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;transition:transform .3s cubic-bezier(.4,0,.2,1)}
-
 .sidebar-logo{padding:22px 20px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
 .sb-brand{font-family:var(--f-serif);font-size:20px;font-weight:700;font-style:italic;color:var(--snow)}
 .sb-brand b{color:var(--fire)}
 .sb-admin{font-size:9px;font-weight:600;background:rgba(255,107,43,.1);color:var(--fire);padding:2px 8px;border:1px solid var(--border-fire);letter-spacing:1px;text-transform:uppercase;margin-left:auto;flex-shrink:0}
-
 .nav-section{padding:20px 20px 6px;font-size:9px;font-weight:500;color:#333;text-transform:uppercase;letter-spacing:3px}
 .nav-item{display:flex;align-items:center;gap:10px;padding:9px 16px;margin:1px 10px;cursor:pointer;transition:all .15s;font-size:12px;font-weight:500;color:var(--fog);text-decoration:none;position:relative;letter-spacing:.5px}
 .nav-item:hover{background:var(--slate);color:var(--snow)}
@@ -77,25 +64,18 @@ body{font-family:var(--f-body);background:var(--ink);color:var(--snow);min-heigh
 .nav-badge.fire{background:rgba(255,107,43,.1);color:var(--fire)}
 .nav-badge.gold{background:var(--gold-dim);color:var(--gold)}
 .nav-badge.rouge{background:var(--rouge-dim);color:var(--rouge)}
-
 .sidebar-footer{margin-top:auto;padding:14px;border-top:1px solid var(--border)}
 .sb-user{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;transition:background .15s}
 .sb-user:hover{background:var(--slate)}
 .sb-av{width:30px;height:30px;background:rgba(255,107,43,.1);border:1px solid var(--border-fire);display:flex;align-items:center;justify-content:center;font-family:var(--f-serif);font-size:14px;font-weight:700;font-style:italic;color:var(--fire);flex-shrink:0}
 .sb-name{font-size:11px;font-weight:600;color:var(--snow)}
 .sb-role{font-size:9px;color:var(--fog);letter-spacing:1px;text-transform:uppercase;margin-top:1px}
-
-/* ══ MAIN ══ */
 .main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh}
-
-/* DB BAR */
 #db-bar{display:none;align-items:center;gap:8px;padding:6px 20px;font-size:10px;font-weight:500;letter-spacing:1px;border-bottom:1px solid var(--border)}
 #db-bar.show{display:flex}
 #db-bar.loading{background:rgba(208,166,0,.06);color:var(--gold);border-color:rgba(208,166,0,.15)}
 #db-bar.ok{background:rgba(0,196,106,.06);color:var(--emerald);border-color:rgba(0,196,106,.15)}
 #db-bar.err{background:var(--rouge-dim);color:var(--rouge);border-color:rgba(244,63,94,.2)}
-
-/* TOPBAR */
 .topbar{height:var(--topbar-h);background:rgba(8,8,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50}
 .tb-title{font-family:var(--f-serif);font-size:18px;font-weight:700;font-style:italic}
 .tb-crumb{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#333;margin-top:2px}
@@ -106,54 +86,33 @@ body{font-family:var(--f-body);background:var(--ink);color:var(--snow);min-heigh
 .live-dot{width:6px;height:6px;border-radius:50%;background:var(--fire);animation:pdot 1.5s ease-in-out infinite;flex-shrink:0}
 @keyframes pdot{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.4}}
 .menu-toggle{display:none;background:none;border:none;color:var(--snow);cursor:pointer}
-
-/* CONTENT */
 .content{flex:1;padding:28px;overflow-y:auto}
 .view{display:none;animation:fadeUp .25s ease}.view.active{display:block}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* ══ SECTION HEADER ══ */
 .sec-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px}
 .sec-title{font-family:var(--f-serif);font-size:28px;font-weight:700;font-style:italic;line-height:1}
 .sec-sub{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#333;margin-top:6px}
-
-/* EYEBROW */
 .eyebrow{font-size:9px;font-weight:500;letter-spacing:4px;text-transform:uppercase;color:var(--fire);display:flex;align-items:center;gap:10px;margin-bottom:6px}
 .eyebrow::before{content:'';display:block;width:16px;height:1px;background:var(--fire)}
-
-/* ══ GRIDS ══ */
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
 .g2{display:grid;grid-template-columns:repeat(2,1fr);gap:2px}
 .g21{display:grid;grid-template-columns:2fr 1fr;gap:16px}
 @media(max-width:1100px){.g4{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:760px){.g4,.g3,.g2,.g21{grid-template-columns:1fr}}
-
-/* ══ STAT CARD ══ */
 .stat-card{background:var(--slate);padding:28px 24px;position:relative;overflow:hidden;border-left:2px solid transparent;transition:border-color .2s}
 .stat-card::before{content:'';position:absolute;inset:0;pointer-events:none}
-.stat-card.fire{border-left-color:var(--fire)}
-.stat-card.fire::before{background:radial-gradient(circle at 100% 0,rgba(255,107,43,.06),transparent 60%)}
-.stat-card.gold{border-left-color:var(--gold)}
-.stat-card.gold::before{background:radial-gradient(circle at 100% 0,rgba(208,166,0,.06),transparent 60%)}
-.stat-card.em{border-left-color:var(--emerald)}
-.stat-card.em::before{background:radial-gradient(circle at 100% 0,rgba(0,196,106,.06),transparent 60%)}
-.stat-card.rouge{border-left-color:var(--rouge)}
-.stat-card.rouge::before{background:radial-gradient(circle at 100% 0,rgba(244,63,94,.06),transparent 60%)}
+.stat-card.fire{border-left-color:var(--fire)}.stat-card.fire::before{background:radial-gradient(circle at 100% 0,rgba(255,107,43,.06),transparent 60%)}
+.stat-card.gold{border-left-color:var(--gold)}.stat-card.gold::before{background:radial-gradient(circle at 100% 0,rgba(208,166,0,.06),transparent 60%)}
+.stat-card.em{border-left-color:var(--emerald)}.stat-card.em::before{background:radial-gradient(circle at 100% 0,rgba(0,196,106,.06),transparent 60%)}
+.stat-card.rouge{border-left-color:var(--rouge)}.stat-card.rouge::before{background:radial-gradient(circle at 100% 0,rgba(244,63,94,.06),transparent 60%)}
 .stat-val{font-family:var(--f-serif);font-size:36px;font-weight:700;font-style:italic;line-height:1;margin-bottom:6px}
-.stat-val.fire{color:var(--fire)}
-.stat-val.gold{color:var(--gold)}
-.stat-val.em{color:var(--emerald)}
-.stat-val.rouge{color:var(--rouge)}
+.stat-val.fire{color:var(--fire)}.stat-val.gold{color:var(--gold)}.stat-val.em{color:var(--emerald)}.stat-val.rouge{color:var(--rouge)}
 .stat-lbl{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#444}
-
-/* ══ CARD ══ */
 .card{background:var(--coal);border:1px solid var(--border);padding:24px}
 .card-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
 .card-title{font-family:var(--f-serif);font-size:18px;font-weight:700;font-style:italic}
-
-/* ══ TABLE ══ */
 .table-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:12px}
 thead tr{border-bottom:1px solid var(--border-hi)}
@@ -164,8 +123,6 @@ tbody tr:hover{background:var(--slate)}
 tbody tr:last-child td{border-bottom:none}
 .mono{font-family:var(--f-mono);font-size:11px;color:var(--fog)}
 .muted{color:var(--fog)}
-
-/* ══ PILLS ══ */
 .pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:1px;white-space:nowrap}
 .pill-dot{width:4px;height:4px;border-radius:50%;background:currentColor;flex-shrink:0}
 .pill.em{background:rgba(0,196,106,.1);color:var(--emerald);border:1px solid rgba(0,196,106,.2)}
@@ -174,8 +131,6 @@ tbody tr:last-child td{border-bottom:none}
 .pill.re{background:var(--rouge-dim);color:var(--rouge);border:1px solid rgba(244,63,94,.2)}
 .pill.gy{background:var(--smoke);color:var(--fog);border:1px solid var(--border)}
 .pill.fire{background:rgba(255,107,43,.1);color:var(--fire);border:1px solid var(--border-fire)}
-
-/* ══ BUTTONS ══ */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;font-size:10px;font-weight:500;cursor:pointer;transition:all .15s;border:none;font-family:var(--f-body);letter-spacing:1.5px;text-transform:uppercase;white-space:nowrap}
 .btn-fire{background:var(--fire);color:#fff;clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px))}
 .btn-fire:hover{background:var(--ember)}
@@ -188,8 +143,6 @@ tbody tr:last-child td{border-bottom:none}
 .btn-gold{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(208,166,0,.2)}
 .btn-sm{padding:6px 12px;font-size:9px}
 .btn-icon{padding:7px;clip-path:none}
-
-/* ══ FORMS ══ */
 .fg{margin-bottom:14px}
 .fl{display:block;font-size:9px;font-weight:500;color:#444;text-transform:uppercase;letter-spacing:2px;margin-bottom:6px}
 .fi{width:100%;background:rgba(255,255,255,.04);border:none;border-bottom:1px solid var(--border);color:var(--snow);padding:10px 12px;font-size:12px;font-family:var(--f-body);outline:none;transition:border-color .2s}
@@ -198,71 +151,44 @@ tbody tr:last-child td{border-bottom:none}
 textarea.fi{resize:vertical;min-height:80px}
 select.fi{appearance:none;cursor:pointer;background-image:none}
 .fi-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-
-/* ══ ALERTS ══ */
 .alert{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;margin-bottom:16px;font-size:12px;line-height:1.6}
 .alert.co{background:var(--cobalt-dim);border:1px solid rgba(59,130,246,.2);color:#93bbff}
 .alert.go{background:var(--gold-dim);border:1px solid rgba(208,166,0,.2);color:var(--gold)}
 .alert.re{background:var(--rouge-dim);border:1px solid rgba(244,63,94,.2);color:var(--rouge)}
 .alert.em{background:var(--emerald-dim);border:1px solid rgba(0,196,106,.2);color:var(--emerald)}
-
-/* PENDING BANNER */
 .pending-banner{display:flex;align-items:center;gap:14px;padding:14px 20px;margin-bottom:22px;background:rgba(208,166,0,.05);border-left:2px solid var(--gold);font-size:12px;color:var(--fog)}
 .pending-banner strong{color:var(--gold)}
 .pending-banner a{color:var(--fire);text-decoration:none;margin-left:4px;border-bottom:1px solid var(--border-fire);padding-bottom:1px}
-
-/* EMPTY */
 .empty{text-align:center;padding:56px 20px;color:#333}
 .empty .mi{font-size:36px;display:block;margin-bottom:12px;opacity:.3}
-
-/* LOADING */
 .loader{display:inline-block;width:14px;height:14px;border:2px solid var(--slate);border-top-color:var(--fire);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
 .loading-row td{text-align:center;padding:40px;color:#333}
-
-/* PROD THUMB */
 .prod-thumb{width:40px;height:40px;object-fit:cover;background:var(--smoke);flex-shrink:0;border:1px solid var(--border)}
-
-/* PROGRESS */
 .prog-track{height:3px;background:var(--smoke);overflow:hidden;margin-top:6px}
 .prog-fill{height:100%;transition:width 1s ease}
-.prog-fill.fire{background:var(--fire)}
-.prog-fill.em{background:var(--emerald)}
-.prog-fill.co{background:var(--cobalt)}
-.prog-fill.go{background:var(--gold)}
-
-/* TABS */
+.prog-fill.fire{background:var(--fire)}.prog-fill.em{background:var(--emerald)}.prog-fill.co{background:var(--cobalt)}.prog-fill.go{background:var(--gold)}
 .tabs{display:flex;gap:2px;background:var(--smoke);padding:3px;width:fit-content;margin-bottom:22px}
 .tab-btn{padding:7px 16px;font-size:10px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--fog);transition:all .15s;font-family:var(--f-body);letter-spacing:1px;text-transform:uppercase}
 .tab-btn.active{background:var(--slate);color:var(--snow)}
-
-/* TOGGLE */
 .toggle{position:relative;display:inline-block;width:36px;height:20px;cursor:pointer;flex-shrink:0}
 .toggle input{opacity:0;width:0;height:0}
 .toggle-track{position:absolute;inset:0;background:var(--smoke);border:1px solid var(--border-hi);transition:background .2s}
 .toggle input:checked+.toggle-track{background:rgba(255,107,43,.2);border-color:var(--border-fire)}
 .toggle-thumb{position:absolute;width:14px;height:14px;top:2px;left:2px;background:var(--fog);transition:transform .2s,background .2s}
 .toggle input:checked~.toggle-thumb{transform:translateX(16px);background:var(--fire)}
-
-/* IMG GALLERY */
 .img-gallery{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
 .img-slot{aspect-ratio:1;background:var(--smoke);border:1px dashed var(--border-hi);overflow:hidden;position:relative;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;color:#333;text-align:center}
 .img-slot img{width:100%;height:100%;object-fit:cover}
 .img-slot:hover{border-color:var(--border-fire);color:var(--fire)}
 .img-slot .del-photo{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.8);padding:2px;cursor:pointer;display:none}
 .img-slot:hover .del-photo{display:flex}
-
-/* ICON PICKER */
 .icon-picker-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;max-height:180px;overflow-y:auto;padding:4px}
 .icon-opt{width:34px;height:34px;background:var(--smoke);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;transition:all .15s}
 .icon-opt:hover,.icon-opt.sel{background:rgba(255,107,43,.08);border-color:var(--border-fire)}
 .icon-search{width:100%;background:var(--smoke);border:none;border-bottom:1px solid var(--border);padding:8px 12px;font-size:12px;color:var(--snow);font-family:var(--f-body);outline:none;margin-bottom:10px}
 .icon-search:focus{border-bottom-color:var(--fire)}
-
-/* CARAC */
 .carac-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
 .carac-row .fi{flex:1}
-
-/* ══ MODAL ══ */
 .modal-overlay{position:fixed;inset:0;background:rgba(8,8,8,.88);backdrop-filter:blur(16px);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
 .modal-overlay.open{opacity:1;pointer-events:all}
 .modal{background:var(--coal);border:1px solid var(--border);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;animation:fadeUp .2s ease;position:relative}
@@ -271,39 +197,28 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
 .modal-title{font-family:var(--f-serif);font-size:20px;font-weight:700;font-style:italic}
 .modal-body{padding:22px 24px}
 .modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
-
-/* BANNER PREVIEW */
 .banner-preview{background:var(--smoke);border:1px dashed var(--border-hi);min-height:100px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;text-align:center;font-size:11px;color:#333;gap:8px;flex-direction:column;transition:border-color .2s}
 .banner-preview:hover{border-color:var(--border-fire);color:var(--fire)}
 .banner-preview img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5}
 .banner-preview .ov{position:relative;z-index:2}
-
-/* ══ TOAST ══ */
 #toast{position:fixed;bottom:28px;right:28px;z-index:999;background:var(--slate);border:1px solid var(--border-fire);color:var(--snow);padding:12px 20px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;transform:translateY(8px);max-width:320px}
 #toast.show{opacity:1;transform:translateY(0)}
 #toast.success{border-color:rgba(0,196,106,.4);background:#0a1a10}
 #toast.error{border-color:rgba(244,63,94,.4);background:#1a0a0e}
-
-/* ══ MOBILE ══ */
 @media(max-width:768px){
-  .sidebar{transform:translateX(-100%)}
-  .sidebar.open{transform:translateX(0)}
-  .main{margin-left:0}
-  .menu-toggle{display:flex}
-  .content{padding:14px}
+  .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}.menu-toggle{display:flex}.content{padding:14px}
   .g4{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
 <body>
 
-<!-- AUTH SCREEN (vérification session) -->
 <div id="auth-screen">
   <div class="auth-logo">Wenna<b>Shop</b></div>
   <div class="auth-sub"><span class="auth-spinner"></span>Vérification de la session…</div>
 </div>
 
-<!-- AUTH GATE (login si pas connecté) -->
 <div id="auth-gate">
   <div class="auth-card">
     <div class="auth-logo" style="font-size:28px;margin-bottom:4px;">Wenna<b>Shop</b></div>
@@ -317,36 +232,30 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
   </div>
 </div>
 
-<!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
     <div class="sb-brand">Wenna<b>Shop</b></div>
     <div class="sb-admin">Admin</div>
   </div>
-
   <div class="nav-section">Vue d'ensemble</div>
   <a class="nav-item active" onclick="nav('dashboard',this)" href="#"><span class="mi">dashboard</span>Dashboard</a>
   <a class="nav-item" onclick="nav('analytics',this)" href="#"><span class="mi">bar_chart</span>Analytiques</a>
-
   <div class="nav-section">Commerce</div>
   <a class="nav-item" onclick="nav('commandes',this)" href="#"><span class="mi">package_2</span>Commandes<span class="nav-badge" id="nb-cmd">—</span></a>
   <a class="nav-item" onclick="nav('produits',this)" href="#"><span class="mi">inventory_2</span>Produits<span class="nav-badge fire" id="nb-prod">—</span></a>
   <a class="nav-item" onclick="nav('validation',this)" href="#"><span class="mi">pending_actions</span>Validation<span class="nav-badge gold" id="nb-val">—</span></a>
   <a class="nav-item" onclick="nav('categories',this)" href="#"><span class="mi">category</span>Catégories</a>
   <a class="nav-item" onclick="nav('artisans',this)" href="#"><span class="mi">groups</span>Artisans</a>
-
   <div class="nav-section">Communauté</div>
   <a class="nav-item" onclick="nav('utilisateurs',this)" href="#"><span class="mi">person</span>Utilisateurs</a>
   <a class="nav-item" onclick="nav('avis',this)" href="#"><span class="mi">star</span>Avis<span class="nav-badge rouge" id="nb-avis">—</span></a>
   <a class="nav-item" onclick="nav('payments',this)" href="#"><span class="mi">payments</span>Paiements</a>
-
   <div class="nav-section">Pages</div>
   <a class="nav-item" onclick="nav('quetes',this)" href="#"><span class="mi">emoji_events</span>Quêtes<span class="nav-badge gold">NEW</span></a>
   <a class="nav-item" onclick="nav('chasseur',this)" href="#"><span class="mi">gps_fixed</span>Chasseur</a>
-
+  <a class="nav-item" onclick="nav('boutique-config',this)" href="#"><span class="mi">storefront</span>Boutique<span class="nav-badge fire">LIVE</span></a>
   <div class="nav-section">Système</div>
   <a class="nav-item" onclick="nav('parametres',this)" href="#"><span class="mi">settings</span>Paramètres</a>
-
   <div class="sidebar-footer">
     <div class="sb-user" onclick="signOut()">
       <div class="sb-av" id="user-av">WA</div>
@@ -356,7 +265,6 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
   </div>
 </aside>
 
-<!-- MAIN -->
 <div class="main">
   <div id="db-bar" class="loading"><span class="mi sm">cloud</span><span id="db-msg">Connexion à Supabase…</span></div>
 
@@ -364,22 +272,20 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
     <div style="display:flex;align-items:center;gap:14px">
       <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><span class="mi">menu</span></button>
       <div>
-        <div class="topbar-title-wrap">
-          <div class="eyebrow" style="margin-bottom:0">WennaShop Admin</div>
-          <div class="tb-title" id="tb-title">Dashboard</div>
-        </div>
+        <div class="eyebrow" style="margin-bottom:0">WennaShop Admin</div>
+        <div class="tb-title" id="tb-title">Dashboard</div>
       </div>
     </div>
     <div class="tb-right">
       <div class="live-chip"><div class="live-dot"></div><span id="live-txt">—</span></div>
       <button class="tb-btn" onclick="refreshAll()" title="Actualiser"><span class="mi">refresh</span></button>
-      <button class="tb-btn" onclick="window.open('index.html','_blank')"><span class="mi">open_in_new</span></button>
+      <button class="tb-btn" onclick="window.open('boutique.html','_blank')"><span class="mi">open_in_new</span></button>
     </div>
   </div>
 
   <div class="content">
 
-    <!-- ══ DASHBOARD ══ -->
+    <!-- DASHBOARD -->
     <div class="view active" id="view-dashboard">
       <div class="sec-hd">
         <div><div class="eyebrow">Vue d'ensemble</div><div class="sec-title">Dashboard</div><div class="sec-sub" id="dash-date">—</div></div>
@@ -412,7 +318,7 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
       </div>
     </div>
 
-    <!-- ══ VALIDATION ══ -->
+    <!-- VALIDATION -->
     <div class="view" id="view-validation">
       <div class="sec-hd">
         <div><div class="eyebrow">Commerce</div><div class="sec-title">En validation</div><div class="sec-sub" id="val-sub">—</div></div>
@@ -427,7 +333,7 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
       </div>
     </div>
 
-    <!-- ══ COMMANDES ══ -->
+    <!-- COMMANDES -->
     <div class="view" id="view-commandes">
       <div class="sec-hd">
         <div><div class="eyebrow">Commerce</div><div class="sec-title">Commandes</div><div class="sec-sub" id="cmd-sub">—</div></div>
@@ -447,7 +353,7 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
       </div>
     </div>
 
-    <!-- ══ PRODUITS ══ -->
+    <!-- PRODUITS -->
     <div class="view" id="view-produits">
       <div class="sec-hd">
         <div><div class="eyebrow">Commerce</div><div class="sec-title">Produits</div><div class="sec-sub" id="prod-sub">—</div></div>
@@ -472,7 +378,7 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
       </div>
     </div>
 
-    <!-- ══ CATÉGORIES ══ -->
+    <!-- CATÉGORIES -->
     <div class="view" id="view-categories">
       <div class="sec-hd">
         <div><div class="eyebrow">Commerce</div><div class="sec-title">Catégories</div><div class="sec-sub" id="cat-sub">—</div></div>
@@ -481,7 +387,7 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
       <div class="g3" id="cat-grid"><div style="text-align:center;padding:40px;color:#333"><span class="loader"></span></div></div>
     </div>
 
-    <!-- ══ ARTISANS ══ -->
+    <!-- ARTISANS -->
     <div class="view" id="view-artisans">
       <div class="sec-hd">
         <div><div class="eyebrow">Commerce</div><div class="sec-title">Artisans</div><div class="sec-sub" id="art-sub">—</div></div>
@@ -489,7 +395,7 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
       <div class="g3" id="art-grid"><div style="text-align:center;padding:40px;color:#333"><span class="loader"></span></div></div>
     </div>
 
-    <!-- ══ UTILISATEURS ══ -->
+    <!-- UTILISATEURS -->
     <div class="view" id="view-utilisateurs">
       <div class="sec-hd">
         <div><div class="eyebrow">Communauté</div><div class="sec-title">Utilisateurs</div><div class="sec-sub" id="usr-sub">—</div></div>
@@ -509,7 +415,7 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
       </div>
     </div>
 
-    <!-- ══ AVIS ══ -->
+    <!-- AVIS -->
     <div class="view" id="view-avis">
       <div class="sec-hd">
         <div><div class="eyebrow">Communauté</div><div class="sec-title">Avis clients</div><div class="sec-sub" id="avis-sub">—</div></div>
@@ -523,7 +429,7 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
       </div>
     </div>
 
-    <!-- ══ PAIEMENTS ══ -->
+    <!-- PAIEMENTS -->
     <div class="view" id="view-payments">
       <div class="sec-hd">
         <div><div class="eyebrow">Commerce</div><div class="sec-title">Paiements</div><div class="sec-sub" id="pay-sub">—</div></div>
@@ -537,7 +443,7 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
       </div>
     </div>
 
-    <!-- ══ ANALYTIQUES ══ -->
+    <!-- ANALYTIQUES -->
     <div class="view" id="view-analytics">
       <div class="sec-hd">
         <div><div class="eyebrow">Performances</div><div class="sec-title">Analytiques</div><div class="sec-sub">Données temps réel</div></div>
@@ -554,7 +460,7 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
       </div>
     </div>
 
-    <!-- ══ QUÊTES ══ -->
+    <!-- QUÊTES -->
     <div class="view" id="view-quetes">
       <div class="sec-hd">
         <div><div class="eyebrow">Pages spéciales</div><div class="sec-title">Quêtes</div><div class="sec-sub">Contrôle de quetes.html</div></div>
@@ -575,6 +481,10 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
             <div style="margin-top:12px">
               <div class="fg"><label class="fl">URL image</label><input class="fi" id="quest-banner-url" placeholder="https://…" oninput="updateBannerPreview(this.value)"/></div>
               <div class="fg"><label class="fl">Lien bannière</label><input class="fi" id="quest-banner-link" placeholder="https://…"/></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+                <div><div style="font-size:12px;font-weight:500">Bannière visible</div><div style="font-size:10px;color:var(--fog)">Affichée en haut de la boutique</div></div>
+                <label class="toggle"><input type="checkbox" id="quest-banner-enabled"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+              </div>
             </div>
           </div>
           <div class="card">
@@ -600,7 +510,7 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
       </div>
     </div>
 
-    <!-- ══ CHASSEUR ══ -->
+    <!-- CHASSEUR -->
     <div class="view" id="view-chasseur">
       <div class="sec-hd">
         <div><div class="eyebrow">Pages spéciales</div><div class="sec-title">Chasseur</div><div class="sec-sub">Contrôle de chasseur.html</div></div>
@@ -635,7 +545,104 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
       </div>
     </div>
 
-    <!-- ══ PARAMÈTRES ══ -->
+    <!-- ══ BOUTIQUE CONFIG (NOUVELLE SECTION) ══ -->
+    <div class="view" id="view-boutique-config">
+      <div class="sec-hd">
+        <div><div class="eyebrow">Contrôle boutique</div><div class="sec-title">Boutique Live</div><div class="sec-sub">Modifications appliquées en temps réel sur boutique.html</div></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sec btn-sm" onclick="window.open('boutique.html','_blank')"><span class="mi sm">open_in_new</span>Voir boutique</button>
+          <button class="btn btn-fire btn-sm" onclick="saveBoutiqueConfig()"><span class="mi sm">save</span>Sauvegarder tout</button>
+        </div>
+      </div>
+
+      <!-- Statut -->
+      <div class="alert em" id="boutique-save-status" style="display:none"><span class="mi sm">check_circle</span><span>Configuration sauvegardée et live.</span></div>
+
+      <div class="g2" style="align-items:start">
+        <div style="display:flex;flex-direction:column;gap:16px">
+
+          <!-- Ticker -->
+          <div class="card">
+            <div class="card-hd"><div class="card-title">Ticker (bandeau défilant)</div></div>
+            <div class="alert co" style="margin-bottom:14px"><span class="mi sm">info</span><span>Un message par ligne. Séparateur ✦ ajouté automatiquement.</span></div>
+            <div class="fg">
+              <label class="fl">Messages (1 par ligne)</label>
+              <textarea class="fi" id="bc-ticker" rows="6" placeholder="Livraison express Casablanca → Libreville&#10;Nouveaux artisans rejoignent la communauté&#10;-15% première commande · Code WENNA15&#10;Paiements sécurisés · Retours 30 jours"></textarea>
+            </div>
+            <div style="font-size:10px;color:var(--fog)">Les lignes vides sont ignorées.</div>
+          </div>
+
+          <!-- Bannière boutique -->
+          <div class="card">
+            <div class="card-hd"><div class="card-title">Bannière promotionnelle</div></div>
+            <div class="banner-preview" id="bc-banner-preview" onclick="document.getElementById('bc-banner-upload').click()">
+              <img id="bc-banner-img" src="" style="display:none" alt=""/>
+              <div class="ov"><span class="mi" style="display:block;margin-bottom:6px">add_photo_alternate</span>Cliquer pour changer l'image</div>
+            </div>
+            <input type="file" id="bc-banner-upload" accept="image/*" style="display:none" onchange="previewBcBanner(this)"/>
+            <div style="margin-top:14px">
+              <div class="fg"><label class="fl">URL image</label><input class="fi" id="bc-banner-url" placeholder="https://…" oninput="updateBcBannerPreview(this.value)"/></div>
+              <div class="fg"><label class="fl">Lien (clic sur bannière)</label><input class="fi" id="bc-banner-link" placeholder="https://…"/></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+                <div><div style="font-size:12px;font-weight:500">Bannière activée</div><div style="font-size:10px;color:var(--fog)">Affiche la bannière en haut de la boutique</div></div>
+                <label class="toggle"><input type="checkbox" id="bc-banner-enabled"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:16px">
+
+          <!-- Modes boutique -->
+          <div class="card">
+            <div class="card-hd"><div class="card-title">Comportement</div></div>
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div><div style="font-size:12px;font-weight:500">Mode maintenance</div><div style="font-size:10px;color:var(--fog)">Masque la boutique aux visiteurs</div></div>
+                <label class="toggle"><input type="checkbox" id="bc-maintenance"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div><div style="font-size:12px;font-weight:500">Avis clients</div><div style="font-size:10px;color:var(--fog)">Affiche les étoiles sur les produits</div></div>
+                <label class="toggle"><input type="checkbox" id="bc-reviews" checked/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div><div style="font-size:12px;font-weight:500">Modal quêtes (30s)</div><div style="font-size:10px;color:var(--fog)">Popup automatique sur la boutique</div></div>
+                <label class="toggle"><input type="checkbox" id="bc-quest-modal" checked/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Livraison & devise -->
+          <div class="card">
+            <div class="card-hd"><div class="card-title">Livraison & Devise</div></div>
+            <div class="fg">
+              <label class="fl">Devise principale</label>
+              <select class="fi" id="bc-currency">
+                <option value="MAD">MAD — Dirham marocain</option>
+                <option value="EUR">EUR — Euro</option>
+                <option value="XAF">XAF — Franc CFA</option>
+              </select>
+            </div>
+            <div class="fi-row">
+              <div class="fg"><label class="fl">Seuil livraison gratuite</label><input class="fi" id="bc-shipping-threshold" type="number" value="2500" placeholder="2500"/></div>
+              <div class="fg"><label class="fl">Frais de port</label><input class="fi" id="bc-shipping-cost" type="number" value="120" placeholder="120"/></div>
+            </div>
+            <div class="fg"><label class="fl">Délai estimé</label><input class="fi" id="bc-shipping-delay" value="5-12 jours ouvrés" placeholder="5-12 jours ouvrés"/></div>
+          </div>
+
+          <!-- Prévisualisation config live -->
+          <div class="card">
+            <div class="card-hd"><div class="card-title">Config actuelle</div><button class="btn btn-sec btn-sm" onclick="loadBoutiqueConfig()"><span class="mi sm">refresh</span></button></div>
+            <div id="bc-current" style="font-size:11px;color:var(--fog);display:flex;flex-direction:column;gap:6px">
+              <div><span class="loader"></span>Chargement…</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- PARAMÈTRES -->
     <div class="view" id="view-parametres">
       <div class="sec-hd">
         <div><div class="eyebrow">Système</div><div class="sec-title">Paramètres</div><div class="sec-sub">Configuration WennaShop</div></div>
@@ -648,13 +655,27 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
             <div class="fg"><label class="fl">Nom du site</label><input class="fi" value="WennaShop"/></div>
             <div class="fg"><label class="fl">Slogan</label><input class="fi" value="Bridging Gabon & Morocco"/></div>
             <div class="fg"><label class="fl">Email contact</label><input class="fi" value="contact@wennashop.com" type="email"/></div>
-            <div class="fg"><label class="fl">Devise</label><select class="fi"><option>MAD — Dirham marocain</option><option>EUR — Euro</option><option>XAF — Franc CFA</option></select></div>
+            <div class="fg">
+              <label class="fl">Devise</label>
+              <select class="fi" id="param-currency">
+                <option value="MAD">MAD — Dirham marocain</option>
+                <option value="EUR">EUR — Euro</option>
+                <option value="XAF">XAF — Franc CFA</option>
+              </select>
+            </div>
           </div>
           <div class="card">
             <div class="card-title" style="margin-bottom:18px">Livraison</div>
-            <div class="fg"><label class="fl">Seuil livraison gratuite (MAD)</label><input class="fi" value="2500" type="number"/></div>
-            <div class="fg"><label class="fl">Frais de port (MAD)</label><input class="fi" value="120" type="number"/></div>
-            <div class="fg"><label class="fl">Délai estimé</label><input class="fi" value="5-12 jours ouvrés"/></div>
+            <div class="fg"><label class="fl">Seuil livraison gratuite (MAD)</label><input class="fi" id="param-shipping-threshold" value="2500" type="number"/></div>
+            <div class="fg"><label class="fl">Frais de port (MAD)</label><input class="fi" id="param-shipping-cost" value="120" type="number"/></div>
+            <div class="fg"><label class="fl">Délai estimé</label><input class="fi" id="param-shipping-delay" value="5-12 jours ouvrés"/></div>
+          </div>
+          <div class="card">
+            <div class="card-title" style="margin-bottom:18px">Ticker (bandeau défilant)</div>
+            <div class="alert co" style="margin-bottom:12px"><span class="mi sm">info</span><span>Un message par ligne.</span></div>
+            <div class="fg">
+              <textarea class="fi" id="param-ticker" rows="5" placeholder="Livraison express…&#10;Nouveaux artisans…"></textarea>
+            </div>
           </div>
         </div>
         <div style="display:flex;flex-direction:column;gap:16px">
@@ -667,19 +688,18 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
           <div class="card">
             <div class="card-title" style="margin-bottom:18px">Fonctionnalités</div>
             <div style="display:flex;flex-direction:column;gap:14px">
-              <div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:12px;font-weight:500">Avis clients</div></div><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
-              <div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:12px;font-weight:500">Validation automatique</div></div><label class="toggle"><input type="checkbox"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
-              <div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:12px;font-weight:500">Mode maintenance</div></div><label class="toggle"><input type="checkbox"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+              <div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:12px;font-weight:500">Avis clients</div></div><label class="toggle"><input type="checkbox" id="param-reviews" checked/><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+              <div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:12px;font-weight:500">Mode maintenance</div></div><label class="toggle"><input type="checkbox" id="param-maintenance"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-  </div><!-- /content -->
-</div><!-- /main -->
+  </div>
+</div>
 
-<!-- ══ MODAL PRODUIT ══ -->
+<!-- MODAL PRODUIT -->
 <div class="modal-overlay" id="modal-product">
   <div class="modal">
     <div class="modal-hd">
@@ -721,7 +741,7 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
   </div>
 </div>
 
-<!-- ══ MODAL CATÉGORIE ══ -->
+<!-- MODAL CATÉGORIE -->
 <div class="modal-overlay" id="modal-category">
   <div class="modal">
     <div class="modal-hd">
@@ -752,9 +772,6 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
 <div id="toast"></div>
 
 <script>
-// ══════════════════════════════
-// SUPABASE — init direct (pas de window.db)
-// ══════════════════════════════
 const SB_URL  = 'https://aakxoydznmybstfozjte.supabase.co'
 const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
 const db = supabase.createClient(SB_URL, SB_ANON)
@@ -763,36 +780,18 @@ let allOrders = [], allProducts = [], prodImages = ['','','',''], caracList = []
 let selectedIcon = '📦'
 const ICONS = ['🛍️','👗','👠','👜','👒','🧣','🧢','💍','📿','🛒','🍽️','🫙','🌿','🫚','🧴','🪴','🎨','🪵','🏺','🧺','🧶','🪡','✂️','🔨','🪚','🧲','💎','🌍','🇬🇦','🇲🇦','🎁','📦','🏠','🚗','📱','💻','🎵','📚','⚽','🌺','🌾','☕','🍵','🥘','🧁','🍊','🥭','🌴','🐘','🦁','🦅','🎭','🎪','🏆','⭐','✨','🔥','💫','🌟','💚','🌱','🍃']
 
-// ══════════════════════════════
-// AUTH — avec gate login
-// ══════════════════════════════
+// ══ AUTH ══
 async function checkAuth() {
   const { data: { session } } = await db.auth.getSession()
-
-  if (!session) {
-    // Pas de session → afficher le formulaire de login
-    document.getElementById('auth-screen').classList.add('hidden')
-    document.getElementById('auth-gate').classList.add('show')
-    return
-  }
-
-  // Session OK → vérifier le rôle admin
-  const { data: userData } = await db
-    .from('users')
-    .select('role, full_name, email')
-    .eq('auth_id', session.user.id)
-    .single()
-
+  if (!session) { document.getElementById('auth-screen').classList.add('hidden'); document.getElementById('auth-gate').classList.add('show'); return }
+  const { data: userData } = await db.from('users').select('role, full_name, email').eq('auth_id', session.user.id).single()
   if (!userData || userData.role !== 'admin') {
     document.getElementById('auth-screen').classList.add('hidden')
     document.getElementById('auth-gate').classList.add('show')
     document.getElementById('auth-error').style.display = 'block'
     document.getElementById('auth-error').textContent = 'Accès réservé aux administrateurs.'
-    await db.auth.signOut()
-    return
+    await db.auth.signOut(); return
   }
-
-  // Admin confirmé
   const displayName = userData.full_name || userData.email || session.user.email
   document.getElementById('user-av').textContent = displayName.substring(0, 2).toUpperCase()
   document.getElementById('user-em').textContent = displayName
@@ -804,40 +803,15 @@ async function doLogin() {
   const pass  = document.getElementById('login-password').value
   const btn   = document.getElementById('login-btn')
   const errEl = document.getElementById('auth-error')
-
   if (!email || !pass) { errEl.textContent='Remplissez tous les champs.'; errEl.style.display='block'; return }
-
-  btn.disabled = true
-  btn.textContent = 'Connexion…'
-  errEl.style.display = 'none'
-
+  btn.disabled = true; btn.textContent = 'Connexion…'; errEl.style.display = 'none'
   const { data, error } = await db.auth.signInWithPassword({ email, password: pass })
-
-  if (error) {
-    btn.disabled = false
-    btn.textContent = 'Se connecter'
-    errEl.textContent = 'Email ou mot de passe incorrect.'
-    errEl.style.display = 'block'
-    return
-  }
-
-  // Vérifier le rôle
-  const { data: userData } = await db
-    .from('users')
-    .select('role, full_name, email')
-    .eq('auth_id', data.user.id)
-    .single()
-
+  if (error) { btn.disabled=false; btn.textContent='Se connecter'; errEl.textContent='Email ou mot de passe incorrect.'; errEl.style.display='block'; return }
+  const { data: userData } = await db.from('users').select('role, full_name, email').eq('auth_id', data.user.id).single()
   if (!userData || userData.role !== 'admin') {
-    await db.auth.signOut()
-    btn.disabled = false
-    btn.textContent = 'Se connecter'
-    errEl.textContent = 'Accès réservé aux administrateurs.'
-    errEl.style.display = 'block'
-    return
+    await db.auth.signOut(); btn.disabled=false; btn.textContent='Se connecter'
+    errEl.textContent='Accès réservé aux administrateurs.'; errEl.style.display='block'; return
   }
-
-  // OK → afficher le dashboard
   const displayName = userData.full_name || userData.email || email
   document.getElementById('user-av').textContent = displayName.substring(0, 2).toUpperCase()
   document.getElementById('user-em').textContent = displayName
@@ -847,13 +821,10 @@ async function doLogin() {
 
 async function signOut() {
   if (!confirm('Se déconnecter ?')) return
-  await db.auth.signOut()
-  location.reload()
+  await db.auth.signOut(); location.reload()
 }
 
-// ══════════════════════════════
-// CONNEXION
-// ══════════════════════════════
+// ══ CONNEXION ══
 async function testConnection() {
   const bar = document.getElementById('db-bar')
   bar.classList.add('show','loading')
@@ -873,19 +844,197 @@ async function testConnection() {
 }
 
 // ══════════════════════════════
-// NAVIGATION
+// SITE CONFIG — clé/valeur
 // ══════════════════════════════
+async function loadConfigMap() {
+  const { data, error } = await db.from('site_config').select('key,value')
+  if (error || !data) return {}
+  const map = {}
+  data.forEach(r => { map[r.key] = r.value })
+  return map
+}
+
+async function saveConfigKey(key, value) {
+  const { error } = await db.from('site_config').upsert(
+    { key, value, updated_at: new Date().toISOString() },
+    { onConflict: 'key' }
+  )
+  if (error) throw new Error(error.message)
+}
+
+// Initialise tous les champs depuis la config Supabase
+async function initSiteConfig() {
+  const cfg = await loadConfigMap()
+
+  // --- Ticker ---
+  if (cfg.ticker_messages) {
+    try {
+      const msgs = JSON.parse(cfg.ticker_messages)
+      const ta = document.getElementById('param-ticker')
+      if (ta) ta.value = msgs.join('\n')
+      const bcTa = document.getElementById('bc-ticker')
+      if (bcTa) bcTa.value = msgs.join('\n')
+    } catch(e) {}
+  }
+
+  // --- Bannière (section Quêtes) ---
+  if (cfg.boutique_banner_url) {
+    ;['quest-banner-url','bc-banner-url'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.value = cfg.boutique_banner_url
+    })
+    updateBannerPreview(cfg.boutique_banner_url)
+    updateBcBannerPreview(cfg.boutique_banner_url)
+  }
+  if (cfg.boutique_banner_link) {
+    ;['quest-banner-link','bc-banner-link'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.value = cfg.boutique_banner_link
+    })
+  }
+  const banEnabled = cfg.boutique_banner_enabled === 'true'
+  ;['quest-banner-enabled','bc-banner-enabled'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.checked = banEnabled
+  })
+
+  // --- Devise & livraison ---
+  const fieldMap = {
+    'param-currency': 'site_currency', 'bc-currency': 'site_currency',
+    'param-shipping-threshold': 'shipping_threshold', 'bc-shipping-threshold': 'shipping_threshold',
+    'param-shipping-cost': 'shipping_cost', 'bc-shipping-cost': 'shipping_cost',
+    'param-shipping-delay': 'shipping_delay', 'bc-shipping-delay': 'shipping_delay',
+  }
+  Object.entries(fieldMap).forEach(([elId, cfgKey]) => {
+    const el = document.getElementById(elId)
+    if (el && cfg[cfgKey] != null) el.value = cfg[cfgKey]
+  })
+
+  // --- Toggles ---
+  const toggleMap = {
+    'param-reviews': 'reviews_enabled', 'bc-reviews': 'reviews_enabled',
+    'param-maintenance': 'maintenance_mode', 'bc-maintenance': 'maintenance_mode',
+  }
+  Object.entries(toggleMap).forEach(([elId, cfgKey]) => {
+    const el = document.getElementById(elId)
+    if (el && cfg[cfgKey] != null) el.checked = cfg[cfgKey] === 'true'
+  })
+  if (cfg.quest_modal_enabled != null) {
+    const el = document.getElementById('bc-quest-modal'); if (el) el.checked = cfg.quest_modal_enabled === 'true'
+  }
+
+  renderBcCurrent(cfg)
+}
+
+function renderBcCurrent(cfg) {
+  const el = document.getElementById('bc-current'); if (!el) return
+  const rows = [
+    ['Devise', cfg.site_currency || 'MAD'],
+    ['Livraison gratuite dès', (cfg.shipping_threshold || '2500') + ' MAD'],
+    ['Frais de port', (cfg.shipping_cost || '120') + ' MAD'],
+    ['Délai', cfg.shipping_delay || '5-12 jours ouvrés'],
+    ['Bannière', cfg.boutique_banner_enabled === 'true' ? '✓ Active' : '✗ Désactivée'],
+    ['Maintenance', cfg.maintenance_mode === 'true' ? '⚠ EN MAINTENANCE' : '✓ Boutique ouverte'],
+  ]
+  el.innerHTML = rows.map(([k,v]) => `
+    <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
+      <span style="color:#555;text-transform:uppercase;font-size:9px;letter-spacing:1px">${k}</span>
+      <strong style="font-size:11px">${v}</strong>
+    </div>`).join('')
+}
+
+// ══ SAVE PARAMÈTRES (sync avec Supabase) ══
+async function saveSettings() {
+  const btn = event?.target; if (btn) btn.disabled = true
+  try {
+    const tickerEl = document.getElementById('param-ticker')
+    if (tickerEl) {
+      const lines = tickerEl.value.split('\n').map(l => l.trim()).filter(Boolean)
+      await saveConfigKey('ticker_messages', JSON.stringify(lines))
+      const bcTa = document.getElementById('bc-ticker'); if (bcTa) bcTa.value = tickerEl.value
+    }
+    const currEl = document.getElementById('param-currency'); if (currEl) await saveConfigKey('site_currency', currEl.value)
+    const stEl = document.getElementById('param-shipping-threshold'); if (stEl) await saveConfigKey('shipping_threshold', stEl.value)
+    const scEl = document.getElementById('param-shipping-cost'); if (scEl) await saveConfigKey('shipping_cost', scEl.value)
+    const sdEl = document.getElementById('param-shipping-delay'); if (sdEl) await saveConfigKey('shipping_delay', sdEl.value)
+    const revEl = document.getElementById('param-reviews'); if (revEl) await saveConfigKey('reviews_enabled', String(revEl.checked))
+    const maintEl = document.getElementById('param-maintenance'); if (maintEl) await saveConfigKey('maintenance_mode', String(maintEl.checked))
+    showToast('Paramètres sauvegardés et live ✓', 'success')
+    await initSiteConfig()
+  } catch(err) { showToast('Erreur: ' + err.message, 'error') }
+  finally { if (btn) btn.disabled = false }
+}
+
+// ══ SAVE BANNIÈRE BOUTIQUE ══
+async function saveQuestSettings() {
+  try {
+    const banUrl = document.getElementById('quest-banner-url')?.value?.trim() || ''
+    const banLink = document.getElementById('quest-banner-link')?.value?.trim() || ''
+    const banEnabled = document.getElementById('quest-banner-enabled')?.checked ?? false
+    await Promise.all([
+      saveConfigKey('boutique_banner_url', banUrl),
+      saveConfigKey('boutique_banner_link', banLink),
+      saveConfigKey('boutique_banner_enabled', String(banEnabled)),
+    ])
+    // Sync les champs boutique-config
+    ;['bc-banner-url'].forEach(id => { const el=document.getElementById(id); if(el) el.value=banUrl })
+    ;['bc-banner-link'].forEach(id => { const el=document.getElementById(id); if(el) el.value=banLink })
+    ;['bc-banner-enabled'].forEach(id => { const el=document.getElementById(id); if(el) el.checked=banEnabled })
+    showToast('Bannière & quêtes sauvegardées ✓', 'success')
+  } catch(err) { showToast('Erreur: ' + err.message, 'error') }
+}
+
+// ══ SAVE BOUTIQUE CONFIG (section dédiée) ══
+async function saveBoutiqueConfig() {
+  const btn = event?.target; if (btn) { btn.disabled=true; btn.textContent='Sauvegarde…' }
+  try {
+    const tickerEl = document.getElementById('bc-ticker')
+    if (tickerEl) {
+      const lines = tickerEl.value.split('\n').map(l => l.trim()).filter(Boolean)
+      await saveConfigKey('ticker_messages', JSON.stringify(lines))
+      const paramTa = document.getElementById('param-ticker'); if (paramTa) paramTa.value = tickerEl.value
+    }
+    await saveConfigKey('boutique_banner_url', document.getElementById('bc-banner-url')?.value?.trim() || '')
+    await saveConfigKey('boutique_banner_link', document.getElementById('bc-banner-link')?.value?.trim() || '')
+    await saveConfigKey('boutique_banner_enabled', String(document.getElementById('bc-banner-enabled')?.checked ?? false))
+    await saveConfigKey('maintenance_mode', String(document.getElementById('bc-maintenance')?.checked ?? false))
+    await saveConfigKey('reviews_enabled', String(document.getElementById('bc-reviews')?.checked ?? true))
+    await saveConfigKey('quest_modal_enabled', String(document.getElementById('bc-quest-modal')?.checked ?? true))
+    await saveConfigKey('site_currency', document.getElementById('bc-currency')?.value || 'MAD')
+    await saveConfigKey('shipping_threshold', document.getElementById('bc-shipping-threshold')?.value || '2500')
+    await saveConfigKey('shipping_cost', document.getElementById('bc-shipping-cost')?.value || '120')
+    await saveConfigKey('shipping_delay', document.getElementById('bc-shipping-delay')?.value || '5-12 jours ouvrés')
+    // Statut live
+    const st = document.getElementById('boutique-save-status'); if (st) { st.style.display='flex'; setTimeout(()=>st.style.display='none', 4000) }
+    showToast('Config boutique sauvegardée et live ✓', 'success')
+    await loadBoutiqueConfig()
+  } catch(err) { showToast('Erreur: ' + err.message, 'error') }
+  finally { if (btn) { btn.disabled=false; btn.innerHTML='<span class="mi sm">save</span>Sauvegarder tout' } }
+}
+
+async function loadBoutiqueConfig() {
+  const cfg = await loadConfigMap()
+  renderBcCurrent(cfg)
+}
+
+// Bannière preview (section Quêtes)
+function previewBanner(input) { if (!input.files[0]) return; const r=new FileReader(); r.onload=e=>updateBannerPreview(e.target.result); r.readAsDataURL(input.files[0]) }
+function updateBannerPreview(url) { const img=document.getElementById('quest-banner-img'); if(url){img.src=url;img.style.display='block'}else img.style.display='none' }
+
+// Bannière preview (section Boutique Config)
+function previewBcBanner(input) { if (!input.files[0]) return; const r=new FileReader(); r.onload=e=>updateBcBannerPreview(e.target.result); r.readAsDataURL(input.files[0]) }
+function updateBcBannerPreview(url) { const img=document.getElementById('bc-banner-img'); if(url){img.src=url;img.style.display='block'}else img.style.display='none' }
+
+// ══ NAV ══
 const TITLES = {
   dashboard:'Dashboard', analytics:'Analytiques', commandes:'Commandes',
   produits:'Produits', validation:'En validation', categories:'Catégories',
   artisans:'Artisans', utilisateurs:'Utilisateurs', avis:'Avis clients',
-  payments:'Paiements', quetes:'Quêtes', chasseur:'Chasseur', parametres:'Paramètres',
+  payments:'Paiements', quetes:'Quêtes', chasseur:'Chasseur',
+  'boutique-config':'Boutique Live', parametres:'Paramètres',
 }
 const LOADERS = {
   commandes:loadOrders, produits:loadProducts, validation:loadValidation,
   categories:loadCategories, utilisateurs:loadUsers, avis:loadReviews,
   payments:loadPayments, analytics:loadAnalytics, artisans:loadArtisans,
-  quetes:initQuetes, chasseur:initChasseur,
+  quetes:initQuetes, chasseur:initChasseur, 'boutique-config':loadBoutiqueConfig,
 }
 
 function nav(id, el) {
@@ -897,9 +1046,7 @@ function nav(id, el) {
   if (LOADERS[id]) LOADERS[id]()
 }
 
-// ══════════════════════════════
-// HELPERS
-// ══════════════════════════════
+// ══ HELPERS ══
 const fd = d => d ? new Date(d).toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', year:'2-digit' }) : '—'
 const fmad = n => n != null ? new Intl.NumberFormat('fr-FR', { style:'currency', currency:'MAD' }).format(n) : '—'
 const flag = c => ({'Gabon':'🇬🇦','Maroc':'🇲🇦','Morocco':'🇲🇦','France':'🇫🇷'}[c] || '🌍') + ' ' + (c || '—')
@@ -918,9 +1065,7 @@ function showToast(msg, type = 'success') {
   setTimeout(() => t.className = '', 3500)
 }
 
-// ══════════════════════════════
-// DASHBOARD
-// ══════════════════════════════
+// ══ DASHBOARD ══
 async function loadDashboardKPIs() {
   document.getElementById('dash-date').textContent = new Date().toLocaleDateString('fr-FR', { weekday:'long', year:'numeric', month:'long', day:'numeric' })
   const [oR, uR, pR, pyR, pendR] = await Promise.all([
@@ -942,52 +1087,48 @@ async function loadDashboardKPIs() {
   const ppn = document.getElementById('prod-pending-n'); if (ppn) ppn.textContent = pend
   document.getElementById('live-txt').textContent = (oR.count || 0) + ' cmd'
   const banner = document.getElementById('pending-banner')
-  if (pend > 0) { banner.style.display = 'flex'; document.getElementById('pending-n').textContent = pend }
-  else banner.style.display = 'none'
+  if (pend > 0) { banner.style.display='flex'; document.getElementById('pending-n').textContent=pend }
+  else banner.style.display='none'
 
-  // Commandes récentes
   const tb = document.getElementById('dash-orders')
   if (!orders.length) { tb.innerHTML = emptyRow(4, 'Aucune commande'); return }
   tb.innerHTML = orders.slice(0, 5).map(o => `
     <tr>
-      <td class="mono">#${String(o.id).substring(0, 8).toUpperCase()}</td>
+      <td class="mono">#${String(o.id).substring(0,8).toUpperCase()}</td>
       <td><strong>${fmad(o.total_amount)}</strong></td>
       <td>${pill(o.status)}</td>
       <td class="muted">${fd(o.created_at)}</td>
     </tr>`).join('')
 
-  // Produits récents
-  const { data: rp } = await db.from('products').select('name,price,status,image_url,created_at').order('created_at', { ascending:false }).limit(5)
+  const { data: rp } = await db.from('products').select('name,price,status,image_url,created_at').order('created_at',{ascending:false}).limit(5)
   const pl = document.getElementById('dash-prods')
-  if (!rp?.length) { pl.innerHTML = '<div class="empty"><span class="mi">inventory_2</span><p>Aucun produit</p></div>'; return }
+  if (!rp?.length) { pl.innerHTML='<div class="empty"><span class="mi">inventory_2</span><p>Aucun produit</p></div>'; return }
   pl.innerHTML = rp.map(p => `
     <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
-      ${p.image_url ? `<img class="prod-thumb" src="${p.image_url}" onerror="this.style.background='var(--smoke)'"/>` : '<div class="prod-thumb"></div>'}
-      <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name || '—'}</div><div style="font-size:10px;color:var(--fog)">${fd(p.created_at)}</div></div>
-      <div style="text-align:right;flex-shrink:0"><div style="font-size:13px;font-weight:600;color:var(--fire)">${fmad(p.price)}</div>${pill(p.status || 'active')}</div>
+      ${p.image_url?`<img class="prod-thumb" src="${p.image_url}" onerror="this.style.background='var(--smoke)'"/>`:'<div class="prod-thumb"></div>'}
+      <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name||'—'}</div><div style="font-size:10px;color:var(--fog)">${fd(p.created_at)}</div></div>
+      <div style="text-align:right;flex-shrink:0"><div style="font-size:13px;font-weight:600;color:var(--fire)">${fmad(p.price)}</div>${pill(p.status||'active')}</div>
     </div>`).join('')
 }
 
-// ══════════════════════════════
-// VALIDATION
-// ══════════════════════════════
+// ══ VALIDATION ══
 async function loadValidation() {
   const tb = document.getElementById('val-tbody')
   tb.innerHTML = `<tr class="loading-row"><td colspan="7"><span class="loader"></span></td></tr>`
-  const { data, error } = await db.from('products').select('*,users(full_name,email)').eq('status','pending').order('created_at', { ascending:false })
-  if (error) { tb.innerHTML = `<tr class="loading-row"><td colspan="7" style="color:var(--rouge)">⚠ ${error.message}</td></tr>`; return }
-  document.getElementById('val-sub').textContent = `${data?.length || 0} produit(s) en attente`
-  document.getElementById('nb-val').textContent = data?.length || 0
-  if (!data?.length) { tb.innerHTML = emptyRow(7, 'Aucun produit en attente ✓'); return }
+  const { data, error } = await db.from('products').select('*,users(full_name,email)').eq('status','pending').order('created_at',{ascending:false})
+  if (error) { tb.innerHTML=`<tr class="loading-row"><td colspan="7" style="color:var(--rouge)">⚠ ${error.message}</td></tr>`; return }
+  document.getElementById('val-sub').textContent = `${data?.length||0} produit(s) en attente`
+  document.getElementById('nb-val').textContent = data?.length||0
+  if (!data?.length) { tb.innerHTML=emptyRow(7,'Aucun produit en attente ✓'); return }
   tb.innerHTML = data.map(p => {
     const imgs = parseImages(p.image_url)
     return `<tr id="row-${p.id}">
       <td><div style="display:flex;align-items:center;gap:10px">
-        ${imgs[0] ? `<img class="prod-thumb" src="${imgs[0]}" onerror="this.style.background='var(--smoke)'"/>` : '<div class="prod-thumb"></div>'}
-        <div><div style="font-weight:600">${p.name}</div><div class="muted" style="font-size:10px">${(p.description || '').substring(0, 50)}</div></div>
+        ${imgs[0]?`<img class="prod-thumb" src="${imgs[0]}" onerror="this.style.background='var(--smoke)'"/>`:'<div class="prod-thumb"></div>'}
+        <div><div style="font-weight:600">${p.name}</div><div class="muted" style="font-size:10px">${(p.description||'').substring(0,50)}</div></div>
       </div></td>
-      <td><div style="display:flex;gap:3px">${imgs.filter(Boolean).map(img => `<img src="${img}" style="width:26px;height:26px;object-fit:cover;border:1px solid var(--border)" onerror="this.remove()"/>`).join('') || '<span class="muted" style="font-size:10px">—</span>'}</div></td>
-      <td><div style="font-size:12px;font-weight:500">${p.users?.full_name || '—'}</div><div class="mono" style="font-size:10px">${p.users?.email || ''}</div></td>
+      <td><div style="display:flex;gap:3px">${imgs.filter(Boolean).map(img=>`<img src="${img}" style="width:26px;height:26px;object-fit:cover;border:1px solid var(--border)" onerror="this.remove()"/>`).join('')||'<span class="muted" style="font-size:10px">—</span>'}</div></td>
+      <td><div style="font-size:12px;font-weight:500">${p.users?.full_name||'—'}</div><div class="mono" style="font-size:10px">${p.users?.email||''}</div></td>
       <td>${flag(p.country)}</td>
       <td><strong>${fmad(p.price)}</strong></td>
       <td class="muted">${fd(p.created_at)}</td>
@@ -1000,464 +1141,385 @@ async function loadValidation() {
 }
 
 function parseImages(imgData) {
-  if (!imgData) return ['', '', '', '']
-  try { const p = JSON.parse(imgData); return Array.isArray(p) ? [...p, ...Array(4).fill('')].slice(0, 4) : [imgData, '', '', ''] }
-  catch { return [imgData, '', '', ''] }
+  if (!imgData) return ['','','','']
+  try { const p=JSON.parse(imgData); return Array.isArray(p)?[...p,...Array(4).fill('')].slice(0,4):[imgData,'','',''] }
+  catch { return [imgData,'','',''] }
 }
 
 async function approveProduct(id) {
-  const row = document.getElementById('row-' + id); if (row) row.style.opacity = '.5'
-  const { error } = await db.from('products').update({ status:'active', updated_at:new Date().toISOString() }).eq('id', id)
-  if (error) { showToast('Erreur: ' + error.message, 'error'); if (row) row.style.opacity = '1'; return }
-  showToast('Produit approuvé ✓', 'success'); loadValidation(); loadDashboardKPIs()
+  const row=document.getElementById('row-'+id); if(row) row.style.opacity='.5'
+  const { error } = await db.from('products').update({status:'active',updated_at:new Date().toISOString()}).eq('id',id)
+  if(error){showToast('Erreur: '+error.message,'error');if(row)row.style.opacity='1';return}
+  showToast('Produit approuvé ✓','success'); loadValidation(); loadDashboardKPIs()
 }
 async function rejectProduct(id) {
-  if (!confirm('Rejeter ce produit ?')) return
-  await db.from('products').update({ status:'inactive', updated_at:new Date().toISOString() }).eq('id', id)
-  showToast('Produit rejeté.'); loadValidation(); loadDashboardKPIs()
+  if(!confirm('Rejeter ce produit ?')) return
+  await db.from('products').update({status:'inactive',updated_at:new Date().toISOString()}).eq('id',id)
+  showToast('Produit rejeté'); loadValidation(); loadDashboardKPIs()
 }
 
-// ══════════════════════════════
-// COMMANDES
-// ══════════════════════════════
-let ordersFilter = ''
+// ══ COMMANDES ══
+let ordersFilter=''
 async function loadOrders() {
-  const tb = document.getElementById('cmd-tbody')
-  tb.innerHTML = `<tr class="loading-row"><td colspan="6"><span class="loader"></span></td></tr>`
-  let q = db.from('orders').select('*').order('created_at', { ascending:false })
-  if (ordersFilter) q = q.eq('status', ordersFilter)
-  const { data, error } = await q
-  if (error) { tb.innerHTML = `<tr class="loading-row"><td colspan="6" style="color:var(--rouge)">⚠ ${error.message}</td></tr>`; return }
-  allOrders = data || []
-  document.getElementById('cmd-sub').textContent = `${allOrders.length} commande(s)`
-  if (!allOrders.length) { tb.innerHTML = emptyRow(6, 'Aucune commande'); return }
-  tb.innerHTML = allOrders.map(o => `
+  const tb=document.getElementById('cmd-tbody')
+  tb.innerHTML=`<tr class="loading-row"><td colspan="6"><span class="loader"></span></td></tr>`
+  let q=db.from('orders').select('*').order('created_at',{ascending:false})
+  if(ordersFilter) q=q.eq('status',ordersFilter)
+  const {data,error}=await q
+  if(error){tb.innerHTML=`<tr class="loading-row"><td colspan="6" style="color:var(--rouge)">⚠ ${error.message}</td></tr>`;return}
+  allOrders=data||[]
+  document.getElementById('cmd-sub').textContent=`${allOrders.length} commande(s)`
+  if(!allOrders.length){tb.innerHTML=emptyRow(6,'Aucune commande');return}
+  tb.innerHTML=allOrders.map(o=>`
     <tr>
-      <td class="mono">#${String(o.id).substring(0, 8).toUpperCase()}</td>
+      <td class="mono">#${String(o.id).substring(0,8).toUpperCase()}</td>
       <td class="muted">${fd(o.created_at)}</td>
-      <td>${o.shipping_name || '—'}</td>
+      <td>${o.shipping_name||'—'}</td>
       <td><strong>${fmad(o.total_amount)}</strong></td>
       <td>${pill(o.status)}</td>
       <td><select class="fi btn-sm" style="width:120px" onchange="updateOrderStatus('${o.id}',this.value)">
-        ${['pending','processing','shipped','delivered','cancelled'].map(s => `<option value="${s}" ${o.status === s ? 'selected' : ''}>${s}</option>`).join('')}
+        ${['pending','processing','shipped','delivered','cancelled'].map(s=>`<option value="${s}" ${o.status===s?'selected':''}>${s}</option>`).join('')}
       </select></td>
     </tr>`).join('')
 }
-function filterOrders(v) { ordersFilter = v; loadOrders() }
-async function updateOrderStatus(id, status) {
-  const { error } = await db.from('orders').update({ status }).eq('id', id)
-  if (error) showToast('Erreur: ' + error.message, 'error')
+function filterOrders(v){ordersFilter=v;loadOrders()}
+async function updateOrderStatus(id,status){
+  const {error}=await db.from('orders').update({status}).eq('id',id)
+  if(error) showToast('Erreur: '+error.message,'error')
   else showToast('Statut mis à jour ✓')
 }
 
-// ══════════════════════════════
-// PRODUITS
-// ══════════════════════════════
-let prodFilter = ''
+// ══ PRODUITS ══
+let prodFilter=''
 async function loadProducts() {
-  const tb = document.getElementById('prod-tbody')
-  tb.innerHTML = `<tr class="loading-row"><td colspan="7"><span class="loader"></span></td></tr>`
-  let q = db.from('products').select('*,categories(name)').order('created_at', { ascending:false })
-  if (prodFilter) q = q.eq('status', prodFilter)
-  const { data, error } = await q
-  if (error) { tb.innerHTML = `<tr class="loading-row"><td colspan="7" style="color:var(--rouge)">⚠ ${error.message}</td></tr>`; return }
-  allProducts = data || []
-  const pend = allProducts.filter(p => p.status === 'pending').length
-  document.getElementById('prod-sub').textContent = `${allProducts.length} produit(s)`
-  const ppn = document.getElementById('prod-pending-n'); if (ppn) ppn.textContent = pend
-  if (!allProducts.length) { tb.innerHTML = emptyRow(7, 'Aucun produit'); return }
-  tb.innerHTML = allProducts.map(p => {
-    const imgs = parseImages(p.image_url)
+  const tb=document.getElementById('prod-tbody')
+  tb.innerHTML=`<tr class="loading-row"><td colspan="7"><span class="loader"></span></td></tr>`
+  let q=db.from('products').select('*,categories(name)').order('created_at',{ascending:false})
+  if(prodFilter) q=q.eq('status',prodFilter)
+  const {data,error}=await q
+  if(error){tb.innerHTML=`<tr class="loading-row"><td colspan="7" style="color:var(--rouge)">⚠ ${error.message}</td></tr>`;return}
+  allProducts=data||[]
+  const pend=allProducts.filter(p=>p.status==='pending').length
+  document.getElementById('prod-sub').textContent=`${allProducts.length} produit(s)`
+  const ppn=document.getElementById('prod-pending-n'); if(ppn) ppn.textContent=pend
+  if(!allProducts.length){tb.innerHTML=emptyRow(7,'Aucun produit');return}
+  tb.innerHTML=allProducts.map(p=>{
+    const imgs=parseImages(p.image_url)
     return `<tr>
       <td><div style="display:flex;align-items:center;gap:10px">
-        ${imgs[0] ? `<img class="prod-thumb" src="${imgs[0]}" onerror="this.style.background='var(--smoke)'"/>` : '<div class="prod-thumb"></div>'}
-        <span style="font-weight:500">${p.name || '—'}</span>
+        ${imgs[0]?`<img class="prod-thumb" src="${imgs[0]}" onerror="this.style.background='var(--smoke)'"/>`:'<div class="prod-thumb"></div>'}
+        <span style="font-weight:500">${p.name||'—'}</span>
       </div></td>
-      <td class="muted">${p.categories?.name || '—'}</td>
+      <td class="muted">${p.categories?.name||'—'}</td>
       <td>${flag(p.country)}</td>
       <td><strong style="color:var(--fire)">${fmad(p.price)}</strong></td>
-      <td><span class="pill ${(p.stock || 0) > 0 ? 'em' : 're'}">${p.stock ?? 0}</span></td>
-      <td>${pill(p.status || 'active')}</td>
+      <td><span class="pill ${(p.stock||0)>0?'em':'re'}">${p.stock??0}</span></td>
+      <td>${pill(p.status||'active')}</td>
       <td style="display:flex;gap:4px">
-        ${p.status === 'pending' ? `<button class="btn btn-success btn-sm btn-icon" onclick="approveProduct('${p.id}')"><span class="mi sm">check</span></button>` : ''}
+        ${p.status==='pending'?`<button class="btn btn-success btn-sm btn-icon" onclick="approveProduct('${p.id}')"><span class="mi sm">check</span></button>`:''}
         <button class="btn btn-danger btn-sm btn-icon" onclick="deleteProduct('${p.id}')"><span class="mi sm">delete</span></button>
       </td>
     </tr>`
   }).join('')
 }
-function filterProducts(v, btn) { prodFilter = v; document.querySelectorAll('#view-produits .tab-btn').forEach(b => b.classList.remove('active')); if (btn) btn.classList.add('active'); loadProducts() }
-function parseCarac(data) { if (!data) return []; try { const p = JSON.parse(data); return Array.isArray(p) ? p : Object.entries(p).map(([k, v]) => ({ k, v })) } catch { return [] } }
+function filterProducts(v,btn){prodFilter=v;document.querySelectorAll('#view-produits .tab-btn').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');loadProducts()}
 
 function openAddProduct() {
-  prodImages = ['', '', '', '']; caracList = []
-  document.getElementById('p-name').value = ''; document.getElementById('p-price').value = ''
-  document.getElementById('p-desc').value = ''; document.getElementById('p-stock').value = '1'
-  document.getElementById('p-img-url').value = ''
+  prodImages=['','','','']; caracList=[]
+  ;['p-name','p-price','p-desc','p-img-url'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''})
+  document.getElementById('p-stock').value='1'
   renderImgGallery(); renderCarac(); loadCatOptions()
-  openModal('modal-product'); showProdTab('info', document.querySelector('#modal-product .tab-btn'))
+  openModal('modal-product'); showProdTab('info',document.querySelector('#modal-product .tab-btn'))
 }
 
-function showProdTab(tab, btn) {
-  document.querySelectorAll('#ptab-info,#ptab-photos,#ptab-carac').forEach(t => t.style.display = 'none')
-  document.getElementById('ptab-' + tab).style.display = 'block'
-  document.querySelectorAll('#modal-product .tab-btn').forEach(b => b.classList.remove('active'))
-  if (btn) btn.classList.add('active')
+function showProdTab(tab,btn){
+  document.querySelectorAll('#ptab-info,#ptab-photos,#ptab-carac').forEach(t=>t.style.display='none')
+  document.getElementById('ptab-'+tab).style.display='block'
+  document.querySelectorAll('#modal-product .tab-btn').forEach(b=>b.classList.remove('active'))
+  if(btn) btn.classList.add('active')
 }
 
 function renderImgGallery() {
-  document.getElementById('prod-img-gallery').innerHTML = prodImages.map((img, i) => `
+  document.getElementById('prod-img-gallery').innerHTML=prodImages.map((img,i)=>`
     <div class="img-slot" onclick="pickSlot(${i})">
-      ${img ? `<img src="${img}" onerror="this.remove()"/><div class="del-photo" onclick="event.stopPropagation();removeImg(${i})"><span class="mi sm" style="color:white">close</span></div>` : `<div style="font-size:10px;color:#333;text-align:center;padding:8px"><span class="mi sm" style="display:block;margin-bottom:4px">add_a_photo</span>Photo ${i === 0 ? 'principale' : i + 1}</div>`}
+      ${img?`<img src="${img}" onerror="this.remove()"/><div class="del-photo" onclick="event.stopPropagation();removeImg(${i})"><span class="mi sm" style="color:white">close</span></div>`:`<div style="font-size:10px;color:#333;text-align:center;padding:8px"><span class="mi sm" style="display:block;margin-bottom:4px">add_a_photo</span>Photo ${i===0?'principale':i+1}</div>`}
     </div>`).join('')
 }
-let activeSlot = 0
-function pickSlot(i) { activeSlot = i; document.getElementById('p-img-url').value = prodImages[i] || '' }
-function addImgFromUrl() { const url = document.getElementById('p-img-url').value.trim(); if (!url) return; prodImages[activeSlot] = url; renderImgGallery() }
-function removeImg(i) { prodImages[i] = ''; renderImgGallery() }
+let activeSlot=0
+function pickSlot(i){activeSlot=i;document.getElementById('p-img-url').value=prodImages[i]||''}
+function addImgFromUrl(){const url=document.getElementById('p-img-url').value.trim();if(!url)return;prodImages[activeSlot]=url;renderImgGallery()}
+function removeImg(i){prodImages[i]='';renderImgGallery()}
 
-function renderCarac() {
-  document.getElementById('carac-list').innerHTML = caracList.map((item, i) => `
+function renderCarac(){
+  document.getElementById('carac-list').innerHTML=caracList.map((item,i)=>`
     <div class="carac-row">
       <input class="fi" placeholder="Clé" value="${item.k}" oninput="caracList[${i}].k=this.value"/>
       <input class="fi" placeholder="Valeur" value="${item.v}" oninput="caracList[${i}].v=this.value"/>
       <button class="btn btn-danger btn-sm btn-icon" onclick="removeCarac(${i})"><span class="mi sm">close</span></button>
     </div>`).join('')
 }
-function addCarac() { caracList.push({ k:'', v:'' }); renderCarac() }
-function removeCarac(i) { caracList.splice(i, 1); renderCarac() }
+function addCarac(){caracList.push({k:'',v:''});renderCarac()}
+function removeCarac(i){caracList.splice(i,1);renderCarac()}
 
 async function loadCatOptions() {
-  const { data } = await db.from('categories').select('id,name,icon').order('name')
-  const sel = document.getElementById('p-cat')
-  if (data?.length) sel.innerHTML = '<option value="">— Sélectionner —</option>' + data.map(c => `<option value="${c.id}">${c.icon || ''} ${c.name}</option>`).join('')
+  const {data}=await db.from('categories').select('id,name,icon').order('name')
+  const sel=document.getElementById('p-cat')
+  if(data?.length) sel.innerHTML='<option value="">— Sélectionner —</option>'+data.map(c=>`<option value="${c.id}">${c.icon||''} ${c.name}</option>`).join('')
 }
 
 async function saveProduct() {
-  const name = document.getElementById('p-name').value.trim()
-  const price = parseFloat(document.getElementById('p-price').value) || 0
-  if (!name) { showToast('Nom requis', 'error'); return }
-  const imgs = prodImages.filter(Boolean)
-  const payload = {
-    name, price,
-    description: document.getElementById('p-desc').value,
-    country: document.getElementById('p-country').value,
-    stock: parseInt(document.getElementById('p-stock').value) || 0,
-    status: document.getElementById('p-status').value,
-    image_url: imgs.length > 1 ? JSON.stringify(imgs) : (imgs[0] || null),
-    characteristics: caracList.filter(c => c.k && c.v).length ? JSON.stringify(caracList.filter(c => c.k && c.v)) : null,
-  }
-  const catId = document.getElementById('p-cat').value
-  if (catId) payload.category_id = catId
-  const { error } = await db.from('products').insert([payload])
-  if (error) { showToast('Erreur: ' + error.message, 'error'); return }
+  const name=document.getElementById('p-name').value.trim()
+  const price=parseFloat(document.getElementById('p-price').value)||0
+  if(!name){showToast('Nom requis','error');return}
+  const imgs=prodImages.filter(Boolean)
+  const payload={name,price,description:document.getElementById('p-desc').value,country:document.getElementById('p-country').value,stock:parseInt(document.getElementById('p-stock').value)||0,status:document.getElementById('p-status').value,image_url:imgs.length>1?JSON.stringify(imgs):(imgs[0]||null),characteristics:caracList.filter(c=>c.k&&c.v).length?JSON.stringify(caracList.filter(c=>c.k&&c.v)):null}
+  const catId=document.getElementById('p-cat').value; if(catId) payload.category_id=catId
+  const {error}=await db.from('products').insert([payload])
+  if(error){showToast('Erreur: '+error.message,'error');return}
   showToast('Produit ajouté ✓'); closeModal('modal-product'); loadProducts(); loadDashboardKPIs()
 }
 
 async function deleteProduct(id) {
-  if (!confirm('Supprimer définitivement ?')) return
-  const { error } = await db.from('products').delete().eq('id', id)
-  if (error) { showToast('Erreur: ' + error.message, 'error'); return }
+  if(!confirm('Supprimer définitivement ?')) return
+  const {error}=await db.from('products').delete().eq('id',id)
+  if(error){showToast('Erreur: '+error.message,'error');return}
   showToast('Produit supprimé'); loadProducts(); loadDashboardKPIs()
 }
 
-// ══════════════════════════════
-// CATÉGORIES
-// ══════════════════════════════
+// ══ CATÉGORIES ══
 async function loadCategories() {
-  const g = document.getElementById('cat-grid')
-  g.innerHTML = '<div style="text-align:center;padding:40px;color:#333"><span class="loader"></span></div>'
-  const { data, error } = await db.from('categories').select('*').order('name')
-  if (error) { g.innerHTML = `<div class="alert re">${error.message}</div>`; return }
-  document.getElementById('cat-sub').textContent = `${data?.length || 0} catégorie(s)`
-  if (!data?.length) { g.innerHTML = '<div class="card" style="grid-column:1/-1"><div class="empty"><span class="mi">category</span><strong>Aucune catégorie</strong></div></div>'; return }
-  g.innerHTML = data.map(c => `
+  const g=document.getElementById('cat-grid')
+  g.innerHTML='<div style="text-align:center;padding:40px;color:#333"><span class="loader"></span></div>'
+  const {data,error}=await db.from('categories').select('*').order('name')
+  if(error){g.innerHTML=`<div class="alert re">${error.message}</div>`;return}
+  document.getElementById('cat-sub').textContent=`${data?.length||0} catégorie(s)`
+  if(!data?.length){g.innerHTML='<div class="card" style="grid-column:1/-1"><div class="empty"><span class="mi">category</span><strong>Aucune catégorie</strong></div></div>';return}
+  g.innerHTML=data.map(c=>`
     <div class="card">
-      ${c.image_url ? `<div style="height:60px;overflow:hidden;margin:-24px -24px 16px;"><img src="${c.image_url}" style="width:100%;height:100%;object-fit:cover;opacity:.5" onerror="this.parentNode.remove()"/></div>` : ''}
-      <div style="font-size:26px;margin-bottom:8px">${c.icon || '📦'}</div>
+      ${c.image_url?`<div style="height:60px;overflow:hidden;margin:-24px -24px 16px;"><img src="${c.image_url}" style="width:100%;height:100%;object-fit:cover;opacity:.5" onerror="this.parentNode.remove()"/></div>`:''}
+      <div style="font-size:26px;margin-bottom:8px">${c.icon||'📦'}</div>
       <div style="font-weight:600;font-size:15px;font-family:var(--f-serif);font-style:italic">${c.name}</div>
-      <div style="font-size:11px;color:var(--fog);margin-top:4px">${c.description || ''}</div>
+      <div style="font-size:11px;color:var(--fog);margin-top:4px">${c.description||''}</div>
       <div style="margin-top:14px;display:flex;align-items:center;justify-content:space-between">
         ${pill('active')}
         <button class="btn btn-danger btn-sm btn-icon" onclick="deleteCategory('${c.id}')"><span class="mi sm">delete</span></button>
       </div>
-    </div>`).join('') +
-    `<div class="card" onclick="openAddCategory()" style="cursor:pointer;border-style:dashed;border-color:var(--border-hi);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:140px;gap:8px;transition:border-color .2s" onmouseover="this.style.borderColor='var(--border-fire)'" onmouseout="this.style.borderColor='var(--border-hi)'">
-      <span class="mi" style="color:#333">add_circle</span>
-      <div style="font-size:12px;color:var(--fog)">Nouvelle catégorie</div>
-    </div>`
+    </div>`).join('')+
+  `<div class="card" onclick="openAddCategory()" style="cursor:pointer;border-style:dashed;border-color:var(--border-hi);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:140px;gap:8px;transition:border-color .2s" onmouseover="this.style.borderColor='var(--border-fire)'" onmouseout="this.style.borderColor='var(--border-hi)'">
+    <span class="mi" style="color:#333">add_circle</span>
+    <div style="font-size:12px;color:var(--fog)">Nouvelle catégorie</div>
+  </div>`
 }
 
 function openAddCategory() {
-  ['c-name','c-desc','c-img'].forEach(id => document.getElementById(id).value = '')
-  document.getElementById('c-icon').value = '📦'
-  document.getElementById('icon-preview').textContent = '📦'
-  selectedIcon = '📦'; renderIconGrid('')
+  ;['c-name','c-desc','c-img'].forEach(id=>document.getElementById(id).value='')
+  document.getElementById('c-icon').value='📦'
+  document.getElementById('icon-preview').textContent='📦'
+  selectedIcon='📦'; renderIconGrid('')
   openModal('modal-category')
 }
 
 function renderIconGrid(filter) {
-  const filtered = filter ? ICONS.filter(ic => ic.includes(filter)) : ICONS
-  document.getElementById('icon-grid').innerHTML = filtered.map(ic => `
-    <div class="icon-opt ${ic === selectedIcon ? 'sel' : ''}" onclick="selectIcon('${ic}')">${ic}</div>`).join('')
+  const filtered=filter?ICONS.filter(ic=>ic.includes(filter)):ICONS
+  document.getElementById('icon-grid').innerHTML=filtered.map(ic=>`
+    <div class="icon-opt ${ic===selectedIcon?'sel':''}" onclick="selectIcon('${ic}')">${ic}</div>`).join('')
 }
-function filterIcons(v) { renderIconGrid(v) }
-function selectIcon(ic) {
-  selectedIcon = ic
-  document.getElementById('c-icon').value = ic
-  document.getElementById('icon-preview').textContent = ic
-  document.querySelectorAll('.icon-opt').forEach(el => el.classList.toggle('sel', el.textContent.trim() === ic))
+function filterIcons(v){renderIconGrid(v)}
+function selectIcon(ic){
+  selectedIcon=ic
+  document.getElementById('c-icon').value=ic
+  document.getElementById('icon-preview').textContent=ic
+  document.querySelectorAll('.icon-opt').forEach(el=>el.classList.toggle('sel',el.textContent.trim()===ic))
 }
 
 async function saveCategory() {
-  const name = document.getElementById('c-name').value.trim()
-  if (!name) { showToast('Nom requis', 'error'); return }
-  const { error } = await db.from('categories').insert([{
-    name, icon: document.getElementById('c-icon').value.trim() || selectedIcon || '📦',
-    description: document.getElementById('c-desc').value,
-    image_url: document.getElementById('c-img').value || null,
-  }])
-  if (error) { showToast('Erreur: ' + error.message, 'error'); return }
+  const name=document.getElementById('c-name').value.trim()
+  if(!name){showToast('Nom requis','error');return}
+  const {error}=await db.from('categories').insert([{name,icon:document.getElementById('c-icon').value.trim()||selectedIcon||'📦',description:document.getElementById('c-desc').value,image_url:document.getElementById('c-img').value||null}])
+  if(error){showToast('Erreur: '+error.message,'error');return}
   showToast('Catégorie créée ✓'); closeModal('modal-category'); loadCategories()
 }
 
 async function deleteCategory(id) {
-  if (!confirm('Supprimer cette catégorie ?')) return
-  await db.from('categories').delete().eq('id', id)
+  if(!confirm('Supprimer cette catégorie ?')) return
+  await db.from('categories').delete().eq('id',id)
   showToast('Catégorie supprimée'); loadCategories()
 }
 
-// ══════════════════════════════
-// ARTISANS
-// ══════════════════════════════
+// ══ ARTISANS ══
 async function loadArtisans() {
-  const g = document.getElementById('art-grid')
-  g.innerHTML = '<div style="text-align:center;padding:40px;color:#333"><span class="loader"></span></div>'
-  const { data, error } = await db.from('users').select('*').eq('role','artisan').order('created_at', { ascending:false })
-  if (error) { g.innerHTML = `<div class="alert re">${error.message}</div>`; return }
-  document.getElementById('art-sub').textContent = `${data?.length || 0} artisan(s)`
-  if (!data?.length) { g.innerHTML = '<div class="card" style="grid-column:1/-1"><div class="empty"><span class="mi">groups</span><strong>Aucun artisan</strong></div></div>'; return }
-  g.innerHTML = data.map(u => {
-    const name = u.full_name || ((u.first_name || '') + ' ' + (u.last_name || '')).trim() || '—'
+  const g=document.getElementById('art-grid')
+  g.innerHTML='<div style="text-align:center;padding:40px;color:#333"><span class="loader"></span></div>'
+  const {data,error}=await db.from('users').select('*').eq('role','artisan').order('created_at',{ascending:false})
+  if(error){g.innerHTML=`<div class="alert re">${error.message}</div>`;return}
+  document.getElementById('art-sub').textContent=`${data?.length||0} artisan(s)`
+  if(!data?.length){g.innerHTML='<div class="card" style="grid-column:1/-1"><div class="empty"><span class="mi">groups</span><strong>Aucun artisan</strong></div></div>';return}
+  g.innerHTML=data.map(u=>{
+    const name=u.full_name||((u.first_name||'')+' '+(u.last_name||'')).trim()||'—'
     return `<div class="card">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
         <div style="width:44px;height:44px;background:rgba(255,107,43,.08);border:1px solid var(--border-fire);display:flex;align-items:center;justify-content:center;font-family:var(--f-serif);font-weight:700;font-size:20px;font-style:italic;color:var(--fire)">${name[0].toUpperCase()}</div>
-        <div>
-          <div style="font-weight:600;font-size:13px">${name}</div>
-          <div style="font-size:10px;color:var(--fog)">${flag(u.country)} · ${u.specialty || 'Artisan'}</div>
-        </div>
+        <div><div style="font-weight:600;font-size:13px">${name}</div><div style="font-size:10px;color:var(--fog)">${flag(u.country)} · ${u.specialty||'Artisan'}</div></div>
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        ${pill(u.status || 'active')}
-        <span class="muted" style="font-size:10px">${fd(u.created_at)}</span>
-      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center">${pill(u.status||'active')}<span class="muted" style="font-size:10px">${fd(u.created_at)}</span></div>
     </div>`
   }).join('')
 }
 
-// ══════════════════════════════
-// UTILISATEURS
-// ══════════════════════════════
+// ══ UTILISATEURS ══
 async function loadUsers() {
-  const tb = document.getElementById('usr-tbody')
-  tb.innerHTML = `<tr class="loading-row"><td colspan="6"><span class="loader"></span></td></tr>`
-  const { data, error } = await db.from('users').select('*').order('created_at', { ascending:false })
-  if (error) { tb.innerHTML = `<tr class="loading-row"><td colspan="6" style="color:var(--rouge)">⚠ ${error.message}</td></tr>`; return }
-  const total = data?.length || 0
-  document.getElementById('usr-sub').textContent = `${total} membre(s)`
-  document.getElementById('su-total').textContent = total
-  document.getElementById('su-art').textContent = (data || []).filter(u => u.role === 'artisan').length
-  document.getElementById('su-buy').textContent = (data || []).filter(u => u.role === 'buyer' || !u.role).length
-  document.getElementById('su-inact').textContent = (data || []).filter(u => u.status === 'inactive' || u.status === 'banned').length
-  if (!data?.length) { tb.innerHTML = emptyRow(6, 'Aucun utilisateur'); return }
-  tb.innerHTML = data.map(u => `
+  const tb=document.getElementById('usr-tbody')
+  tb.innerHTML=`<tr class="loading-row"><td colspan="6"><span class="loader"></span></td></tr>`
+  const {data,error}=await db.from('users').select('*').order('created_at',{ascending:false})
+  if(error){tb.innerHTML=`<tr class="loading-row"><td colspan="6" style="color:var(--rouge)">⚠ ${error.message}</td></tr>`;return}
+  const total=data?.length||0
+  document.getElementById('usr-sub').textContent=`${total} membre(s)`
+  document.getElementById('su-total').textContent=total
+  document.getElementById('su-art').textContent=(data||[]).filter(u=>u.role==='artisan').length
+  document.getElementById('su-buy').textContent=(data||[]).filter(u=>u.role==='buyer'||!u.role).length
+  document.getElementById('su-inact').textContent=(data||[]).filter(u=>u.status==='inactive'||u.status==='banned').length
+  if(!data?.length){tb.innerHTML=emptyRow(6,'Aucun utilisateur');return}
+  tb.innerHTML=data.map(u=>`
     <tr>
-      <td>${u.full_name || ((u.first_name || '') + ' ' + (u.last_name || '')).trim() || '—'}</td>
-      <td class="mono">${u.email || '—'}</td>
+      <td>${u.full_name||((u.first_name||'')+' '+(u.last_name||'')).trim()||'—'}</td>
+      <td class="mono">${u.email||'—'}</td>
       <td>${flag(u.country)}</td>
-      <td><span class="pill ${u.role === 'artisan' ? 'fire' : u.role === 'admin' ? 'gold' : 'co'}">${u.role || 'buyer'}</span></td>
+      <td><span class="pill ${u.role==='artisan'?'fire':u.role==='admin'?'gold':'co'}">${u.role||'buyer'}</span></td>
       <td class="muted">${fd(u.created_at)}</td>
-      <td>${pill(u.status || 'active')}</td>
+      <td>${pill(u.status||'active')}</td>
     </tr>`).join('')
 }
 
-// ══════════════════════════════
-// AVIS
-// ══════════════════════════════
+// ══ AVIS ══
 async function loadReviews() {
-  const tb = document.getElementById('avis-tbody')
-  tb.innerHTML = `<tr class="loading-row"><td colspan="7"><span class="loader"></span></td></tr>`
-  const { data, error } = await db.from('reviews').select('*,products(name),users(full_name)').order('created_at', { ascending:false })
-  if (error) { tb.innerHTML = `<tr class="loading-row"><td colspan="7" style="color:var(--rouge)">⚠ ${error.message}</td></tr>`; return }
-  const pend = (data || []).filter(r => r.status === 'pending').length
-  document.getElementById('avis-sub').textContent = `${data?.length || 0} avis · ${pend} en attente`
-  document.getElementById('nb-avis').textContent = pend
-  if (!data?.length) { tb.innerHTML = emptyRow(7, 'Aucun avis'); return }
-  tb.innerHTML = data.map(r => `
+  const tb=document.getElementById('avis-tbody')
+  tb.innerHTML=`<tr class="loading-row"><td colspan="7"><span class="loader"></span></td></tr>`
+  const {data,error}=await db.from('reviews').select('*,products(name),users(full_name)').order('created_at',{ascending:false})
+  if(error){tb.innerHTML=`<tr class="loading-row"><td colspan="7" style="color:var(--rouge)">⚠ ${error.message}</td></tr>`;return}
+  const pend=(data||[]).filter(r=>r.status==='pending').length
+  document.getElementById('avis-sub').textContent=`${data?.length||0} avis · ${pend} en attente`
+  document.getElementById('nb-avis').textContent=pend
+  if(!data?.length){tb.innerHTML=emptyRow(7,'Aucun avis');return}
+  tb.innerHTML=data.map(r=>`
     <tr>
-      <td>${r.users?.full_name || '—'}</td>
-      <td class="muted">${r.products?.name || '—'}</td>
-      <td style="color:var(--gold)">${stars(r.rating)} (${r.rating || '—'})</td>
-      <td class="muted" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.comment || '—'}</td>
+      <td>${r.users?.full_name||'—'}</td>
+      <td class="muted">${r.products?.name||'—'}</td>
+      <td style="color:var(--gold)">${stars(r.rating)} (${r.rating||'—'})</td>
+      <td class="muted" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.comment||'—'}</td>
       <td class="muted">${fd(r.created_at)}</td>
-      <td>${pill(r.status || 'pending')}</td>
-      <td>${r.status === 'pending' ? `
+      <td>${pill(r.status||'pending')}</td>
+      <td>${r.status==='pending'?`
         <button class="btn btn-success btn-sm btn-icon" onclick="approveReview('${r.id}')"><span class="mi sm">check</span></button>
-        <button class="btn btn-danger btn-sm btn-icon" onclick="rejectReview('${r.id}')" style="margin-left:4px"><span class="mi sm">close</span></button>` : ''}</td>
+        <button class="btn btn-danger btn-sm btn-icon" onclick="rejectReview('${r.id}')" style="margin-left:4px"><span class="mi sm">close</span></button>`:''}</td>
     </tr>`).join('')
 }
-const approveReview = async id => { await db.from('reviews').update({ status:'approved' }).eq('id', id); loadReviews(); showToast('Avis approuvé ✓') }
-const rejectReview  = async id => { if (!confirm('Rejeter ?')) return; await db.from('reviews').update({ status:'rejected' }).eq('id', id); loadReviews(); showToast('Avis rejeté') }
+const approveReview = async id => { await db.from('reviews').update({status:'approved'}).eq('id',id); loadReviews(); showToast('Avis approuvé ✓') }
+const rejectReview  = async id => { if(!confirm('Rejeter ?')) return; await db.from('reviews').update({status:'rejected'}).eq('id',id); loadReviews(); showToast('Avis rejeté') }
 
-// ══════════════════════════════
-// PAIEMENTS
-// ══════════════════════════════
+// ══ PAIEMENTS ══
 async function loadPayments() {
-  const tb = document.getElementById('pay-tbody')
-  tb.innerHTML = `<tr class="loading-row"><td colspan="6"><span class="loader"></span></td></tr>`
-  const { data, error } = await db.from('payments').select('*').order('created_at', { ascending:false })
-  if (error) { tb.innerHTML = `<tr class="loading-row"><td colspan="6" style="color:var(--rouge)">⚠ ${error.message}</td></tr>`; return }
-  const total = (data || []).filter(p => p.status === 'paid').reduce((s, p) => s + (p.amount || 0), 0)
-  document.getElementById('pay-sub').textContent = `${data?.length || 0} transaction(s) · ${fmad(total)} encaissés`
-  if (!data?.length) { tb.innerHTML = emptyRow(6, 'Aucun paiement'); return }
-  tb.innerHTML = data.map(p => `
+  const tb=document.getElementById('pay-tbody')
+  tb.innerHTML=`<tr class="loading-row"><td colspan="6"><span class="loader"></span></td></tr>`
+  const {data,error}=await db.from('payments').select('*').order('created_at',{ascending:false})
+  if(error){tb.innerHTML=`<tr class="loading-row"><td colspan="6" style="color:var(--rouge)">⚠ ${error.message}</td></tr>`;return}
+  const total=(data||[]).filter(p=>p.status==='paid').reduce((s,p)=>s+(p.amount||0),0)
+  document.getElementById('pay-sub').textContent=`${data?.length||0} transaction(s) · ${fmad(total)} encaissés`
+  if(!data?.length){tb.innerHTML=emptyRow(6,'Aucun paiement');return}
+  tb.innerHTML=data.map(p=>`
     <tr>
-      <td class="mono">${String(p.id).substring(0, 8).toUpperCase()}</td>
-      <td class="mono muted">${p.order_id ? String(p.order_id).substring(0, 8) : '—'}</td>
+      <td class="mono">${String(p.id).substring(0,8).toUpperCase()}</td>
+      <td class="mono muted">${p.order_id?String(p.order_id).substring(0,8):'—'}</td>
       <td><strong style="color:var(--fire)">${fmad(p.amount)}</strong></td>
-      <td class="muted">${p.method || '—'}</td>
+      <td class="muted">${p.method||'—'}</td>
       <td>${pill(p.status)}</td>
       <td class="muted">${fd(p.created_at)}</td>
     </tr>`).join('')
 }
 
-// ══════════════════════════════
-// ANALYTIQUES
-// ══════════════════════════════
+// ══ ANALYTIQUES ══
 async function loadAnalytics() {
-  const [oR, uR, pR, pyR] = await Promise.all([
-    db.from('orders').select('status,shipping_country'),
-    db.from('users').select('id', { count:'exact' }),
-    db.from('products').select('id', { count:'exact' }),
-    db.from('payments').select('amount,status'),
-  ])
-  const orders = oR.data || [], pays = pyR.data || []
-  const rev = pays.filter(p => p.status === 'paid').reduce((s, p) => s + (p.amount || 0), 0)
-  document.getElementById('an-cmd').textContent = orders.length
-  document.getElementById('an-rev').textContent = fmad(rev)
-  document.getElementById('an-usr').textContent = uR.count || 0
-  document.getElementById('an-prd').textContent = pR.count || 0
-
-  const sm = {}; orders.forEach(o => { sm[o.status] = (sm[o.status] || 0) + 1 })
-  const sc = document.getElementById('an-status-chart')
-  if (!Object.keys(sm).length) { sc.innerHTML = '<div class="empty"><span class="mi">bar_chart</span><p>Aucune donnée</p></div>' }
-  else {
-    const mx = Math.max(...Object.values(sm))
-    sc.innerHTML = Object.entries(sm).map(([s, n]) => `
-      <div style="margin-bottom:12px">
-        <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:11px"><span>${s}</span><strong>${n}</strong></div>
-        <div class="prog-track"><div class="prog-fill fire" style="width:${(n/mx*100).toFixed(0)}%"></div></div>
-      </div>`).join('')
-  }
-  const cm = {}; orders.forEach(o => { if (o.shipping_country) cm[o.shipping_country] = (cm[o.shipping_country] || 0) + 1 })
-  const cc = document.getElementById('an-country-chart')
-  if (!Object.keys(cm).length) { cc.innerHTML = '<div class="empty"><span class="mi">public</span><p>Aucune donnée</p></div>' }
-  else {
-    const mx2 = Math.max(...Object.values(cm))
-    cc.innerHTML = Object.entries(cm).map(([c, n]) => `
-      <div style="margin-bottom:12px">
-        <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:11px"><span>${flag(c)}</span><strong>${n}</strong></div>
-        <div class="prog-track"><div class="prog-fill em" style="width:${(n/mx2*100).toFixed(0)}%"></div></div>
-      </div>`).join('')
-  }
+  const [oR,uR,pR,pyR]=await Promise.all([db.from('orders').select('status,shipping_country'),db.from('users').select('id',{count:'exact'}),db.from('products').select('id',{count:'exact'}),db.from('payments').select('amount,status')])
+  const orders=oR.data||[], pays=pyR.data||[]
+  const rev=pays.filter(p=>p.status==='paid').reduce((s,p)=>s+(p.amount||0),0)
+  document.getElementById('an-cmd').textContent=orders.length
+  document.getElementById('an-rev').textContent=fmad(rev)
+  document.getElementById('an-usr').textContent=uR.count||0
+  document.getElementById('an-prd').textContent=pR.count||0
+  const sm={}; orders.forEach(o=>{sm[o.status]=(sm[o.status]||0)+1})
+  const sc=document.getElementById('an-status-chart')
+  if(!Object.keys(sm).length){sc.innerHTML='<div class="empty"><span class="mi">bar_chart</span><p>Aucune donnée</p></div>'}
+  else{const mx=Math.max(...Object.values(sm)); sc.innerHTML=Object.entries(sm).map(([s,n])=>`<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:11px"><span>${s}</span><strong>${n}</strong></div><div class="prog-track"><div class="prog-fill fire" style="width:${(n/mx*100).toFixed(0)}%"></div></div></div>`).join('')}
+  const cm={}; orders.forEach(o=>{if(o.shipping_country)cm[o.shipping_country]=(cm[o.shipping_country]||0)+1})
+  const cc=document.getElementById('an-country-chart')
+  if(!Object.keys(cm).length){cc.innerHTML='<div class="empty"><span class="mi">public</span><p>Aucune donnée</p></div>'}
+  else{const mx2=Math.max(...Object.values(cm)); cc.innerHTML=Object.entries(cm).map(([c,n])=>`<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:11px"><span>${flag(c)}</span><strong>${n}</strong></div><div class="prog-track"><div class="prog-fill em" style="width:${(n/mx2*100).toFixed(0)}%"></div></div></div>`).join('')}
 }
 
-// ══════════════════════════════
-// QUÊTES & CHASSEUR
-// ══════════════════════════════
-let quests = [{ id:1, title:'Premier achat', desc:'Effectue ton premier achat', points:100, active:true }, { id:2, title:'Ambassadeur Gabon', desc:'Achète 3 produits gabonais', points:250, active:true }]
-function initQuetes() {
-  renderQuests()
-  const banUrl = localStorage.getItem('wenna_quest_banner')
-  if (banUrl) { document.getElementById('quest-banner-url').value = banUrl; updateBannerPreview(banUrl) }
-}
-function renderQuests() {
-  const c = document.getElementById('quests-list')
-  if (!quests.length) { c.innerHTML = '<div class="muted" style="font-size:11px;text-align:center;padding:16px">Aucune quête — Cliquer + pour ajouter</div>'; return }
-  c.innerHTML = quests.map((q, i) => `
+// ══ QUÊTES ══
+let quests=[{id:1,title:'Premier achat',desc:'Effectue ton premier achat',points:100,active:true},{id:2,title:'Ambassadeur Gabon',desc:'Achète 3 produits gabonais',points:250,active:true}]
+function initQuetes(){ renderQuests(); const banUrl=localStorage.getItem('wenna_quest_banner'); if(banUrl){document.getElementById('quest-banner-url').value=banUrl; updateBannerPreview(banUrl)} }
+function renderQuests(){
+  const c=document.getElementById('quests-list')
+  if(!quests.length){c.innerHTML='<div class="muted" style="font-size:11px;text-align:center;padding:16px">Aucune quête — Cliquer + pour ajouter</div>';return}
+  c.innerHTML=quests.map((q,i)=>`
     <div style="background:var(--smoke);border:1px solid var(--border);padding:12px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
         <div style="font-size:12px;font-weight:600">${q.title}</div>
         <div style="display:flex;align-items:center;gap:6px">
           <span class="pill gold" style="font-size:9px">${q.points} pts</span>
-          <label class="toggle"><input type="checkbox" ${q.active ? 'checked' : ''} onchange="quests[${i}].active=this.checked"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          <label class="toggle"><input type="checkbox" ${q.active?'checked':''} onchange="quests[${i}].active=this.checked"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
           <button class="btn btn-danger btn-sm btn-icon" onclick="removeQuest(${i})"><span class="mi sm">close</span></button>
         </div>
       </div>
       <div style="font-size:10px;color:var(--fog)">${q.desc}</div>
     </div>`).join('')
 }
-function addQuest() {
-  const title = prompt('Titre de la quête:'); if (!title) return
-  quests.push({ id:Date.now(), title, desc:prompt('Description:') || '', points:parseInt(prompt('Points:') || '100'), active:true })
-  renderQuests()
-}
-function removeQuest(i) { quests.splice(i, 1); renderQuests() }
-function previewBanner(input) { if (!input.files[0]) return; const r = new FileReader(); r.onload = e => updateBannerPreview(e.target.result); r.readAsDataURL(input.files[0]) }
-function updateBannerPreview(url) { const img = document.getElementById('quest-banner-img'); if (url) { img.src = url; img.style.display = 'block' } else img.style.display = 'none' }
-function saveQuestSettings() { const url = document.getElementById('quest-banner-url').value; if (url) localStorage.setItem('wenna_quest_banner', url); showToast('Paramètres quêtes sauvegardés ✓') }
+function addQuest(){const title=prompt('Titre de la quête:');if(!title)return;quests.push({id:Date.now(),title,desc:prompt('Description:')||'',points:parseInt(prompt('Points:')||'100'),active:true});renderQuests()}
+function removeQuest(i){quests.splice(i,1);renderQuests()}
 
-let chasseurs = [{ id:1, name:'Kofi M.', specialty:'Artisanat gabonais', active:true }, { id:2, name:'Yasmine B.', specialty:'Mode marocaine', active:true }]
-function initChasseur() { renderChasseurs() }
-function renderChasseurs() {
-  const c = document.getElementById('chasseurs-list')
-  c.innerHTML = chasseurs.map((ch, i) => `
+// ══ CHASSEUR ══
+let chasseurs=[{id:1,name:'Kofi M.',specialty:'Artisanat gabonais',active:true},{id:2,name:'Yasmine B.',specialty:'Mode marocaine',active:true}]
+function initChasseur(){renderChasseurs()}
+function renderChasseurs(){
+  const c=document.getElementById('chasseurs-list')
+  c.innerHTML=chasseurs.map((ch,i)=>`
     <div style="background:var(--smoke);border:1px solid var(--border);padding:10px;display:flex;align-items:center;gap:10px">
       <div style="width:32px;height:32px;background:rgba(255,107,43,.08);border:1px solid var(--border-fire);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--fire);font-family:var(--f-serif);font-style:italic">${ch.name.charAt(0)}</div>
       <div style="flex:1"><div style="font-size:12px;font-weight:500">${ch.name}</div><div style="font-size:10px;color:var(--fog)">${ch.specialty}</div></div>
-      <label class="toggle"><input type="checkbox" ${ch.active ? 'checked' : ''} onchange="chasseurs[${i}].active=this.checked"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+      <label class="toggle"><input type="checkbox" ${ch.active?'checked':''} onchange="chasseurs[${i}].active=this.checked"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
       <button class="btn btn-danger btn-sm btn-icon" onclick="removeChasseur(${i})"><span class="mi sm">close</span></button>
     </div>`).join('')
 }
-function addChasseur() {
-  const name = prompt('Nom:'); if (!name) return
-  chasseurs.push({ id:Date.now(), name, specialty:prompt('Spécialité:') || '', active:true })
-  renderChasseurs()
-}
-function removeChasseur(i) { chasseurs.splice(i, 1); renderChasseurs() }
-function saveChasseurSettings() { showToast('Paramètres chasseur sauvegardés ✓') }
+function addChasseur(){const name=prompt('Nom:');if(!name)return;chasseurs.push({id:Date.now(),name,specialty:prompt('Spécialité:')||'',active:true});renderChasseurs()}
+function removeChasseur(i){chasseurs.splice(i,1);renderChasseurs()}
+function saveChasseurSettings(){showToast('Paramètres chasseur sauvegardés ✓')}
 
-// ══════════════════════════════
-// MODALS
-// ══════════════════════════════
-function openModal(id) { document.getElementById(id).classList.add('open') }
-function closeModal(id) { document.getElementById(id).classList.remove('open') }
-document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open') }))
+// ══ MODALS ══
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}))
 
-// ══════════════════════════════
-// MISC
-// ══════════════════════════════
-function saveSettings() { showToast('Paramètres sauvegardés ✓') }
-async function refreshAll() { await loadDashboardKPIs() }
+// ══ INIT ══
+async function refreshAll(){ await loadDashboardKPIs() }
 
-// ══════════════════════════════
-// INIT
-// ══════════════════════════════
 async function initDashboard() {
   await testConnection()
+  await initSiteConfig()   // ← charge la config depuis Supabase
   await loadDashboardKPIs()
   renderIconGrid('')
-  document.getElementById('c-icon').addEventListener('input', function () { document.getElementById('icon-preview').textContent = this.value || '📦'; selectedIcon = this.value || '📦' })
+  document.getElementById('c-icon').addEventListener('input',function(){document.getElementById('icon-preview').textContent=this.value||'📦';selectedIcon=this.value||'📦'})
   try {
     db.channel('admin-rt')
-      .on('postgres_changes', { event:'*', schema:'public', table:'orders' }, () => loadDashboardKPIs())
-      .on('postgres_changes', { event:'INSERT', schema:'public', table:'products' }, () => loadDashboardKPIs())
+      .on('postgres_changes',{event:'*',schema:'public',table:'orders'},()=>loadDashboardKPIs())
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'products'},()=>loadDashboardKPIs())
+      // Reload config si modifiée ailleurs en temps réel
+      .on('postgres_changes',{event:'*',schema:'public',table:'site_config'},()=>initSiteConfig())
       .subscribe()
-  } catch(e) { console.log('Realtime:', e.message) }
+  } catch(e){ console.log('Realtime:',e.message) }
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
   await checkAuth()
-  // Si la session existe déjà et que l'auth-gate n'est pas affiché, lancer le dashboard
   if (!document.getElementById('auth-gate').classList.contains('show')) {
     await initDashboard()
   }
