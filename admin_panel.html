@@ -97,7 +97,7 @@ body{font-family:var(--f-body);background:var(--ink);color:var(--snow);min-heigh
 .eyebrow::before{content:'';display:block;width:16px;height:1px;background:var(--fire)}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
-.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:2px}
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
 .g21{display:grid;grid-template-columns:2fr 1fr;gap:16px}
 @media(max-width:1100px){.g4{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:760px){.g4,.g3,.g2,.g21{grid-template-columns:1fr}}
@@ -182,21 +182,6 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
 .img-slot:hover{border-color:var(--border-fire);color:var(--fire)}
 .img-slot .del-photo{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.8);padding:2px;cursor:pointer;display:none}
 .img-slot:hover .del-photo{display:flex}
-.icon-picker-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;max-height:180px;overflow-y:auto;padding:4px}
-.icon-opt{width:34px;height:34px;background:var(--smoke);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;transition:all .15s}
-.icon-opt:hover,.icon-opt.sel{background:rgba(255,107,43,.08);border-color:var(--border-fire)}
-.icon-search{width:100%;background:var(--smoke);border:none;border-bottom:1px solid var(--border);padding:8px 12px;font-size:12px;color:var(--snow);font-family:var(--f-body);outline:none;margin-bottom:10px}
-.icon-search:focus{border-bottom-color:var(--fire)}
-.carac-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
-.carac-row .fi{flex:1}
-.modal-overlay{position:fixed;inset:0;background:rgba(8,8,8,.88);backdrop-filter:blur(16px);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
-.modal-overlay.open{opacity:1;pointer-events:all}
-.modal{background:var(--coal);border:1px solid var(--border);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;animation:fadeUp .2s ease;position:relative}
-.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--fire),transparent)}
-.modal-hd{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--coal);z-index:10}
-.modal-title{font-family:var(--f-serif);font-size:20px;font-weight:700;font-style:italic}
-.modal-body{padding:22px 24px}
-.modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
 .banner-preview{background:var(--smoke);border:1px dashed var(--border-hi);min-height:100px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;text-align:center;font-size:11px;color:#333;gap:8px;flex-direction:column;transition:border-color .2s}
 .banner-preview:hover{border-color:var(--border-fire);color:var(--fire)}
 .banner-preview img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5}
@@ -205,6 +190,37 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
 #toast.show{opacity:1;transform:translateY(0)}
 #toast.success{border-color:rgba(0,196,106,.4);background:#0a1a10}
 #toast.error{border-color:rgba(244,63,94,.4);background:#1a0a0e}
+ 
+/* ══ CATÉGORIES ══ */
+.cat-parent-card{background:var(--coal);border:1px solid var(--border);margin-bottom:2px;overflow:hidden;transition:border-color .2s}
+.cat-parent-card.has-active{border-color:rgba(255,107,43,.2)}
+.cat-parent-header{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;transition:background .15s;user-select:none}
+.cat-parent-header:hover{background:var(--slate)}
+.cat-expand-icon{font-size:14px;color:var(--fog);transition:transform .2s;flex-shrink:0}
+.cat-parent-card.open .cat-expand-icon{transform:rotate(90deg)}
+.cat-parent-name{font-family:var(--f-serif);font-size:15px;font-weight:700;font-style:italic;flex:1}
+.cat-parent-desc{font-size:10px;color:var(--fog);margin-top:1px}
+.cat-count{font-size:9px;background:var(--smoke);color:var(--fog);padding:2px 8px;letter-spacing:.5px;flex-shrink:0}
+.cat-count.has-active{background:rgba(255,107,43,.08);color:var(--fire)}
+.cat-children{display:none;border-top:1px solid var(--border);padding:8px 0}
+.cat-parent-card.open .cat-children{display:block}
+.cat-child-row{display:flex;align-items:center;gap:12px;padding:9px 18px 9px 44px;border-bottom:1px solid var(--border);transition:background .1s}
+.cat-child-row:last-child{border-bottom:none}
+.cat-child-row:hover{background:var(--slate)}
+.cat-child-name{font-size:12px;font-weight:500;flex:1}
+.cat-child-desc{font-size:10px;color:var(--fog);flex:1}
+.cat-add-child{display:flex;align-items:center;gap:8px;padding:10px 18px 10px 44px;font-size:10px;color:#333;cursor:pointer;transition:color .15s;letter-spacing:1px;text-transform:uppercase;border:none;background:none;width:100%;font-family:var(--f-body)}
+.cat-add-child:hover{color:var(--fire)}
+.cat-status-bar{display:flex;align-items:center;gap:8px;padding:10px 18px;border-top:1px solid var(--border);background:rgba(0,0,0,.2)}
+.cat-status-txt{font-size:10px;color:var(--fog);flex:1}
+.cat-filter-tabs{display:flex;gap:2px;background:var(--smoke);padding:3px;margin-bottom:20px;width:fit-content}
+.cat-filter-btn{padding:6px 14px;font-size:10px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--fog);transition:all .15s;font-family:var(--f-body);letter-spacing:1px;text-transform:uppercase}
+.cat-filter-btn.active{background:var(--slate);color:var(--snow)}
+.cat-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:16px}
+.cat-stat{background:var(--slate);padding:16px 18px}
+.cat-stat-val{font-family:var(--f-serif);font-size:28px;font-weight:700;font-style:italic}
+.cat-stat-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#444;margin-top:2px}
+ 
 @media(max-width:768px){
   .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}
   .main{margin-left:0}.menu-toggle{display:flex}.content{padding:14px}
@@ -382,16 +398,31 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
     <div class="view" id="view-categories">
       <div class="sec-hd">
         <div><div class="eyebrow">Commerce</div><div class="sec-title">Catégories</div><div class="sec-sub" id="cat-sub">—</div></div>
-        <button class="btn btn-fire btn-sm" onclick="openAddCategory()"><span class="mi sm">add</span>Nouvelle</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-sec btn-sm" onclick="loadCategories()"><span class="mi sm">refresh</span></button>
+          <button class="btn btn-fire btn-sm" onclick="openAddCategory()"><span class="mi sm">add</span>Nouvelle</button>
+        </div>
       </div>
-      <div class="g3" id="cat-grid"><div style="text-align:center;padding:40px;color:#333"><span class="loader"></span></div></div>
+      <div class="cat-stats-row">
+        <div class="cat-stat"><div class="cat-stat-val" id="cat-kpi-total" style="color:var(--fire)">—</div><div class="cat-stat-lbl">Catégories parentes</div></div>
+        <div class="cat-stat"><div class="cat-stat-val" id="cat-kpi-active" style="color:var(--emerald)">—</div><div class="cat-stat-lbl">Actives (visibles)</div></div>
+        <div class="cat-stat"><div class="cat-stat-val" id="cat-kpi-sub" style="color:var(--gold)">—</div><div class="cat-stat-lbl">Sous-catégories</div></div>
+      </div>
+      <div class="cat-filter-tabs">
+        <button class="cat-filter-btn active" onclick="setCatFilter('all',this)">Toutes</button>
+        <button class="cat-filter-btn" onclick="setCatFilter('active',this)">Actives</button>
+        <button class="cat-filter-btn" onclick="setCatFilter('inactive',this)">Inactives</button>
+      </div>
+      <div class="alert co" style="margin-bottom:16px">
+        <span class="mi sm">info</span>
+        <span>Catégories <strong>inactives</strong> = masquées sur la boutique. Active quand tu as des produits disponibles.</span>
+      </div>
+      <div id="cat-tree"><div style="text-align:center;padding:48px;color:#333"><span class="loader"></span></div></div>
     </div>
 
     <!-- ARTISANS -->
     <div class="view" id="view-artisans">
-      <div class="sec-hd">
-        <div><div class="eyebrow">Commerce</div><div class="sec-title">Artisans</div><div class="sec-sub" id="art-sub">—</div></div>
-      </div>
+      <div class="sec-hd"><div><div class="eyebrow">Commerce</div><div class="sec-title">Artisans</div><div class="sec-sub" id="art-sub">—</div></div></div>
       <div class="g3" id="art-grid"><div style="text-align:center;padding:40px;color:#333"><span class="loader"></span></div></div>
     </div>
 
@@ -445,9 +476,7 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
 
     <!-- ANALYTIQUES -->
     <div class="view" id="view-analytics">
-      <div class="sec-hd">
-        <div><div class="eyebrow">Performances</div><div class="sec-title">Analytiques</div><div class="sec-sub">Données temps réel</div></div>
-      </div>
+      <div class="sec-hd"><div><div class="eyebrow">Performances</div><div class="sec-title">Analytiques</div><div class="sec-sub">Données temps réel</div></div></div>
       <div class="g4" style="margin-bottom:2px">
         <div class="stat-card fire"><div class="stat-val fire" id="an-cmd">—</div><div class="stat-lbl">Total commandes</div></div>
         <div class="stat-card em"><div class="stat-val em" id="an-rev">—</div><div class="stat-lbl">Revenus</div></div>
@@ -482,7 +511,7 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
               <div class="fg"><label class="fl">URL image</label><input class="fi" id="quest-banner-url" placeholder="https://…" oninput="updateBannerPreview(this.value)"/></div>
               <div class="fg"><label class="fl">Lien bannière</label><input class="fi" id="quest-banner-link" placeholder="https://…"/></div>
               <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
-                <div><div style="font-size:12px;font-weight:500">Bannière visible</div><div style="font-size:10px;color:var(--fog)">Affichée en haut de la boutique</div></div>
+                <div><div style="font-size:12px;font-weight:500">Bannière visible</div></div>
                 <label class="toggle"><input type="checkbox" id="quest-banner-enabled"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
               </div>
             </div>
@@ -502,7 +531,7 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
           <div class="card">
             <div class="card-hd"><div class="card-title">Visibilité</div></div>
             <div style="display:flex;flex-direction:column;gap:14px">
-              <div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:12px;font-weight:500">Page visible</div><div style="font-size:10px;color:var(--fog)">Accessible aux visiteurs</div></div><label class="toggle"><input type="checkbox" id="q-visible" checked/><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+              <div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:12px;font-weight:500">Page visible</div></div><label class="toggle"><input type="checkbox" id="q-visible" checked/><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
               <div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:12px;font-weight:500">Requiert connexion</div></div><label class="toggle"><input type="checkbox" id="q-login"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
             </div>
           </div>
@@ -545,7 +574,7 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
       </div>
     </div>
 
-    <!-- ══ BOUTIQUE CONFIG (NOUVELLE SECTION) ══ -->
+    <!-- BOUTIQUE CONFIG -->
     <div class="view" id="view-boutique-config">
       <div class="sec-hd">
         <div><div class="eyebrow">Contrôle boutique</div><div class="sec-title">Boutique Live</div><div class="sec-sub">Modifications appliquées en temps réel sur boutique.html</div></div>
@@ -554,25 +583,14 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
           <button class="btn btn-fire btn-sm" onclick="saveBoutiqueConfig()"><span class="mi sm">save</span>Sauvegarder tout</button>
         </div>
       </div>
-
-      <!-- Statut -->
       <div class="alert em" id="boutique-save-status" style="display:none"><span class="mi sm">check_circle</span><span>Configuration sauvegardée et live.</span></div>
-
       <div class="g2" style="align-items:start">
         <div style="display:flex;flex-direction:column;gap:16px">
-
-          <!-- Ticker -->
           <div class="card">
             <div class="card-hd"><div class="card-title">Ticker (bandeau défilant)</div></div>
-            <div class="alert co" style="margin-bottom:14px"><span class="mi sm">info</span><span>Un message par ligne. Séparateur ✦ ajouté automatiquement.</span></div>
-            <div class="fg">
-              <label class="fl">Messages (1 par ligne)</label>
-              <textarea class="fi" id="bc-ticker" rows="6" placeholder="Livraison express Casablanca → Libreville&#10;Nouveaux artisans rejoignent la communauté&#10;-15% première commande · Code WENNA15&#10;Paiements sécurisés · Retours 30 jours"></textarea>
-            </div>
-            <div style="font-size:10px;color:var(--fog)">Les lignes vides sont ignorées.</div>
+            <div class="alert co" style="margin-bottom:14px"><span class="mi sm">info</span><span>Un message par ligne.</span></div>
+            <div class="fg"><label class="fl">Messages (1 par ligne)</label><textarea class="fi" id="bc-ticker" rows="6"></textarea></div>
           </div>
-
-          <!-- Bannière boutique -->
           <div class="card">
             <div class="card-hd"><div class="card-title">Bannière promotionnelle</div></div>
             <div class="banner-preview" id="bc-banner-preview" onclick="document.getElementById('bc-banner-upload').click()">
@@ -584,60 +602,34 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
               <div class="fg"><label class="fl">URL image</label><input class="fi" id="bc-banner-url" placeholder="https://…" oninput="updateBcBannerPreview(this.value)"/></div>
               <div class="fg"><label class="fl">Lien (clic sur bannière)</label><input class="fi" id="bc-banner-link" placeholder="https://…"/></div>
               <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
-                <div><div style="font-size:12px;font-weight:500">Bannière activée</div><div style="font-size:10px;color:var(--fog)">Affiche la bannière en haut de la boutique</div></div>
+                <div><div style="font-size:12px;font-weight:500">Bannière activée</div></div>
                 <label class="toggle"><input type="checkbox" id="bc-banner-enabled"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
               </div>
             </div>
           </div>
         </div>
-
         <div style="display:flex;flex-direction:column;gap:16px">
-
-          <!-- Modes boutique -->
           <div class="card">
             <div class="card-hd"><div class="card-title">Comportement</div></div>
             <div style="display:flex;flex-direction:column;gap:16px">
-              <div style="display:flex;justify-content:space-between;align-items:center">
-                <div><div style="font-size:12px;font-weight:500">Mode maintenance</div><div style="font-size:10px;color:var(--fog)">Masque la boutique aux visiteurs</div></div>
-                <label class="toggle"><input type="checkbox" id="bc-maintenance"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-              </div>
-              <div style="display:flex;justify-content:space-between;align-items:center">
-                <div><div style="font-size:12px;font-weight:500">Avis clients</div><div style="font-size:10px;color:var(--fog)">Affiche les étoiles sur les produits</div></div>
-                <label class="toggle"><input type="checkbox" id="bc-reviews" checked/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-              </div>
-              <div style="display:flex;justify-content:space-between;align-items:center">
-                <div><div style="font-size:12px;font-weight:500">Modal quêtes (30s)</div><div style="font-size:10px;color:var(--fog)">Popup automatique sur la boutique</div></div>
-                <label class="toggle"><input type="checkbox" id="bc-quest-modal" checked/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:12px;font-weight:500">Mode maintenance</div><div style="font-size:10px;color:var(--fog)">Masque la boutique aux visiteurs</div></div><label class="toggle"><input type="checkbox" id="bc-maintenance"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+              <div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:12px;font-weight:500">Avis clients</div></div><label class="toggle"><input type="checkbox" id="bc-reviews" checked/><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+              <div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:12px;font-weight:500">Modal quêtes (30s)</div></div><label class="toggle"><input type="checkbox" id="bc-quest-modal" checked/><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
             </div>
           </div>
-
-          <!-- Livraison & devise -->
           <div class="card">
             <div class="card-hd"><div class="card-title">Livraison & Devise</div></div>
-            <div class="fg">
-              <label class="fl">Devise principale</label>
-              <select class="fi" id="bc-currency">
-                <option value="MAD">MAD — Dirham marocain</option>
-                <option value="EUR">EUR — Euro</option>
-                <option value="XAF">XAF — Franc CFA</option>
-              </select>
-            </div>
+            <div class="fg"><label class="fl">Devise principale</label><select class="fi" id="bc-currency"><option value="MAD">MAD</option><option value="EUR">EUR</option><option value="XAF">XAF</option></select></div>
             <div class="fi-row">
-              <div class="fg"><label class="fl">Seuil livraison gratuite</label><input class="fi" id="bc-shipping-threshold" type="number" value="2500" placeholder="2500"/></div>
-              <div class="fg"><label class="fl">Frais de port</label><input class="fi" id="bc-shipping-cost" type="number" value="120" placeholder="120"/></div>
+              <div class="fg"><label class="fl">Seuil livraison gratuite</label><input class="fi" id="bc-shipping-threshold" type="number" value="2500"/></div>
+              <div class="fg"><label class="fl">Frais de port</label><input class="fi" id="bc-shipping-cost" type="number" value="120"/></div>
             </div>
-            <div class="fg"><label class="fl">Délai estimé</label><input class="fi" id="bc-shipping-delay" value="5-12 jours ouvrés" placeholder="5-12 jours ouvrés"/></div>
+            <div class="fg"><label class="fl">Délai estimé</label><input class="fi" id="bc-shipping-delay" value="5-12 jours ouvrés"/></div>
           </div>
-
-          <!-- Prévisualisation config live -->
           <div class="card">
             <div class="card-hd"><div class="card-title">Config actuelle</div><button class="btn btn-sec btn-sm" onclick="loadBoutiqueConfig()"><span class="mi sm">refresh</span></button></div>
-            <div id="bc-current" style="font-size:11px;color:var(--fog);display:flex;flex-direction:column;gap:6px">
-              <div><span class="loader"></span>Chargement…</div>
-            </div>
+            <div id="bc-current" style="font-size:11px;color:var(--fog);display:flex;flex-direction:column;gap:6px"><div><span class="loader"></span></div></div>
           </div>
-
         </div>
       </div>
     </div>
@@ -655,14 +647,7 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
             <div class="fg"><label class="fl">Nom du site</label><input class="fi" value="WennaShop"/></div>
             <div class="fg"><label class="fl">Slogan</label><input class="fi" value="Bridging Gabon & Morocco"/></div>
             <div class="fg"><label class="fl">Email contact</label><input class="fi" value="contact@wennashop.com" type="email"/></div>
-            <div class="fg">
-              <label class="fl">Devise</label>
-              <select class="fi" id="param-currency">
-                <option value="MAD">MAD — Dirham marocain</option>
-                <option value="EUR">EUR — Euro</option>
-                <option value="XAF">XAF — Franc CFA</option>
-              </select>
-            </div>
+            <div class="fg"><label class="fl">Devise</label><select class="fi" id="param-currency"><option value="MAD">MAD</option><option value="EUR">EUR</option><option value="XAF">XAF</option></select></div>
           </div>
           <div class="card">
             <div class="card-title" style="margin-bottom:18px">Livraison</div>
@@ -671,11 +656,8 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
             <div class="fg"><label class="fl">Délai estimé</label><input class="fi" id="param-shipping-delay" value="5-12 jours ouvrés"/></div>
           </div>
           <div class="card">
-            <div class="card-title" style="margin-bottom:18px">Ticker (bandeau défilant)</div>
-            <div class="alert co" style="margin-bottom:12px"><span class="mi sm">info</span><span>Un message par ligne.</span></div>
-            <div class="fg">
-              <textarea class="fi" id="param-ticker" rows="5" placeholder="Livraison express…&#10;Nouveaux artisans…"></textarea>
-            </div>
+            <div class="card-title" style="margin-bottom:18px">Ticker</div>
+            <div class="fg"><textarea class="fi" id="param-ticker" rows="5"></textarea></div>
           </div>
         </div>
         <div style="display:flex;flex-direction:column;gap:16px">
@@ -696,8 +678,8 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
       </div>
     </div>
 
-  </div>
-</div>
+  </div><!-- end .content -->
+</div><!-- end .main -->
 
 <!-- MODAL PRODUIT -->
 <div class="modal-overlay" id="modal-product">
@@ -745,32 +727,44 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
 <div class="modal-overlay" id="modal-category">
   <div class="modal">
     <div class="modal-hd">
-      <div class="modal-title">Nouvelle catégorie</div>
+      <div class="modal-title" id="cat-modal-title">Nouvelle catégorie</div>
       <button class="btn btn-sec btn-sm btn-icon" onclick="closeModal('modal-category')"><span class="mi">close</span></button>
     </div>
     <div class="modal-body">
-      <div class="fg"><label class="fl">Nom *</label><input class="fi" id="c-name" placeholder="Artisanat, Mode…"/></div>
-      <div class="fg"><label class="fl">Description</label><input class="fi" id="c-desc"/></div>
-      <div class="fg"><label class="fl">Icône</label>
-        <input class="icon-search" id="icon-search" placeholder="Rechercher un emoji…" oninput="filterIcons(this.value)"/>
-        <div class="icon-picker-grid" id="icon-grid"></div>
-        <div style="margin-top:10px;display:flex;align-items:center;gap:8px">
-          <span style="font-size:11px;color:var(--fog)">Custom :</span>
-          <input class="fi" id="c-icon" style="width:70px;text-align:center;font-size:18px" placeholder="🎁" maxlength="4"/>
-          <span style="font-size:24px" id="icon-preview">🎁</span>
+      <input type="hidden" id="c-id"/>
+      <input type="hidden" id="c-parent-id"/>
+      <div class="fg" id="c-parent-fg" style="display:none">
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(255,107,43,.05);border:1px solid var(--border-fire)">
+          <span class="mi sm" style="color:var(--fire)">subdirectory_arrow_right</span>
+          <span style="font-size:11px;color:var(--fog)">Sous-catégorie de : <strong id="c-parent-name" style="color:var(--snow)">—</strong></span>
         </div>
       </div>
-      <div class="fg"><label class="fl">Image (URL)</label><input class="fi" id="c-img" placeholder="https://…"/></div>
+      <div class="fi-row">
+        <div class="fg"><label class="fl">Nom *</label><input class="fi" id="c-name" placeholder="Mode femme…"/></div>
+        <div class="fg" id="c-parent-select-fg">
+          <label class="fl">Catégorie parente</label>
+          <select class="fi" id="c-parent-select"><option value="">— Catégorie principale —</option></select>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Description</label><input class="fi" id="c-desc" placeholder="Courte description…"/></div>
+      <div class="fg"><label class="fl">Image bannière (URL)</label><input class="fi" id="c-img" placeholder="https://…"/></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--border);margin-top:8px">
+        <div>
+          <div style="font-size:12px;font-weight:500">Activer immédiatement</div>
+          <div style="font-size:10px;color:var(--fog)">Visible sur la boutique dès la création</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="c-active"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+      </div>
       <div class="modal-footer">
+        <button class="btn btn-danger btn-sm" id="c-delete-btn" onclick="deleteCategoryFromModal()" style="display:none;margin-right:auto"><span class="mi sm">delete</span>Supprimer</button>
         <button class="btn btn-sec" onclick="closeModal('modal-category')">Annuler</button>
-        <button class="btn btn-fire" onclick="saveCategory()"><span class="mi sm">save</span>Créer</button>
+        <button class="btn btn-fire" onclick="saveCategory()"><span class="mi sm">save</span>Enregistrer</button>
       </div>
     </div>
   </div>
 </div>
 
 <div id="toast"></div>
-
 <script>
 const SB_URL  = 'https://aakxoydznmybstfozjte.supabase.co'
 const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
