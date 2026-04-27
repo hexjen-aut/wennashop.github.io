@@ -405,7 +405,7 @@ let db = null
   if (!db) return
   try {
     const { data: { session } } = await db.auth.getSession()
-    if (session) window.location.href = 'hero.html'
+    if (session) window.location.href = 'boutique.html'
   } catch(e) {}
 })()
 
@@ -516,7 +516,7 @@ async function handleConnexion() {
     toast('Connexion réussie ✓', 'ok')
     setTimeout(() => {
       const role = data.user?.user_metadata?.role
-      window.location.href = role === 'artisan' ? 'dashboard-vendeur.html' : 'hero.html'
+      window.location.href = role === 'artisan' ? 'dashboard-vendeur.html' : 'boutique.html'
     }, 900)
   } catch(err) {
     let msg = 'Erreur de connexion.'
@@ -593,7 +593,7 @@ async function handleGoogle() {
   if (!db) { toast('Supabase non configuré', 'ko'); return }
   const { error } = await db.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: window.location.origin + '/hero.html' }
+    options: { redirectTo: window.location.origin + '/boutique.html' }
   })
   if (error) toast(error.message, 'ko')
 }
