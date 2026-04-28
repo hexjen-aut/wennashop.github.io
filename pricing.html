@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WennaShop — Plans vendeurs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0d;
+      --surface: #161616;
+      --surface-2: #1f1f1f;
+      --border: rgba(255,255,255,0.08);
+      --border-accent: rgba(255,255,255,0.16);
+      --text: #f5f3ee;
+      --text-muted: #8a8680;
+      --text-dim: #5a5855;
+      --accent: #c8a96e;
+      --accent-light: #e8c98e;
+      --accent-bg: rgba(200,169,110,0.08);
+      --accent-border: rgba(200,169,110,0.25);
+      --green: #4caf7d;
+      --green-bg: rgba(76,175,125,0.08);
+      --red-text: #7a7a7a;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(13,13,13,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .logo-mark {
+      width: 34px;
+      height: 34px;
+      background: var(--accent);
+      color: #0d0d0d;
+      font-family: 'DM Serif Display', serif;
+      font-size: 17px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    .logo-text {
+      font-size: 16px;
+      font-weight: 300;
+      color: var(--text);
+      letter-spacing: 0.01em;
+    }
+
+    .logo-text strong { font-weight: 500; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-nav {
+      padding: 7px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 400;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border-accent);
+      color: var(--text-muted);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--accent-border);
+      color: var(--accent);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      border: 1px solid var(--accent);
+      color: #0d0d0d;
+      font-weight: 500;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-light);
+    }
+
+    /* HERO */
+    .hero {
+      text-align: center;
+      padding: 80px 2rem 60px;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-bg);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 100px;
+      margin-bottom: 28px;
+    }
+
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(32px, 5vw, 50px);
+      font-weight: 400;
+      line-height: 1.15;
+      color: var(--text);
+      margin-bottom: 18px;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero p {
+      font-size: 16px;
+      color: var(--text-muted);
+      font-weight: 300;
+      max-width: 500px;
+      margin: 0 auto 36px;
+      line-height: 1.7;
+    }
+
+    /* TOGGLE CYCLE */
+    .billing-toggle {
+      display: inline-flex;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 4px;
+      gap: 2px;
+      margin-bottom: 60px;
+    }
+
+    .toggle-btn {
+      padding: 7px 20px;
+      border-radius: 100px;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: transparent;
+      color: var(--text-muted);
+    }
+
+    .toggle-btn.active {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border-accent);
+    }
+
+    /* PLANS GRID */
+    .plans-section {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 2rem 80px;
+    }
+
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    @media (max-width: 800px) {
+      .plans-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+    }
+
+    .plan-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 26px 26px;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+
+    .plan-card:hover { border-color: var(--border-accent); }
+
+    .plan-card.featured {
+      background: var(--surface);
+      border-color: var(--accent-border);
+      transform: none;
+    }
+
+    .plan-card.featured::before {
+      content: 'Recommandé';
+      position: absolute;
+      top: -13px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: #0d0d0d;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+
+    .plan-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 20px;
+    }
+
+    .plan-card.featured .plan-label { color: var(--accent); }
+
+    .plan-price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .plan-price {
+      font-family: 'DM Serif Display', serif;
+      font-size: 42px;
+      font-weight: 400;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .plan-currency {
+      font-size: 16px;
+      color: var(--text-muted);
+      font-weight: 300;
+      align-self: flex-end;
+      padding-bottom: 4px;
+    }
+
+    .plan-period {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .plan-commission {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .plan-commission strong {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .plan-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .plan-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .plan-features li.included { color: var(--text); }
+    .plan-features li.excluded { color: var(--text-dim); }
+
+    .feat-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 5px;
+    }
+
+    .feat-dot.yes { background: var(--green); }
+    .feat-dot.no  { background: var(--text-dim); }
+
+    .plan-cta {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      transition: all 0.15s;
+      border: 1px solid var(--border-accent);
+      background: transparent;
+      color: var(--text-muted);
+    }
+
+    .plan-cta:hover {
+      border-color: var(--text-muted);
+      color: var(--text);
+    }
+
+    .plan-card.featured .plan-cta {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #0d0d0d;
+      font-weight: 500;
+    }
+
+    .plan-card.featured .plan-cta:hover {
+      background: var(--accent-light);
+    }
+
+    /* COMPARISON TABLE */
+    .comparison-section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 2rem 100px;
+    }
+
+    .section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 28px;
+      font-weight: 400;
+      text-align: center;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .section-sub {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 300;
+      margin-bottom: 40px;
+    }
+
+    .comp-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .comp-table thead th {
+      padding: 14px 16px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .comp-table thead th:first-child { text-align: left; }
+
+    .comp-table thead th.col-featured {
+      color: var(--accent);
+      border-bottom: 1px solid var(--accent-border);
+    }
+
+    .comp-table tbody tr { border-bottom: 1px solid var(--border); }
+    .comp-table tbody tr:last-child { border-bottom: none; }
+
+    .comp-table tbody tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .comp-table td {
+      padding: 12px 16px;
+      font-size: 13.5px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .comp-table td:first-child {
+      text-align: left;
+      color: var(--text);
+      font-weight: 400;
+    }
+
+    .comp-table td.col-featured { background: rgba(200,169,110,0.04); }
+
+    .check-yes { color: var(--green); font-size: 15px; }
+    .check-no  { color: var(--text-dim); font-size: 15px; }
+
+    /* FAQ */
+    .faq-section {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 2rem 100px;
+    }
+
+    .faq-item {
+      border-top: 1px solid var(--border);
+      padding: 20px 0;
+    }
+
+    .faq-item:last-child { border-bottom: 1px solid var(--border); }
+
+    .faq-q {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .faq-q .faq-arrow {
+      color: var(--text-dim);
+      font-size: 18px;
+      flex-shrink: 0;
+      transition: transform 0.2s;
+      user-select: none;
+    }
+
+    .faq-item.open .faq-arrow { transform: rotate(45deg); }
+
+    .faq-a {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      font-weight: 300;
+      line-height: 1.7;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding-top 0.2s;
+    }
+
+    .faq-item.open .faq-a {
+      max-height: 200px;
+      padding-top: 12px;
+    }
+
+    /* CTA BANNER */
+    .cta-banner {
+      max-width: 900px;
+      margin: 0 auto 80px;
+      padding: 0 2rem;
+    }
+
+    .cta-inner {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 48px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-inner::before {
+      content: '';
+      position: absolute;
+      top: -60px; left: 50%;
+      transform: translateX(-50%);
+      width: 300px; height: 200px;
+      background: radial-gradient(ellipse, rgba(200,169,110,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-flags {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 22px;
+      margin-bottom: 16px;
+    }
+
+    .cta-sep { font-size: 14px; color: var(--text-dim); }
+
+    .cta-inner h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 26px;
+      font-weight: 400;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .cta-inner p {
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 300;
+      margin-bottom: 28px;
+    }
+
+    .cta-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-lg {
+      padding: 12px 28px;
+      font-size: 14px;
+      border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+
+    .btn-accent-lg {
+      background: var(--accent);
+      color: #0d0d0d;
+      border: 1px solid var(--accent);
+      font-weight: 500;
+    }
+
+    .btn-accent-lg:hover { background: var(--accent-light); }
+
+    .btn-outline-lg {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border-accent);
+    }
+
+    .btn-outline-lg:hover {
+      border-color: var(--text-muted);
+      color: var(--text);
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1080px;
+      margin: 0 auto;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-copy {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-links a {
+      font-size: 12px;
+      color: var(--text-dim);
+      text-decoration: none;
+    }
+
+    .footer-links a:hover { color: var(--text-muted); }
+
+    /* ANNUAL BADGE */
+    .annual-save {
+      display: none;
+      background: var(--green-bg);
+      color: var(--green);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    body.annual .annual-save { display: inline; }
+    body.annual .monthly-price { display: none; }
+    body.annual .annual-price { display: inline; }
+    body:not(.annual) .annual-price { display: none; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-mark">W</div>
+    <span class="logo-text">Wenna<strong>Shop</strong></span>
+  </a>
+  <div class="nav-links">
+    <a href="boutique.html" class="btn-nav btn-ghost">Boutique</a>
+    <a href="login.html" class="btn-nav btn-primary">Vendre</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">Vendeurs</div>
+  <h1>Un plan adapté à <em>chaque vendeur</em></h1>
+  <p>Commencez gratuitement. Évoluez à votre rythme. Réduisez votre commission au fil de votre croissance.</p>
+
+  <div class="billing-toggle">
+    <button class="toggle-btn active" id="btn-monthly" onclick="setBilling('monthly')">Mensuel</button>
+    <button class="toggle-btn" id="btn-annual" onclick="setBilling('annual')">Annuel<span class="annual-save">−20%</span></button>
+  </div>
+</section>
+
+<!-- PLANS -->
+<section class="plans-section">
+  <div class="plans-grid">
+
+    <!-- STARTER -->
+    <div class="plan-card">
+      <div class="plan-label">Starter</div>
+      <div class="plan-price-row">
+        <span class="plan-price monthly-price">0</span>
+        <span class="plan-price annual-price">0</span>
+        <span class="plan-currency">MAD</span>
+      </div>
+      <div class="plan-period">Pour toujours gratuit</div>
+      <div class="plan-commission">Commission par vente : <strong>10%</strong></div>
+      <ul class="plan-features">
+        <li class="included"><span class="feat-dot yes"></span>5 produits publiés max</li>
+        <li class="included"><span class="feat-dot yes"></span>2 photos par produit</li>
+        <li class="included"><span class="feat-dot yes"></span>Fiche boutique basique</li>
+        <li class="included"><span class="feat-dot yes"></span>Accès acheteurs Gabon & Maroc</li>
+        <li class="excluded"><span class="feat-dot no"></span>Quests (sourcing acheteur) non inclus</li>
+        <li class="excluded"><span class="feat-dot no"></span>Wallet vendeur non inclus</li>
+        <li class="excluded"><span class="feat-dot no"></span>Badge vérifié non inclus</li>
+      </ul>
+      <a href="login.html" class="plan-cta">Commencer gratuitement</a>
+    </div>
+
+    <!-- PRO -->
+    <div class="plan-card featured">
+      <div class="plan-label">Pro</div>
+      <div class="plan-price-row">
+        <span class="plan-price monthly-price">99</span>
+        <span class="plan-price annual-price">79</span>
+        <span class="plan-currency">MAD</span>
+      </div>
+      <div class="plan-period">
+        par mois
+        <span id="annual-note-pro" style="display:none; font-size:11px; color:var(--text-dim);"> — facturé <span id="annual-total-pro">948</span> MAD/an</span>
+      </div>
+      <div class="plan-commission">Commission par vente : <strong>7%</strong></div>
+      <ul class="plan-features">
+        <li class="included"><span class="feat-dot yes"></span>30 produits publiés max</li>
+        <li class="included"><span class="feat-dot yes"></span>5 photos par produit</li>
+        <li class="included"><span class="feat-dot yes"></span>Fiche boutique personnalisée</li>
+        <li class="included"><span class="feat-dot yes"></span>Accès aux Quests acheteurs</li>
+        <li class="included"><span class="feat-dot yes"></span>Wallet vendeur activé</li>
+        <li class="excluded"><span class="feat-dot no"></span>Badge vérifié non inclus</li>
+        <li class="excluded"><span class="feat-dot no"></span>Mise en avant produits non incluse</li>
+      </ul>
+      <a href="login.html" class="plan-cta">Démarrer avec Pro</a>
+    </div>
+
+    <!-- PREMIUM -->
+    <div class="plan-card">
+      <div class="plan-label">Premium</div>
+      <div class="plan-price-row">
+        <span class="plan-price monthly-price">249</span>
+        <span class="plan-price annual-price">199</span>
+        <span class="plan-currency">MAD</span>
+      </div>
+      <div class="plan-period">
+        par mois
+        <span id="annual-note-prem" style="display:none; font-size:11px; color:var(--text-dim);"> — facturé <span id="annual-total-prem">2388</span> MAD/an</span>
+      </div>
+      <div class="plan-commission">Commission par vente : <strong>4%</strong></div>
+      <ul class="plan-features">
+        <li class="included"><span class="feat-dot yes"></span>Produits illimités</li>
+        <li class="included"><span class="feat-dot yes"></span>10 photos par produit</li>
+        <li class="included"><span class="feat-dot yes"></span>Boutique premium + couverture</li>
+        <li class="included"><span class="feat-dot yes"></span>Quests en priorité</li>
+        <li class="included"><span class="feat-dot yes"></span>Wallet + virements prioritaires</li>
+        <li class="included"><span class="feat-dot yes"></span>Badge vendeur vérifié</li>
+        <li class="included"><span class="feat-dot yes"></span>Mise en avant catalogue</li>
+      </ul>
+      <a href="login.html" class="plan-cta">Passer à Premium</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- COMPARAISON -->
+<section class="comparison-section">
+  <h2 class="section-title">Comparer les plans</h2>
+  <p class="section-sub">Toutes les fonctionnalités en détail</p>
+
+  <table class="comp-table">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Starter</th>
+        <th class="col-featured">Pro</th>
+        <th>Premium</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Prix mensuel</td>
+        <td>Gratuit</td>
+        <td class="col-featured">99 MAD</td>
+        <td>249 MAD</td>
+      </tr>
+      <tr>
+        <td>Commission par vente</td>
+        <td>10%</td>
+        <td class="col-featured">7%</td>
+        <td>4%</td>
+      </tr>
+      <tr>
+        <td>Produits publiés</td>
+        <td>5 max</td>
+        <td class="col-featured">30 max</td>
+        <td>Illimités</td>
+      </tr>
+      <tr>
+        <td>Photos par produit</td>
+        <td>2</td>
+        <td class="col-featured">5</td>
+        <td>10</td>
+      </tr>
+      <tr>
+        <td>Fiche boutique</td>
+        <td>Basique</td>
+        <td class="col-featured">Personnalisée</td>
+        <td>Premium + couverture</td>
+      </tr>
+      <tr>
+        <td>Accès aux Quests</td>
+        <td><span class="check-no">—</span></td>
+        <td class="col-featured"><span class="check-yes">✓</span></td>
+        <td><span class="check-yes">✓</span></td>
+      </tr>
+      <tr>
+        <td>Quests en priorité</td>
+        <td><span class="check-no">—</span></td>
+        <td class="col-featured"><span class="check-no">—</span></td>
+        <td><span class="check-yes">✓</span></td>
+      </tr>
+      <tr>
+        <td>Wallet vendeur</td>
+        <td><span class="check-no">—</span></td>
+        <td class="col-featured"><span class="check-yes">✓</span></td>
+        <td><span class="check-yes">✓</span></td>
+      </tr>
+      <tr>
+        <td>Badge vérifié</td>
+        <td><span class="check-no">—</span></td>
+        <td class="col-featured"><span class="check-no">—</span></td>
+        <td><span class="check-yes">✓</span></td>
+      </tr>
+      <tr>
+        <td>Mise en avant catalogue</td>
+        <td><span class="check-no">—</span></td>
+        <td class="col-featured"><span class="check-no">—</span></td>
+        <td><span class="check-yes">✓</span></td>
+      </tr>
+      <tr>
+        <td>Paiement Attijari / CMI</td>
+        <td><span class="check-yes">✓</span></td>
+        <td class="col-featured"><span class="check-yes">✓</span></td>
+        <td><span class="check-yes">✓</span></td>
+      </tr>
+      <tr>
+        <td>Support</td>
+        <td>Email</td>
+        <td class="col-featured">Email prioritaire</td>
+        <td>WhatsApp dédié</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section">
+  <h2 class="section-title">Questions fréquentes</h2>
+  <p class="section-sub" style="margin-bottom:32px;">Tout ce qu'il faut savoir avant de choisir</p>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      Puis-je changer de plan à tout moment ?
+      <span class="faq-arrow">+</span>
+    </div>
+    <div class="faq-a">Oui. Vous pouvez passer à un plan supérieur immédiatement depuis votre espace vendeur. Pour un downgrade, il sera effectif à la fin de votre période en cours.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      Comment est prélevée la commission ?
+      <span class="faq-arrow">+</span>
+    </div>
+    <div class="faq-a">La commission est déduite automatiquement du montant de chaque vente livrée, avant virement sur votre wallet vendeur. Vous voyez le détail dans votre tableau de bord.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      Quels moyens de paiement sont acceptés pour l'abonnement ?
+      <span class="faq-arrow">+</span>
+    </div>
+    <div class="faq-a">Nous acceptons les cartes bancaires marocaines via Attijari Payment (Visa, Mastercard, CMI). Pour les vendeurs au Gabon, un paiement manuel par virement est possible — contactez-nous.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      Que se passe-t-il si j'atteins ma limite de produits en plan Starter ?
+      <span class="faq-arrow">+</span>
+    </div>
+    <div class="faq-a">Vos 5 produits existants restent publiés. Vous ne pouvez simplement plus en ajouter de nouveaux tant que vous n'avez pas passé un produit en pause ou upgradé votre plan.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      Qu'est-ce qu'une Quest ?
+      <span class="faq-arrow">+</span>
+    </div>
+    <div class="faq-a">Les Quests sont des demandes lancées par des acheteurs qui cherchent un produit spécifique. En tant que vendeur Pro ou Premium, vous pouvez proposer votre offre et décrocher la vente directement.</div>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<section class="cta-banner">
+  <div class="cta-inner">
+    <div class="cta-flags">
+      <span>🇬🇦</span>
+      <span class="cta-sep">·</span>
+      <span>🇲🇦</span>
+    </div>
+    <h2>Prêt à vendre sur deux marchés ?</h2>
+    <p>Inscrivez-vous en quelques minutes. Aucune carte requise pour le plan Starter.</p>
+    <div class="cta-actions">
+      <a href="login.html" class="btn-lg btn-accent-lg">Créer mon compte vendeur</a>
+      <a href="boutique.html" class="btn-lg btn-outline-lg">Explorer la boutique</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-copy">© 2025 WennaShop — Gabon · Maroc</span>
+  <div class="footer-links">
+    <a href="#">CGU</a>
+    <a href="#">Confidentialité</a>
+    <a href="#">Contact</a>
+  </div>
+</footer>
+
+<script>
+  function setBilling(mode) {
+    const body = document.body;
+    const btnM = document.getElementById('btn-monthly');
+    const btnA = document.getElementById('btn-annual');
+
+    if (mode === 'annual') {
+      body.classList.add('annual');
+      btnA.classList.add('active');
+      btnM.classList.remove('active');
+      document.getElementById('annual-note-pro').style.display = 'inline';
+      document.getElementById('annual-note-prem').style.display = 'inline';
+      document.getElementById('annual-total-pro').textContent = (79 * 12).toLocaleString('fr-FR');
+      document.getElementById('annual-total-prem').textContent = (199 * 12).toLocaleString('fr-FR');
+    } else {
+      body.classList.remove('annual');
+      btnM.classList.add('active');
+      btnA.classList.remove('active');
+      document.getElementById('annual-note-pro').style.display = 'none';
+      document.getElementById('annual-note-prem').style.display = 'none';
+    }
+  }
+
+  function toggleFaq(el) {
+    const item = el.parentElement;
+    item.classList.toggle('open');
+  }
+</script>
+
+</body>
+</html>
