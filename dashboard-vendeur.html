@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8"/>
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="description" content="WennaShop — Dashboard Vendeur"/>
   <title>Dashboard Vendeur – WennaShop</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
   <style>
-    :root{--fire:#FF6B2B;--ember:#E85A1A;--ink:#080808;--coal:#111111;--slate:#1A1A1A;--smoke:#242424;--fog:#888;--snow:#f0ece6;--border:rgba(255,255,255,.07);--border-fire:rgba(255,107,43,.25);--gold:#d0a600;--gold-dim:rgba(208,166,0,.12);--gold-border:rgba(208,166,0,.25);}
+    :root{--fire:#FF6B2B;--ember:#E85A1A;--ink:#080808;--coal:#111111;--slate:#1A1A1A;--smoke:#242424;--fog:#888;--snow:#f0ece6;--border:rgba(255,255,255,.07);--border-fire:rgba(255,107,43,.25);--gold:#d0a600;--gold-dim:rgba(208,166,0,.12);--gold-border:rgba(208,166,0,.25);--green:#4caf7d;}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     html{scroll-behavior:smooth;}
     body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);min-height:100dvh;overflow-x:hidden;}
@@ -40,14 +40,28 @@
     .sb-name{font-size:13px;font-weight:600;}
     .sb-country{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;display:flex;align-items:center;gap:5px;margin-top:3px;}
     .sb-dot{width:6px;height:6px;background:#22c55e;border-radius:50%;}
+
+    /* PLAN BADGE SIDEBAR */
+    .sb-plan-badge{padding:10px 20px;border-bottom:1px solid var(--border);}
+    .plan-pill{display:inline-flex;align-items:center;gap:7px;padding:5px 10px;font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;}
+    .plan-pill.starter{background:rgba(255,255,255,.04);border:1px solid var(--border);color:#666;}
+    .plan-pill.pro{background:rgba(255,107,43,.08);border:1px solid var(--border-fire);color:var(--fire);}
+    .plan-pill.premium{background:var(--gold-dim);border:1px solid var(--gold-border);color:var(--gold);}
+    .plan-pill-dot{width:5px;height:5px;border-radius:50%;}
+    .plan-pill.starter .plan-pill-dot{background:#666;}
+    .plan-pill.pro .plan-pill-dot{background:var(--fire);}
+    .plan-pill.premium .plan-pill-dot{background:var(--gold);}
+    .plan-upgrade-cta{display:block;margin-top:7px;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--fire);text-decoration:none;cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif;padding:0;transition:opacity .2s;}
+    .plan-upgrade-cta:hover{opacity:.7;}
+    .plan-upgrade-cta.hidden{display:none;}
+
     .sb-nav{flex:1;overflow-y:auto;padding:14px 10px;display:flex;flex-direction:column;gap:2px;}
     .sb-nav::-webkit-scrollbar{display:none;}
-
-    /* BOUTON QUÊTES SIDEBAR */
     .sb-quest-btn{display:flex;align-items:center;gap:12px;padding:10px 14px;margin:6px 0;background:rgba(208,166,0,.08);border:1px solid var(--gold-border);color:var(--gold);font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:all .2s;font-family:'DM Sans',sans-serif;}
     .sb-quest-btn:hover{background:rgba(208,166,0,.15);border-color:rgba(208,166,0,.5);}
-    .sb-quest-icon{font-size:18px;color:var(--gold);}
-
+    .sb-quest-btn.locked{background:rgba(255,255,255,.02);border-color:var(--border);color:#444;cursor:not-allowed;}
+    .sb-quest-btn.locked:hover{background:rgba(255,255,255,.02);border-color:var(--border);}
+    .sb-quest-icon{font-size:18px;}
     .nav-item{display:flex;align-items:center;gap:12px;padding:10px 14px;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#666;background:transparent;border:none;cursor:pointer;text-decoration:none;transition:all .2s;width:100%;text-align:left;font-family:'DM Sans',sans-serif;}
     .nav-item:hover{color:var(--snow);background:rgba(255,255,255,.04);}
     .nav-item.active{background:rgba(255,107,43,.1);color:var(--fire);border-left:2px solid var(--fire);padding-left:12px;}
@@ -65,10 +79,24 @@
     .page-date{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#444;margin-top:4px;}
     .btn-fire{display:inline-flex;align-items:center;gap:8px;background:var(--fire);color:#fff;padding:10px 22px;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;transition:background .2s,transform .2s;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));font-family:'DM Sans',sans-serif;}
     .btn-fire:hover{background:var(--ember);transform:translateY(-1px);}
+    .btn-fire:disabled{opacity:.4;cursor:not-allowed;transform:none;}
     .btn-ghost{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border-fire);color:var(--fire);background:transparent;padding:9px 18px;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
     .btn-ghost:hover{background:rgba(255,107,43,.08);}
     main{flex:1;padding:28px 32px;}
     .section{display:none;}.section.active{display:block;}
+
+    /* PLAN LIMIT BAR */
+    .plan-limit-bar{display:flex;align-items:center;justify-content:space-between;background:var(--slate);border:1px solid var(--border);padding:14px 20px;margin-bottom:16px;gap:16px;flex-wrap:wrap;}
+    .plan-limit-info{display:flex;align-items:center;gap:12px;}
+    .plan-limit-label{font-size:11px;color:#666;letter-spacing:1px;}
+    .plan-limit-count{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;font-style:italic;}
+    .plan-limit-count.ok{color:var(--snow);}
+    .plan-limit-count.warn{color:var(--gold);}
+    .plan-limit-count.full{color:#ef4444;}
+    .plan-limit-track{flex:1;min-width:120px;height:3px;background:rgba(255,255,255,.06);max-width:200px;}
+    .plan-limit-fill{height:100%;transition:width .4s;background:var(--fire);}
+    .plan-limit-fill.warn{background:var(--gold);}
+    .plan-limit-fill.full{background:#ef4444;}
 
     /* STATS */
     .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-bottom:2px;}
@@ -91,9 +119,13 @@
     /* QUÊTES CARD OVERVIEW */
     .quetes-overview{background:linear-gradient(135deg,rgba(208,166,0,.06),rgba(208,166,0,.02));border:1px solid var(--gold-border);padding:22px 24px;margin-bottom:2px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;cursor:pointer;transition:background .2s;}
     .quetes-overview:hover{background:rgba(208,166,0,.1);}
+    .quetes-overview.locked{background:rgba(255,255,255,.02);border-color:var(--border);cursor:default;}
+    .quetes-overview.locked:hover{background:rgba(255,255,255,.02);}
     .quetes-ov-left{display:flex;align-items:center;gap:16px;}
     .quetes-ov-icon{width:44px;height:44px;background:var(--gold-dim);border:1px solid var(--gold-border);display:flex;align-items:center;justify-content:center;color:var(--gold);}
+    .quetes-ov-icon.locked{background:rgba(255,255,255,.03);border-color:var(--border);color:#444;}
     .quetes-ov-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;font-style:italic;color:var(--gold);}
+    .quetes-ov-title.locked{color:#444;}
     .quetes-ov-sub{font-size:11px;color:#555;margin-top:2px;letter-spacing:.5px;}
     .quetes-ov-stats{display:flex;gap:20px;}
     .quetes-ov-stat{text-align:center;}
@@ -176,6 +208,8 @@
     .img-slot{aspect-ratio:1;background:var(--smoke);border:1px dashed var(--border);position:relative;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .2s;}
     .img-slot:hover{border-color:var(--border-fire);}
     .img-slot.filled{border-style:solid;border-color:var(--border);}
+    .img-slot.slot-locked{cursor:not-allowed;opacity:.3;}
+    .img-slot.slot-locked:hover{border-color:var(--border);}
     .img-slot img{width:100%;height:100%;object-fit:cover;}
     .img-slot .slot-del{position:absolute;top:3px;right:3px;width:20px;height:20px;background:rgba(8,8,8,.8);color:#fff;display:none;align-items:center;justify-content:center;cursor:pointer;z-index:2;}
     .img-slot:hover .slot-del{display:flex;}
@@ -186,6 +220,7 @@
     .upload-progress{height:2px;background:var(--border);margin-bottom:12px;display:none;}
     .upload-progress-fill{height:100%;background:var(--fire);width:0%;transition:width .3s;}
     .upload-status-text{font-size:10px;color:var(--fire);letter-spacing:1px;margin-bottom:12px;display:none;}
+    .plan-photo-note{font-size:11px;color:var(--gold);background:var(--gold-dim);border:1px solid var(--gold-border);padding:8px 12px;margin-bottom:16px;display:none;}
 
     /* CARACTÉRISTIQUES */
     .carac-row{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:8px;align-items:end;}
@@ -195,6 +230,38 @@
     .btn-carac-del .material-symbols-outlined{font-size:16px;}
     .btn-add-carac{display:flex;align-items:center;gap:6px;background:transparent;border:1px dashed var(--border);color:#555;padding:9px 16px;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;width:100%;justify-content:center;}
     .btn-add-carac:hover{border-color:var(--border-fire);color:var(--fire);}
+
+    /* ── SECTION PLAN ── */
+    .plan-section-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:24px;}
+    .plan-card-s{background:var(--slate);border:1px solid transparent;padding:24px 20px;position:relative;transition:all .2s;}
+    .plan-card-s.current{border-color:var(--border-fire);background:var(--coal);border-top:2px solid var(--fire);}
+    .plan-card-s.current.gold{border-color:var(--gold-border);border-top-color:var(--gold);}
+    .plan-card-s:not(.current):hover{border-color:var(--border);}
+    .plan-current-tag{position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--fire);color:#fff;font-size:8px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:3px 14px;white-space:nowrap;}
+    .plan-current-tag.gold{background:var(--gold);color:#000;}
+    .plan-s-name{font-size:9px;font-weight:500;letter-spacing:4px;text-transform:uppercase;color:#555;margin-bottom:16px;}
+    .plan-card-s.current .plan-s-name{color:var(--fire);}
+    .plan-card-s.current.gold .plan-s-name{color:var(--gold);}
+    .plan-s-price{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:700;font-style:italic;line-height:1;margin-bottom:4px;}
+    .plan-s-period{font-size:11px;color:#555;margin-bottom:12px;}
+    .plan-s-commission{font-size:12px;color:#888;padding-bottom:14px;border-bottom:1px solid var(--border);margin-bottom:14px;}
+    .plan-s-commission strong{color:var(--gold);}
+    .plan-s-features{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
+    .plan-s-features li{display:flex;align-items:flex-start;gap:8px;font-size:12px;}
+    .feat-dot-s{width:4px;height:4px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+    .feat-dot-s.on{background:var(--green);}
+    .feat-dot-s.off{background:#333;}
+    .plan-s-cta{display:block;width:100%;padding:11px;font-family:'DM Sans',sans-serif;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;text-align:center;cursor:pointer;transition:all .2s;border:1px solid var(--border-fire);background:transparent;color:var(--fire);clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));}
+    .plan-s-cta:hover{background:rgba(255,107,43,.08);}
+    .plan-s-cta.current{opacity:.4;cursor:not-allowed;pointer-events:none;}
+    .plan-s-cta.gold{border-color:var(--gold-border);color:var(--gold);}
+    .plan-s-cta.gold:hover{background:rgba(208,166,0,.1);}
+
+    .plan-sub-info{background:var(--slate);border:1px solid var(--border);padding:20px 24px;margin-bottom:2px;}
+    .plan-sub-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
+    .plan-sub-row:last-child{border-bottom:none;}
+    .plan-sub-key{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#555;}
+    .plan-sub-val{font-size:13px;color:var(--snow);}
 
     /* PROFILE */
     .eyebrow{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--fire);display:flex;align-items:center;gap:12px;}
@@ -209,6 +276,7 @@
       .stat-grid{grid-template-columns:repeat(2,1fr);}
       .two-col{grid-template-columns:1fr;}
       .form-grid{grid-template-columns:1fr;}
+      .plan-section-grid{grid-template-columns:1fr;}
       #menu-btn{display:block!important;}
     }
     @keyframes spin{to{transform:rotate(360deg);}}
@@ -243,6 +311,18 @@
       <div class="sb-country"><span class="sb-dot"></span><span id="seller-country">—</span></div>
     </div>
   </div>
+
+  <!-- PLAN BADGE SIDEBAR -->
+  <div class="sb-plan-badge">
+    <div id="sb-plan-pill" class="plan-pill starter">
+      <span class="plan-pill-dot"></span>
+      <span id="sb-plan-name">Starter</span>
+    </div>
+    <button id="sb-plan-upgrade" class="plan-upgrade-cta" onclick="showSection('plan')">
+      Changer de plan →
+    </button>
+  </div>
+
   <nav class="sb-nav">
     <button onclick="showSection('overview')" data-nav="overview" class="nav-item active">
       <span class="nav-icon material-symbols-outlined">dashboard</span>Vue d'ensemble
@@ -260,13 +340,16 @@
     <button onclick="showSection('reviews')" data-nav="reviews" class="nav-item">
       <span class="nav-icon material-symbols-outlined">star</span>Avis Clients
     </button>
+    <button onclick="showSection('plan')" data-nav="plan" class="nav-item">
+      <span class="nav-icon material-symbols-outlined">workspace_premium</span>Mon Plan
+    </button>
     <button onclick="showSection('profile')" data-nav="profile" class="nav-item">
       <span class="nav-icon material-symbols-outlined">store</span>Ma Boutique
     </button>
     <!-- BOUTON QUÊTES -->
-    <a href="quetes.html" class="sb-quest-btn" style="margin-top:8px;">
+    <a id="sb-quetes-btn" href="quetes.html" class="sb-quest-btn" style="margin-top:8px;">
       <span class="sb-quest-icon material-symbols-outlined">emoji_events</span>
-      Voir les Quêtes
+      <span>Voir les Quêtes</span>
     </a>
   </nav>
   <div class="sb-footer">
@@ -291,11 +374,11 @@
       </div>
     </div>
     <div style="display:flex;gap:10px;align-items:center;">
-      <a href="quetes.html" class="btn-quetes">
+      <a id="topbar-quetes-btn" href="quetes.html" class="btn-quetes">
         <span class="material-symbols-outlined" style="font-size:16px;color:var(--gold)">emoji_events</span>
         Quêtes
       </a>
-      <button onclick="showSection('products'); setTimeout(openProductModal, 100)" class="btn-fire">
+      <button id="topbar-new-product-btn" onclick="showSection('products'); setTimeout(openProductModal, 100)" class="btn-fire">
         <span class="material-symbols-outlined" style="font-size:16px">add</span>Nouveau produit
       </button>
     </div>
@@ -305,23 +388,24 @@
 
     <!-- OVERVIEW -->
     <section id="section-overview" class="section active">
-      <!-- Bannière Quêtes -->
-      <div class="quetes-overview" onclick="location.href='quetes.html'">
+      <div id="quetes-overview-banner" class="quetes-overview" onclick="location.href='quetes.html'">
         <div class="quetes-ov-left">
-          <div class="quetes-ov-icon"><span class="material-symbols-outlined">emoji_events</span></div>
+          <div id="quetes-ov-icon" class="quetes-ov-icon"><span class="material-symbols-outlined">emoji_events</span></div>
           <div>
-            <div class="quetes-ov-title">Système de Quêtes</div>
-            <div class="quetes-ov-sub">Des acheteurs cherchent des produits — devenez chasseur et gagnez des récompenses</div>
+            <div id="quetes-ov-title" class="quetes-ov-title">Système de Quêtes</div>
+            <div id="quetes-ov-sub" class="quetes-ov-sub">Des acheteurs cherchent des produits — devenez chasseur et gagnez des récompenses</div>
           </div>
         </div>
         <div class="quetes-ov-stats">
           <div class="quetes-ov-stat"><div class="val" id="ov-quests-open">—</div><div class="lbl">Ouvertes</div></div>
           <div class="quetes-ov-stat"><div class="val" id="ov-quests-reward">—</div><div class="lbl">Récomp. max</div></div>
         </div>
-        <a href="quetes.html" class="btn-quetes" onclick="event.stopPropagation()">
-          <span class="material-symbols-outlined" style="font-size:14px;">arrow_forward</span>
-          Voir les quêtes
-        </a>
+        <div id="quetes-ov-cta-wrap">
+          <a href="quetes.html" class="btn-quetes" onclick="event.stopPropagation()">
+            <span class="material-symbols-outlined" style="font-size:14px;">arrow_forward</span>
+            Voir les quêtes
+          </a>
+        </div>
       </div>
 
       <div class="stat-grid">
@@ -368,6 +452,20 @@
 
     <!-- PRODUCTS -->
     <section id="section-products" class="section">
+      <!-- Barre limite plan -->
+      <div class="plan-limit-bar" id="plan-limit-bar">
+        <div class="plan-limit-info">
+          <div>
+            <div class="plan-limit-label">Produits publiés</div>
+            <div id="plan-limit-count" class="plan-limit-count ok">— / —</div>
+          </div>
+        </div>
+        <div class="plan-limit-track">
+          <div id="plan-limit-fill" class="plan-limit-fill" style="width:0%"></div>
+        </div>
+        <button onclick="showSection('plan')" style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--fire);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;">Changer de plan →</button>
+      </div>
+
       <div class="toolbar">
         <div class="toolbar-left">
           <input id="prod-search" type="search" placeholder="Rechercher un produit…" oninput="filterProducts()" class="inp-dark" style="width:220px;"/>
@@ -378,7 +476,7 @@
             <option value="inactive">Inactif</option>
           </select>
         </div>
-        <button onclick="openProductModal()" class="btn-fire">
+        <button id="new-product-btn" onclick="openProductModal()" class="btn-fire">
           <span class="material-symbols-outlined" style="font-size:16px">add</span>Nouveau produit
         </button>
       </div>
@@ -464,6 +562,99 @@
       </div>
     </section>
 
+    <!-- ── SECTION MON PLAN ── -->
+    <section id="section-plan" class="section">
+      <!-- Info abonnement actif -->
+      <div class="plan-sub-info" id="plan-sub-info" style="margin-bottom:24px;">
+        <div class="plan-sub-row">
+          <span class="plan-sub-key">Plan actuel</span>
+          <span id="psi-plan" class="plan-sub-val">—</span>
+        </div>
+        <div class="plan-sub-row">
+          <span class="plan-sub-key">Commission par vente</span>
+          <span id="psi-commission" class="plan-sub-val">—</span>
+        </div>
+        <div class="plan-sub-row">
+          <span class="plan-sub-key">Produits max</span>
+          <span id="psi-products" class="plan-sub-val">—</span>
+        </div>
+        <div class="plan-sub-row">
+          <span class="plan-sub-key">Photos par produit</span>
+          <span id="psi-photos" class="plan-sub-val">—</span>
+        </div>
+        <div class="plan-sub-row">
+          <span class="plan-sub-key">Accès Quêtes</span>
+          <span id="psi-quetes" class="plan-sub-val">—</span>
+        </div>
+        <div class="plan-sub-row">
+          <span class="plan-sub-key">Abonnement actif depuis</span>
+          <span id="psi-since" class="plan-sub-val">—</span>
+        </div>
+        <div class="plan-sub-row">
+          <span class="plan-sub-key">Expire le</span>
+          <span id="psi-expires" class="plan-sub-val">—</span>
+        </div>
+      </div>
+
+      <!-- Grille des 3 plans -->
+      <div class="plan-section-grid">
+
+        <!-- STARTER -->
+        <div class="plan-card-s" id="plan-card-starter">
+          <div class="plan-s-name">Starter</div>
+          <div class="plan-s-price">0 <span style="font-size:14px;color:#555;font-style:normal;font-weight:300;">MAD</span></div>
+          <div class="plan-s-period">Pour toujours gratuit</div>
+          <div class="plan-s-commission">Commission : <strong>10%</strong></div>
+          <ul class="plan-s-features">
+            <li><span class="feat-dot-s on"></span>5 produits max</li>
+            <li><span class="feat-dot-s on"></span>2 photos / produit</li>
+            <li><span class="feat-dot-s on"></span>Fiche boutique basique</li>
+            <li><span class="feat-dot-s off"></span><span style="color:#444">Quêtes non incluses</span></li>
+            <li><span class="feat-dot-s off"></span><span style="color:#444">Wallet non inclus</span></li>
+          </ul>
+          <button class="plan-s-cta" id="plan-cta-starter" onclick="requestPlanChange('starter')">Plan actuel</button>
+        </div>
+
+        <!-- PRO -->
+        <div class="plan-card-s" id="plan-card-pro">
+          <div class="plan-s-name">Pro</div>
+          <div class="plan-s-price">99 <span style="font-size:14px;color:#555;font-style:normal;font-weight:300;">MAD</span></div>
+          <div class="plan-s-period">par mois</div>
+          <div class="plan-s-commission">Commission : <strong>7%</strong></div>
+          <ul class="plan-s-features">
+            <li><span class="feat-dot-s on"></span>30 produits max</li>
+            <li><span class="feat-dot-s on"></span>5 photos / produit</li>
+            <li><span class="feat-dot-s on"></span>Boutique personnalisée</li>
+            <li><span class="feat-dot-s on"></span>Accès aux Quêtes</li>
+            <li><span class="feat-dot-s on"></span>Wallet vendeur activé</li>
+          </ul>
+          <button class="plan-s-cta" id="plan-cta-pro" onclick="requestPlanChange('pro')">Passer à Pro</button>
+        </div>
+
+        <!-- PREMIUM -->
+        <div class="plan-card-s" id="plan-card-premium">
+          <div class="plan-s-name">Premium</div>
+          <div class="plan-s-price">249 <span style="font-size:14px;color:#555;font-style:normal;font-weight:300;">MAD</span></div>
+          <div class="plan-s-period">par mois</div>
+          <div class="plan-s-commission">Commission : <strong>4%</strong></div>
+          <ul class="plan-s-features">
+            <li><span class="feat-dot-s on"></span>Produits illimités</li>
+            <li><span class="feat-dot-s on"></span>10 photos / produit</li>
+            <li><span class="feat-dot-s on"></span>Boutique premium</li>
+            <li><span class="feat-dot-s on"></span>Quêtes en priorité</li>
+            <li><span class="feat-dot-s on"></span>Badge vérifié</li>
+          </ul>
+          <button class="plan-s-cta gold" id="plan-cta-premium" onclick="requestPlanChange('premium')">Passer à Premium</button>
+        </div>
+
+      </div>
+
+      <div style="background:rgba(255,107,43,.04);border:1px solid var(--border-fire);padding:16px 20px;font-size:12px;color:#888;line-height:1.7;">
+        Pour changer de plan, contactez-nous sur WhatsApp ou par email. L'activation est effectuée manuellement après confirmation du paiement.
+        <br><strong style="color:var(--fog);">support@wennashop.com · +212 6XX XXX XXX</strong>
+      </div>
+    </section>
+
     <!-- PROFILE -->
     <section id="section-profile" class="section" style="max-width:640px;">
       <div class="card" style="margin-bottom:2px;">
@@ -503,7 +694,7 @@
   </main>
 </div>
 
-<!-- MODAL PRODUIT avec tabs -->
+<!-- MODAL PRODUIT -->
 <div id="modal-overlay" class="modal-ov hidden">
   <div class="modal-box" onclick="event.stopPropagation()">
     <div class="modal-head">
@@ -566,8 +757,9 @@
 
       <!-- TAB PHOTOS -->
       <div id="tab-photos" style="display:none;">
-        <p style="font-size:12px;color:var(--fog);margin-bottom:16px;letter-spacing:.3px;">Ajoutez jusqu'à 4 photos. La première est l'image principale affichée dans la boutique.</p>
-        <div class="img-grid" id="imgGrid"><!-- slots injectés --></div>
+        <div id="plan-photo-note" class="plan-photo-note"></div>
+        <p style="font-size:12px;color:var(--fog);margin-bottom:16px;letter-spacing:.3px;">La première photo est l'image principale.</p>
+        <div class="img-grid" id="imgGrid"></div>
         <div class="upload-progress" id="uploadProgress"><div class="upload-progress-fill" id="uploadProgressFill"></div></div>
         <div class="upload-status-text" id="uploadStatusText"></div>
         <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" multiple style="display:none;" onchange="handleFiles(this.files)"/>
@@ -582,18 +774,17 @@
 
       <!-- TAB CARACTÉRISTIQUES -->
       <div id="tab-carac" style="display:none;">
-        <p style="font-size:12px;color:var(--fog);margin-bottom:16px;letter-spacing:.3px;">Ajoutez des attributs clé/valeur : matière, taille, couleur, poids, garantie…</p>
+        <p style="font-size:12px;color:var(--fog);margin-bottom:16px;letter-spacing:.3px;">Ajoutez des attributs clé/valeur : matière, taille, couleur, poids…</p>
         <div id="caracContainer"></div>
         <button type="button" onclick="addCarac()" class="btn-add-carac">
           <span class="material-symbols-outlined" style="font-size:16px;">add</span>
           Ajouter une caractéristique
         </button>
-
         <div style="border-top:1px solid var(--border);margin-top:20px;padding-top:20px;">
           <p style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:14px;">Champs dédiés</p>
           <div class="form-grid" style="margin-bottom:14px;">
-            <div class="form-group"><label class="form-label">Matière</label><input id="product-material" type="text" class="inp-full" placeholder="ex: Coton, Cuir, Bois…"/></div>
-            <div class="form-group"><label class="form-label">Couleur</label><input id="product-color" type="text" class="inp-full" placeholder="ex: Rouge, Naturel…"/></div>
+            <div class="form-group"><label class="form-label">Matière</label><input id="product-material" type="text" class="inp-full" placeholder="ex: Coton, Cuir…"/></div>
+            <div class="form-group"><label class="form-label">Couleur</label><input id="product-color" type="text" class="inp-full" placeholder="ex: Rouge…"/></div>
           </div>
           <div class="form-grid">
             <div class="form-group"><label class="form-label">Poids</label><input id="product-weight" type="text" class="inp-full" placeholder="ex: 250g"/></div>
@@ -651,14 +842,50 @@
   </div>
 </div>
 
+<!-- MODAL CHANGEMENT DE PLAN -->
+<div id="plan-modal-overlay" class="modal-ov hidden">
+  <div class="modal-box modal-sm" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <h3 class="modal-title">Changer de plan</h3>
+      <button onclick="closePlanModal()" class="modal-close"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div style="padding:24px;">
+      <p style="font-size:13px;color:#888;line-height:1.7;margin-bottom:20px;">
+        Pour passer au plan <strong id="plan-modal-name" style="color:var(--fire);">—</strong>, contactez notre équipe.<br>
+        L'activation est effectuée après confirmation du paiement.
+      </p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <a id="plan-modal-whatsapp" href="#" target="_blank" class="btn-fire" style="text-decoration:none;justify-content:center;">
+          <span class="material-symbols-outlined" style="font-size:16px">chat</span>
+          Contacter sur WhatsApp
+        </a>
+        <a href="mailto:support@wennashop.com" class="btn-ghost" style="text-decoration:none;justify-content:center;">
+          <span class="material-symbols-outlined" style="font-size:16px">mail</span>
+          Envoyer un email
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.config.js"></script>
 <script>
 function getDb(){ return window.db }
 
-let currentSeller=null, allProducts=[], prodPage=1, currentOrderId=null, productToDelete=null
-let categories=[], prodImages=['','','',''], caracList=[]
-const PROD_PER_PAGE=10
+// ── PLAN CONFIG ──
+const PLAN_CONFIG = {
+  starter:  { label:'Starter',  maxProducts:5,   maxPhotos:2,  commission:'10%', hasQuetes:false, hasWallet:false },
+  pro:      { label:'Pro',      maxProducts:30,  maxPhotos:5,  commission:'7%',  hasQuetes:true,  hasWallet:true  },
+  premium:  { label:'Premium',  maxProducts:9999,maxPhotos:10, commission:'4%',  hasQuetes:true,  hasWallet:true  }
+}
+
+let currentSeller = null
+let currentPlan = 'starter'
+let allProducts = [], prodPage = 1, currentOrderId = null, productToDelete = null
+let categories = [], prodImages = ['','','',''], caracList = []
+let totalProductCount = 0 // nb total de produits du vendeur
+const PROD_PER_PAGE = 10
 
 // ── UTILS ──
 function setInitMsg(m){ const e=document.getElementById('init-msg'); if(e) e.textContent=m }
@@ -688,37 +915,180 @@ function parseImages(imgData){
   } catch { return [imgData,'','',''] }
 }
 
+// ── PLAN UI ──
+function applyPlanUI(plan) {
+  currentPlan = plan || 'starter'
+  const cfg = PLAN_CONFIG[currentPlan] || PLAN_CONFIG.starter
+
+  // Sidebar badge
+  const pill = document.getElementById('sb-plan-pill')
+  pill.className = 'plan-pill ' + currentPlan
+  document.getElementById('sb-plan-name').textContent = cfg.label
+  const upgradeBtn = document.getElementById('sb-plan-upgrade')
+  upgradeBtn.classList.toggle('hidden', currentPlan === 'premium')
+
+  // Quêtes : lock si starter
+  const sbQuestBtn = document.getElementById('sb-quetes-btn')
+  const topbarQuestBtn = document.getElementById('topbar-quetes-btn')
+  if (!cfg.hasQuetes) {
+    sbQuestBtn.classList.add('locked')
+    sbQuestBtn.removeAttribute('href')
+    sbQuestBtn.onclick = (e) => { e.preventDefault(); showToast('Les Quêtes sont disponibles dès le plan Pro.','error'); }
+    if (topbarQuestBtn) { topbarQuestBtn.style.opacity = '.35'; topbarQuestBtn.style.pointerEvents = 'none'; }
+    // Banner overview
+    const banner = document.getElementById('quetes-overview-banner')
+    banner.classList.add('locked')
+    banner.onclick = null
+    document.getElementById('quetes-ov-icon').classList.add('locked')
+    document.getElementById('quetes-ov-title').classList.add('locked')
+    document.getElementById('quetes-ov-title').textContent = 'Quêtes — Plan Pro requis'
+    document.getElementById('quetes-ov-sub').textContent = 'Passez au plan Pro pour accéder aux demandes des acheteurs.'
+    const cta = document.getElementById('quetes-ov-cta-wrap')
+    if (cta) cta.innerHTML = `<button onclick="showSection('plan')" class="btn-ghost" style="font-size:9px;letter-spacing:2px;">Voir les plans</button>`
+  }
+
+  // Plan section : highlight la card active
+  ;['starter','pro','premium'].forEach(p => {
+    const card = document.getElementById('plan-card-' + p)
+    const cta = document.getElementById('plan-cta-' + p)
+    if (!card) return
+    if (p === currentPlan) {
+      card.classList.add('current')
+      if (p === 'premium') card.classList.add('gold')
+      if (!card.querySelector('.plan-current-tag')) {
+        const tag = document.createElement('div')
+        tag.className = 'plan-current-tag' + (p==='premium'?' gold':'')
+        tag.textContent = 'Plan actuel'
+        card.insertBefore(tag, card.firstChild)
+      }
+      cta.textContent = 'Plan actuel'
+      cta.classList.add('current')
+    } else {
+      card.classList.remove('current','gold')
+      const existing = card.querySelector('.plan-current-tag')
+      if (existing) existing.remove()
+      cta.classList.remove('current')
+    }
+  })
+
+  // Section plan : info
+  document.getElementById('psi-plan').textContent = cfg.label
+  document.getElementById('psi-commission').textContent = cfg.commission
+  document.getElementById('psi-products').textContent = cfg.maxProducts >= 9999 ? 'Illimités' : cfg.maxProducts + ' max'
+  document.getElementById('psi-photos').textContent = cfg.maxPhotos + ' photos / produit'
+  document.getElementById('psi-quetes').textContent = cfg.hasQuetes ? '✓ Inclus' : '— Non inclus'
+}
+
+function updatePlanLimitBar() {
+  const cfg = PLAN_CONFIG[currentPlan] || PLAN_CONFIG.starter
+  const used = totalProductCount
+  const max = cfg.maxProducts >= 9999 ? '∞' : cfg.maxProducts
+  const pct = cfg.maxProducts >= 9999 ? 10 : Math.min((used / cfg.maxProducts) * 100, 100)
+  const countEl = document.getElementById('plan-limit-count')
+  const fillEl = document.getElementById('plan-limit-fill')
+  countEl.textContent = used + ' / ' + max
+  fillEl.style.width = pct + '%'
+  const isWarn = cfg.maxProducts < 9999 && used >= cfg.maxProducts * 0.8
+  const isFull = cfg.maxProducts < 9999 && used >= cfg.maxProducts
+  countEl.className = 'plan-limit-count ' + (isFull ? 'full' : isWarn ? 'warn' : 'ok')
+  fillEl.className = 'plan-limit-fill ' + (isFull ? 'full' : isWarn ? 'warn' : '')
+
+  // Désactiver le bouton "Nouveau produit" si limit atteinte
+  const newBtn = document.getElementById('new-product-btn')
+  const topBtn = document.getElementById('topbar-new-product-btn')
+  if (isFull) {
+    if (newBtn) { newBtn.disabled = true; newBtn.title = 'Limite de produits atteinte. Changez de plan.' }
+    if (topBtn) { topBtn.disabled = true; topBtn.title = 'Limite de produits atteinte.' }
+  } else {
+    if (newBtn) { newBtn.disabled = false; newBtn.title = '' }
+    if (topBtn) { topBtn.disabled = false; topBtn.title = '' }
+  }
+}
+
+// ── PLAN CHANGE ──
+function requestPlanChange(plan) {
+  if (plan === currentPlan) return
+  const cfg = PLAN_CONFIG[plan]
+  document.getElementById('plan-modal-name').textContent = cfg.label
+  document.getElementById('plan-modal-name').style.color = plan === 'premium' ? 'var(--gold)' : 'var(--fire)'
+  const prices = { starter:'Gratuit', pro:'99 MAD/mois', premium:'249 MAD/mois' }
+  const msg = `Bonjour, je souhaite passer au plan ${cfg.label} (${prices[plan]}) sur WennaShop. Mon email : ${currentSeller?.email||'—'}`
+  document.getElementById('plan-modal-whatsapp').href = `https://wa.me/212600000000?text=${encodeURIComponent(msg)}`
+  document.getElementById('plan-modal-overlay').classList.remove('hidden')
+}
+function closePlanModal(){ document.getElementById('plan-modal-overlay').classList.add('hidden') }
+
+// ── ABONNEMENT ──
+async function loadSubscriptionInfo() {
+  const db = getDb()
+  try {
+    const { data: sub } = await db.from('subscriptions').select('*').eq('user_id', currentSeller.id).eq('status','active').order('created_at',{ascending:false}).limit(1).maybeSingle()
+    if (sub) {
+      document.getElementById('psi-since').textContent = fmtDate(sub.started_at || sub.created_at)
+      document.getElementById('psi-expires').textContent = sub.expires_at ? fmtDate(sub.expires_at) : 'Sans expiration'
+    } else {
+      document.getElementById('psi-since').textContent = fmtDate(currentSeller.created_at)
+      document.getElementById('psi-expires').textContent = currentPlan === 'starter' ? 'Toujours gratuit' : '—'
+    }
+  } catch(e) {}
+}
+
 // ── TABS MODAL ──
 function switchTab(name, btn){
   document.querySelectorAll('[id^="tab-"]').forEach(t=>t.style.display='none')
   document.getElementById('tab-'+name).style.display='block'
   document.querySelectorAll('.modal-tab').forEach(b=>b.classList.remove('active'))
   if(btn) btn.classList.add('active')
+  // Afficher la note photos selon le plan
+  if(name === 'photos') {
+    const cfg = PLAN_CONFIG[currentPlan]
+    const noteEl = document.getElementById('plan-photo-note')
+    if(cfg.maxPhotos < 10) {
+      noteEl.style.display = 'block'
+      noteEl.textContent = `Plan ${cfg.label} : ${cfg.maxPhotos} photos max par produit.`
+    } else {
+      noteEl.style.display = 'none'
+    }
+  }
 }
 
-// ── MULTI-IMAGE ──
+// ── MULTI-IMAGE (limité selon plan) ──
+function getMaxPhotos() { return (PLAN_CONFIG[currentPlan] || PLAN_CONFIG.starter).maxPhotos }
+
 function renderImgGrid(){
   const g=document.getElementById('imgGrid'); if(!g) return
-  g.innerHTML=prodImages.map((img,i)=>`
-    <div class="img-slot ${img?'filled':''} ${i===0?'img-slot-main':''}" onclick="clickSlot(${i})">
-      ${img
-        ? `<img src="${img}" onerror="this.parentNode.classList.remove('filled');this.remove()"/>
-           <div class="slot-del" onclick="event.stopPropagation();removeImg(${i})"><span class="material-symbols-outlined">close</span></div>`
-        : `<span class="material-symbols-outlined add-icon">add_photo_alternate</span>
-           <div class="img-slot-label">${i===0?'Principal':i+1}</div>`}
-    </div>`).join('')
+  const maxPh = getMaxPhotos()
+  g.innerHTML=prodImages.map((img,i)=>{
+    const isLocked = i >= maxPh
+    return `<div class="img-slot ${img?'filled':''} ${i===0?'img-slot-main':''} ${isLocked?'slot-locked':''}" onclick="${isLocked?`showPlanPhotoLimit()`:`clickSlot(${i})`}">
+      ${isLocked
+        ? `<span class="material-symbols-outlined" style="font-size:18px;color:#333">lock</span><div class="img-slot-label">Plan Pro+</div>`
+        : img
+          ? `<img src="${img}" onerror="this.parentNode.classList.remove('filled');this.remove()"/>
+             <div class="slot-del" onclick="event.stopPropagation();removeImg(${i})"><span class="material-symbols-outlined">close</span></div>`
+          : `<span class="material-symbols-outlined add-icon">add_photo_alternate</span>
+             <div class="img-slot-label">${i===0?'Principal':i+1}</div>`}
+    </div>`
+  }).join('')
+}
+
+function showPlanPhotoLimit(){
+  const cfg = PLAN_CONFIG[currentPlan]
+  showToast(`Plan ${cfg.label} : ${cfg.maxPhotos} photos max. Passez au plan supérieur.`, 'error')
 }
 
 function clickSlot(i){
+  const maxPh = getMaxPhotos()
+  if(i >= maxPh){ showPlanPhotoLimit(); return }
   window._activeSlot=i
   const f=document.getElementById('fileInput')
-  f.removeAttribute('multiple')
-  f.click()
+  f.removeAttribute('multiple'); f.click()
 }
 
 function handleFiles(files){
   const start = window._activeSlot != null ? window._activeSlot : 0
-  Array.from(files).slice(0, 4-start).forEach((file, idx) => {
+  const maxPh = getMaxPhotos()
+  Array.from(files).slice(0, maxPh-start).forEach((file, idx) => {
     uploadImage(file, start+idx)
   })
   window._activeSlot=null
@@ -726,21 +1096,16 @@ function handleFiles(files){
 
 async function uploadImage(file, slot){
   const db=getDb(); if(!db) return
+  const maxPh = getMaxPhotos()
+  if(slot >= maxPh){ showPlanPhotoLimit(); return }
   if(!file.type.startsWith('image/')){ showToast('Format non supporté','error'); return }
   if(file.size>5*1024*1024){ showToast('Image trop lourde (max 5Mo)','error'); return }
-
-  // Preview immédiat
   const reader=new FileReader()
   reader.onload=e=>{ prodImages[slot]=e.target.result; renderImgGrid() }
   reader.readAsDataURL(file)
-
-  // Progress
-  const prog=document.getElementById('uploadProgress')
-  const fill=document.getElementById('uploadProgressFill')
-  const txt=document.getElementById('uploadStatusText')
+  const prog=document.getElementById('uploadProgress'), fill=document.getElementById('uploadProgressFill'), txt=document.getElementById('uploadStatusText')
   prog.style.display='block'; txt.style.display='block'; txt.textContent=`Envoi photo ${slot+1}…`
   let p=0; const iv=setInterval(()=>{ p=Math.min(p+10,85); fill.style.width=p+'%' },100)
-
   try {
     const ext=file.name.split('.').pop()||'jpg'
     const path=`products/${currentSeller?.id||'anon'}/${Date.now()}_${slot}.${ext}`
@@ -761,8 +1126,9 @@ async function uploadImage(file, slot){
 
 function addImgFromUrl(){
   const url=document.getElementById('imgUrlInput').value.trim(); if(!url) return
-  const slot=prodImages.findIndex(i=>!i)
-  if(slot===-1){ showToast('4 photos maximum','error'); return }
+  const maxPh = getMaxPhotos()
+  const slot=prodImages.findIndex((img,i)=>!img && i<maxPh)
+  if(slot===-1){ showToast(`${getMaxPhotos()} photos maximum pour votre plan`,'error'); return }
   prodImages[slot]=url; renderImgGrid()
   document.getElementById('imgUrlInput').value=''
 }
@@ -773,8 +1139,8 @@ function renderCarac(){
   const c=document.getElementById('caracContainer'); if(!c) return
   c.innerHTML=caracList.map((item,i)=>`
     <div class="carac-row">
-      <input class="inp-full" placeholder="Clé (ex: Matière)" value="${item.k}" oninput="caracList[${i}].k=this.value"/>
-      <input class="inp-full" placeholder="Valeur (ex: Coton)" value="${item.v}" oninput="caracList[${i}].v=this.value"/>
+      <input class="inp-full" placeholder="Clé" value="${item.k}" oninput="caracList[${i}].k=this.value"/>
+      <input class="inp-full" placeholder="Valeur" value="${item.v}" oninput="caracList[${i}].v=this.value"/>
       <button class="btn-carac-del" onclick="removeCarac(${i})"><span class="material-symbols-outlined">delete</span></button>
     </div>`).join('')
 }
@@ -782,18 +1148,19 @@ function addCarac(){ caracList.push({k:'',v:''}); renderCarac() }
 function removeCarac(i){ caracList.splice(i,1); renderCarac() }
 
 // ── NAV ──
-const pageTitles={overview:"Vue d'ensemble",products:'Mes Produits',orders:'Commandes',revenue:'Revenus',reviews:'Avis Clients',profile:'Ma Boutique'}
+const pageTitles={overview:"Vue d'ensemble",products:'Mes Produits',orders:'Commandes',revenue:'Revenus',reviews:'Avis Clients',plan:'Mon Plan',profile:'Ma Boutique'}
 function showSection(name){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'))
   document.getElementById('section-'+name)?.classList.add('active')
   document.querySelectorAll('.nav-item[data-nav]').forEach(b=>{b.classList.toggle('active',b.dataset.nav===name)})
   document.getElementById('page-title').textContent=pageTitles[name]||''
   closeSidebar()
-  if(name==='products') loadProducts()
+  if(name==='products'){ loadProducts() }
   if(name==='orders') loadOrders()
   if(name==='revenue') loadRevenue()
   if(name==='reviews') loadReviews()
   if(name==='profile') loadProfileSection()
+  if(name==='plan') loadSubscriptionInfo()
 }
 function openSidebar(){
   document.getElementById('sidebar').classList.add('open')
@@ -826,7 +1193,7 @@ async function initAuth(){
     }
     if(!user){
       setInitMsg('Création du profil…')
-      const { data:newUser } = await db.from('users').insert({auth_id:session.user.id,email:session.user.email,role:'buyer',status:'active',created_at:new Date().toISOString(),updated_at:new Date().toISOString()}).select().single()
+      const { data:newUser } = await db.from('users').insert({auth_id:session.user.id,email:session.user.email,role:'buyer',status:'active',subscription_plan:'starter',created_at:new Date().toISOString(),updated_at:new Date().toISOString()}).select().single()
       user=newUser
     }
     if(!user){ showToast('Impossible de charger le profil.','error'); hideInitScreen(); return }
@@ -836,6 +1203,10 @@ async function initAuth(){
       return
     }
     currentSeller=user
+
+    // Appliquer le plan
+    applyPlanUI(user.subscription_plan || 'starter')
+
     const initials=((user.first_name?.[0]||'')+(user.last_name?.[0]||'')).toUpperCase()||user.email?.[0]?.toUpperCase()||'?'
     document.getElementById('seller-avatar').textContent=initials
     document.getElementById('seller-name').textContent=user.full_name||`${user.first_name||''} ${user.last_name||''}`.trim()||user.email
@@ -872,6 +1243,9 @@ async function loadOverview(){
     db.from('products').select('*',{count:'exact',head:true}).eq('seller_id',sid),
     db.from('products').select('*',{count:'exact',head:true}).eq('seller_id',sid).eq('status','active'),
   ])
+  totalProductCount = totalProd || 0
+  updatePlanLimitBar()
+
   let totalOrders=0, pendingOrders=0, totalRevenue=0, avgRating='—'
   if(productIds.length){
     const { data:items } = await db.from('order_items').select('order_id').in('product_id',productIds)
@@ -897,7 +1271,7 @@ async function loadOverview(){
   const badge=document.getElementById('badge-orders')
   if(pendingOrders>0){ badge.textContent=pendingOrders; badge.classList.remove('hidden') }
 
-  // Charger stats quêtes
+  // Stats quêtes (même si plan starter, on affiche les chiffres)
   try {
     const { count:qOpen } = await db.from('quests').select('id',{count:'exact',head:true}).eq('status','open')
     const { data:qRewards } = await db.from('quests').select('reward_amount').eq('status','open').order('reward_amount',{ascending:false}).limit(1)
@@ -949,7 +1323,10 @@ async function loadProducts(){
     .select('id, name, price, stock, status, country, origin_city, image_url, images, category_id, categories(name), material, color, characteristics')
     .eq('seller_id',currentSeller.id).order('created_at',{ascending:false})
   if(error){ showToast('Erreur produits: '+error.message,'error'); return }
-  allProducts=data||[]; prodPage=1; filterProducts()
+  allProducts=data||[]
+  totalProductCount = allProducts.length
+  updatePlanLimitBar()
+  prodPage=1; filterProducts()
 }
 
 function filterProducts(){
@@ -967,7 +1344,7 @@ function renderProductsTable(data){
   const total=data.length, totalPages=Math.ceil(total/PROD_PER_PAGE)
   if(prodPage>totalPages) prodPage=1
   const imgs = p => {
-    if(Array.isArray(p.images) && p.images.length) return p.images
+    if(Array.isArray(p.images)&&p.images.length) return p.images
     return parseImages(p.image_url)
   }
   tbody.innerHTML=data.slice((prodPage-1)*PROD_PER_PAGE,prodPage*PROD_PER_PAGE).map(p=>{
@@ -1009,6 +1386,16 @@ function renderProductsTable(data){
 function changeProdPage(dir){ prodPage+=dir; filterProducts() }
 
 function openProductModal(p=null){
+  // Vérifier la limite plan avant d'ouvrir (seulement pour nouveau produit)
+  if(!p) {
+    const cfg = PLAN_CONFIG[currentPlan]
+    if(cfg.maxProducts < 9999 && totalProductCount >= cfg.maxProducts) {
+      showToast(`Limite atteinte (${cfg.maxProducts} produits max en plan ${cfg.label}). Passez au plan supérieur.`, 'error')
+      setTimeout(() => showSection('plan'), 1200)
+      return
+    }
+  }
+
   prodImages=['','','','']
   caracList=[]
   document.getElementById('product-id').value=p?.id||''
@@ -1029,11 +1416,9 @@ function openProductModal(p=null){
   document.getElementById('product-weight').value=p?.weight||''
   document.getElementById('product-dimensions').value=p?.dimensions||''
 
-  // Images existantes
   if(p){
     if(Array.isArray(p.images)&&p.images.length) prodImages=[...p.images,...Array(4).fill('')].slice(0,4)
     else prodImages=parseImages(p.image_url)
-    // Caractéristiques existantes
     if(p.characteristics){
       try {
         const ch=typeof p.characteristics==='string'?JSON.parse(p.characteristics):p.characteristics
@@ -1060,15 +1445,22 @@ async function saveProduct(){
   if(!name) return showToast('Le nom est obligatoire.','error')
   if(!price||price<=0) return showToast('Prix invalide.','error')
 
+  // Vérifier la limite plan pour nouveau produit
+  if(!id){
+    const cfg = PLAN_CONFIG[currentPlan]
+    if(cfg.maxProducts < 9999 && totalProductCount >= cfg.maxProducts) {
+      showToast(`Limite atteinte pour le plan ${cfg.label}.`, 'error')
+      return
+    }
+  }
+
   const btn=document.getElementById('modal-submit-btn')
   btn.disabled=true; btn.textContent='Enregistrement…'
 
-  // Images : stocker en JSON si plusieurs
-  const imgs=prodImages.filter(Boolean)
+  const maxPh = getMaxPhotos()
+  const imgs=prodImages.filter((img,i)=>img && i<maxPh)
   const imageUrl=imgs.length>1?JSON.stringify(imgs):(imgs[0]||null)
   const imagesArr=imgs.length?imgs:null
-
-  // Caractéristiques
   const carac=caracList.filter(c=>c.k&&c.v)
 
   const payload={
@@ -1273,6 +1665,7 @@ async function resetPassword(){
 document.getElementById('modal-overlay').addEventListener('click',function(e){ if(e.target===this) closeProductModal() })
 document.getElementById('order-modal-overlay').addEventListener('click',function(e){ if(e.target===this) closeOrderModal() })
 document.getElementById('delete-modal-overlay').addEventListener('click',function(e){ if(e.target===this) closeDeleteModal() })
+document.getElementById('plan-modal-overlay').addEventListener('click',function(e){ if(e.target===this) closePlanModal() })
 
 document.addEventListener('DOMContentLoaded', initAuth)
 </script>
