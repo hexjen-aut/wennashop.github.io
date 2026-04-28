@@ -1,754 +1,513 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>WennaShop — Plans vendeurs</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+  <meta name="description" content="Choisissez votre plan vendeur sur WennaShop. Commencez gratuitement, évoluez selon votre croissance."/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.config.js"></script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg: #0d0d0d;
-      --surface: #161616;
-      --surface-2: #1f1f1f;
-      --border: rgba(255,255,255,0.08);
-      --border-accent: rgba(255,255,255,0.16);
-      --text: #f5f3ee;
-      --text-muted: #8a8680;
-      --text-dim: #5a5855;
-      --accent: #c8a96e;
-      --accent-light: #e8c98e;
-      --accent-bg: rgba(200,169,110,0.08);
-      --accent-border: rgba(200,169,110,0.25);
+      --fire: #FF6B2B;
+      --ember: #E85A1A;
+      --ink: #080808;
+      --coal: #111111;
+      --slate: #1A1A1A;
+      --smoke: #242424;
+      --fog: #888;
+      --mist: #555;
+      --snow: #f0ece6;
+      --border: rgba(255,255,255,.07);
+      --border-fire: rgba(255,107,43,.25);
+      --gold: #d0a600;
+      --gold-bg: rgba(208,166,0,.08);
+      --gold-border: rgba(208,166,0,.25);
       --green: #4caf7d;
-      --green-bg: rgba(76,175,125,0.08);
-      --red-text: #7a7a7a;
-      --radius: 12px;
-      --radius-sm: 8px;
     }
 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-
     body {
-      background: var(--bg);
-      color: var(--text);
       font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
-      line-height: 1.6;
-      min-height: 100vh;
+      background: var(--ink);
+      color: var(--snow);
+      min-height: 100dvh;
+      overflow-x: hidden;
+      padding-bottom: 80px;
     }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--coal); }
+    ::-webkit-scrollbar-thumb { background: rgba(255,107,43,.3); }
 
-    /* NAV */
+    /* ── NAV ── */
     nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(13,13,13,0.92);
-      backdrop-filter: blur(12px);
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(8,8,8,.92);
+      backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
-      padding: 0 2rem;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      padding: 16px 40px;
+      display: flex; align-items: center; justify-content: space-between;
     }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px; font-weight: 700; font-style: italic;
+      color: var(--snow); text-decoration: none; letter-spacing: -.5px;
     }
-
-    .logo-mark {
-      width: 34px;
-      height: 34px;
-      background: var(--accent);
-      color: #0d0d0d;
-      font-family: 'DM Serif Display', serif;
-      font-size: 17px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 6px;
-      flex-shrink: 0;
+    .nav-logo b { color: var(--fire); }
+    .nav-links { display: flex; gap: 28px; align-items: center; }
+    .nav-links a {
+      text-decoration: none; color: var(--fog);
+      font-size: 10px; font-weight: 500; letter-spacing: 2px;
+      text-transform: uppercase; transition: color .2s;
     }
-
-    .logo-text {
-      font-size: 16px;
-      font-weight: 300;
-      color: var(--text);
-      letter-spacing: 0.01em;
-    }
-
-    .logo-text strong { font-weight: 500; }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
+    .nav-links a:hover { color: var(--snow); }
+    .nav-links a.active { color: var(--fire); }
     .btn-nav {
-      padding: 7px 16px;
-      border-radius: var(--radius-sm);
-      font-size: 13px;
-      font-weight: 400;
-      cursor: pointer;
-      text-decoration: none;
-      transition: all 0.15s;
-      font-family: 'DM Sans', sans-serif;
+      background: var(--fire) !important; color: #fff !important;
+      padding: 8px 18px; font-size: 9px !important;
+      clip-path: polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));
     }
+    .btn-nav:hover { background: var(--ember) !important; }
+    @media(max-width:768px) { nav { padding: 14px 20px; } .nav-links a:not(.btn-nav) { display: none; } }
 
-    .btn-ghost {
-      background: transparent;
-      border: 1px solid var(--border-accent);
-      color: var(--text-muted);
-    }
-
-    .btn-ghost:hover {
-      border-color: var(--accent-border);
-      color: var(--accent);
-    }
-
-    .btn-primary {
-      background: var(--accent);
-      border: 1px solid var(--accent);
-      color: #0d0d0d;
-      font-weight: 500;
-    }
-
-    .btn-primary:hover {
-      background: var(--accent-light);
-    }
-
-    /* HERO */
+    /* ── HERO ── */
     .hero {
-      text-align: center;
-      padding: 80px 2rem 60px;
-      max-width: 680px;
-      margin: 0 auto;
+      background: var(--coal); border-bottom: 1px solid var(--border);
+      padding: 72px 40px 56px; text-align: center;
+      position: relative; overflow: hidden;
     }
-
+    .hero::before {
+      content: ''; position: absolute; top: -80px; right: -80px;
+      width: 320px; height: 320px;
+      background: radial-gradient(circle, rgba(255,107,43,.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: ''; position: absolute; bottom: -60px; left: -60px;
+      width: 240px; height: 240px;
+      background: radial-gradient(circle, rgba(208,166,0,.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-deco {
+      position: absolute; top: -30px; right: 40px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 280px; font-style: italic; font-weight: 700;
+      color: rgba(255,107,43,.025); line-height: 1;
+      pointer-events: none; user-select: none;
+    }
     .hero-eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--accent-bg);
-      border: 1px solid var(--accent-border);
-      color: var(--accent);
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 5px 14px;
-      border-radius: 100px;
-      margin-bottom: 28px;
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--gold-bg); border: 1px solid var(--gold-border);
+      color: var(--gold); padding: 6px 16px;
+      font-size: 9px; font-weight: 500; letter-spacing: 3px;
+      text-transform: uppercase; margin-bottom: 24px;
     }
-
     .hero h1 {
-      font-family: 'DM Serif Display', serif;
-      font-size: clamp(32px, 5vw, 50px);
-      font-weight: 400;
-      line-height: 1.15;
-      color: var(--text);
-      margin-bottom: 18px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(36px, 5vw, 64px);
+      font-weight: 700; font-style: italic; line-height: 1.05;
+      letter-spacing: -1px; margin-bottom: 16px;
     }
-
-    .hero h1 em {
-      font-style: italic;
-      color: var(--accent);
-    }
-
+    .hero h1 span { color: var(--fire); }
     .hero p {
-      font-size: 16px;
-      color: var(--text-muted);
-      font-weight: 300;
-      max-width: 500px;
-      margin: 0 auto 36px;
-      line-height: 1.7;
+      color: var(--fog); max-width: 500px;
+      margin: 0 auto 36px; font-size: 14px; line-height: 1.7;
     }
 
-    /* TOGGLE CYCLE */
+    /* Toggle billing */
     .billing-toggle {
-      display: inline-flex;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 100px;
-      padding: 4px;
-      gap: 2px;
-      margin-bottom: 60px;
+      display: inline-flex; background: var(--slate);
+      border: 1px solid var(--border); padding: 4px; gap: 2px;
     }
-
     .toggle-btn {
-      padding: 7px 20px;
-      border-radius: 100px;
-      border: none;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-      font-weight: 400;
-      cursor: pointer;
-      transition: all 0.2s;
-      background: transparent;
-      color: var(--text-muted);
+      padding: 8px 24px; border: none; font-family: 'DM Sans', sans-serif;
+      font-size: 10px; font-weight: 500; letter-spacing: 1.5px;
+      text-transform: uppercase; cursor: pointer; transition: all .2s;
+      background: transparent; color: var(--mist);
+    }
+    .toggle-btn.active { background: var(--smoke); color: var(--snow); }
+    .annual-badge {
+      background: rgba(76,175,125,.12); color: var(--green);
+      font-size: 9px; font-weight: 600; letter-spacing: 1px;
+      padding: 2px 7px; margin-left: 6px; vertical-align: middle;
     }
 
-    .toggle-btn.active {
-      background: var(--surface-2);
-      color: var(--text);
-      border: 1px solid var(--border-accent);
-    }
-
-    /* PLANS GRID */
+    /* ── PLANS ── */
     .plans-section {
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 0 2rem 80px;
+      max-width: 1100px; margin: 0 auto;
+      padding: 48px 24px 64px;
     }
-
     .plans-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      align-items: start;
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 2px; align-items: start;
     }
-
-    @media (max-width: 800px) {
-      .plans-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+    @media(max-width:800px) {
+      .plans-grid { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
     }
 
     .plan-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 28px 26px 26px;
-      position: relative;
-      transition: border-color 0.2s;
+      background: var(--slate); border: 1px solid transparent;
+      padding: 32px 28px 28px; position: relative;
+      transition: border-color .2s, background .2s;
     }
-
-    .plan-card:hover { border-color: var(--border-accent); }
-
+    .plan-card:hover { border-color: var(--border-fire); background: var(--smoke); }
     .plan-card.featured {
-      background: var(--surface);
-      border-color: var(--accent-border);
-      transform: none;
+      background: var(--coal);
+      border-color: var(--border-fire);
+      border-top: 2px solid var(--fire);
+    }
+    .plan-featured-label {
+      position: absolute; top: -1px; left: 50%; transform: translateX(-50%);
+      background: var(--fire); color: #fff;
+      font-size: 8px; font-weight: 500; letter-spacing: 2.5px;
+      text-transform: uppercase; padding: 4px 16px; white-space: nowrap;
     }
 
-    .plan-card.featured::before {
-      content: 'Recommandé';
-      position: absolute;
-      top: -13px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--accent);
-      color: #0d0d0d;
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      padding: 4px 14px;
-      border-radius: 100px;
-      white-space: nowrap;
+    .plan-name {
+      font-size: 9px; font-weight: 500; letter-spacing: 4px;
+      text-transform: uppercase; color: var(--mist); margin-bottom: 24px;
     }
+    .plan-card.featured .plan-name { color: var(--fire); }
 
-    .plan-label {
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      margin-bottom: 20px;
-    }
-
-    .plan-card.featured .plan-label { color: var(--accent); }
-
-    .plan-price-row {
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
-      margin-bottom: 4px;
-    }
-
+    .plan-price-row { display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px; }
     .plan-price {
-      font-family: 'DM Serif Display', serif;
-      font-size: 42px;
-      font-weight: 400;
-      color: var(--text);
-      line-height: 1;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 52px; font-weight: 700; font-style: italic;
+      color: var(--snow); line-height: 1;
     }
-
-    .plan-currency {
-      font-size: 16px;
-      color: var(--text-muted);
-      font-weight: 300;
-      align-self: flex-end;
-      padding-bottom: 4px;
-    }
-
-    .plan-period {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-    }
+    .plan-currency { font-size: 15px; color: var(--fog); font-weight: 300; padding-bottom: 6px; }
+    .plan-period { font-size: 12px; color: var(--mist); margin-bottom: 6px; }
+    .plan-annual-note { display: none; font-size: 10px; color: var(--mist); }
 
     .plan-commission {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-bottom: 24px;
-      padding-bottom: 24px;
+      font-size: 13px; color: var(--fog);
+      margin-bottom: 24px; padding-bottom: 24px;
       border-bottom: 1px solid var(--border);
     }
+    .plan-commission strong { color: var(--gold); font-weight: 500; }
 
-    .plan-commission strong {
-      color: var(--accent);
-      font-weight: 500;
-    }
-
-    .plan-features {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 28px;
-    }
-
+    .plan-features { list-style: none; display: flex; flex-direction: column; gap: 11px; margin-bottom: 28px; }
     .plan-features li {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      font-size: 13.5px;
-      color: var(--text-muted);
-      line-height: 1.4;
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 13px; line-height: 1.4;
     }
-
-    .plan-features li.included { color: var(--text); }
-    .plan-features li.excluded { color: var(--text-dim); }
-
+    .plan-features li.yes { color: var(--snow); }
+    .plan-features li.no { color: var(--mist); }
     .feat-dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      margin-top: 5px;
+      width: 4px; height: 4px; border-radius: 50%;
+      flex-shrink: 0; margin-top: 5px;
     }
-
-    .feat-dot.yes { background: var(--green); }
-    .feat-dot.no  { background: var(--text-dim); }
+    .feat-dot.on { background: var(--green); }
+    .feat-dot.off { background: var(--mist); }
 
     .plan-cta {
-      display: block;
-      width: 100%;
-      padding: 12px;
-      border-radius: var(--radius-sm);
+      display: block; width: 100%; padding: 13px;
       font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 400;
-      cursor: pointer;
-      text-align: center;
-      text-decoration: none;
-      transition: all 0.15s;
-      border: 1px solid var(--border-accent);
-      background: transparent;
-      color: var(--text-muted);
+      font-size: 9px; font-weight: 500; letter-spacing: 2.5px;
+      text-transform: uppercase; text-align: center;
+      text-decoration: none; cursor: pointer; transition: all .2s;
+      border: 1px solid var(--border-fire); background: transparent;
+      color: var(--fire);
+      clip-path: polygon(0 0,calc(100% - 7px) 0,100% 7px,100% 100%,7px 100%,0 calc(100% - 7px));
     }
-
-    .plan-cta:hover {
-      border-color: var(--text-muted);
-      color: var(--text);
-    }
-
+    .plan-cta:hover { background: rgba(255,107,43,.08); }
     .plan-card.featured .plan-cta {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #0d0d0d;
-      font-weight: 500;
+      background: var(--fire); border-color: var(--fire); color: #fff;
+    }
+    .plan-card.featured .plan-cta:hover { background: var(--ember); }
+
+    /* Plan actuel badge */
+    .current-plan-badge {
+      display: none; text-align: center; margin-bottom: 10px;
+      font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--green);
     }
 
-    .plan-card.featured .plan-cta:hover {
-      background: var(--accent-light);
-    }
-
-    /* COMPARISON TABLE */
-    .comparison-section {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 0 2rem 100px;
-    }
-
-    .section-title {
-      font-family: 'DM Serif Display', serif;
-      font-size: 28px;
-      font-weight: 400;
-      text-align: center;
-      color: var(--text);
+    /* ── COMPARISON ── */
+    .section-wrap { max-width: 960px; margin: 0 auto; padding: 0 24px 80px; }
+    .section-head { text-align: center; margin-bottom: 40px; }
+    .section-head h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(28px, 3vw, 40px); font-weight: 700; font-style: italic;
       margin-bottom: 8px;
     }
-
-    .section-sub {
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 14px;
-      font-weight: 300;
-      margin-bottom: 40px;
+    .section-head p { font-size: 13px; color: var(--fog); font-weight: 300; }
+    .section-line {
+      width: 40px; height: 1px; background: var(--fire);
+      margin: 12px auto 0;
     }
 
-    .comp-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
+    .comp-table { width: 100%; border-collapse: collapse; }
     .comp-table thead th {
-      padding: 14px 16px;
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      text-align: center;
+      padding: 14px 16px; font-size: 9px; font-weight: 500;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: var(--mist); text-align: center;
       border-bottom: 1px solid var(--border);
     }
-
     .comp-table thead th:first-child { text-align: left; }
-
-    .comp-table thead th.col-featured {
-      color: var(--accent);
-      border-bottom: 1px solid var(--accent-border);
-    }
-
+    .comp-table thead th.featured-col { color: var(--fire); border-bottom: 1px solid var(--border-fire); }
     .comp-table tbody tr { border-bottom: 1px solid var(--border); }
     .comp-table tbody tr:last-child { border-bottom: none; }
-
-    .comp-table tbody tr:hover td { background: rgba(255,255,255,0.02); }
-
+    .comp-table tbody tr:hover td { background: rgba(255,255,255,.015); }
     .comp-table td {
-      padding: 12px 16px;
-      font-size: 13.5px;
-      text-align: center;
-      color: var(--text-muted);
+      padding: 13px 16px; font-size: 13px;
+      text-align: center; color: var(--fog);
     }
+    .comp-table td:first-child { text-align: left; color: var(--snow); font-weight: 400; }
+    .comp-table td.featured-col { background: rgba(255,107,43,.03); }
+    .check-yes { color: var(--green); }
+    .check-no { color: var(--mist); }
 
-    .comp-table td:first-child {
-      text-align: left;
-      color: var(--text);
-      font-weight: 400;
-    }
-
-    .comp-table td.col-featured { background: rgba(200,169,110,0.04); }
-
-    .check-yes { color: var(--green); font-size: 15px; }
-    .check-no  { color: var(--text-dim); font-size: 15px; }
-
-    /* FAQ */
-    .faq-section {
-      max-width: 680px;
-      margin: 0 auto;
-      padding: 0 2rem 100px;
-    }
-
-    .faq-item {
-      border-top: 1px solid var(--border);
-      padding: 20px 0;
-    }
-
+    /* ── FAQ ── */
+    .faq-section { max-width: 680px; margin: 0 auto; padding: 0 24px 80px; }
+    .faq-item { border-top: 1px solid var(--border); padding: 20px 0; }
     .faq-item:last-child { border-bottom: 1px solid var(--border); }
-
     .faq-q {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text);
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
+      font-size: 14px; font-weight: 500; color: var(--snow);
+      cursor: pointer; display: flex; justify-content: space-between;
+      align-items: center; gap: 16px;
     }
-
-    .faq-q .faq-arrow {
-      color: var(--text-dim);
-      font-size: 18px;
-      flex-shrink: 0;
-      transition: transform 0.2s;
-      user-select: none;
+    .faq-arrow {
+      color: var(--mist); font-size: 20px; flex-shrink: 0;
+      transition: transform .2s; user-select: none; line-height: 1;
     }
-
-    .faq-item.open .faq-arrow { transform: rotate(45deg); }
-
+    .faq-item.open .faq-arrow { transform: rotate(45deg); color: var(--fire); }
     .faq-a {
-      font-size: 13.5px;
-      color: var(--text-muted);
-      font-weight: 300;
-      line-height: 1.7;
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.3s ease, padding-top 0.2s;
+      font-size: 13px; color: var(--fog); font-weight: 300;
+      line-height: 1.7; max-height: 0; overflow: hidden;
+      transition: max-height .3s ease, padding-top .2s;
     }
+    .faq-item.open .faq-a { max-height: 240px; padding-top: 14px; }
 
-    .faq-item.open .faq-a {
-      max-height: 200px;
-      padding-top: 12px;
-    }
-
-    /* CTA BANNER */
-    .cta-banner {
-      max-width: 900px;
-      margin: 0 auto 80px;
-      padding: 0 2rem;
-    }
-
+    /* ── CTA BANNER ── */
+    .cta-section { max-width: 900px; margin: 0 auto; padding: 0 24px 80px; }
     .cta-inner {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 48px 40px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
+      background: var(--coal); border: 1px solid var(--border);
+      padding: 56px 48px; text-align: center;
+      position: relative; overflow: hidden;
+      border-top: 1px solid var(--border-fire);
     }
-
     .cta-inner::before {
-      content: '';
-      position: absolute;
-      top: -60px; left: 50%;
-      transform: translateX(-50%);
-      width: 300px; height: 200px;
-      background: radial-gradient(ellipse, rgba(200,169,110,0.12) 0%, transparent 70%);
+      content: ''; position: absolute; top: -80px; left: 50%;
+      transform: translateX(-50%); width: 400px; height: 240px;
+      background: radial-gradient(ellipse, rgba(255,107,43,.07) 0%, transparent 70%);
       pointer-events: none;
     }
-
     .cta-flags {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      font-size: 22px;
-      margin-bottom: 16px;
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; font-size: 24px; margin-bottom: 20px;
     }
-
-    .cta-sep { font-size: 14px; color: var(--text-dim); }
-
+    .cta-sep { font-size: 14px; color: var(--mist); }
     .cta-inner h2 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 26px;
-      font-weight: 400;
-      color: var(--text);
-      margin-bottom: 10px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(28px, 3vw, 40px); font-weight: 700; font-style: italic;
+      margin-bottom: 12px;
     }
-
-    .cta-inner p {
-      color: var(--text-muted);
-      font-size: 14px;
-      font-weight: 300;
-      margin-bottom: 28px;
+    .cta-inner p { color: var(--fog); font-size: 14px; font-weight: 300; margin-bottom: 32px; }
+    .cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-fire {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--fire); color: #fff;
+      padding: 14px 32px; font-size: 9px; font-weight: 500;
+      letter-spacing: 2.5px; text-transform: uppercase;
+      border: none; cursor: pointer; text-decoration: none;
+      transition: background .2s, transform .15s; font-family: 'DM Sans', sans-serif;
+      clip-path: polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));
     }
-
-    .cta-actions {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .btn-lg {
-      padding: 12px 28px;
-      font-size: 14px;
-      border-radius: var(--radius-sm);
+    .btn-fire:hover { background: var(--ember); transform: translateY(-1px); }
+    .btn-ghost-lg {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1px solid var(--border-fire); color: var(--fire); background: transparent;
+      padding: 13px 28px; font-size: 9px; font-weight: 500;
+      letter-spacing: 2.5px; text-transform: uppercase;
+      cursor: pointer; transition: all .2s; text-decoration: none;
       font-family: 'DM Sans', sans-serif;
-      cursor: pointer;
-      text-decoration: none;
-      transition: all 0.15s;
     }
+    .btn-ghost-lg:hover { background: rgba(255,107,43,.08); }
 
-    .btn-accent-lg {
-      background: var(--accent);
-      color: #0d0d0d;
-      border: 1px solid var(--accent);
-      font-weight: 500;
-    }
-
-    .btn-accent-lg:hover { background: var(--accent-light); }
-
-    .btn-outline-lg {
-      background: transparent;
-      color: var(--text-muted);
-      border: 1px solid var(--border-accent);
-    }
-
-    .btn-outline-lg:hover {
-      border-color: var(--text-muted);
-      color: var(--text);
-    }
-
-    /* FOOTER */
+    /* ── FOOTER ── */
     footer {
-      border-top: 1px solid var(--border);
-      padding: 28px 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      max-width: 1080px;
-      margin: 0 auto;
-      gap: 16px;
-      flex-wrap: wrap;
+      border-top: 1px solid var(--border); padding: 28px 40px;
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: 1100px; margin: 0 auto; gap: 16px; flex-wrap: wrap;
     }
+    .footer-copy { font-size: 11px; color: var(--mist); }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-size: 11px; color: var(--mist); text-decoration: none; }
+    .footer-links a:hover { color: var(--fog); }
 
-    .footer-copy {
-      font-size: 12px;
-      color: var(--text-dim);
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      z-index: 400; background: var(--slate);
+      border: 1px solid var(--border-fire); color: var(--snow);
+      padding: 12px 28px; font-size: 12px; opacity: 0;
+      pointer-events: none; transition: opacity .3s, transform .3s;
+      white-space: nowrap; font-family: 'DM Sans', sans-serif;
     }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    #toast.success { border-color: rgba(76,175,125,.4); background: #081a0e; }
+    #toast.error { border-color: rgba(186,26,26,.4); background: #1a0808; }
 
-    .footer-links {
-      display: flex;
-      gap: 20px;
+    /* Mobile nav */
+    .bnav {
+      display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 40;
+      background: rgba(8,8,8,.95); backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border-fire); padding: 10px 0 22px;
     }
-
-    .footer-links a {
-      font-size: 12px;
-      color: var(--text-dim);
-      text-decoration: none;
+    .bnav-inner { display: flex; justify-content: space-around; }
+    .bnav-item {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      color: var(--mist); text-decoration: none;
+      font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
+      transition: color .2s;
     }
+    .bnav-item.active, .bnav-item:hover { color: var(--fire); }
+    .bnav-icon { font-size: 20px; line-height: 1; }
+    @media(max-width: 768px) { .bnav { display: block; } }
 
-    .footer-links a:hover { color: var(--text-muted); }
+    /* ── BILLING STATES ── */
+    body.annual .price-annual { display: inline; }
+    body.annual .price-monthly { display: none; }
+    body:not(.annual) .price-monthly { display: inline; }
+    body:not(.annual) .price-annual { display: none; }
+    body.annual .plan-annual-note { display: inline; }
 
-    /* ANNUAL BADGE */
-    .annual-save {
-      display: none;
-      background: var(--green-bg);
-      color: var(--green);
-      font-size: 10px;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 3px 8px;
-      border-radius: 4px;
-      margin-left: 8px;
-      vertical-align: middle;
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-
-    body.annual .annual-save { display: inline; }
-    body.annual .monthly-price { display: none; }
-    body.annual .annual-price { display: inline; }
-    body:not(.annual) .annual-price { display: none; }
+    .anim-up { animation: fadeUp .6s cubic-bezier(.22,1,.36,1) forwards; }
   </style>
 </head>
 <body>
 
-<!-- NAV -->
+<div id="toast"></div>
+
 <nav>
-  <a href="index.html" class="logo">
-    <div class="logo-mark">W</div>
-    <span class="logo-text">Wenna<strong>Shop</strong></span>
-  </a>
+  <a href="hero.html" class="nav-logo">Wenna<b>Shop</b></a>
   <div class="nav-links">
-    <a href="boutique.html" class="btn-nav btn-ghost">Boutique</a>
-    <a href="login.html" class="btn-nav btn-primary">Vendre</a>
+    <a href="boutique.html">Boutique</a>
+    <a href="quetes.html">Quêtes</a>
+    <a href="pricing.html" class="active">Plans</a>
+    <a href="compte.html" class="btn-nav">Mon compte</a>
   </div>
 </nav>
 
 <!-- HERO -->
-<section class="hero">
-  <div class="hero-eyebrow">Vendeurs</div>
-  <h1>Un plan adapté à <em>chaque vendeur</em></h1>
+<section class="hero anim-up">
+  <div class="hero-deco">P</div>
+  <div class="hero-eyebrow">Vendeurs · Tarification</div>
+  <h1>Un plan pour chaque<br/><span>ambition.</span></h1>
   <p>Commencez gratuitement. Évoluez à votre rythme. Réduisez votre commission au fil de votre croissance.</p>
 
   <div class="billing-toggle">
-    <button class="toggle-btn active" id="btn-monthly" onclick="setBilling('monthly')">Mensuel</button>
-    <button class="toggle-btn" id="btn-annual" onclick="setBilling('annual')">Annuel<span class="annual-save">−20%</span></button>
+    <button class="toggle-btn active" id="btnMonthly" onclick="setBilling('monthly')">Mensuel</button>
+    <button class="toggle-btn" id="btnAnnual" onclick="setBilling('annual')">
+      Annuel <span class="annual-badge">−20%</span>
+    </button>
   </div>
 </section>
 
-<!-- PLANS -->
+<!-- PLANS GRID -->
 <section class="plans-section">
   <div class="plans-grid">
 
     <!-- STARTER -->
-    <div class="plan-card">
-      <div class="plan-label">Starter</div>
+    <div class="plan-card" id="card-starter">
+      <div class="plan-name">Starter</div>
       <div class="plan-price-row">
-        <span class="plan-price monthly-price">0</span>
-        <span class="plan-price annual-price">0</span>
+        <span class="plan-price price-monthly">0</span>
+        <span class="plan-price price-annual">0</span>
         <span class="plan-currency">MAD</span>
       </div>
       <div class="plan-period">Pour toujours gratuit</div>
       <div class="plan-commission">Commission par vente : <strong>10%</strong></div>
       <ul class="plan-features">
-        <li class="included"><span class="feat-dot yes"></span>5 produits publiés max</li>
-        <li class="included"><span class="feat-dot yes"></span>2 photos par produit</li>
-        <li class="included"><span class="feat-dot yes"></span>Fiche boutique basique</li>
-        <li class="included"><span class="feat-dot yes"></span>Accès acheteurs Gabon & Maroc</li>
-        <li class="excluded"><span class="feat-dot no"></span>Quests (sourcing acheteur) non inclus</li>
-        <li class="excluded"><span class="feat-dot no"></span>Wallet vendeur non inclus</li>
-        <li class="excluded"><span class="feat-dot no"></span>Badge vérifié non inclus</li>
+        <li class="yes"><span class="feat-dot on"></span>5 produits publiés max</li>
+        <li class="yes"><span class="feat-dot on"></span>2 photos par produit</li>
+        <li class="yes"><span class="feat-dot on"></span>Fiche boutique basique</li>
+        <li class="yes"><span class="feat-dot on"></span>Accès acheteurs Gabon &amp; Maroc</li>
+        <li class="no"><span class="feat-dot off"></span>Quêtes (sourcing) non incluses</li>
+        <li class="no"><span class="feat-dot off"></span>Wallet vendeur non inclus</li>
+        <li class="no"><span class="feat-dot off"></span>Badge vérifié non inclus</li>
       </ul>
-      <a href="login.html" class="plan-cta">Commencer gratuitement</a>
+      <div class="current-plan-badge" id="badge-starter">Plan actuel</div>
+      <a href="login.html" class="plan-cta" id="cta-starter">Commencer gratuitement</a>
     </div>
 
-    <!-- PRO -->
-    <div class="plan-card featured">
-      <div class="plan-label">Pro</div>
+    <!-- PRO (featured) -->
+    <div class="plan-card featured" id="card-pro">
+      <div class="plan-featured-label">Recommandé</div>
+      <div class="plan-name">Pro</div>
       <div class="plan-price-row">
-        <span class="plan-price monthly-price">99</span>
-        <span class="plan-price annual-price">79</span>
+        <span class="plan-price price-monthly">99</span>
+        <span class="plan-price price-annual">79</span>
         <span class="plan-currency">MAD</span>
       </div>
       <div class="plan-period">
         par mois
-        <span id="annual-note-pro" style="display:none; font-size:11px; color:var(--text-dim);"> — facturé <span id="annual-total-pro">948</span> MAD/an</span>
+        <span class="plan-annual-note"> — facturé <span id="totalPro">948</span> MAD/an</span>
       </div>
       <div class="plan-commission">Commission par vente : <strong>7%</strong></div>
       <ul class="plan-features">
-        <li class="included"><span class="feat-dot yes"></span>30 produits publiés max</li>
-        <li class="included"><span class="feat-dot yes"></span>5 photos par produit</li>
-        <li class="included"><span class="feat-dot yes"></span>Fiche boutique personnalisée</li>
-        <li class="included"><span class="feat-dot yes"></span>Accès aux Quests acheteurs</li>
-        <li class="included"><span class="feat-dot yes"></span>Wallet vendeur activé</li>
-        <li class="excluded"><span class="feat-dot no"></span>Badge vérifié non inclus</li>
-        <li class="excluded"><span class="feat-dot no"></span>Mise en avant produits non incluse</li>
+        <li class="yes"><span class="feat-dot on"></span>30 produits publiés max</li>
+        <li class="yes"><span class="feat-dot on"></span>5 photos par produit</li>
+        <li class="yes"><span class="feat-dot on"></span>Fiche boutique personnalisée</li>
+        <li class="yes"><span class="feat-dot on"></span>Accès aux Quêtes acheteurs</li>
+        <li class="yes"><span class="feat-dot on"></span>Wallet vendeur activé</li>
+        <li class="no"><span class="feat-dot off"></span>Badge vérifié non inclus</li>
+        <li class="no"><span class="feat-dot off"></span>Mise en avant non incluse</li>
       </ul>
-      <a href="login.html" class="plan-cta">Démarrer avec Pro</a>
+      <div class="current-plan-badge" id="badge-pro">Plan actuel</div>
+      <a href="login.html" class="plan-cta" id="cta-pro">Démarrer avec Pro</a>
     </div>
 
     <!-- PREMIUM -->
-    <div class="plan-card">
-      <div class="plan-label">Premium</div>
+    <div class="plan-card" id="card-premium">
+      <div class="plan-name">Premium</div>
       <div class="plan-price-row">
-        <span class="plan-price monthly-price">249</span>
-        <span class="plan-price annual-price">199</span>
+        <span class="plan-price price-monthly">249</span>
+        <span class="plan-price price-annual">199</span>
         <span class="plan-currency">MAD</span>
       </div>
       <div class="plan-period">
         par mois
-        <span id="annual-note-prem" style="display:none; font-size:11px; color:var(--text-dim);"> — facturé <span id="annual-total-prem">2388</span> MAD/an</span>
+        <span class="plan-annual-note"> — facturé <span id="totalPremium">2388</span> MAD/an</span>
       </div>
       <div class="plan-commission">Commission par vente : <strong>4%</strong></div>
       <ul class="plan-features">
-        <li class="included"><span class="feat-dot yes"></span>Produits illimités</li>
-        <li class="included"><span class="feat-dot yes"></span>10 photos par produit</li>
-        <li class="included"><span class="feat-dot yes"></span>Boutique premium + couverture</li>
-        <li class="included"><span class="feat-dot yes"></span>Quests en priorité</li>
-        <li class="included"><span class="feat-dot yes"></span>Wallet + virements prioritaires</li>
-        <li class="included"><span class="feat-dot yes"></span>Badge vendeur vérifié</li>
-        <li class="included"><span class="feat-dot yes"></span>Mise en avant catalogue</li>
+        <li class="yes"><span class="feat-dot on"></span>Produits illimités</li>
+        <li class="yes"><span class="feat-dot on"></span>10 photos par produit</li>
+        <li class="yes"><span class="feat-dot on"></span>Boutique premium + couverture</li>
+        <li class="yes"><span class="feat-dot on"></span>Quêtes en priorité</li>
+        <li class="yes"><span class="feat-dot on"></span>Wallet + virements prioritaires</li>
+        <li class="yes"><span class="feat-dot on"></span>Badge vendeur vérifié</li>
+        <li class="yes"><span class="feat-dot on"></span>Mise en avant catalogue</li>
       </ul>
-      <a href="login.html" class="plan-cta">Passer à Premium</a>
+      <div class="current-plan-badge" id="badge-premium">Plan actuel</div>
+      <a href="login.html" class="plan-cta" id="cta-premium">Passer à Premium</a>
     </div>
 
   </div>
 </section>
 
-<!-- COMPARAISON -->
-<section class="comparison-section">
-  <h2 class="section-title">Comparer les plans</h2>
-  <p class="section-sub">Toutes les fonctionnalités en détail</p>
-
+<!-- COMPARISON TABLE -->
+<section class="section-wrap">
+  <div class="section-head">
+    <h2>Comparer les plans</h2>
+    <p>Toutes les fonctionnalités en détail</p>
+    <div class="section-line"></div>
+  </div>
   <table class="comp-table">
     <thead>
       <tr>
         <th></th>
         <th>Starter</th>
-        <th class="col-featured">Pro</th>
+        <th class="featured-col">Pro</th>
         <th>Premium</th>
       </tr>
     </thead>
@@ -756,73 +515,73 @@
       <tr>
         <td>Prix mensuel</td>
         <td>Gratuit</td>
-        <td class="col-featured">99 MAD</td>
+        <td class="featured-col">99 MAD</td>
         <td>249 MAD</td>
       </tr>
       <tr>
         <td>Commission par vente</td>
         <td>10%</td>
-        <td class="col-featured">7%</td>
+        <td class="featured-col">7%</td>
         <td>4%</td>
       </tr>
       <tr>
         <td>Produits publiés</td>
         <td>5 max</td>
-        <td class="col-featured">30 max</td>
+        <td class="featured-col">30 max</td>
         <td>Illimités</td>
       </tr>
       <tr>
         <td>Photos par produit</td>
         <td>2</td>
-        <td class="col-featured">5</td>
+        <td class="featured-col">5</td>
         <td>10</td>
       </tr>
       <tr>
         <td>Fiche boutique</td>
         <td>Basique</td>
-        <td class="col-featured">Personnalisée</td>
+        <td class="featured-col">Personnalisée</td>
         <td>Premium + couverture</td>
       </tr>
       <tr>
-        <td>Accès aux Quests</td>
+        <td>Accès aux Quêtes</td>
         <td><span class="check-no">—</span></td>
-        <td class="col-featured"><span class="check-yes">✓</span></td>
+        <td class="featured-col"><span class="check-yes">✓</span></td>
         <td><span class="check-yes">✓</span></td>
       </tr>
       <tr>
-        <td>Quests en priorité</td>
+        <td>Quêtes en priorité</td>
         <td><span class="check-no">—</span></td>
-        <td class="col-featured"><span class="check-no">—</span></td>
+        <td class="featured-col"><span class="check-no">—</span></td>
         <td><span class="check-yes">✓</span></td>
       </tr>
       <tr>
         <td>Wallet vendeur</td>
         <td><span class="check-no">—</span></td>
-        <td class="col-featured"><span class="check-yes">✓</span></td>
+        <td class="featured-col"><span class="check-yes">✓</span></td>
         <td><span class="check-yes">✓</span></td>
       </tr>
       <tr>
         <td>Badge vérifié</td>
         <td><span class="check-no">—</span></td>
-        <td class="col-featured"><span class="check-no">—</span></td>
+        <td class="featured-col"><span class="check-no">—</span></td>
         <td><span class="check-yes">✓</span></td>
       </tr>
       <tr>
         <td>Mise en avant catalogue</td>
         <td><span class="check-no">—</span></td>
-        <td class="col-featured"><span class="check-no">—</span></td>
+        <td class="featured-col"><span class="check-no">—</span></td>
         <td><span class="check-yes">✓</span></td>
       </tr>
       <tr>
         <td>Paiement Attijari / CMI</td>
         <td><span class="check-yes">✓</span></td>
-        <td class="col-featured"><span class="check-yes">✓</span></td>
+        <td class="featured-col"><span class="check-yes">✓</span></td>
         <td><span class="check-yes">✓</span></td>
       </tr>
       <tr>
         <td>Support</td>
         <td>Email</td>
-        <td class="col-featured">Email prioritaire</td>
+        <td class="featured-col">Email prioritaire</td>
         <td>WhatsApp dédié</td>
       </tr>
     </tbody>
@@ -831,8 +590,11 @@
 
 <!-- FAQ -->
 <section class="faq-section">
-  <h2 class="section-title">Questions fréquentes</h2>
-  <p class="section-sub" style="margin-bottom:32px;">Tout ce qu'il faut savoir avant de choisir</p>
+  <div class="section-head">
+    <h2>Questions fréquentes</h2>
+    <p>Tout ce qu'il faut savoir avant de choisir</p>
+    <div class="section-line"></div>
+  </div>
 
   <div class="faq-item">
     <div class="faq-q" onclick="toggleFaq(this)">
@@ -863,20 +625,28 @@
       Que se passe-t-il si j'atteins ma limite de produits en plan Starter ?
       <span class="faq-arrow">+</span>
     </div>
-    <div class="faq-a">Vos 5 produits existants restent publiés. Vous ne pouvez simplement plus en ajouter de nouveaux tant que vous n'avez pas passé un produit en pause ou upgradé votre plan.</div>
+    <div class="faq-a">Vos 5 produits existants restent publiés. Vous ne pouvez simplement plus en ajouter de nouveaux tant que vous n'avez pas mis un produit en pause ou upgradé votre plan.</div>
   </div>
 
   <div class="faq-item">
     <div class="faq-q" onclick="toggleFaq(this)">
-      Qu'est-ce qu'une Quest ?
+      Qu'est-ce qu'une Quête ?
       <span class="faq-arrow">+</span>
     </div>
-    <div class="faq-a">Les Quests sont des demandes lancées par des acheteurs qui cherchent un produit spécifique. En tant que vendeur Pro ou Premium, vous pouvez proposer votre offre et décrocher la vente directement.</div>
+    <div class="faq-a">Les Quêtes sont des demandes lancées par des acheteurs qui cherchent un produit spécifique. En tant que vendeur Pro ou Premium, vous pouvez proposer votre offre et décrocher la vente directement.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      Le plan Starter est-il vraiment gratuit pour toujours ?
+      <span class="faq-arrow">+</span>
+    </div>
+    <div class="faq-a">Oui, sans limite de durée. Seule la commission de 10% par vente s'applique. Aucune carte bancaire n'est requise pour s'inscrire en Starter.</div>
   </div>
 </section>
 
 <!-- CTA BANNER -->
-<section class="cta-banner">
+<section class="cta-section">
   <div class="cta-inner">
     <div class="cta-flags">
       <span>🇬🇦</span>
@@ -886,8 +656,8 @@
     <h2>Prêt à vendre sur deux marchés ?</h2>
     <p>Inscrivez-vous en quelques minutes. Aucune carte requise pour le plan Starter.</p>
     <div class="cta-actions">
-      <a href="login.html" class="btn-lg btn-accent-lg">Créer mon compte vendeur</a>
-      <a href="boutique.html" class="btn-lg btn-outline-lg">Explorer la boutique</a>
+      <a href="login.html" class="btn-fire">Créer mon compte vendeur</a>
+      <a href="boutique.html" class="btn-ghost-lg">Explorer la boutique</a>
     </div>
   </div>
 </section>
@@ -902,33 +672,126 @@
   </div>
 </footer>
 
+<!-- MOBILE NAV -->
+<nav class="bnav">
+  <div class="bnav-inner">
+    <a href="hero.html" class="bnav-item">
+      <span class="bnav-icon">⌂</span><span>Accueil</span>
+    </a>
+    <a href="boutique.html" class="bnav-item">
+      <span class="bnav-icon">◻</span><span>Boutique</span>
+    </a>
+    <a href="quetes.html" class="bnav-item">
+      <span class="bnav-icon">◎</span><span>Quêtes</span>
+    </a>
+    <a href="pricing.html" class="bnav-item active">
+      <span class="bnav-icon">◈</span><span>Plans</span>
+    </a>
+  </div>
+</nav>
+
 <script>
-  function setBilling(mode) {
-    const body = document.body;
-    const btnM = document.getElementById('btn-monthly');
-    const btnA = document.getElementById('btn-annual');
-
-    if (mode === 'annual') {
-      body.classList.add('annual');
-      btnA.classList.add('active');
-      btnM.classList.remove('active');
-      document.getElementById('annual-note-pro').style.display = 'inline';
-      document.getElementById('annual-note-prem').style.display = 'inline';
-      document.getElementById('annual-total-pro').textContent = (79 * 12).toLocaleString('fr-FR');
-      document.getElementById('annual-total-prem').textContent = (199 * 12).toLocaleString('fr-FR');
-    } else {
-      body.classList.remove('annual');
-      btnM.classList.add('active');
-      btnA.classList.remove('active');
-      document.getElementById('annual-note-pro').style.display = 'none';
-      document.getElementById('annual-note-prem').style.display = 'none';
+// ── UTILS ──
+function waitForDb(attempts = 0) {
+  return new Promise((resolve, reject) => {
+    const check = (n) => {
+      if (typeof window.db !== 'undefined') return resolve(window.db)
+      if (n >= 40) return reject(new Error('[WennaShop] window.db non disponible après 4s'))
+      setTimeout(() => check(n + 1), 100)
     }
-  }
+    check(attempts)
+  })
+}
 
-  function toggleFaq(el) {
-    const item = el.parentElement;
-    item.classList.toggle('open');
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.className = 'show ' + type
+  setTimeout(() => { t.className = '' }, 3500)
+}
+
+// ── BILLING TOGGLE ──
+function setBilling(mode) {
+  const body = document.body
+  const btnM = document.getElementById('btnMonthly')
+  const btnA = document.getElementById('btnAnnual')
+
+  if (mode === 'annual') {
+    body.classList.add('annual')
+    btnA.classList.add('active')
+    btnM.classList.remove('active')
+    document.getElementById('totalPro').textContent = (79 * 12).toLocaleString('fr-FR')
+    document.getElementById('totalPremium').textContent = (199 * 12).toLocaleString('fr-FR')
+  } else {
+    body.classList.remove('annual')
+    btnM.classList.add('active')
+    btnA.classList.remove('active')
   }
+}
+
+// ── FAQ ──
+function toggleFaq(el) {
+  el.parentElement.classList.toggle('open')
+}
+
+// ── SUPABASE : Auth + plan actuel ──
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const sb = await waitForDb()
+    const { data: { session } } = await sb.auth.getSession()
+    if (!session?.user) return // pas connecté, on laisse les CTA vers login.html
+
+    const userId = session.user.id
+
+    // Récupérer le plan du vendeur depuis la table users
+    const { data: userData, error } = await sb
+      .from('users')
+      .select('plan, role')
+      .eq('auth_id', userId)
+      .single()
+
+    if (error || !userData) return
+
+    const plan = userData.plan || 'starter' // fallback starter
+    const role = userData.role
+
+    // Afficher le plan actuel + adapter les CTA
+    highlightCurrentPlan(plan, role)
+
+  } catch (e) {
+    console.warn('[WennaShop] pricing auth check:', e.message)
+  }
+})
+
+function highlightCurrentPlan(plan, role) {
+  const plans = ['starter', 'pro', 'premium']
+
+  plans.forEach(p => {
+    const badge = document.getElementById('badge-' + p)
+    const cta = document.getElementById('cta-' + p)
+    const card = document.getElementById('card-' + p)
+
+    if (p === plan) {
+      // Plan actuel
+      badge.style.display = 'block'
+      cta.textContent = 'Plan actuel'
+      cta.style.pointerEvents = 'none'
+      cta.style.opacity = '0.45'
+    } else {
+      const planOrder = { starter: 0, pro: 1, premium: 2 }
+      if (planOrder[p] > planOrder[plan]) {
+        // Upgrade possible
+        cta.textContent = 'Passer à ' + p.charAt(0).toUpperCase() + p.slice(1)
+        cta.href = 'compte.html?upgrade=' + p
+      } else {
+        // Downgrade
+        cta.textContent = 'Rétrograder'
+        cta.href = 'compte.html?downgrade=' + p
+        cta.style.opacity = '0.5'
+      }
+    }
+  })
+}
 </script>
 
 </body>
