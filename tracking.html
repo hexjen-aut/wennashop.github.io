@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Suivi de colis – WennaShop</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --fire:#FF6B2B;--ember:#E85A1A;--ink:#080808;--coal:#111111;--slate:#1A1A1A;
+      --smoke:#242424;--fog:#888;--snow:#f0ece6;--border:rgba(255,255,255,.07);
+      --border-fire:rgba(255,107,43,.25);--gold:#d0a600;--green:#4caf7d;
+      --green-dim:rgba(76,175,125,.12);--green-border:rgba(76,175,125,.3);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);min-height:100dvh;overflow-x:hidden;}
+    .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24;font-size:22px;line-height:1;}
+    .icon-fill{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;}
+    ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--coal);}::-webkit-scrollbar-thumb{background:rgba(255,107,43,.3);}
+
+    /* INIT */
+    #init-screen{position:fixed;inset:0;background:var(--ink);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;}
+    #init-screen.hidden{display:none;}
+    .spinner{width:32px;height:32px;border:2px solid rgba(255,107,43,.2);border-top-color:var(--fire);border-radius:50%;animation:spin .8s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    /* TOAST */
+    #toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(8px);z-index:400;background:var(--slate);border:1px solid var(--border-fire);color:var(--snow);padding:12px 22px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;white-space:nowrap;}
+    #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    #toast.success{border-color:var(--green-border);background:#0a1f0e;}
+    #toast.error{border-color:rgba(186,26,26,.4);background:#1f0a0a;}
+
+    /* HEADER */
+    header{background:rgba(8,8,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+    .logo-text{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;font-style:italic;color:var(--snow);text-decoration:none;letter-spacing:-.5px;}
+    .logo-text b{color:var(--fire);}
+    .eyebrow{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:#444;}
+
+    /* MAIN LAYOUT */
+    main{max-width:860px;margin:0 auto;padding:40px 24px;}
+
+    /* SEARCH BAR */
+    .search-wrap{background:var(--coal);border:1px solid var(--border);padding:28px 28px;margin-bottom:2px;}
+    .search-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;font-style:italic;margin-bottom:6px;}
+    .search-sub{font-size:11px;color:#555;letter-spacing:1px;margin-bottom:20px;}
+    .search-row{display:flex;gap:0;}
+    .search-input{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border);border-right:none;color:var(--snow);padding:12px 18px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
+    .search-input:focus{border-color:var(--border-fire);}
+    .search-input::placeholder{color:#333;}
+    .btn-search{background:var(--fire);color:#fff;border:none;padding:12px 28px;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,0 100%);}
+    .btn-search:hover{background:var(--ember);}
+
+    /* RESULT CARD */
+    #result{display:none;}
+    #result.show{display:block;}
+
+    .result-header{background:var(--slate);border:1px solid var(--border);padding:22px 28px;margin-bottom:2px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+    .result-order-ref{font-family:monospace;font-size:11px;color:#555;letter-spacing:2px;margin-bottom:6px;}
+    .result-order-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;font-style:italic;}
+    .result-meta{display:flex;gap:20px;margin-top:10px;flex-wrap:wrap;}
+    .result-meta-item{display:flex;flex-direction:column;gap:3px;}
+    .result-meta-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#444;}
+    .result-meta-val{font-size:13px;color:#888;}
+
+    /* STATUS BADGE PRINCIPAL */
+    .main-status-badge{display:inline-flex;align-items:center;gap:9px;padding:10px 18px;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;}
+    .main-status-badge.pending{background:#3d2e00;border:1px solid rgba(208,166,0,.3);color:var(--gold);}
+    .main-status-badge.picked_up{background:rgba(255,107,43,.1);border:1px solid var(--border-fire);color:var(--fire);}
+    .main-status-badge.in_transit{background:rgba(26,95,168,.12);border:1px solid rgba(78,130,210,.3);color:#78b0fe;}
+    .main-status-badge.out_for_delivery{background:rgba(208,166,0,.08);border:1px solid rgba(208,166,0,.3);color:var(--gold);}
+    .main-status-badge.delivered{background:var(--green-dim);border:1px solid var(--green-border);color:var(--green);}
+    .main-status-badge.cancelled{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#ef4444;}
+    .main-status-badge.returned{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#ef4444;}
+    .status-dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+    .status-dot.pulse{animation:pulse-anim 1.5s ease-in-out infinite;}
+    @keyframes pulse-anim{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
+
+    /* TIMELINE */
+    .timeline-wrap{background:var(--slate);border:1px solid var(--border);padding:28px;margin-bottom:2px;}
+    .tl-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;font-style:italic;margin-bottom:24px;}
+
+    .timeline{display:flex;flex-direction:column;gap:0;}
+    .tl-step{display:grid;grid-template-columns:48px 1fr;gap:0;position:relative;}
+    .tl-left{display:flex;flex-direction:column;align-items:center;gap:0;}
+    .tl-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid;transition:all .4s;}
+    .tl-icon.done{background:var(--green-dim);border-color:var(--green);color:var(--green);}
+    .tl-icon.active{background:rgba(255,107,43,.12);border-color:var(--fire);color:var(--fire);}
+    .tl-icon.pending{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.1);color:#333;}
+    .tl-icon .material-symbols-outlined{font-size:18px;}
+    .tl-icon.active .material-symbols-outlined{animation:icon-pulse 2s ease-in-out infinite;}
+    @keyframes icon-pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
+    .tl-line{flex:1;width:2px;background:rgba(255,255,255,.06);margin:2px 0;min-height:24px;}
+    .tl-line.done{background:var(--green);opacity:.4;}
+    .tl-line.active{background:linear-gradient(to bottom, var(--fire), rgba(255,107,43,.1));}
+    .tl-step:last-child .tl-line{display:none;}
+
+    .tl-right{padding:8px 0 32px 20px;}
+    .tl-step:last-child .tl-right{padding-bottom:0;}
+    .tl-step-title{font-size:13px;font-weight:600;margin-bottom:4px;transition:color .3s;}
+    .tl-step.done .tl-step-title{color:var(--green);}
+    .tl-step.active .tl-step-title{color:var(--snow);}
+    .tl-step.pending .tl-step-title{color:#444;}
+    .tl-step-time{font-size:10px;color:#444;letter-spacing:1px;margin-bottom:6px;}
+    .tl-step.done .tl-step-time,.tl-step.active .tl-step-time{color:#666;}
+    .tl-step-desc{font-size:12px;color:#666;line-height:1.6;}
+    .tl-step.pending .tl-step-desc{color:#333;}
+    .tl-event-list{margin-top:8px;display:flex;flex-direction:column;gap:4px;}
+    .tl-event{display:flex;align-items:flex-start;gap:8px;font-size:11px;color:#555;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.03);}
+    .tl-event:last-child{border-bottom:none;}
+    .tl-event-dot{width:4px;height:4px;border-radius:50%;background:#444;flex-shrink:0;margin-top:5px;}
+    .tl-event-dot.green{background:var(--green);}
+    .tl-event-dot.fire{background:var(--fire);}
+    .tl-event-time{flex-shrink:0;color:#444;font-family:monospace;font-size:10px;padding-top:1px;}
+
+    /* LIVREUR */
+    .delivery-card{background:var(--slate);border:1px solid var(--border);padding:22px 28px;margin-bottom:2px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+    .delivery-info{display:flex;align-items:center;gap:16px;}
+    .delivery-av{width:48px;height:48px;border-radius:50%;background:rgba(255,107,43,.08);border:1px solid var(--border-fire);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;color:var(--fire);}
+    .delivery-name{font-size:14px;font-weight:600;margin-bottom:3px;}
+    .delivery-meta{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#555;}
+    .delivery-actions{display:flex;gap:10px;}
+    .btn-call{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--green-border);background:var(--green-dim);color:var(--green);padding:9px 18px;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;transition:all .2s;}
+    .btn-call:hover{background:rgba(76,175,125,.2);}
+    .btn-msg{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border-fire);background:rgba(255,107,43,.08);color:var(--fire);padding:9px 18px;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;transition:all .2s;}
+    .btn-msg:hover{background:rgba(255,107,43,.15);}
+
+    /* PRODUITS */
+    .items-card{background:var(--slate);border:1px solid var(--border);padding:0;margin-bottom:2px;overflow:hidden;}
+    .items-head{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;border-bottom:1px solid var(--border);}
+    .items-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;font-style:italic;}
+    .item-row{display:flex;align-items:center;gap:14px;padding:14px 28px;border-bottom:1px solid var(--border);}
+    .item-row:last-child{border-bottom:none;}
+    .item-img{width:46px;height:46px;object-fit:cover;flex-shrink:0;}
+    .item-img-ph{width:46px;height:46px;background:var(--smoke);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#333;}
+    .item-name{font-size:13px;font-weight:600;flex:1;}
+    .item-qty{font-size:11px;color:#555;margin-top:3px;}
+    .item-price{font-size:14px;font-weight:600;color:var(--fire);}
+
+    /* ADRESSES */
+    .addresses-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:2px;}
+    .addr-card{background:var(--slate);border:1px solid var(--border);padding:22px 24px;}
+    .addr-icon-wrap{width:36px;height:36px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+    .addr-icon-wrap.green{background:var(--green-dim);border:1px solid var(--green-border);color:var(--green);}
+    .addr-icon-wrap.fire{background:rgba(255,107,43,.1);border:1px solid var(--border-fire);color:var(--fire);}
+    .addr-icon-wrap .material-symbols-outlined{font-size:18px;}
+    .addr-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#444;margin-bottom:6px;}
+    .addr-name{font-size:13px;font-weight:600;margin-bottom:4px;}
+    .addr-detail{font-size:12px;color:#666;line-height:1.7;}
+
+    /* PROGRESS BAR */
+    .progress-bar-wrap{background:var(--coal);border:1px solid var(--border);padding:20px 28px;margin-bottom:2px;}
+    .progress-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+    .progress-pct{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;font-style:italic;color:var(--fire);}
+    .progress-status-txt{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#555;}
+    .progress-track{height:4px;background:rgba(255,255,255,.06);}
+    .progress-fill{height:100%;background:linear-gradient(90deg,var(--fire),var(--gold));transition:width .8s cubic-bezier(.22,1,.36,1);}
+
+    /* EMPTY STATE */
+    .empty-state{background:var(--slate);border:1px solid var(--border);padding:60px 24px;text-align:center;}
+    .empty-icon{width:56px;height:56px;margin:0 auto 16px;background:rgba(255,107,43,.06);border:1px solid var(--border-fire);display:flex;align-items:center;justify-content:center;}
+    .empty-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;font-style:italic;margin-bottom:8px;}
+    .empty-sub{font-size:12px;color:#555;letter-spacing:.5px;}
+
+    /* ETA */
+    .eta-banner{background:linear-gradient(90deg,rgba(208,166,0,.06),rgba(208,166,0,.02));border:1px solid rgba(208,166,0,.2);padding:14px 28px;margin-bottom:2px;display:flex;align-items:center;gap:14px;}
+    .eta-banner .material-symbols-outlined{color:var(--gold);font-size:20px;flex-shrink:0;}
+    .eta-text{font-size:13px;color:#888;}
+    .eta-text strong{color:var(--snow);}
+
+    /* REFRESH BTN */
+    .btn-refresh{display:inline-flex;align-items:center;gap:7px;background:transparent;border:1px solid var(--border);color:#555;padding:7px 14px;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+    .btn-refresh:hover{border-color:var(--border-fire);color:var(--fire);}
+    .btn-refresh.spinning .material-symbols-outlined{animation:spin .6s linear infinite;}
+
+    @media(max-width:640px){
+      header{padding:14px 16px;}
+      main{padding:24px 12px;}
+      .search-wrap{padding:20px 16px;}
+      .search-title{font-size:22px;}
+      .result-header{padding:16px 18px;}
+      .timeline-wrap{padding:20px 16px;}
+      .delivery-card{padding:16px 18px;}
+      .addresses-grid{grid-template-columns:1fr;}
+      .item-row,.items-head{padding:12px 16px;}
+      .addr-card{padding:16px 16px;}
+      .progress-bar-wrap,.eta-banner{padding:16px 16px;}
+    }
+  </style>
+</head>
+<body>
+
+<div id="init-screen">
+  <span style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:700;font-style:italic;">Wenna<b style="color:var(--fire)">Shop</b></span>
+  <div class="spinner"></div>
+  <p style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#444;">Initialisation…</p>
+</div>
+
+<div id="toast"></div>
+
+<header>
+  <div>
+    <a href="index.html" class="logo-text">Wenna<b>Shop</b></a>
+    <div class="eyebrow">Suivi de colis</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <button id="btn-refresh" class="btn-refresh" onclick="refreshTracking()" style="display:none;">
+      <span class="material-symbols-outlined" style="font-size:14px;">refresh</span>
+      Actualiser
+    </button>
+    <a href="index.html" style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#444;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='var(--fire)'" onmouseout="this.style.color='#444'">
+      ← Accueil
+    </a>
+  </div>
+</header>
+
+<main>
+  <!-- SEARCH -->
+  <div class="search-wrap">
+    <h1 class="search-title">Suivre mon colis</h1>
+    <p class="search-sub">Entrez votre numéro de commande ou code de suivi</p>
+    <div class="search-row">
+      <input id="tracking-input" type="text" class="search-input" placeholder="Ex: WNS-20240501-ABCD ou #UUID…" onkeydown="if(event.key==='Enter')searchTracking()"/>
+      <button class="btn-search" onclick="searchTracking()">Rechercher</button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="result">
+
+    <!-- BARRE DE PROGRESSION -->
+    <div class="progress-bar-wrap">
+      <div class="progress-label">
+        <span class="progress-status-txt" id="prog-label">En cours</span>
+        <span class="progress-pct" id="prog-pct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="prog-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- HEADER COMMANDE -->
+    <div class="result-header">
+      <div>
+        <div class="result-order-ref" id="res-ref">—</div>
+        <div class="result-order-name" id="res-name">—</div>
+        <div class="result-meta">
+          <div class="result-meta-item">
+            <span class="result-meta-label">Date de commande</span>
+            <span class="result-meta-val" id="res-date">—</span>
+          </div>
+          <div class="result-meta-item">
+            <span class="result-meta-label">Vendeur</span>
+            <span class="result-meta-val" id="res-seller">—</span>
+          </div>
+          <div class="result-meta-item">
+            <span class="result-meta-label">Montant</span>
+            <span class="result-meta-val" id="res-amount">—</span>
+          </div>
+        </div>
+      </div>
+      <div id="res-status-badge" class="main-status-badge pending">
+        <span class="status-dot pulse"></span>
+        <span id="res-status-txt">—</span>
+      </div>
+    </div>
+
+    <!-- ETA -->
+    <div class="eta-banner" id="eta-banner" style="display:none;">
+      <span class="material-symbols-outlined icon-fill">schedule</span>
+      <span class="eta-text" id="eta-text">—</span>
+    </div>
+
+    <!-- LIVREUR -->
+    <div class="delivery-card" id="delivery-card" style="display:none;">
+      <div class="delivery-info">
+        <div class="delivery-av" id="del-av">?</div>
+        <div>
+          <div class="delivery-name" id="del-name">—</div>
+          <div class="delivery-meta" id="del-meta">—</div>
+        </div>
+      </div>
+      <div class="delivery-actions">
+        <a id="del-call-btn" href="#" class="btn-call">
+          <span class="material-symbols-outlined" style="font-size:14px">call</span>
+          Appeler
+        </a>
+        <a id="del-wa-btn" href="#" target="_blank" class="btn-msg">
+          <span class="material-symbols-outlined" style="font-size:14px">chat</span>
+          WhatsApp
+        </a>
+      </div>
+    </div>
+
+    <!-- TIMELINE -->
+    <div class="timeline-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:8px;">
+        <div class="tl-title" style="margin-bottom:0;">Historique du suivi</div>
+        <span id="tl-last-update" style="font-size:10px;color:#444;letter-spacing:1px;"></span>
+      </div>
+      <div class="timeline" id="timeline"></div>
+    </div>
+
+    <!-- ADRESSES -->
+    <div class="addresses-grid">
+      <div class="addr-card">
+        <div class="addr-icon-wrap green"><span class="material-symbols-outlined">store</span></div>
+        <div class="addr-label">Expédié depuis</div>
+        <div class="addr-name" id="from-name">—</div>
+        <div class="addr-detail" id="from-detail">—</div>
+      </div>
+      <div class="addr-card">
+        <div class="addr-icon-wrap fire"><span class="material-symbols-outlined">home_pin</span></div>
+        <div class="addr-label">Destination</div>
+        <div class="addr-name" id="to-name">—</div>
+        <div class="addr-detail" id="to-detail">—</div>
+      </div>
+    </div>
+
+    <!-- PRODUITS -->
+    <div class="items-card">
+      <div class="items-head">
+        <div class="items-title">Articles de la commande</div>
+        <span id="items-count" style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#444;"></span>
+      </div>
+      <div id="items-list"></div>
+    </div>
+
+  </div>
+
+  <!-- EMPTY STATE (si pas encore cherché) -->
+  <div id="empty-state" class="empty-state">
+    <div class="empty-icon"><span class="material-symbols-outlined" style="color:var(--fire);font-size:26px;">package_2</span></div>
+    <div class="empty-title">Votre colis vous attend</div>
+    <div class="empty-sub">Entrez votre numéro de commande pour localiser votre colis en temps réel</div>
+  </div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.config.js"></script>
+<script>
+function getDb(){ return window.db }
+
+// ── UTILS ──
+function showToast(msg,type='default'){
+  const el=document.getElementById('toast'); el.textContent=msg
+  el.className=type==='success'?'show success':type==='error'?'show error':'show'
+  setTimeout(()=>el.className='',3500)
+}
+function fmtDate(d){
+  if(!d) return '—'
+  return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})
+}
+function fmtDateShort(d){
+  if(!d) return '—'
+  return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'})
+}
+function fmtAmount(n,currency='MAD'){
+  return n==null?'—':Number(n).toLocaleString('fr-FR')+' '+currency
+}
+function initials(name){
+  if(!name) return '?'
+  return name.split(' ').map(p=>p[0]).join('').toUpperCase().slice(0,2)
+}
+
+// ── STATUS CONFIG ──
+const STATUS_CONFIG = {
+  pending:          { label:'En attente',         class:'pending',          icon:'hourglass_empty', progress:5,   pct:'5%',   eta:true  },
+  picked_up:        { label:'Pris en charge',      class:'picked_up',        icon:'inventory_2',     progress:25,  pct:'25%',  eta:true  },
+  in_transit:       { label:'En transit',          class:'in_transit',       icon:'local_shipping',  progress:55,  pct:'55%',  eta:true  },
+  out_for_delivery: { label:'En livraison',        class:'out_for_delivery', icon:'delivery_dining', progress:80,  pct:'80%',  eta:true  },
+  delivered:        { label:'Livré',               class:'delivered',        icon:'check_circle',    progress:100, pct:'100%', eta:false },
+  cancelled:        { label:'Annulée',             class:'cancelled',        icon:'cancel',          progress:0,   pct:'—',    eta:false },
+  returned:         { label:'Retournée',           class:'returned',         icon:'keyboard_return', progress:0,   pct:'—',    eta:false },
+}
+
+// ── TIMELINE STEPS CONFIG ──
+const TL_STEPS = [
+  { key:'pending',          icon:'receipt',         label:'Commande confirmée',    desc:'Votre commande a été validée et transmise au vendeur.' },
+  { key:'picked_up',        icon:'inventory_2',     label:'Colis pris en charge',  desc:'Le livreur a récupéré le colis chez le vendeur.' },
+  { key:'in_transit',       icon:'local_shipping',  label:'En transit',            desc:'Le colis est en route vers la destination finale.' },
+  { key:'out_for_delivery', icon:'delivery_dining', label:'En cours de livraison', desc:'Le livreur est en chemin, votre colis arrive aujourd\'hui.' },
+  { key:'delivered',        icon:'check_circle',    label:'Colis livré',           desc:'Le colis a été remis au destinataire avec succès.' },
+]
+const STATUS_ORDER = ['pending','picked_up','in_transit','out_for_delivery','delivered']
+
+let currentOrder = null
+let currentDelivery = null
+
+// ── SEARCH ──
+async function searchTracking(){
+  const db = getDb()
+  const query = document.getElementById('tracking-input').value.trim()
+  if(!query){ showToast('Entrez un numéro de commande.','error'); return }
+  
+  document.getElementById('empty-state').style.display='none'
+  document.getElementById('result').classList.remove('show')
+  document.getElementById('result').style.display='none'
+  document.getElementById('btn-refresh').style.display='none'
+
+  const btnSearch = document.querySelector('.btn-search')
+  btnSearch.textContent = 'Recherche…'
+  btnSearch.disabled = true
+
+  try {
+    let order = null
+
+    // 1. Chercher par tracking_number
+    let { data } = await db.from('orders')
+      .select(`
+        id, tracking_number, status, created_at, updated_at, total_amount,
+        shipping_address, delivery_address,
+        users!orders_user_id_fkey(full_name, email),
+        order_items(
+          quantity, unit_price,
+          products(
+            name, image_url,
+            users!products_seller_id_fkey(full_name, email, specialty, country, city)
+          )
+        ),
+        deliveries(
+          id, status, picked_up_at, delivered_at, estimated_delivery, notes,
+          users!deliveries_driver_id_fkey(full_name, phone, specialty)
+        )
+      `)
+      .ilike('tracking_number', query)
+      .maybeSingle()
+
+    order = data
+
+    // 2. Si non trouvé, chercher par ID (les 8 premiers chars)
+    if(!order && query.length >= 8){
+      const cleanQuery = query.replace(/^#/,'').toLowerCase()
+      const { data: allOrders } = await db.from('orders')
+        .select(`
+          id, tracking_number, status, created_at, updated_at, total_amount,
+          shipping_address, delivery_address,
+          users!orders_user_id_fkey(full_name, email),
+          order_items(
+            quantity, unit_price,
+            products(
+              name, image_url,
+              users!products_seller_id_fkey(full_name, email, specialty, country, city)
+            )
+          ),
+          deliveries(
+            id, status, picked_up_at, delivered_at, estimated_delivery, notes,
+            users!deliveries_driver_id_fkey(full_name, phone, specialty)
+          )
+        `)
+        .order('created_at', {ascending:false})
+        .limit(50)
+
+      if(allOrders){
+        order = allOrders.find(o => o.id?.toLowerCase().startsWith(cleanQuery) || o.id?.toLowerCase() === cleanQuery)
+      }
+    }
+
+    // 3. Si toujours pas : chercher par email du client courant
+    if(!order){
+      const { data:{ session } } = await db.auth.getSession()
+      if(session){
+        const { data: myOrders } = await db.from('orders')
+          .select(`
+            id, tracking_number, status, created_at, updated_at, total_amount,
+            shipping_address, delivery_address,
+            users!orders_user_id_fkey(full_name, email),
+            order_items(
+              quantity, unit_price,
+              products(
+                name, image_url,
+                users!products_seller_id_fkey(full_name, email, specialty, country, city)
+              )
+            ),
+            deliveries(
+              id, status, picked_up_at, delivered_at, estimated_delivery, notes,
+              users!deliveries_driver_id_fkey(full_name, phone, specialty)
+            )
+          `)
+          .eq('user_id', session.user.id)
+          .order('created_at', {ascending:false})
+          .limit(50)
+
+        if(myOrders){
+          order = myOrders.find(o =>
+            o.tracking_number?.toLowerCase().includes(query.toLowerCase()) ||
+            o.id?.toLowerCase().includes(query.toLowerCase().replace(/^#/,''))
+          )
+          // Si rien trouvé, proposer la dernière commande
+          if(!order && myOrders.length){ order = myOrders[0] }
+        }
+      }
+    }
+
+    if(!order){
+      showToast('Aucune commande trouvée pour ce numéro.','error')
+      document.getElementById('empty-state').style.display='block'
+    } else {
+      renderTracking(order)
+    }
+  } catch(e){
+    console.error(e)
+    showToast('Erreur : '+e.message,'error')
+    document.getElementById('empty-state').style.display='block'
+  } finally {
+    btnSearch.textContent = 'Rechercher'
+    btnSearch.disabled = false
+  }
+}
+
+// ── RENDER ──
+function renderTracking(order){
+  currentOrder = order
+  const status = order.status || 'pending'
+  const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.pending
+  const delivery = order.deliveries?.[0] || null
+  currentDelivery = delivery
+
+  // Résultat visible
+  document.getElementById('result').style.display='block'
+  document.getElementById('result').classList.add('show')
+  document.getElementById('empty-state').style.display='none'
+  document.getElementById('btn-refresh').style.display='inline-flex'
+
+  // Ref & nom
+  const ref = order.tracking_number || ('#'+order.id.slice(0,8).toUpperCase())
+  document.getElementById('res-ref').textContent = ref
+  const firstProduct = order.order_items?.[0]?.products?.name
+  document.getElementById('res-name').textContent = firstProduct
+    ? (order.order_items.length > 1 ? `${firstProduct} + ${order.order_items.length-1} article(s)` : firstProduct)
+    : 'Commande WennaShop'
+  document.getElementById('res-date').textContent = fmtDateShort(order.created_at)
+  const seller = order.order_items?.[0]?.products?.users
+  document.getElementById('res-seller').textContent = seller?.full_name || seller?.specialty || '—'
+  document.getElementById('res-amount').textContent = fmtAmount(order.total_amount)
+
+  // Badge status
+  const badge = document.getElementById('res-status-badge')
+  badge.className = 'main-status-badge ' + cfg.class
+  document.getElementById('res-status-txt').textContent = cfg.label
+  const dot = badge.querySelector('.status-dot')
+  if(['in_transit','out_for_delivery','picked_up'].includes(status)){
+    dot.classList.add('pulse')
+  } else {
+    dot.classList.remove('pulse')
+  }
+
+  // Progress bar
+  document.getElementById('prog-label').textContent = cfg.label
+  document.getElementById('prog-pct').textContent = status === 'cancelled' || status === 'returned' ? '—' : cfg.pct
+  setTimeout(()=>{
+    document.getElementById('prog-fill').style.width = (status === 'cancelled' || status === 'returned') ? '0%' : cfg.pct
+  }, 100)
+
+  // ETA
+  const etaBanner = document.getElementById('eta-banner')
+  const etaDate = delivery?.estimated_delivery || null
+  if(cfg.eta && status !== 'delivered' && status !== 'cancelled'){
+    etaBanner.style.display = 'flex'
+    const etaEl = document.getElementById('eta-text')
+    if(etaDate){
+      etaEl.innerHTML = `Livraison estimée le <strong>${fmtDateShort(etaDate)}</strong>`
+    } else {
+      const daysMap = { pending:'5–7 jours', picked_up:'3–5 jours', in_transit:'2–3 jours', out_for_delivery:'aujourd\'hui' }
+      etaEl.innerHTML = `Livraison estimée dans <strong>${daysMap[status] || '—'}</strong>`
+    }
+  } else {
+    etaBanner.style.display = 'none'
+  }
+
+  // Livreur
+  const delCard = document.getElementById('delivery-card')
+  const driver = delivery?.users || null
+  if(driver && ['picked_up','in_transit','out_for_delivery','delivered'].includes(status)){
+    delCard.style.display = 'flex'
+    const av = initials(driver.full_name)
+    document.getElementById('del-av').textContent = av
+    document.getElementById('del-name').textContent = driver.full_name || '—'
+    document.getElementById('del-meta').textContent = driver.specialty || 'Livreur WennaShop'
+    const phone = driver.phone || null
+    const callBtn = document.getElementById('del-call-btn')
+    const waBtn = document.getElementById('del-wa-btn')
+    if(phone){
+      callBtn.href = 'tel:' + phone
+      waBtn.href = 'https://wa.me/' + phone.replace(/\D/g,'')
+    } else {
+      callBtn.style.display = 'none'
+      waBtn.style.display = 'none'
+    }
+  } else {
+    delCard.style.display = 'none'
+  }
+
+  // Timeline
+  renderTimeline(order, delivery, status)
+
+  // Adresses
+  renderAddresses(order)
+
+  // Produits
+  renderItems(order)
+
+  // Last update
+  document.getElementById('tl-last-update').textContent = 'Mis à jour ' + fmtDate(order.updated_at)
+}
+
+function renderTimeline(order, delivery, currentStatus){
+  const tl = document.getElementById('timeline')
+  const currentIdx = STATUS_ORDER.indexOf(currentStatus)
+
+  const events = buildEvents(order, delivery)
+
+  tl.innerHTML = TL_STEPS.map((step, i) => {
+    const isDone = i < currentIdx
+    const isActive = i === currentIdx
+    const isPending = i > currentIdx
+    const state = isDone ? 'done' : isActive ? 'active' : 'pending'
+    const iconClass = isDone ? 'done' : isActive ? 'active' : 'pending'
+    const lineClass = isDone ? 'done' : isActive ? 'active' : ''
+
+    const stepEvents = events.filter(e => e.step === step.key)
+
+    return `
+    <div class="tl-step ${state}">
+      <div class="tl-left">
+        <div class="tl-icon ${iconClass}">
+          <span class="material-symbols-outlined ${isDone?'icon-fill':''}">${isDone ? 'check' : step.icon}</span>
+        </div>
+        <div class="tl-line ${lineClass}"></div>
+      </div>
+      <div class="tl-right">
+        <div class="tl-step-title">${step.label}</div>
+        <div class="tl-step-time">${getStepTime(step.key, order, delivery)}</div>
+        ${isPending ? '' : `<div class="tl-step-desc">${step.desc}</div>`}
+        ${stepEvents.length ? `
+          <div class="tl-event-list">
+            ${stepEvents.map(e=>`
+              <div class="tl-event">
+                <div class="tl-event-dot ${e.type}"></div>
+                <span class="tl-event-time">${e.time}</span>
+                <span>${e.text}</span>
+              </div>`).join('')}
+          </div>` : ''}
+      </div>
+    </div>`
+  }).join('')
+}
+
+function getStepTime(key, order, delivery){
+  const map = {
+    pending:          order.created_at,
+    picked_up:        delivery?.picked_up_at,
+    in_transit:       null,
+    out_for_delivery: null,
+    delivered:        delivery?.delivered_at,
+  }
+  return map[key] ? fmtDate(map[key]) : '—'
+}
+
+function buildEvents(order, delivery){
+  const events = []
+  if(order.created_at){
+    events.push({ step:'pending', time: new Date(order.created_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}), text:'Commande validée · Paiement confirmé', type:'green' })
+  }
+  if(delivery?.picked_up_at){
+    events.push({ step:'picked_up', time: new Date(delivery.picked_up_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}), text:'Colis scanné au départ', type:'fire' })
+  }
+  if(delivery?.notes){
+    const step = ['in_transit','out_for_delivery'].includes(order.status) ? order.status : 'in_transit'
+    events.push({ step, time:'—', text: delivery.notes, type:'green' })
+  }
+  return events
+}
+
+function renderAddresses(order){
+  // FROM : vendeur
+  const seller = order.order_items?.[0]?.products?.users
+  document.getElementById('from-name').textContent = seller?.full_name || seller?.specialty || 'Vendeur WennaShop'
+  document.getElementById('from-detail').textContent = [seller?.city, seller?.country].filter(Boolean).join(', ') || '—'
+
+  // TO : acheteur
+  const addr = order.shipping_address || order.delivery_address
+  const buyer = order.users
+  document.getElementById('to-name').textContent = buyer?.full_name || '—'
+  if(addr){
+    try {
+      const a = typeof addr === 'string' ? JSON.parse(addr) : addr
+      document.getElementById('to-detail').textContent = [a.address, a.city, a.country].filter(Boolean).join(', ')
+    } catch {
+      document.getElementById('to-detail').textContent = addr.toString() || '—'
+    }
+  } else {
+    document.getElementById('to-detail').textContent = '—'
+  }
+}
+
+function renderItems(order){
+  const items = order.order_items || []
+  document.getElementById('items-count').textContent = items.length + ' article' + (items.length > 1 ? 's' : '')
+  const list = document.getElementById('items-list')
+  if(!items.length){
+    list.innerHTML = '<div style="padding:28px;text-align:center;font-size:11px;color:#444;letter-spacing:2px;text-transform:uppercase;">Aucun article</div>'
+    return
+  }
+  list.innerHTML = items.map(item => {
+    const img = item.products?.image_url
+    let imgSrc = img
+    try { const arr = JSON.parse(img); if(Array.isArray(arr)&&arr.length) imgSrc = arr[0] } catch{}
+    return `
+    <div class="item-row">
+      ${imgSrc
+        ? `<img src="${imgSrc}" class="item-img" onerror="this.style.display='none'"/>`
+        : `<div class="item-img-ph"><span class="material-symbols-outlined" style="font-size:18px">image</span></div>`}
+      <div style="flex:1;">
+        <div class="item-name">${item.products?.name || '—'}</div>
+        <div class="item-qty">Qté : ${item.quantity}</div>
+      </div>
+      <div class="item-price">${fmtAmount(item.unit_price * item.quantity)}</div>
+    </div>`
+  }).join('')
+}
+
+// ── REFRESH ──
+async function refreshTracking(){
+  if(!currentOrder) return
+  const btn = document.getElementById('btn-refresh')
+  btn.classList.add('spinning')
+  const db = getDb()
+  try {
+    const { data } = await db.from('orders')
+      .select(`
+        id, tracking_number, status, created_at, updated_at, total_amount,
+        shipping_address, delivery_address,
+        users!orders_user_id_fkey(full_name, email),
+        order_items(
+          quantity, unit_price,
+          products(
+            name, image_url,
+            users!products_seller_id_fkey(full_name, email, specialty, country, city)
+          )
+        ),
+        deliveries(
+          id, status, picked_up_at, delivered_at, estimated_delivery, notes,
+          users!deliveries_driver_id_fkey(full_name, phone, specialty)
+        )
+      `)
+      .eq('id', currentOrder.id)
+      .single()
+    if(data){ renderTracking(data); showToast('Suivi mis à jour','success') }
+  } catch(e){ showToast('Erreur : '+e.message,'error') }
+  finally { btn.classList.remove('spinning') }
+}
+
+// ── URL PARAM ──
+function checkUrlParam(){
+  const params = new URLSearchParams(window.location.search)
+  const orderId = params.get('order') || params.get('tracking')
+  if(orderId){
+    document.getElementById('tracking-input').value = orderId
+    searchTracking()
+  }
+}
+
+// ── INIT ──
+async function init(){
+  const db = getDb()
+  if(!db){ setTimeout(init, 100); return }
+  document.getElementById('init-screen').classList.add('hidden')
+  checkUrlParam()
+}
+document.addEventListener('DOMContentLoaded', init)
+</script>
+</body>
+</html>
