@@ -28,10 +28,28 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
 @media(max-width:768px){.layout{grid-template-columns:1fr;}}
 
 /* LEFT PANEL */
-.left-panel{position:relative;overflow:hidden;background:var(--coal);}
+.left-panel{
+  position:relative;overflow:hidden;
+  background:var(--coal);
+}
 @media(max-width:768px){.left-panel{height:220px;}}
-.left-panel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55;filter:grayscale(20%);}
-.left-panel-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(8,8,8,.85) 0%,rgba(255,107,43,.08) 100%);}
+
+/* Fond géométrique SVG */
+.left-panel-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 30% 70%, rgba(255,107,43,.07) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 40% at 80% 20%, rgba(255,107,43,.04) 0%, transparent 60%),
+    var(--coal);
+}
+.left-panel-bg svg{
+  position:absolute;inset:0;width:100%;height:100%;
+  opacity:.18;
+}
+.left-panel-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(8,8,8,0) 0%,rgba(8,8,8,.7) 100%);
+}
 .left-content{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding:48px;}
 @media(max-width:768px){.left-content{justify-content:center;padding:24px;text-align:center;}}
 .left-eyebrow{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--fire);display:flex;align-items:center;gap:12px;margin-bottom:20px;}
@@ -39,10 +57,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
 @media(max-width:768px){.left-eyebrow{justify-content:center;}}
 .left-logo{font-family:'Cormorant Garamond',serif;font-size:clamp(48px,6vw,80px);font-weight:700;font-style:italic;line-height:1;letter-spacing:-2px;color:var(--snow);margin-bottom:16px;}
 .left-logo b{color:var(--fire);}
-.left-tagline{font-size:13px;color:#777;letter-spacing:1px;line-height:1.6;max-width:320px;}
+.left-tagline{font-size:13px;color:#666;letter-spacing:.5px;line-height:1.7;max-width:300px;}
 .left-flags{display:flex;gap:16px;margin-top:32px;align-items:center;}
 @media(max-width:768px){.left-flags{justify-content:center;}}
-.flag-item{display:flex;align-items:center;gap:8px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#555;}
+.flag-item{display:flex;align-items:center;gap:8px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#444;}
 .flag-sep{width:1px;height:16px;background:var(--border);}
 .left-deco{position:absolute;top:-40px;right:-60px;font-family:'Cormorant Garamond',serif;font-size:320px;font-style:italic;font-weight:700;color:rgba(255,107,43,.03);line-height:1;pointer-events:none;user-select:none;}
 
@@ -95,7 +113,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
 .role-btn:hover{border-color:var(--border-fire);color:var(--snow);}
 .role-btn.active{border-color:var(--fire);background:rgba(255,107,43,.1);color:var(--fire);}
 
-/* GENRE BTNS — design carte + icône textile */
+/* GENRE BTNS */
 .genre-group{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:4px;}
 .genre-btn{
   display:flex;flex-direction:column;align-items:center;gap:5px;
@@ -174,7 +192,28 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
 
   <!-- LEFT -->
   <div class="left-panel">
-    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80" alt="WennaShop"/>
+    <div class="left-panel-bg">
+      <!-- Motif géométrique inspiré zellij marocain -->
+      <svg viewBox="0 0 600 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <pattern id="geo" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+            <!-- Losange central -->
+            <polygon points="40,4 76,40 40,76 4,40" fill="none" stroke="#FF6B2B" stroke-width="0.6"/>
+            <!-- Carré intérieur -->
+            <rect x="24" y="24" width="32" height="32" fill="none" stroke="#FF6B2B" stroke-width="0.4" transform="rotate(45 40 40)"/>
+            <!-- Points de jonction -->
+            <circle cx="40" cy="4"  r="1.2" fill="#FF6B2B"/>
+            <circle cx="76" cy="40" r="1.2" fill="#FF6B2B"/>
+            <circle cx="40" cy="76" r="1.2" fill="#FF6B2B"/>
+            <circle cx="4"  cy="40" r="1.2" fill="#FF6B2B"/>
+            <!-- Lignes diagonales fines -->
+            <line x1="0" y1="0" x2="80" y2="80" stroke="#FF6B2B" stroke-width="0.2" opacity="0.5"/>
+            <line x1="80" y1="0" x2="0" y2="80" stroke="#FF6B2B" stroke-width="0.2" opacity="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="600" height="800" fill="url(#geo)"/>
+      </svg>
+    </div>
     <div class="left-panel-overlay"></div>
     <div class="left-deco">W</div>
     <div class="left-content">
@@ -201,9 +240,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
         <button id="tab-ins" class="tab" onclick="switchMode('inscription')">Inscription</button>
       </div>
 
-      <!-- ══════════════════════
-           PANEL CONNEXION
-      ══════════════════════ -->
+      <!-- PANEL CONNEXION -->
       <div id="panel-connexion" class="panel">
         <div class="form-heading">
           <div class="form-eyebrow">Accès sécurisé</div>
@@ -253,9 +290,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
         </div>
       </div>
 
-      <!-- ══════════════════════
-           PANEL INSCRIPTION
-      ══════════════════════ -->
+      <!-- PANEL INSCRIPTION -->
       <div id="panel-inscription" class="panel hidden-panel">
         <div class="form-heading">
           <div class="form-eyebrow">Nouveau compte</div>
@@ -263,7 +298,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
           <div class="form-sub">Créez votre espace vendeur ou acheteur.</div>
         </div>
 
-        <!-- Prénom / Nom -->
         <div class="grid-2" style="margin-bottom:18px;">
           <div class="field">
             <div class="field-label">Prénom</div>
@@ -275,7 +309,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
           </div>
         </div>
 
-        <!-- Email -->
         <div class="field inp-icon-left">
           <div class="field-label">Email</div>
           <div class="input-wrap">
@@ -284,7 +317,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
           </div>
         </div>
 
-        <!-- Mot de passe -->
         <div class="field inp-icon-left">
           <div class="field-label">Mot de passe</div>
           <div class="input-wrap">
@@ -296,32 +328,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
           <div id="pwd-hint"></div>
         </div>
 
-        <!-- Genre (NOUVEAU) -->
         <div class="field">
           <div class="field-label">
             Genre
             <span style="color:#333;font-size:8px;letter-spacing:1px;">Personnalise vos recommandations</span>
           </div>
           <div class="genre-group">
-            <button class="genre-btn" data-genre="homme" onclick="selectGenre('homme')">
-              <span>Homme</span>
-            </button>
-            <button class="genre-btn" data-genre="femme" onclick="selectGenre('femme')">
-              <span>Femme</span>
-            </button>
-            <button class="genre-btn" data-genre="autre" onclick="selectGenre('autre')">
-              <span class="genre-icon">✦</span>
-              <span>Autre</span>
-            </button>
-            <button class="genre-btn" data-genre="non_precise" onclick="selectGenre('non_precise')">
-              <span class="genre-icon">◎</span>
-              <span>Ne pas dire</span>
-            </button>
+            <button class="genre-btn" data-genre="homme" onclick="selectGenre('homme')"><span>Homme</span></button>
+            <button class="genre-btn" data-genre="femme" onclick="selectGenre('femme')"><span>Femme</span></button>
+            <button class="genre-btn" data-genre="autre" onclick="selectGenre('autre')"><span class="genre-icon">✦</span><span>Autre</span></button>
+            <button class="genre-btn" data-genre="non_precise" onclick="selectGenre('non_precise')"><span class="genre-icon">◎</span><span>Ne pas dire</span></button>
           </div>
           <div class="genre-hint" id="genre-hint">Sélectionnez pour recevoir des suggestions adaptées à vos préférences.</div>
         </div>
 
-        <!-- Pays -->
         <div class="field">
           <div class="field-label">Pays d'origine</div>
           <div class="choice-group">
@@ -330,7 +350,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
           </div>
         </div>
 
-        <!-- Rôle -->
         <div class="field">
           <div class="field-label">Vous êtes</div>
           <div class="choice-group">
@@ -345,7 +364,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
           </div>
         </div>
 
-        <!-- CGU -->
         <div class="cgu-wrap">
           <input id="cgu" type="checkbox" class="cgu-check"/>
           <label for="cgu" class="cgu-text">
@@ -380,7 +398,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
 </div>
 
 <script>
-// ── CURSOR ────────────────────────────────────
+// ── CURSOR
 const cur  = document.getElementById('cursor')
 const ring = document.getElementById('cursor-ring')
 document.addEventListener('mousemove', e => {
@@ -388,7 +406,7 @@ document.addEventListener('mousemove', e => {
   ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px'
 })
 
-// ── SUPABASE ──────────────────────────────────
+// ── SUPABASE
 const SUPABASE_URL  = 'https://aakxoydznmybstfozjte.supabase.co'
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
 let db = null
@@ -409,20 +427,19 @@ let db = null
   } catch(e) {}
 })()
 
-// ── STATE ─────────────────────────────────────
+// ── STATE
 let selectedCountry = null
 let selectedRole    = null
-let selectedGenre   = null  // 'homme' | 'femme' | 'autre' | 'non_precise'
+let selectedGenre   = null
 
-// Descriptions affichées selon le genre
 const GENRE_HINTS = {
   homme      : 'Vous verrez en priorité : bijoux hommes, accessoires, djellabas, art traditionnel masculin.',
   femme      : 'Vous verrez en priorité : tissu, bijoux, maroquinerie, cosmétiques, art textile féminin.',
-  autre      : 'Recommandations variées sur l\'ensemble des catégories, sans distinction.',
+  autre      : "Recommandations variées sur l'ensemble des catégories, sans distinction.",
   non_precise: 'Vous recevrez des suggestions générales sur toutes les catégories.'
 }
 
-// ── SWITCH ────────────────────────────────────
+// ── SWITCH
 function switchMode(mode) {
   const cnx = document.getElementById('panel-connexion')
   const ins  = document.getElementById('panel-inscription')
@@ -503,7 +520,7 @@ function need(id, label) {
   return v
 }
 
-// ── CONNEXION ─────────────────────────────────
+// ── CONNEXION
 async function handleConnexion() {
   const email = need('cnx-email', 'Email')
   const pwd   = need('cnx-pwd',   'Mot de passe')
@@ -527,7 +544,7 @@ async function handleConnexion() {
   } finally { setLoading('btn-cnx', false) }
 }
 
-// ── INSCRIPTION ───────────────────────────────
+// ── INSCRIPTION
 async function handleInscription() {
   const prenom = need('ins-prenom', 'Prénom')
   const nom    = need('ins-nom', 'Nom')
@@ -541,12 +558,10 @@ async function handleInscription() {
   if (!document.getElementById('cgu')?.checked) { toast('Acceptez les CGU pour continuer', 'ko'); return }
   if (!db) { toast('Supabase non configuré', 'ko'); return }
 
-  // Genre : si pas sélectionné → 'non_precise' par défaut
   const genre = selectedGenre || 'non_precise'
 
   setLoading('btn-ins', true)
   try {
-    // 1. Créer le compte auth
     const { data: authData, error: authErr } = await db.auth.signUp({
       email, password: pwd,
       options: {
@@ -562,10 +577,7 @@ async function handleInscription() {
     })
     if (authErr) throw authErr
 
-    // 2. Mettre à jour la colonne gender dans public.users
-    //    (le trigger handle_new_user crée la ligne, on la met à jour ensuite)
     if (authData?.user?.id) {
-      // Petite attente pour laisser le trigger s'exécuter
       await new Promise(r => setTimeout(r, 600))
       await db
         .from('users')
@@ -588,7 +600,7 @@ async function handleInscription() {
   } finally { setLoading('btn-ins', false) }
 }
 
-// ── GOOGLE ────────────────────────────────────
+// ── GOOGLE
 async function handleGoogle() {
   if (!db) { toast('Supabase non configuré', 'ko'); return }
   const { error } = await db.auth.signInWithOAuth({
@@ -598,7 +610,7 @@ async function handleGoogle() {
   if (error) toast(error.message, 'ko')
 }
 
-// ── RESET MOT DE PASSE ────────────────────────
+// ── RESET MOT DE PASSE
 async function sendReset() {
   const email = document.getElementById('cnx-email')?.value?.trim()
   if (!email) { toast('Entrez votre email pour réinitialiser', 'ko'); return }
