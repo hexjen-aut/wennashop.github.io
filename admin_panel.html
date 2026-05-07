@@ -957,9 +957,7 @@ select.fi{appearance:none;cursor:pointer;background-image:none}
 <div id="toast"></div>
 
 <script>
-const SB_URL  = 'https://aakxoydznmybstfozjte.supabase.co'
-const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
-const db = supabase.createClient(SB_URL, SB_ANON)
+const db = window.db
 
 let allOrders = [], allProducts = [], prodImages = ['','','',''], caracList = []
 let selectedIcon = '📦', catFilterMode = 'all'
