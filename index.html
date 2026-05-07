@@ -407,9 +407,7 @@ document.addEventListener('mousemove', e => {
 })
 
 // ── SUPABASE
-const SUPABASE_URL  = 'https://aakxoydznmybstfozjte.supabase.co'
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
-let db = null
+const db = window.db
 
 ;(function initSupabase() {
   if (!SUPABASE_ANON?.startsWith('eyJ')) {
