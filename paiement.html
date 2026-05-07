@@ -492,9 +492,8 @@
 
 <script>
   // ─── CONFIG ──────────────────────────────────────────────────────────────────
-  // ✅ Utilise window.db de supabase.config.js si dispo, sinon crée le client
-  const SUPABASE_URL  = 'https://aakxoydznmybstfozjte.supabase.co'
-  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
+ // ✅ Utilise window.db de supabase.config.js
+  const SUPABASE_URL  = window.WENNA.supabaseUrl
   const EDGE_FN_URL   = `${SUPABASE_URL}/functions/v1/process-payment`
   const PROMO_CODES   = { 'WENNA15': 0.15 }
   const CURRENCY      = 'MAD'
