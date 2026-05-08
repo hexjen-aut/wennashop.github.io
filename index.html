@@ -408,15 +408,6 @@ document.addEventListener('mousemove', e => {
 
 // ── SUPABASE
 const db = window.db
-
-;(function initSupabase() {
-  if (!SUPABASE_ANON?.startsWith('eyJ')) {
-    document.getElementById('supabase-warning').style.display = 'block'; return
-  }
-  try { db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON) }
-  catch(e) { document.getElementById('supabase-warning').style.display = 'block' }
-})()
-
 ;(async () => {
   if (!db) return
   try {
