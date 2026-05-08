@@ -500,7 +500,7 @@
   // ─────────────────────────────────────────────────────────────────────────────
 
   // Réutiliser window.db si supabase.config.js est chargé, sinon créer
-  function getSb() { return window.db || window._wennaSb || (window._wennaSb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON)) }
+  function getSb() { return window.db }
 
   let cart           = []
   let orderId        = null

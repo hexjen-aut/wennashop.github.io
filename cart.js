@@ -11,11 +11,10 @@
 
 const Cart = (() => {
   const SUPABASE_URL  = 'https://aakxoydznmybstfozjte.supabase.co'
-  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
 
   // Réutiliser l'instance globale si déjà créée (évite doublons)
   const sb = window._wennaSb
-    || (window._wennaSb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON))
+    || window.db
 
   // Cache userId pour éviter des appels répétés
   let _userId = null
