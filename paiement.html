@@ -471,12 +471,15 @@ async function init(){
 if (!sb) { document.getElementById('error-msg').textContent = "Erreur config — window.db non défini."; showState('state-error'); return }
 const {data:{user},error:authErr} = await sb.auth.getUser()
   if(authErr||!user){
-    window.location.href='compte.html'; return
+    document.getElementById('error-msg').textContent = "Session expirée — " + (authErr?.message || "utilisateur non connecté.")
+    showState('state-error'); return
   }
-
   // Profil
   const {data:profile} = await sb.from('users').select('id,first_name,last_name,country').eq('auth_id',user.id).maybeSingle()
-  if(!profile){window.location.href='compte.html';return}
+  if(!profile){
+    document.getElementById('error-msg').textContent = "Profil introuvable pour cet utilisateur."
+    showState('state-error'); return
+  }
   currentUserId = profile.id
 
   // Pré-remplir nom depuis profil
