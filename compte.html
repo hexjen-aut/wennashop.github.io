@@ -23,6 +23,9 @@
   --snow-faint: rgba(240,236,230,0.08);
   --fire-dim: rgba(255,107,43,0.15);
   --fire-border: rgba(255,107,43,0.25);
+  --singpay: #00A86B;
+  --singpay-dim: rgba(0,168,107,0.12);
+  --singpay-border: rgba(0,168,107,0.3);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
@@ -86,7 +89,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
 .mode-toggle { display:inline-flex; background:var(--slate); border:1px solid rgba(255,255,255,.06); padding:3px; gap:2px; }
 .mode-btn { padding:10px 32px; font-size:10px; font-weight:500; letter-spacing:2.5px; text-transform:uppercase; background:transparent; border:none; color:var(--fog); cursor:none; transition:all .25s; font-family:'DM Sans',sans-serif; position:relative; }
 .mode-btn.active { background:var(--fire); color:#fff; }
-.mode-btn .new-tag { position:absolute; top:-6px; right:6px; background:var(--amber,#fbbf24); color:#000; font-size:7px; font-weight:700; letter-spacing:1px; padding:1px 5px; border-radius:1px; text-transform:uppercase; }
+.mode-btn .new-tag { position:absolute; top:-6px; right:6px; background:#fbbf24; color:#000; font-size:7px; font-weight:700; letter-spacing:1px; padding:1px 5px; border-radius:1px; text-transform:uppercase; }
 
 /* CONTENT */
 .content { max-width:960px; margin:0 auto; padding:36px 48px; }
@@ -197,10 +200,22 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
 #payment-modal-sheet { background:var(--coal); border:1px solid rgba(255,107,43,.15); border-bottom:none; width:100%; max-width:480px; padding:28px 28px 48px; transform:translateY(100%); transition:transform .4s cubic-bezier(.22,1,.36,1); }
 #payment-modal.open #payment-modal-sheet { transform:translateY(0); }
 .drag-bar { width:40px; height:3px; background:rgba(255,255,255,.12); margin:0 auto 24px; }
-.pm-method-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:20px; }
-.pm-method-btn { padding:14px; border:1px solid rgba(255,255,255,.1); background:transparent; cursor:none; transition:all .2s; display:flex; flex-direction:column; align-items:center; gap:6px; }
+
+/* PAYMENT METHOD GRID — 3 colonnes */
+.pm-method-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:20px; }
+.pm-method-btn { padding:12px 8px; border:1px solid rgba(255,255,255,.1); background:transparent; cursor:none; transition:all .2s; display:flex; flex-direction:column; align-items:center; gap:5px; }
 .pm-method-btn:hover, .pm-method-btn.selected { border-color:var(--fire); background:var(--fire-dim); }
-.pm-method-btn span:last-child { font-size:11px; color:var(--fog); }
+.pm-method-btn.singpay-btn:hover, .pm-method-btn.singpay-btn.selected { border-color:var(--singpay); background:var(--singpay-dim); }
+.pm-method-btn .pm-label { font-size:10px; font-weight:500; color:var(--snow); }
+.pm-method-btn .pm-sub { font-size:9px; color:var(--fog); text-align:center; line-height:1.3; }
+
+/* SINGPAY badge */
+.singpay-badge { display:inline-flex; align-items:center; gap:4px; background:var(--singpay-dim); border:1px solid var(--singpay-border); color:var(--singpay); font-size:8px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:2px 7px; border-radius:2px; }
+
+/* SINGPAY phone input */
+#singpay-section { display:none; margin-bottom:16px; }
+#singpay-section.visible { display:block; }
+
 .amount-chips { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
 .amount-chip { padding:6px 16px; border:1px solid rgba(255,255,255,.1); background:transparent; color:var(--fog); font-size:11px; cursor:none; transition:all .2s; font-family:'DM Sans',sans-serif; }
 .amount-chip:hover, .amount-chip.selected { border-color:var(--fire); color:var(--fire); background:var(--fire-dim); }
@@ -257,6 +272,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
   .grid-2 { grid-template-columns:1fr; }
   .dash-stats { grid-template-columns:1fr 1fr; }
   .bnav { display:block; }
+  .pm-method-grid { grid-template-columns:1fr 1fr; }
+  #pm-btn-singpay { grid-column: span 2; }
 }
 </style>
 </head>
@@ -272,7 +289,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
   <div class="load-bar"></div>
 </div>
 
-<!-- PAYMENT MODAL -->
+<!-- ══════════════════ PAYMENT MODAL ══════════════════ -->
 <div id="payment-modal">
   <div id="payment-modal-sheet">
     <div class="drag-bar"></div>
@@ -280,10 +297,14 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
       <p style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--fire);margin-bottom:4px;" id="pm-subtitle">Paiement sécurisé</p>
       <h3 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-style:italic;font-weight:700;" id="pm-title">Finaliser le paiement</h3>
     </div>
+
+    <!-- Récap commande -->
     <div id="pm-order-recap" class="hidden" style="padding:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);margin-bottom:16px;">
       <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:12px;color:var(--fog);">Commande</span><span style="font-weight:600;color:var(--fire);" id="pm-order-amount">—</span></div>
       <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;color:var(--fog);">Référence</span><span style="font-size:11px;font-family:monospace;color:var(--fog);" id="pm-order-ref">—</span></div>
     </div>
+
+    <!-- Recharge solde -->
     <div id="pm-topup-section" class="hidden" style="margin-bottom:16px;">
       <p style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--fog);margin-bottom:10px;">Montant à recharger</p>
       <div class="amount-chips">
@@ -297,33 +318,70 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
         <span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--fog);font-weight:500;">MAD</span>
       </div>
     </div>
+
+    <!-- Méthodes de paiement — 3 options -->
     <p style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--fog);margin-bottom:10px;">Moyen de paiement</p>
     <div class="pm-method-grid">
       <button id="pm-btn-mobile" onclick="selectChannel('MOBILE_MONEY')" class="pm-method-btn">
         <span class="material-symbols-outlined" style="color:var(--fire);">smartphone</span>
-        <span style="font-size:11px;font-weight:500;">Mobile Money</span>
-        <span>Airtel · Moov</span>
+        <span class="pm-label">Mobile Money</span>
+        <span class="pm-sub">Airtel · Moov</span>
       </button>
       <button id="pm-btn-card" onclick="selectChannel('CREDIT_CARD')" class="pm-method-btn">
         <span class="material-symbols-outlined" style="color:var(--fog);">credit_card</span>
-        <span style="font-size:11px;font-weight:500;">Carte bancaire</span>
-        <span>Visa · Mastercard</span>
+        <span class="pm-label">Carte bancaire</span>
+        <span class="pm-sub">Visa · Mastercard</span>
+      </button>
+      <button id="pm-btn-singpay" onclick="selectChannel('SINGPAY')" class="pm-method-btn singpay-btn">
+        <!-- Logo SingPay via texte stylé -->
+        <span style="font-size:14px;font-weight:700;color:var(--singpay);letter-spacing:-0.5px;line-height:1;">SING<span style="color:#fff;">PAY</span></span>
+        <span class="pm-label">SingPay</span>
+        <span class="pm-sub">Gabon · XAF</span>
       </button>
     </div>
+
+    <!-- Section SingPay : numéro de téléphone -->
+    <div id="singpay-section">
+      <div style="padding:12px 14px;background:var(--singpay-dim);border:1px solid var(--singpay-border);margin-bottom:12px;display:flex;align-items:center;gap:10px;">
+        <span style="font-size:18px;font-weight:700;color:var(--singpay);">SING<span style="color:var(--snow);">PAY</span></span>
+        <div>
+          <p style="font-size:11px;font-weight:500;color:var(--snow);">Paiement Mobile Money Gabon</p>
+          <p style="font-size:10px;color:var(--fog);">Airtel Money · Moov Money · EcobankPay</p>
+        </div>
+        <span class="singpay-badge" style="margin-left:auto;">0% frais</span>
+      </div>
+      <div class="field-group" style="margin-bottom:8px;">
+        <label class="field-label" style="color:var(--singpay);">Numéro Mobile Money (Gabon)</label>
+        <div style="position:relative;">
+          <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--fog);font-weight:500;">+241</span>
+          <input id="singpay-phone" class="field-input" type="tel" placeholder="074 XX XX XX" style="padding-left:52px;" maxlength="12"/>
+        </div>
+      </div>
+      <div class="field-group" style="margin-bottom:0;">
+        <label class="field-label" style="color:var(--singpay);">Opérateur</label>
+        <select id="singpay-operator" class="field-input">
+          <option value="AIRTEL">📱 Airtel Money</option>
+          <option value="MOOV">📱 Moov Money</option>
+          <option value="ECOBANK">🏦 EcobankPay</option>
+        </select>
+      </div>
+    </div>
+
     <div class="pm-total-row">
       <span style="font-size:12px;font-weight:500;">Total à payer</span>
       <span style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--fire);" id="pm-total-display">—</span>
     </div>
-    <button id="pm-pay-btn" onclick="launchCinetPay()" class="btn-fire" style="width:100%;justify-content:center;padding:16px;">
+
+    <button id="pm-pay-btn" onclick="launchPayment()" class="btn-fire" style="width:100%;justify-content:center;padding:16px;">
       <span class="material-symbols-outlined" style="font-size:16px;">lock</span>
       Payer maintenant
     </button>
     <button onclick="closePaymentModal()" class="btn-ghost" style="width:100%;justify-content:center;margin-top:8px;">Annuler</button>
-    <p style="text-align:center;font-size:10px;color:#333;margin-top:12px;letter-spacing:1px;">🔒 Certifié PCI-DSS · Propulsé par CinetPay</p>
+    <p style="text-align:center;font-size:10px;color:#333;margin-top:12px;letter-spacing:1px;" id="pm-security-note">🔒 Certifié PCI-DSS · CinetPay</p>
   </div>
 </div>
 
-<!-- WITHDRAW MODAL -->
+<!-- ══════════════════ WITHDRAW MODAL ══════════════════ -->
 <div id="withdraw-modal">
   <div id="withdraw-modal-sheet">
     <div class="drag-bar"></div>
@@ -345,9 +403,9 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
   </div>
 </div>
 
-<!-- HEADER -->
+<!-- ══════════════════ HEADER ══════════════════ -->
 <header class="hd">
-  <a href="hero.html" class="logo">Wenna<b>Shop</b></a>
+  <a href="boutique.html" class="logo">Wenna<b>Shop</b></a>
   <div class="hd-acts">
     <button style="color:var(--fog);" title="Notifications"><span class="material-symbols-outlined">notifications</span></button>
     <a href="panier.html" style="position:relative;">
@@ -373,7 +431,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
       <label for="avatar-input" class="cam-btn" title="Changer la photo">
         <span class="material-symbols-outlined">photo_camera</span>
       </label>
-      <input type="file" id="avatar-input" accept="image/jpeg,image/png,image/webp" class="hidden" style="display:none;"/>
+      <input type="file" id="avatar-input" accept="image/jpeg,image/png,image/webp" style="display:none;"/>
       <div id="avatar-progress-wrap"><div id="avatar-progress-bar"></div></div>
     </div>
     <div class="profile-info">
@@ -416,17 +474,13 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
       <button class="tab-btn" onclick="switchClientTab('parametres',this)">Paramètres</button>
     </div>
 
-    <!-- TAB COMMANDES -->
     <div id="client-commandes" class="tab-panel active reveal">
       <div class="card">
         <h2 class="card-title">Mes Commandes</h2>
-        <div id="orders-list">
-          <div style="display:flex;justify-content:center;padding:40px;"><div class="spinner"></div></div>
-        </div>
+        <div id="orders-list"><div style="display:flex;justify-content:center;padding:40px;"><div class="spinner"></div></div></div>
       </div>
     </div>
 
-    <!-- TAB ADRESSES -->
     <div id="client-adresses" class="tab-panel reveal">
       <div class="card">
         <h2 class="card-title">Mes Adresses</h2>
@@ -443,11 +497,9 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
       </div>
     </div>
 
-    <!-- TAB PARAMETRES -->
     <div id="client-parametres" class="tab-panel reveal">
       <div class="card">
         <h2 class="card-title">Paramètres du compte</h2>
-
         <p style="font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--fog);margin-bottom:16px;">Informations personnelles</p>
         <div class="grid-2" style="margin-bottom:16px;">
           <div class="field-group"><label class="field-label">Prénom</label><input id="input-firstname" class="field-input" placeholder="Prénom"/></div>
@@ -457,14 +509,12 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
         <button onclick="saveProfile()" class="btn-fire">Sauvegarder</button>
 
         <div style="border-top:1px solid rgba(255,255,255,.05);margin:28px 0;"></div>
-
         <p style="font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--fog);margin-bottom:16px;">Notifications</p>
         <div class="toggle-wrap"><div class="toggle-info"><p>Suivi de commande</p><p>Mises à jour en temps réel</p></div><div class="toggle-track on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div></div>
         <div class="toggle-wrap"><div class="toggle-info"><p>Nouvelles collections</p><p>Alertes drops & exclusivités</p></div><div class="toggle-track on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div></div>
         <div class="toggle-wrap"><div class="toggle-info"><p>Offres promotionnelles</p><p>Codes promo & réductions</p></div><div class="toggle-track" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div></div>
 
         <div style="border-top:1px solid rgba(255,255,255,.05);margin:28px 0;"></div>
-
         <p style="font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--fog);margin-bottom:12px;">Sécurité</p>
         <button class="btn-ghost" style="width:100%;justify-content:space-between;margin-bottom:8px;">
           <span style="display:flex;align-items:center;gap:8px;"><span class="material-symbols-outlined" style="font-size:16px;">lock</span>Changer le mot de passe</span>
@@ -480,19 +530,14 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
 
   <!-- MODE VENDEUR -->
   <div id="mode-vendeur" class="mode-panel">
-
-    <!-- UPGRADE SECTION -->
     <div id="vendeur-upgrade-section">
       <div class="vendeur-promo reveal" style="margin-top:24px;">
         <div class="vendeur-promo-deco">🛍️</div>
         <p style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--fire);margin-bottom:8px;">Rejoins les vendeurs</p>
         <h2>Vends sur WennaShop</h2>
         <p>Gabon ↔ Maroc · Des milliers d'artisans vendent leurs produits sans frontières.</p>
-        <button onclick="document.getElementById('upgrade-form-card').scrollIntoView({behavior:'smooth'})" class="btn-fire">
-          Créer ma boutique — gratuit
-        </button>
+        <button onclick="document.getElementById('upgrade-form-card').scrollIntoView({behavior:'smooth'})" class="btn-fire">Créer ma boutique — gratuit</button>
       </div>
-
       <div class="card reveal">
         <div class="feature-list">
           <div class="feature-item"><div class="feature-icon"><span class="material-symbols-outlined">storefront</span></div><div class="feature-text"><p>Boutique personnalisée</p><p>Ta page avec tes produits, ton nom, ta description.</p></div></div>
@@ -501,7 +546,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
           <div class="feature-item"><div class="feature-icon"><span class="material-symbols-outlined">public</span></div><div class="feature-text"><p>Marché international</p><p>Acheteurs au Maroc, au Gabon et partout en Afrique.</p></div></div>
         </div>
       </div>
-
       <div id="upgrade-form-card" class="card reveal">
         <h2 class="card-title">Créer ma boutique</h2>
         <div class="upgrade-form">
@@ -542,9 +586,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
           <div class="card">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
               <h2 class="card-title" style="margin-bottom:0;">Mes Annonces</h2>
-              <a href="dashboard-vendeur.html" class="btn-fire" style="padding:10px 18px;font-size:9px;">
-                <span class="material-symbols-outlined" style="font-size:14px;">add</span>Nouvelle
-              </a>
+              <a href="dashboard-vendeur.html" class="btn-fire" style="padding:10px 18px;font-size:9px;"><span class="material-symbols-outlined" style="font-size:14px;">add</span>Nouvelle</a>
             </div>
             <div id="listings-list"><div style="display:flex;justify-content:center;padding:40px;"><div class="spinner"></div></div></div>
           </div>
@@ -562,12 +604,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
             <p class="solde-label">Solde disponible</p>
             <p class="solde-amount" id="solde-vendeur">—</p>
             <div class="solde-actions">
-              <button onclick="openWithdrawModal()" class="btn-green">
-                <span class="material-symbols-outlined" style="font-size:14px;">send_money</span>Retirer
-              </button>
-              <button onclick="openTopupModal()" class="btn-green">
-                <span class="material-symbols-outlined" style="font-size:14px;">add_circle</span>Recharger
-              </button>
+              <button onclick="openWithdrawModal()" class="btn-green"><span class="material-symbols-outlined" style="font-size:14px;">send_money</span>Retirer</button>
+              <button onclick="openTopupModal()" class="btn-green"><span class="material-symbols-outlined" style="font-size:14px;">add_circle</span>Recharger</button>
             </div>
           </div>
           <div class="card">
@@ -595,14 +633,12 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
 <!-- BOTTOM NAV -->
 <nav class="bnav">
   <div class="bnav-inner">
-    <a href="hero.html" class="bnav-item"><span class="material-symbols-outlined">home</span><span>Home</span></a>
     <a href="boutique.html" class="bnav-item"><span class="material-symbols-outlined">storefront</span><span>Shop</span></a>
     <a href="dashboard-vendeur.html" class="bnav-item"><span class="material-symbols-outlined">add_circle</span><span>Sell</span></a>
     <a href="#" class="bnav-item active"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">person</span><span>Profil</span></a>
@@ -615,6 +651,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
 // ══════════════════════════════════════════════
 const SUPABASE_URL = 'https://aakxoydznmybstfozjte.supabase.co'
 const db = window.db
+
 const CINETPAY_CONFIG = {
   apikey: 'VOTRE_APIKEY_CINETPAY',
   site_id: 'VOTRE_SITE_ID_CINETPAY',
@@ -622,6 +659,7 @@ const CINETPAY_CONFIG = {
   return_url: window.location.origin + '/compte.html',
   mode: 'PRODUCTION'
 }
+
 
 // ══════════════════════════════════════════════
 // ÉTAT
@@ -694,7 +732,7 @@ async function updateCartBadge() {
     const n = (items||[]).reduce((s,i) => s+(i.quantity||1), 0)
     const b = document.getElementById('cart-badge')
     b.textContent = n > 99 ? '99+' : n
-    if (n > 0) { b.style.display='flex' } else { b.style.display='none' }
+    b.style.display = n > 0 ? 'flex' : 'none'
   } catch {}
 }
 
@@ -798,7 +836,7 @@ async function loadProfile() {
 }
 
 // ══════════════════════════════════════════════
-// CLIENT STATS & COMMANDES — FIX DOUBLE LOOKUP
+// CLIENT STATS & COMMANDES
 // ══════════════════════════════════════════════
 async function loadClientStats(userId) {
   if (!userId) { ['stat-orders','stat-favoris','stat-reviews'].forEach(id => document.getElementById(id).textContent='0'); return }
@@ -817,8 +855,6 @@ async function loadOrders(userId) {
     container.innerHTML = '<div class="empty-state"><span class="material-symbols-outlined">shopping_bag</span><p>Aucune commande.</p></div>'
     return
   }
-
-  // ── FIX : double-lookup profile.id + auth_id ──────────────
   let { data:orders } = await db.from('orders')
     .select('id, status, total_amount, currency, created_at, order_items(quantity, unit_price, products(name, image_url))')
     .eq('user_id', userId)
@@ -866,7 +902,7 @@ async function loadOrders(userId) {
 }
 
 // ══════════════════════════════════════════════
-// CINETPAY
+// MODAL PAIEMENT — OUVERTURE
 // ══════════════════════════════════════════════
 function openOrderPaymentModal(orderId, amount, currency='MAD') {
   pmContext = { type:'order_payment', orderId, amount, currency, channel:'MOBILE_MONEY' }
@@ -879,6 +915,7 @@ function openOrderPaymentModal(orderId, amount, currency='MAD') {
   selectChannel('MOBILE_MONEY')
   document.getElementById('payment-modal').classList.add('open')
 }
+
 function openTopupModal() {
   pmContext = { type:'wallet_topup', orderId:null, amount:0, currency:'MAD', channel:'MOBILE_MONEY' }
   document.getElementById('pm-title').textContent = 'Recharger mon solde'
@@ -890,12 +927,42 @@ function openTopupModal() {
   selectChannel('MOBILE_MONEY')
   document.getElementById('payment-modal').classList.add('open')
 }
+
 function closePaymentModal() { document.getElementById('payment-modal').classList.remove('open') }
+
+// ══════════════════════════════════════════════
+// SÉLECTION CANAL — avec toggle SingPay
+// ══════════════════════════════════════════════
 function selectChannel(ch) {
   pmContext.channel = ch
-  document.getElementById('pm-btn-mobile').classList.toggle('selected', ch==='MOBILE_MONEY')
-  document.getElementById('pm-btn-card').classList.toggle('selected', ch==='CREDIT_CARD')
+
+  // Reset tous les boutons
+  document.getElementById('pm-btn-mobile').classList.remove('selected')
+  document.getElementById('pm-btn-card').classList.remove('selected')
+  document.getElementById('pm-btn-singpay').classList.remove('selected')
+
+  // Activer le bouton sélectionné
+  if (ch === 'MOBILE_MONEY') document.getElementById('pm-btn-mobile').classList.add('selected')
+  else if (ch === 'CREDIT_CARD') document.getElementById('pm-btn-card').classList.add('selected')
+  else if (ch === 'SINGPAY') document.getElementById('pm-btn-singpay').classList.add('selected')
+
+  // Afficher/masquer section SingPay
+  const singpaySection = document.getElementById('singpay-section')
+  singpaySection.classList.toggle('visible', ch === 'SINGPAY')
+
+  // Adapter la devise pour SingPay (XAF pour le Gabon)
+  if (ch === 'SINGPAY') {
+    pmContext.currency = 'XAF'
+    document.getElementById('pm-security-note').textContent = '🔒 Sécurisé par SingPay · Gabon · 0% frais'
+    // Recalculer l'affichage si montant déjà défini
+    if (pmContext.amount > 0) document.getElementById('pm-total-display').textContent = fmt(pmContext.amount, 'XAF')
+  } else {
+    pmContext.currency = 'MAD'
+    document.getElementById('pm-security-note').textContent = '🔒 Certifié PCI-DSS · CinetPay'
+    if (pmContext.amount > 0) document.getElementById('pm-total-display').textContent = fmt(pmContext.amount, 'MAD')
+  }
 }
+
 function selectAmount(amount) {
   pmContext.amount = amount
   document.querySelectorAll('.amount-chip').forEach(c => c.classList.remove('selected'))
@@ -903,12 +970,27 @@ function selectAmount(amount) {
   document.getElementById('pm-custom-amount').value = ''
   document.getElementById('pm-total-display').textContent = fmt(amount, pmContext.currency)
 }
+
 function customAmount(val) {
   pmContext.amount = parseFloat(val) || 0
   document.querySelectorAll('.amount-chip').forEach(c => c.classList.remove('selected'))
   document.getElementById('pm-total-display').textContent = pmContext.amount > 0 ? fmt(pmContext.amount, pmContext.currency) : '—'
 }
 
+// ══════════════════════════════════════════════
+// DISPATCHER PAIEMENT
+// ══════════════════════════════════════════════
+async function launchPayment() {
+  if (pmContext.channel === 'SINGPAY') {
+    await launchSingPay()
+  } else {
+    await launchCinetPay()
+  }
+}
+
+// ══════════════════════════════════════════════
+// CINETPAY
+// ══════════════════════════════════════════════
 async function launchCinetPay() {
   if (!currentProfile) { showToast('Profil non chargé', 'error'); return }
   if (pmContext.amount < 50) { showToast('Montant minimum : 50 MAD', 'error'); return }
@@ -917,21 +999,122 @@ async function launchCinetPay() {
   btn.innerHTML = '<div class="spinner" style="border-top-color:#fff;"></div> Initialisation…'
   const transactionId = generateTxId()
   try {
-    const { error } = await db.from('payments').insert({ amount:pmContext.amount, currency:pmContext.currency, method:pmContext.channel==='MOBILE_MONEY'?'Mobile Money':'Carte', status:'pending', transaction_id:transactionId, provider:'cinetpay', type:pmContext.type, user_id:currentProfile.id, order_id:pmContext.orderId||null, created_at:new Date().toISOString() })
+    const { error } = await db.from('payments').insert({
+      amount: pmContext.amount, currency: pmContext.currency,
+      method: pmContext.channel === 'MOBILE_MONEY' ? 'Mobile Money' : 'Carte',
+      status: 'pending', transaction_id: transactionId,
+      provider: 'cinetpay', type: pmContext.type,
+      user_id: currentProfile.id, order_id: pmContext.orderId || null,
+      created_at: new Date().toISOString()
+    })
     if (error) throw error
-    CinetPay.setConfig({ apikey:CINETPAY_CONFIG.apikey, site_id:CINETPAY_CONFIG.site_id, notify_url:CINETPAY_CONFIG.notify_url, return_url:CINETPAY_CONFIG.return_url+'?tx_status=success&tx_id='+transactionId, mode:CINETPAY_CONFIG.mode })
-    CinetPay.getCheckout({ transaction_id:transactionId, amount:pmContext.amount, currency:pmContext.currency, channels:pmContext.channel, description:pmContext.type==='wallet_topup'?'Recharge WennaShop':'Commande WennaShop', customer_name:currentProfile.last_name||'Client', customer_surname:currentProfile.first_name||'WennaShop', customer_email:currentProfile.email||currentUser.email, customer_phone_number:currentProfile.phone||'', customer_address:'', customer_city:currentProfile.country||'', customer_country:currentProfile.country?.toLowerCase().includes('maroc')?'MA':'GA', customer_state:'', customer_zip_code:'' })
+    CinetPay.setConfig({
+      apikey: CINETPAY_CONFIG.apikey, site_id: CINETPAY_CONFIG.site_id,
+      notify_url: CINETPAY_CONFIG.notify_url,
+      return_url: CINETPAY_CONFIG.return_url + '?tx_status=success&tx_id=' + transactionId,
+      mode: CINETPAY_CONFIG.mode
+    })
+    CinetPay.getCheckout({
+      transaction_id: transactionId, amount: pmContext.amount, currency: pmContext.currency,
+      channels: pmContext.channel, description: pmContext.type === 'wallet_topup' ? 'Recharge WennaShop' : 'Commande WennaShop',
+      customer_name: currentProfile.last_name || 'Client',
+      customer_surname: currentProfile.first_name || 'WennaShop',
+      customer_email: currentProfile.email || currentUser.email,
+      customer_phone_number: currentProfile.phone || '',
+      customer_address: '', customer_city: currentProfile.country || '',
+      customer_country: currentProfile.country?.toLowerCase().includes('maroc') ? 'MA' : 'GA',
+      customer_state: '', customer_zip_code: ''
+    })
     CinetPay.waitResponse(data => {
       closePaymentModal()
-      if (data.status==='ACCEPTED') { showToast('✅ Paiement accepté !', 'success'); setTimeout(() => pmContext.type==='wallet_topup'?loadWalletBalance():loadOrders(currentProfile.id), 2000) }
-      else showToast('Paiement non abouti', 'error')
+      if (data.status === 'ACCEPTED') {
+        showToast('✅ Paiement accepté !', 'success')
+        setTimeout(() => pmContext.type === 'wallet_topup' ? loadWalletBalance() : loadOrders(currentProfile.id), 2000)
+      } else showToast('Paiement non abouti', 'error')
       resetPayBtn()
     })
-    CinetPay.onError(data => { closePaymentModal(); showToast('Erreur paiement', 'error'); resetPayBtn() })
+    CinetPay.onError(() => { closePaymentModal(); showToast('Erreur paiement', 'error'); resetPayBtn() })
   } catch (err) {
-    showToast('Erreur : ' + (err.message||'réessaie'), 'error'); resetPayBtn()
+    showToast('Erreur : ' + (err.message || 'réessaie'), 'error'); resetPayBtn()
   }
 }
+
+// ══════════════════════════════════════════════
+// SINGPAY — via Edge Function process-payment
+// ══════════════════════════════════════════════
+async function launchSingPay() {
+  if (!currentProfile) { showToast('Profil non chargé', 'error'); return }
+  if (!pmContext.orderId) { showToast('Aucune commande associée', 'error'); return }
+  if (pmContext.amount < 100) { showToast('Montant minimum : 100 XAF', 'error'); return }
+
+  const phone    = document.getElementById('singpay-phone').value.trim().replace(/\s/g, '')
+  const operator = document.getElementById('singpay-operator').value
+
+  // Mapping opérateur → payment_method attendu par process-payment
+  const methodMap = { AIRTEL: 'airtel_money', MOOV: 'moov_money', ECOBANK: 'mobile_money' }
+  const payment_method = methodMap[operator] || 'mobile_money'
+
+  const btn = document.getElementById('pm-pay-btn')
+  btn.disabled = true
+  btn.innerHTML = '<div class="spinner" style="border-top-color:#fff;"></div> Connexion SingPay…'
+
+  try {
+    const invokeBody = {
+      order_id:       pmContext.orderId,
+      amount:         Math.round(pmContext.amount),
+      payment_method
+    }
+    // Si numéro fourni → USSD Push direct (Airtel ou Moov)
+    if (phone && phone.length >= 8 && operator !== 'ECOBANK') {
+      invokeBody.client_msisdn = '+241' + phone
+    }
+
+    const { data, error } = await window._wennaSb.functions.invoke('process-payment', {
+      body: invokeBody
+    })
+
+    if (error) throw error
+
+    if (data?.payment_url) {
+      // Lien de paiement externe → redirect
+      closePaymentModal()
+      showToast('Redirection vers SingPay…', 'success')
+      setTimeout(() => { window.location.href = data.payment_url }, 800)
+    } else if (data?.success) {
+      // USSD Push envoyé — attendre validation sur le téléphone
+      closePaymentModal()
+      showToast('✅ Demande envoyée — validez le paiement sur votre téléphone', 'success')
+      resetPayBtn()
+      pollSingPayStatus(data.transaction_id)
+    } else {
+      throw new Error(data?.error || 'Réponse inattendue')
+    }
+
+  } catch (err) {
+    showToast('Erreur SingPay : ' + (err.message || 'réessaie'), 'error')
+    resetPayBtn()
+  }
+}
+
+// ══════════════════════════════════════════════
+// SINGPAY — polling statut (max 3 min)
+// ══════════════════════════════════════════════
+async function pollSingPayStatus(transactionId, attempts = 0) {
+  if (attempts > 18) { showToast('Délai dépassé — vérifiez votre téléphone', 'error'); return }
+  setTimeout(async () => {
+    const { data } = await db.from('payments').select('status').eq('transaction_id', transactionId).single()
+    if (data?.status === 'paid' || data?.status === 'completed') {
+      showToast('✅ Paiement SingPay confirmé !', 'success')
+      if (pmContext.type === 'wallet_topup') loadWalletBalance()
+      else if (currentProfile) loadOrders(currentProfile.id)
+    } else if (data?.status === 'failed') {
+      showToast('Paiement SingPay échoué', 'error')
+    } else {
+      pollSingPayStatus(transactionId, attempts + 1)
+    }
+  }, 10000) // check toutes les 10s
+}
+
 function resetPayBtn() {
   const btn = document.getElementById('pm-pay-btn')
   btn.disabled = false
@@ -941,8 +1124,12 @@ function resetPayBtn() {
 // ══════════════════════════════════════════════
 // RETRAIT
 // ══════════════════════════════════════════════
-function openWithdrawModal() { document.getElementById('withdraw-balance-display').textContent=fmt(currentWalletBalance); document.getElementById('withdraw-modal').classList.add('open') }
+function openWithdrawModal() {
+  document.getElementById('withdraw-balance-display').textContent = fmt(currentWalletBalance)
+  document.getElementById('withdraw-modal').classList.add('open')
+}
 function closeWithdrawModal() { document.getElementById('withdraw-modal').classList.remove('open') }
+
 async function submitWithdrawal() {
   const amount = parseFloat(document.getElementById('withdraw-amount').value)
   const method = document.getElementById('withdraw-method').value
@@ -950,9 +1137,16 @@ async function submitWithdrawal() {
   if (!amount || amount < 100) { showToast('Minimum 100 MAD', 'error'); return }
   if (amount > currentWalletBalance) { showToast('Solde insuffisant', 'error'); return }
   if (!account) { showToast('Renseigne ton numéro / IBAN', 'error'); return }
-  const { error } = await db.from('wallet_transactions').insert({ user_id:currentProfile.id, type:'debit', amount, currency:'MAD', description:`Retrait ${method==='mobile_money'?'Mobile Money':'Virement'} → ${account}`, reference:generateTxId(), status:'pending' })
-  if (!error) { showToast('✓ Demande envoyée — 48h ouvrables', 'success'); document.getElementById('payout-account-text').textContent=account; closeWithdrawModal() }
-  else showToast('Erreur lors de la demande', 'error')
+  const { error } = await db.from('wallet_transactions').insert({
+    user_id: currentProfile.id, type: 'debit', amount, currency: 'MAD',
+    description: `Retrait ${method === 'mobile_money' ? 'Mobile Money' : 'Virement'} → ${account}`,
+    reference: generateTxId(), status: 'pending'
+  })
+  if (!error) {
+    showToast('✓ Demande envoyée — 48h ouvrables', 'success')
+    document.getElementById('payout-account-text').textContent = account
+    closeWithdrawModal()
+  } else showToast('Erreur lors de la demande', 'error')
 }
 
 // ══════════════════════════════════════════════
@@ -962,7 +1156,7 @@ async function loadWalletBalance() {
   if (!currentProfile) return
   const { data } = await db.from('vendor_wallets').select('balance, currency').eq('user_id', currentProfile.id).single()
   currentWalletBalance = data?.balance || 0
-  document.getElementById('solde-vendeur').textContent = fmt(currentWalletBalance, data?.currency||'MAD')
+  document.getElementById('solde-vendeur').textContent = fmt(currentWalletBalance, data?.currency || 'MAD')
 }
 
 // ══════════════════════════════════════════════
@@ -972,18 +1166,18 @@ async function loadVendeurData() {
   if (!currentProfile) return
   const sellerId = currentProfile.id
   const { data:products } = await db.from('products').select('id,name,price,currency,status,origin_city,country,image_url,created_at').eq('seller_id', sellerId).order('created_at', { ascending:false })
-  renderListings(products||[])
+  renderListings(products || [])
   const { data:sales } = await db.from('order_items').select('id,quantity,unit_price,created_at,products!inner(name,seller_id),orders(status,currency)').eq('products.seller_id', sellerId).order('created_at', { ascending:false }).limit(20)
-  renderSales(sales||[])
+  renderSales(sales || [])
   const now = new Date()
-  const revMonth = (sales||[]).filter(i => new Date(i.created_at).getMonth()===now.getMonth()).reduce((s,i) => s+parseFloat(i.unit_price)*i.quantity, 0)
+  const revMonth = (sales || []).filter(i => new Date(i.created_at).getMonth() === now.getMonth()).reduce((s,i) => s + parseFloat(i.unit_price) * i.quantity, 0)
   document.getElementById('stat-revenue-month').textContent = fmt(revMonth)
-  document.getElementById('stat-total-sales').textContent = (sales||[]).length
-  document.getElementById('stat-listings').textContent = (products||[]).length
-  const pids = (products||[]).map(p => p.id)
+  document.getElementById('stat-total-sales').textContent = (sales || []).length
+  document.getElementById('stat-listings').textContent = (products || []).length
+  const pids = (products || []).map(p => p.id)
   if (pids.length > 0) {
     const { data:reviews } = await db.from('reviews').select('rating').in('product_id', pids).eq('status', 'approved')
-    document.getElementById('stat-rating').textContent = reviews?.length ? (reviews.reduce((s,r) => s+r.rating, 0)/reviews.length).toFixed(1) : '—'
+    document.getElementById('stat-rating').textContent = reviews?.length ? (reviews.reduce((s,r) => s + r.rating, 0) / reviews.length).toFixed(1) : '—'
   }
   await loadWalletBalance()
   loadPaymentsHistory()
@@ -992,15 +1186,24 @@ async function loadVendeurData() {
 async function loadPaymentsHistory() {
   const container = document.getElementById('payments-list')
   if (!currentProfile) return
-  const { data:payments } = await db.from('payments').select('id,amount,currency,status,created_at,method,type,transaction_id').eq('user_id', currentProfile.id).order('created_at', { ascending:false }).limit(15)
+  const { data:payments } = await db.from('payments').select('id,amount,currency,status,created_at,method,type,transaction_id,provider').eq('user_id', currentProfile.id).order('created_at', { ascending:false }).limit(15)
   if (!payments?.length) { container.innerHTML='<div class="empty-state"><span class="material-symbols-outlined">receipt_long</span><p>Aucun paiement.</p></div>'; return }
   const typeLabels = { order_payment:'Commande', wallet_topup:'Recharge solde', vendor_payout:'Retrait' }
+  const providerBadge = {
+    cinetpay: '<span class="chip chip-blue" style="font-size:8px;">CinetPay</span>',
+    singpay:  '<span class="singpay-badge">SingPay</span>',
+    stripe:   '<span class="chip chip-snow" style="font-size:8px;">Stripe</span>',
+    manual:   '<span class="chip chip-gray" style="font-size:8px;">Manuel</span>'
+  }
   container.innerHTML = payments.map(p => `
     <div class="payment-row">
       <div>
         <p style="font-size:13px;font-weight:500;">${typeLabels[p.type]||'Paiement'} · ${fmtDate(p.created_at)}</p>
         <p style="font-size:10px;color:var(--fog);font-family:monospace;margin-top:2px;">${p.transaction_id||p.id.slice(0,12)}</p>
-        <p style="font-size:10px;color:var(--fog);">${p.method||'En ligne'}</p>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+          <span style="font-size:10px;color:var(--fog);">${p.method||'En ligne'}</span>
+          ${providerBadge[p.provider] || ''}
+        </div>
       </div>
       <div style="text-align:right;">
         <p style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:${p.type==='vendor_payout'?'#f87171':'#4ade80'};">${p.type==='vendor_payout'?'-':'+'}${fmt(p.amount, p.currency||'MAD')}</p>
@@ -1108,8 +1311,8 @@ function switchMode(mode) {
   currentMode = mode
   document.querySelectorAll('.mode-panel').forEach(p => p.classList.remove('active'))
   document.getElementById('mode-' + mode).classList.add('active')
-  document.getElementById('btn-client').classList.toggle('active', mode==='client')
-  document.getElementById('btn-vendeur').classList.toggle('active', mode==='vendeur')
+  document.getElementById('btn-client').classList.toggle('active', mode === 'client')
+  document.getElementById('btn-vendeur').classList.toggle('active', mode === 'vendeur')
   if (mode === 'client') switchClientTab('commandes', document.querySelector('#mode-client .tab-btn'))
 }
 
@@ -1128,8 +1331,8 @@ function switchVendeurTab(tab, btn) {
 }
 
 // Fermer modals au clic fond
-document.getElementById('payment-modal').addEventListener('click', e => { if(e.target===e.currentTarget)closePaymentModal() })
-document.getElementById('withdraw-modal').addEventListener('click', e => { if(e.target===e.currentTarget)closeWithdrawModal() })
+document.getElementById('payment-modal').addEventListener('click', e => { if(e.target===e.currentTarget) closePaymentModal() })
+document.getElementById('withdraw-modal').addEventListener('click', e => { if(e.target===e.currentTarget) closeWithdrawModal() })
 
 // Reveal scroll
 const rObs = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('vis') }), { threshold:.07 })
