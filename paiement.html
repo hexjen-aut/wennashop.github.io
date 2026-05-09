@@ -376,7 +376,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
 </nav>
 
 <script>
-const sb = window.db
+function getSb() { return window.db || null }
 
 // ── CURSEUR ───────────────────────────────────────────
 const cur = document.getElementById('cur'), crng = document.getElementById('curRing')
@@ -467,7 +467,9 @@ async function init(){
   }
 
   // Auth
-  const {data:{user},error:authErr} = await sb.auth.getUser()
+  const sb = getSb()
+if (!sb) { document.getElementById('error-msg').textContent = "Erreur config — window.db non défini."; showState('state-error'); return }
+const {data:{user},error:authErr} = await sb.auth.getUser()
   if(authErr||!user){
     window.location.href='compte.html'; return
   }
@@ -576,12 +578,12 @@ function validateForm(){
 
 // ── PAIEMENT ──────────────────────────────────────────
 async function submitPayment(){
+  const sb = getSb()
+  if (!sb) { toast('Erreur de connexion base de données.'); return }
   if(!validateForm()) return
-
   const btn=document.getElementById('btn-pay')
   btn.disabled=true
   btn.innerHTML='<div class="spinner"></div> Traitement…'
-
   const firstName=document.getElementById('ship-first').value.trim()
   const lastName=document.getElementById('ship-last').value.trim()
   const address=document.getElementById('ship-address').value.trim()
