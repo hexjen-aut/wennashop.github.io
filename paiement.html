@@ -62,6 +62,10 @@
     .method-pill.active span.lbl{color:var(--fire);}
     .method-pill:not(.active) span.lbl{color:#666;}
 
+    /* PANELS PAIEMENT */
+    .pay-panel{display:none;}
+    .pay-panel.active{display:block;}
+
     /* CARD NETWORKS */
     .card-networks{display:flex;gap:8px;margin-bottom:20px;}
     .net-btn{flex:1;border:1px solid var(--border);background:rgba(255,255,255,.03);padding:10px 12px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
@@ -90,13 +94,24 @@
     .field-input{width:100%;background:rgba(255,255,255,.04);border:none;border-bottom:1px solid var(--border);color:var(--snow);padding:12px 14px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
     .field-input:focus{border-bottom-color:var(--fire);}
     .field-input::placeholder{color:#333;}
-    .field-input[style*="uppercase"]{text-transform:uppercase;}
     .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 
     /* SAVE CARD */
     .save-row{display:flex;align-items:center;gap:12px;padding:14px;background:rgba(255,255,255,.03);border:1px solid var(--border);margin-top:16px;}
     .save-row input{accent-color:var(--fire);width:14px;height:14px;cursor:pointer;}
     .save-row label{font-size:12px;color:#888;cursor:pointer;}
+
+    /* MOBILE MONEY PANEL */
+    .mm-info{background:rgba(255,107,43,.06);border:1px solid var(--border-fire);padding:20px;margin-bottom:20px;}
+    .mm-info-title{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--fire);margin-bottom:8px;}
+    .mm-info-text{font-size:12px;color:#888;line-height:1.7;}
+    .mm-operators{display:flex;gap:10px;margin-bottom:20px;}
+    .mm-op{flex:1;border:1px solid var(--border);padding:14px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.03);}
+    .mm-op:hover{border-color:var(--border-fire);}
+    .mm-op.active{border-color:var(--fire);background:rgba(255,107,43,.08);}
+    .mm-op-name{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#666;}
+    .mm-op.active .mm-op-name{color:var(--fire);}
+    .mm-op-badge{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;letter-spacing:1px;}
 
     /* ACCORDION */
     .acc-trigger{width:100%;display:flex;justify-content:space-between;align-items:center;background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;}
@@ -136,6 +151,7 @@
     .btn-pay:disabled{opacity:.5;pointer-events:none;}
     .btn-pay .ripple-el{position:absolute;border-radius:50%;background:rgba(255,255,255,.25);width:100px;height:100px;margin-top:-50px;margin-left:-50px;animation:ripple .6s linear;pointer-events:none;}
     @keyframes ripple{0%{transform:scale(0);opacity:.4;}100%{transform:scale(4);opacity:0;}}
+    @keyframes spin2{to{transform:rotate(360deg);}}
 
     /* TRUST */
     .trust-list{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
@@ -145,7 +161,7 @@
     /* LOGOS */
     .logos{padding-top:16px;border-top:1px solid var(--border);}
     .logos-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#444;text-align:center;margin-bottom:10px;}
-    .logos-row{display:flex;justify-content:center;align-items:center;gap:10px;}
+    .logos-row{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;}
 
     /* SUCCESS OVERLAY */
     .success-overlay{display:none;position:fixed;inset:0;background:rgba(8,8,8,.97);z-index:100;align-items:center;justify-content:center;flex-direction:column;animation:slideUp .5s ease forwards;}
@@ -173,15 +189,19 @@
     .btn-success-ghost{width:100%;padding:14px;background:transparent;border:1px solid var(--border);color:#888;font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
     .btn-success-ghost:hover{border-color:var(--border-fire);color:var(--fire);}
 
+    /* SINGPAY REDIRECT */
+    .singpay-redirect{display:none;position:fixed;inset:0;background:rgba(8,8,8,.97);z-index:100;align-items:center;justify-content:center;flex-direction:column;gap:24px;}
+    .singpay-redirect.show{display:flex;}
+    .sp-logo{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;font-style:italic;color:var(--snow);}
+    .sp-logo b{color:var(--fire);}
+    .sp-msg{font-size:13px;color:#888;text-align:center;max-width:320px;line-height:1.7;}
+    .sp-spinner{width:48px;height:48px;border:3px solid rgba(255,107,43,.2);border-top-color:var(--fire);border-radius:50%;animation:spin2 .8s linear infinite;}
+
     /* BOTTOM NAV */
     .bnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:40;background:rgba(8,8,8,.95);backdrop-filter:blur(20px);border-top:1px solid var(--border-fire);padding:10px 0 22px;}
     .bnav-inner{display:flex;justify-content:space-around;}
     .bnav-item{display:flex;flex-direction:column;align-items:center;gap:4px;color:#555;text-decoration:none;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;transition:color .2s;}
     .bnav-item:hover{color:var(--fire);}
-
-    /* PROMO FEEDBACK */
-    .promo-ok{margin-top:8px;padding:10px 14px;background:rgba(255,107,43,.1);border:1px solid var(--border-fire);color:var(--fire);font-size:11px;font-weight:600;display:none;}
-    .promo-err{margin-top:8px;padding:10px 14px;background:rgba(186,26,26,.1);border:1px solid rgba(186,26,26,.3);color:#ef4444;font-size:11px;font-weight:600;display:none;}
 
     /* ANIM */
     @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
@@ -259,9 +279,9 @@
           <span class="material-symbols-outlined" style="color:var(--fire)">credit_card</span>
           <span class="lbl">Carte</span>
         </button>
-        <button class="method-pill" onclick="selectMethod(this,'mobile')">
+        <button class="method-pill" onclick="selectMethod(this,'mobile_money')">
           <span class="material-symbols-outlined">phone_iphone</span>
-          <span class="lbl">Mobile Pay</span>
+          <span class="lbl">Mobile Money</span>
         </button>
         <button class="method-pill" onclick="selectMethod(this,'transfer')">
           <span class="material-symbols-outlined">account_balance</span>
@@ -269,77 +289,127 @@
         </button>
       </div>
 
-      <!-- Card Preview -->
-      <div class="card-preview" id="cardPreview">
-        <div class="cp-top">
-          <div>
-            <div class="cp-sub">WennaShop</div>
-            <div class="cp-brand">Carte Premium</div>
+      <!-- PANEL CARTE -->
+      <div class="pay-panel active" id="panel-card">
+        <!-- Card Preview -->
+        <div class="card-preview">
+          <div class="cp-top">
+            <div>
+              <div class="cp-sub">WennaShop</div>
+              <div class="cp-brand">Carte Premium</div>
+            </div>
+            <div class="mc-icon">
+              <div class="mc-circle" style="background:#FF6B2B;opacity:.8;margin-right:-8px;"></div>
+              <div class="mc-circle" style="background:#E85A1A;opacity:.6;"></div>
+            </div>
           </div>
-          <div class="mc-icon">
-            <div class="mc-circle" style="background:#FF6B2B;opacity:.8;margin-right:-8px;"></div>
-            <div class="mc-circle" style="background:#E85A1A;opacity:.6;"></div>
+          <div class="cp-num" id="cardNumDisplay">•••• •••• •••• ••••</div>
+          <div class="cp-bottom">
+            <div>
+              <div class="cp-label">Titulaire</div>
+              <div class="cp-val" id="cardNameDisplay">VOTRE NOM</div>
+            </div>
+            <div>
+              <div class="cp-label">Expire</div>
+              <div class="cp-val" id="cardExpDisplay">MM/AA</div>
+            </div>
           </div>
         </div>
-        <div class="cp-num" id="cardNumDisplay">•••• •••• •••• ••••</div>
-        <div class="cp-bottom">
-          <div>
-            <div class="cp-label">Titulaire</div>
-            <div class="cp-val" id="cardNameDisplay">VOTRE NOM</div>
-          </div>
-          <div>
-            <div class="cp-label">Expire</div>
-            <div class="cp-val" id="cardExpDisplay">MM/AA</div>
-          </div>
+
+        <!-- Réseaux -->
+        <div class="card-networks">
+          <button class="net-btn selected" onclick="selectCard(this)">
+            <div style="display:flex;align-items:center;margin-right:-4px;">
+              <div style="width:22px;height:14px;border-radius:2px;background:#f0c110;"></div>
+              <div style="width:22px;height:14px;border-radius:2px;background:#ef4444;opacity:.8;margin-left:-6px;"></div>
+            </div>
+            <span>Mastercard</span>
+          </button>
+          <button class="net-btn" onclick="selectCard(this)">
+            <div style="width:34px;height:14px;border-radius:2px;background:#1a3fa8;display:flex;align-items:center;justify-content:center;">
+              <span style="color:#fff;font-size:8px;font-weight:900;letter-spacing:1px;">VISA</span>
+            </div>
+            <span>Visa</span>
+          </button>
+          <button class="net-btn" onclick="selectCard(this)">
+            <div style="width:30px;height:14px;border-radius:2px;background:linear-gradient(90deg,#3b82f6,#22c55e);display:flex;align-items:center;justify-content:center;">
+              <span style="color:#fff;font-size:7px;font-weight:700;">CMI</span>
+            </div>
+            <span>CMI</span>
+          </button>
         </div>
-      </div>
 
-      <!-- Réseaux -->
-      <div class="card-networks">
-        <button class="net-btn selected" onclick="selectCard(this)">
-          <div style="display:flex;align-items:center;margin-right:-4px;">
-            <div style="width:22px;height:14px;border-radius:2px;background:#f0c110;"></div>
-            <div style="width:22px;height:14px;border-radius:2px;background:#ef4444;opacity:.8;margin-left:-6px;"></div>
-          </div>
-          <span>Mastercard</span>
-        </button>
-        <button class="net-btn" onclick="selectCard(this)">
-          <div style="width:34px;height:14px;border-radius:2px;background:#1a3fa8;display:flex;align-items:center;justify-content:center;">
-            <span style="color:#fff;font-size:8px;font-weight:900;letter-spacing:1px;">VISA</span>
-          </div>
-          <span>Visa</span>
-        </button>
-        <button class="net-btn" onclick="selectCard(this)">
-          <div style="width:30px;height:14px;border-radius:2px;background:linear-gradient(90deg,#3b82f6,#22c55e);display:flex;align-items:center;justify-content:center;">
-            <span style="color:#fff;font-size:7px;font-weight:700;">CMI</span>
-          </div>
-          <span>CMI</span>
-        </button>
-      </div>
-
-      <!-- Champs -->
-      <div class="field-group">
-        <label class="field-label">Numéro de carte</label>
-        <input class="field-input" type="text" placeholder="1234 5678 9012 3456" maxlength="19" id="cardNum" oninput="formatCard(this)"/>
-      </div>
-      <div class="field-group">
-        <label class="field-label">Titulaire de la carte</label>
-        <input class="field-input" type="text" placeholder="NOM PRÉNOM" id="cardName" oninput="updateCardName(this)" style="text-transform:uppercase;"/>
-      </div>
-      <div class="grid-2">
         <div class="field-group">
-          <label class="field-label">Expiration</label>
-          <input class="field-input" type="text" placeholder="MM / AA" maxlength="5" id="cardExp" oninput="formatExp(this)"/>
+          <label class="field-label">Numéro de carte</label>
+          <input class="field-input" type="text" placeholder="1234 5678 9012 3456" maxlength="19" id="cardNum" oninput="formatCard(this)"/>
         </div>
         <div class="field-group">
-          <label class="field-label">CVV / CVC</label>
-          <input class="field-input" type="password" placeholder="•••" maxlength="4" id="cardCvv"/>
+          <label class="field-label">Titulaire de la carte</label>
+          <input class="field-input" type="text" placeholder="NOM PRÉNOM" id="cardName" oninput="updateCardName(this)" style="text-transform:uppercase;"/>
+        </div>
+        <div class="grid-2">
+          <div class="field-group">
+            <label class="field-label">Expiration</label>
+            <input class="field-input" type="text" placeholder="MM / AA" maxlength="5" id="cardExp" oninput="formatExp(this)"/>
+          </div>
+          <div class="field-group">
+            <label class="field-label">CVV / CVC</label>
+            <input class="field-input" type="password" placeholder="•••" maxlength="4" id="cardCvv"/>
+          </div>
+        </div>
+        <div class="save-row">
+          <input type="checkbox" id="saveCard"/>
+          <label for="saveCard">Sauvegarder cette carte pour mes prochains achats</label>
         </div>
       </div>
 
-      <div class="save-row">
-        <input type="checkbox" id="saveCard"/>
-        <label for="saveCard">Sauvegarder cette carte pour mes prochains achats</label>
+      <!-- PANEL MOBILE MONEY (SingPay) -->
+      <div class="pay-panel" id="panel-mobile_money">
+        <div class="mm-info">
+          <div class="mm-info-title">Paiement Mobile Money — SingPay</div>
+          <div class="mm-info-text">
+            Vous serez redirigé vers la page de paiement sécurisée SingPay.<br>
+            Choisissez votre opérateur et validez le push USSD sur votre téléphone.
+          </div>
+        </div>
+
+        <div class="mm-operators">
+          <button class="mm-op active" onclick="selectOperator(this,'airtel_money')">
+            <div class="mm-op-badge" style="background:#e8001a;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="none" stroke="#fff" stroke-width="2"/><path d="M8 12l3 3 5-5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <span class="mm-op-name">Airtel Money</span>
+          </button>
+          <button class="mm-op" onclick="selectOperator(this,'moov_money')">
+            <div class="mm-op-badge" style="background:#0066cc;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="none" stroke="#fff" stroke-width="2"/><path d="M8 12l3 3 5-5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <span class="mm-op-name">Moov Money</span>
+          </button>
+          <button class="mm-op" onclick="selectOperator(this,'mobile_money')">
+            <div class="mm-op-badge" style="background:#ff6b2b;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="none" stroke="#fff" stroke-width="2"/><path d="M8 12h8M12 8v8" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <span class="mm-op-name">Autre</span>
+          </button>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Numéro de téléphone (optionnel — pour USSD Push)</label>
+          <input class="field-input" type="tel" placeholder="+241 07 00 00 00" id="clientPhone"/>
+          <span style="font-size:10px;color:#555;margin-top:4px;">Laissez vide pour payer via le lien SingPay</span>
+        </div>
+      </div>
+
+      <!-- PANEL VIREMENT -->
+      <div class="pay-panel" id="panel-transfer">
+        <div class="mm-info">
+          <div class="mm-info-title">Virement Bancaire</div>
+          <div class="mm-info-text">
+            Votre commande sera réservée pendant 48h.<br>
+            Les coordonnées bancaires vous seront envoyées par email après confirmation.
+          </div>
+        </div>
       </div>
     </div>
 
@@ -357,7 +427,7 @@
           <input class="field-input" type="text" placeholder="Ex: WENNA15" id="promoInput" style="flex:1;"/>
           <button onclick="applyPromo()" class="btn-apply">Appliquer</button>
         </div>
-        <div id="promoFeedback" class="hidden"></div>
+        <div id="promoFeedback"></div>
       </div>
     </div>
 
@@ -382,11 +452,8 @@
   <div class="recap-sidebar anim-up d-200">
     <div class="card" style="position:sticky;top:90px;">
       <div class="card-title">Récapitulatif</div>
-
       <div class="recap-items" id="order-items"></div>
-
       <div class="divider"></div>
-
       <div class="total-row">
         <span>Sous-total</span>
         <span id="recap-subtotal">—</span>
@@ -395,7 +462,7 @@
         <span>Livraison</span>
         <span style="color:var(--fire);font-weight:600;">Incluse</span>
       </div>
-      <div class="total-row promo hidden" id="discountRow">
+      <div class="total-row promo" id="discountRow" style="display:none;">
         <span>Remise promo</span>
         <span id="discountAmt">—</span>
       </div>
@@ -403,18 +470,16 @@
         <span class="label">Total</span>
         <span class="value" id="totalDisplay">—</span>
       </div>
-
       <div style="margin-top:22px;margin-bottom:0;">
-        <button class="btn-pay" onclick="handlePay(this)" id="payBtn">
+        <button class="btn-pay" id="payBtn" onclick="handlePay(this)">
           <span class="material-symbols-outlined" style="font-size:17px;">lock</span>
           Payer <span id="btn-total">—</span>
         </button>
       </div>
-
       <div class="trust-list">
         <div class="trust-item">
           <span class="material-symbols-outlined">verified_user</span>
-          <span>Paiement SSL 256-bit · 3D Secure</span>
+          <span>Paiement SSL 256-bit · SingPay sécurisé</span>
         </div>
         <div class="trust-item">
           <span class="material-symbols-outlined">autorenew</span>
@@ -425,25 +490,42 @@
           <span>Support 7j/7 · 24h/24</span>
         </div>
       </div>
-
       <div class="logos">
         <div class="logos-label">Nous acceptons</div>
         <div class="logos-row">
+          <!-- Mastercard -->
           <div style="display:flex;align-items:center;">
             <div style="width:28px;height:18px;border-radius:3px;background:#f0c110;margin-right:-6px;border:1px solid rgba(255,255,255,.1);"></div>
             <div style="width:28px;height:18px;border-radius:3px;background:#ef4444;opacity:.9;border:1px solid rgba(255,255,255,.1);"></div>
           </div>
+          <!-- Visa -->
           <div style="width:42px;height:18px;border-radius:3px;background:#1a3fa8;display:flex;align-items:center;justify-content:center;">
             <span style="color:#fff;font-size:8px;font-weight:900;letter-spacing:1px;">VISA</span>
           </div>
-          <div style="width:36px;height:18px;border-radius:3px;background:linear-gradient(90deg,#3b82f6,#22c55e);display:flex;align-items:center;justify-content:center;">
-            <span style="color:#fff;font-size:7px;font-weight:700;">CMI</span>
+          <!-- SingPay -->
+          <div style="height:18px;border-radius:3px;background:var(--slate);border:1px solid var(--border-fire);padding:0 8px;display:flex;align-items:center;justify-content:center;">
+            <span style="color:var(--fire);font-size:8px;font-weight:900;letter-spacing:1px;">SINGPAY</span>
+          </div>
+          <!-- Airtel -->
+          <div style="height:18px;border-radius:3px;background:#e8001a;padding:0 8px;display:flex;align-items:center;justify-content:center;">
+            <span style="color:#fff;font-size:7px;font-weight:900;letter-spacing:1px;">AIRTEL</span>
+          </div>
+          <!-- Moov -->
+          <div style="height:18px;border-radius:3px;background:#0066cc;padding:0 8px;display:flex;align-items:center;justify-content:center;">
+            <span style="color:#fff;font-size:7px;font-weight:900;letter-spacing:1px;">MOOV</span>
           </div>
         </div>
       </div>
     </div>
   </div>
 </main>
+
+<!-- SINGPAY REDIRECT OVERLAY -->
+<div class="singpay-redirect" id="singpayRedirect">
+  <div class="sp-spinner"></div>
+  <div class="sp-logo">Wenna<b>Shop</b></div>
+  <div class="sp-msg">Redirection vers SingPay en cours...<br>Vous allez être redirigé vers la page de paiement sécurisée.</div>
+</div>
 
 <!-- SUCCESS OVERLAY -->
 <div class="success-overlay" id="successOverlay">
@@ -454,7 +536,6 @@
     <div class="success-title">Merci !</div>
     <p class="success-sub">Votre commande <strong style="color:var(--snow);" id="order-ref">—</strong> est confirmée.</p>
     <p class="success-sub" id="confirm-email" style="font-size:11px;margin-bottom:0;">Un email de confirmation vous sera envoyé.</p>
-
     <div class="success-track">
       <div class="track-label">Suivi estimé</div>
       <div class="track-step">
@@ -472,7 +553,6 @@
         <div><div class="track-step-name" style="color:#666;">Livraison en route</div><div class="track-step-time">5–12 jours ouvrés</div></div>
       </div>
     </div>
-
     <div class="success-btns">
       <button onclick="window.location.href='index.html'" class="btn-success-primary">Continuer mes achats</button>
       <button onclick="window.location.href='compte.html'" class="btn-success-ghost">Voir mes commandes</button>
@@ -492,14 +572,15 @@
 
 <script>
   // ─── CONFIG ──────────────────────────────────────────────────────────────────
- // ✅ Utilise window.db de supabase.config.js
-  const SUPABASE_URL  = window.WENNA.supabaseUrl
+  const SUPABASE_URL  = window.WENNA?.supabaseUrl || 'https://aakxoydznmybstfozjte.supabase.co'
   const EDGE_FN_URL   = `${SUPABASE_URL}/functions/v1/process-payment`
   const PROMO_CODES   = { 'WENNA15': 0.15 }
-  const CURRENCY      = 'MAD'
+
+  // Devise selon méthode : MAD pour carte, XAF pour mobile money
+  const CURRENCY_CARD = 'MAD'
+  const CURRENCY_MM   = 'XAF'
   // ─────────────────────────────────────────────────────────────────────────────
 
-  // Réutiliser window.db si supabase.config.js est chargé, sinon créer
   function getSb() { return window.db }
 
   let cart           = []
@@ -507,43 +588,44 @@
   let orderTotal     = 0
   let promoDisc      = 0
   let selectedMethod = 'card'
-  let currentUserId  = null  // id interne dans table users (pas auth_id)
+  let selectedOp     = 'airtel_money'
+  let currentUserId  = null
 
   const $ = id => document.getElementById(id)
-  const fmt = n => new Intl.NumberFormat('fr-FR',{style:'currency',currency:CURRENCY}).format(n)
+  const fmt = (n, cur) => new Intl.NumberFormat('fr-FR',{
+    style:'currency',
+    currency: cur || (selectedMethod === 'mobile_money' ? CURRENCY_MM : CURRENCY_CARD)
+  }).format(n)
 
   // ── Init ─────────────────────────────────────────────────────────────────────
   async function init() {
     const sb = getSb()
-
-    // 1. Lire order_id depuis URL ou localStorage
     orderId = new URLSearchParams(location.search).get('order_id')
-             || localStorage.getItem('wenna_current_order_id')
+           || localStorage.getItem('wenna_current_order_id')
 
-    // 2. Vérifier session et récupérer l'id interne user
+    // Vérifier si retour SingPay avec succès
+    const urlParams = new URLSearchParams(location.search)
+    const ref = urlParams.get('ref')
+    if (ref && urlParams.has('success')) {
+      showSuccess(ref)
+      return
+    }
+
     const { data: { session } } = await sb.auth.getSession()
     if (session) {
-      // Charger panier depuis Supabase (cart_items) si connecté
       const { data: userRow } = await sb.from('users').select('id').eq('auth_id', session.user.id).maybeSingle()
       if (userRow) {
         currentUserId = userRow.id
         await loadCartFromSupabase(userRow.id)
       }
     }
-
-    // Fallback : localStorage si panier Supabase vide ou non connecté
-    if (!cart.length) {
-      cart = JSON.parse(localStorage.getItem('wenna_cart') || '[]')
-    }
+    if (!cart.length) cart = JSON.parse(localStorage.getItem('wenna_cart') || '[]')
 
     renderItems()
     renderRecap()
     loadShippingRecap()
   }
 
-  // ── Charger panier depuis cart_items (schéma réel) ───────────────────────────
-  // cart_items : id, user_id, product_id, quantity, added_at
-  // On joint products pour avoir name, price, image_url
   async function loadCartFromSupabase(userId) {
     const sb = getSb()
     const { data, error } = await sb
@@ -552,16 +634,15 @@
       .eq('user_id', userId)
     if (error || !data?.length) return
     cart = data.map(item => ({
-      id:    item.products.id,
-      name:  item.products.name,
-      price: Number(item.products.price),
-      qty:   item.quantity,
-      image: item.products.image_url || null,
-      currency: item.products.currency || CURRENCY
+      id:       item.products.id,
+      name:     item.products.name,
+      price:    Number(item.products.price),
+      qty:      item.quantity,
+      image:    item.products.image_url || null,
+      currency: item.products.currency || CURRENCY_CARD
     }))
   }
 
-  // ── Rendu articles ───────────────────────────────────────────────────────────
   function renderItems() {
     const container = $('order-items')
     if (!cart.length) { container.innerHTML = '<p style="font-size:12px;color:#555;">Aucun article</p>'; return }
@@ -588,22 +669,21 @@
   function renderRecap() {
     const { sub, disc, total } = calcTotals()
     orderTotal = total
-    $('recap-subtotal').textContent = fmt(sub)
-    $('totalDisplay').textContent   = fmt(total)
-    $('btn-total').textContent      = fmt(total)
+    const cur = selectedMethod === 'mobile_money' ? CURRENCY_MM : CURRENCY_CARD
+    $('recap-subtotal').textContent = fmt(sub, cur)
+    $('totalDisplay').textContent   = fmt(total, cur)
+    $('btn-total').textContent      = fmt(total, cur)
     if (disc > 0) {
-      $('discountRow').classList.remove('hidden')
-      $('discountAmt').textContent = `-${fmt(disc)}`
+      $('discountRow').style.display = 'flex'
+      $('discountAmt').textContent   = `-${fmt(disc, cur)}`
     } else {
-      $('discountRow').classList.add('hidden')
+      $('discountRow').style.display = 'none'
     }
   }
 
-  // ── Adresse livraison (colonnes orders: shipping_name/address/city/country) ──
   function loadShippingRecap() {
     const info = JSON.parse(localStorage.getItem('wenna_shipping') || 'null')
     if (info) {
-      // Mapping vers colonnes réelles : shipping_name, shipping_city, shipping_country, shipping_address
       $('shipping-name').textContent    = `${info.name || info.shipping_name || '—'} · ${info.city || info.shipping_city || '—'}, ${info.country || info.shipping_country || '—'}`
       $('shipping-address').textContent = info.address || info.shipping_address || ''
     } else {
@@ -628,16 +708,32 @@
   function updateCardName(el) {
     $('cardNameDisplay').textContent = el.value.toUpperCase() || 'VOTRE NOM'
   }
+
   function selectMethod(btn, type) {
     selectedMethod = type
     document.querySelectorAll('.method-pill').forEach(b => b.classList.remove('active'))
     btn.classList.add('active')
-    $('cardPreview').style.display = type === 'card' ? 'block' : 'none'
+    // Mettre à jour icone du pill actif
+    btn.querySelector('.material-symbols-outlined').style.color = 'var(--fire)'
+    document.querySelectorAll('.method-pill:not(.active) .material-symbols-outlined').forEach(i => i.style.color = '')
+    // Afficher le bon panel
+    document.querySelectorAll('.pay-panel').forEach(p => p.classList.remove('active'))
+    const panel = $('panel-' + type)
+    if (panel) panel.classList.add('active')
+    renderRecap()
   }
+
   function selectCard(btn) {
     document.querySelectorAll('.net-btn').forEach(b => b.classList.remove('selected'))
     btn.classList.add('selected')
   }
+
+  function selectOperator(btn, op) {
+    selectedOp = op
+    document.querySelectorAll('.mm-op').forEach(b => b.classList.remove('active'))
+    btn.classList.add('active')
+  }
+
   function toggleAcc(id, arrowId) {
     $(id).classList.toggle('open')
     $(arrowId).classList.toggle('open')
@@ -647,38 +743,33 @@
   function applyPromo() {
     const code     = ($('promoInput').value || '').trim().toUpperCase()
     const feedback = $('promoFeedback')
-    feedback.classList.remove('hidden')
     if (PROMO_CODES[code] !== undefined) {
       promoDisc = PROMO_CODES[code]
       feedback.style.cssText = 'margin-top:8px;padding:10px 14px;background:rgba(255,107,43,.1);border:1px solid rgba(255,107,43,.25);color:var(--fire);font-size:11px;font-weight:600;display:block;'
       feedback.textContent = `✓ Code appliqué — ${promoDisc*100}% de remise`
-      renderRecap()
     } else {
       promoDisc = 0
       feedback.style.cssText = 'margin-top:8px;padding:10px 14px;background:rgba(186,26,26,.1);border:1px solid rgba(186,26,26,.3);color:#ef4444;font-size:11px;font-weight:600;display:block;'
       feedback.textContent = '✗ Code invalide ou expiré'
-      renderRecap()
     }
+    renderRecap()
   }
 
-  // ── Créer ou récupérer l'order Supabase ──────────────────────────────────────
-  // Colonnes orders : user_id, status, total_amount, subtotal, promo_code,
-  //                   discount_pct, currency, notes,
-  //                   shipping_name, shipping_address, shipping_city, shipping_country
+  // ── Créer order Supabase ─────────────────────────────────────────────────────
   async function ensureOrder(session) {
     const sb = getSb()
-    if (orderId) return orderId  // déjà créé
-
+    if (orderId) return orderId
     const { sub, disc, total } = calcTotals()
-    const shipping = JSON.parse(localStorage.getItem('wenna_shipping') || 'null') || {}
+    const shipping  = JSON.parse(localStorage.getItem('wenna_shipping') || 'null') || {}
     const promoCode = $('promoInput').value.trim().toUpperCase() || null
+    const currency  = selectedMethod === 'mobile_money' ? CURRENCY_MM : CURRENCY_CARD
 
-    const payload = {
+    const { data, error } = await sb.from('orders').insert({
       user_id:          currentUserId,
       status:           'pending',
       subtotal:         sub,
       total_amount:     total,
-      currency:         CURRENCY,
+      currency,
       discount_pct:     promoDisc > 0 ? promoDisc * 100 : null,
       promo_code:       promoDisc > 0 ? promoCode : null,
       notes:            $('orderNote').value.trim() || null,
@@ -688,17 +779,16 @@
       shipping_country: shipping.country || shipping.shipping_country || null,
       created_at:       new Date().toISOString(),
       updated_at:       new Date().toISOString()
-    }
-
-    const { data, error } = await sb.from('orders').insert(payload).select('id').single()
+    }).select('id').single()
     if (error) throw new Error('Impossible de créer la commande : ' + error.message)
     orderId = data.id
     localStorage.setItem('wenna_current_order_id', orderId)
     return orderId
   }
 
-  // ── Paiement ─────────────────────────────────────────────────────────────────
+  // ── PAIEMENT PRINCIPAL ───────────────────────────────────────────────────────
   async function handlePay(btn) {
+    // Validation carte
     if (selectedMethod === 'card') {
       const num  = $('cardNum').value.replace(/\s/g,'')
       const name = $('cardName').value.trim()
@@ -722,68 +812,66 @@
     }
 
     btn.disabled = true
-    const loadingHTML = `<svg style="width:18px;height:18px;animation:spin2 .8s linear infinite;" fill="none" viewBox="0 0 24 24"><circle style="opacity:.25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path style="opacity:.75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Traitement en cours...`
-    btn.innerHTML = loadingHTML
+    btn.innerHTML = `<svg style="width:18px;height:18px;animation:spin2 .8s linear infinite;" fill="none" viewBox="0 0 24 24"><circle style="opacity:.25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path style="opacity:.75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Traitement en cours...`
 
     try {
-      // 1. Créer la commande dans orders si pas encore fait
       const oid = await ensureOrder(session)
+      const currency = selectedMethod === 'mobile_money' ? CURRENCY_MM : CURRENCY_CARD
 
-      // 2. Appeler l'Edge Function process-payment
-      const body = {
+      // ── Appel Edge Function ─────────────────────────────────────────────────
+      const bodyPayload = {
         order_id:       oid,
         user_id:        currentUserId,
-        payment_method: selectedMethod,
-        card_token:     null,  // Stripe.js injectera le vrai token en prod
         amount:         orderTotal,
-        currency:       CURRENCY
+        currency,
+        payment_method: selectedMethod === 'mobile_money' ? selectedOp : selectedMethod,
+        client_msisdn:  selectedMethod === 'mobile_money' ? ($('clientPhone').value.replace(/\s/g,'') || null) : null,
       }
 
       const res = await fetch(EDGE_FN_URL, {
         method:  'POST',
-        headers: {
-          'Content-Type':  'application/json',
-          'Authorization': `Bearer ${session.access_token}`
-        },
-        body: JSON.stringify(body)
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+        body:    JSON.stringify(bodyPayload)
       })
-
       const result = await res.json()
 
-      // Si Edge Function absente ou échoue → fallback : enregistrer le paiement directement
+      // ── SingPay : rediriger vers payment_url ────────────────────────────────
+      if (selectedMethod === 'mobile_money' && result.payment_url) {
+        $('singpayRedirect').classList.add('show')
+        localStorage.setItem('wenna_pending_order', oid)
+        setTimeout(() => { window.location.href = result.payment_url }, 1800)
+        return
+      }
+
+      // ── SingPay USSD Push : attendre callback ───────────────────────────────
+      if (selectedMethod === 'mobile_money' && result.success && !result.payment_url) {
+        await clearCart()
+        showSuccess(result.transaction_id || result.reference || oid.slice(-8))
+        return
+      }
+
+      // ── Carte / virement : fallback direct ─────────────────────────────────
       if (!res.ok || !result.success) {
-        // Fallback : insérer dans payments directement
-        // Colonnes : order_id, user_id, amount, currency, method, status, type, transaction_id
         const txId = 'WN-' + Date.now().toString(36).toUpperCase()
-        const { error: payErr } = await sb.from('payments').insert({
-          order_id:       oid,
-          user_id:        currentUserId,
-          amount:         orderTotal,
-          currency:       CURRENCY,
-          method:         selectedMethod,
-          status:         'paid',
-          type:           'payment',
-          transaction_id: txId,
-          created_at:     new Date().toISOString(),
-          updated_at:     new Date().toISOString()
+        await sb.from('payments').insert({
+          order_id: oid, user_id: currentUserId, amount: orderTotal,
+          currency, method: selectedMethod, status: 'paid', type: 'payment',
+          transaction_id: txId, provider: 'internal',
+          created_at: new Date().toISOString(), updated_at: new Date().toISOString()
         })
-        if (payErr) throw new Error('Erreur paiement : ' + payErr.message)
-
-        // Mettre à jour le statut de la commande
         await sb.from('orders').update({ status: 'processing', updated_at: new Date().toISOString() }).eq('id', oid)
-
         await clearCart()
         showSuccess(txId)
         return
       }
 
-      // ── Succès via Edge Function ──────────────────────────────────────────────
       await clearCart()
       showSuccess(result.transaction_id || oid.slice(-8))
 
     } catch (err) {
       btn.disabled = false
-      btn.innerHTML = `<span class="material-symbols-outlined" style="font-size:17px;">lock</span> Payer ${fmt(orderTotal)}`
+      const cur = selectedMethod === 'mobile_money' ? CURRENCY_MM : CURRENCY_CARD
+      btn.innerHTML = `<span class="material-symbols-outlined" style="font-size:17px;">lock</span> Payer ${fmt(orderTotal, cur)}`
       btn.style.background = '#ba1a1a'
       console.error('[WennaShop] Payment error:', err)
       setTimeout(() => { btn.style.background = '' }, 3000)
@@ -791,22 +879,18 @@
     }
   }
 
-  // ── Vider le panier (Supabase + localStorage) ────────────────────────────────
   async function clearCart() {
     const sb = getSb()
     localStorage.removeItem('wenna_cart')
     localStorage.removeItem('wenna_current_order_id')
-    if (currentUserId) {
-      // Vider cart_items dans Supabase
-      await sb.from('cart_items').delete().eq('user_id', currentUserId)
-    }
+    localStorage.removeItem('wenna_pending_order')
+    if (currentUserId) await sb.from('cart_items').delete().eq('user_id', currentUserId)
   }
 
-  // ── Afficher le succès ───────────────────────────────────────────────────────
   function showSuccess(txId) {
     const shortId = String(txId).slice(-8).toUpperCase()
     $('order-ref').textContent     = `#WN-${shortId}`
-    $('confirm-email').textContent = `Transaction : ${txId}`
+    $('confirm-email').textContent = `Référence transaction : ${txId}`
     $('successOverlay').classList.add('show')
   }
 
