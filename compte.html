@@ -7,6 +7,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.cinetpay.com/seamless/main.js" type="text/javascript"></script>
+<!-- ✅ FIX : config.js chargé ici — expose window.db -->
+<script src="js/config.js"></script>
 <style>
 :root {
   --fire: #FF6B2B;
@@ -31,14 +33,10 @@
 html { scroll-behavior: smooth; }
 body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--snow); min-height: 100vh; overflow-x: hidden; cursor: none; padding-bottom: 100px; }
 
-/* CURSEUR */
 .cur { position: fixed; width: 10px; height: 10px; background: var(--fire); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: width .2s, height .2s; }
 .cur-ring { position: fixed; width: 36px; height: 36px; border: 1px solid rgba(255,107,43,.45); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: width .3s, height .3s; }
-
-/* ICONS */
 .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24; font-size: 22px; line-height: 1; vertical-align: middle; }
 
-/* LOADING OVERLAY */
 #loading-overlay { position:fixed; inset:0; background:var(--ink); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; transition: opacity .4s; }
 #loading-overlay.hidden { opacity:0; pointer-events:none; }
 .load-logo { font-family:'Cormorant Garamond',serif; font-size:42px; font-weight:700; font-style:italic; color:var(--snow); letter-spacing:-1px; }
@@ -47,7 +45,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
 .load-bar::after { content:''; position:absolute; left:-100%; top:0; width:100%; height:100%; background:var(--fire); animation: loadprog 1.2s ease-in-out infinite; }
 @keyframes loadprog { to { left: 100%; } }
 
-/* HEADER */
 .hd { position:fixed; top:0; left:0; right:0; z-index:100; padding:18px 48px; display:flex; align-items:center; justify-content:space-between; background:rgba(8,8,8,.92); backdrop-filter:blur(20px); border-bottom:1px solid rgba(255,107,43,.12); }
 .logo { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:700; font-style:italic; color:var(--snow); text-decoration:none; letter-spacing:-.5px; }
 .logo b { color:var(--fire); }
@@ -56,7 +53,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
 .hd-acts a:hover, .hd-acts button:hover { color:var(--fire); }
 .cbadge { position:absolute; top:-6px; right:-6px; width:16px; height:16px; background:var(--fire); color:#fff; font-size:9px; font-weight:700; border-radius:50%; display:none; align-items:center; justify-content:center; }
 
-/* HERO PROFILE */
 .profile-hero { margin-top:64px; position:relative; overflow:hidden; min-height:260px; display:flex; align-items:flex-end; }
 .profile-hero-bg { position:absolute; inset:0; background:linear-gradient(135deg,#0a1a0a 0%,var(--slate) 50%,#1a0a00 100%); }
 .profile-hero-bg::after { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 60% 80% at 80% 50%, rgba(255,107,43,.08) 0%, transparent 70%); }
@@ -84,24 +80,20 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
 .chip-red { border-color:rgba(248,113,113,.3); color:#f87171; background:rgba(248,113,113,.08); }
 .chip-gray { border-color:rgba(255,255,255,.1); color:var(--fog); background:rgba(255,255,255,.05); }
 
-/* MODE SWITCHER */
 .mode-switcher { display:flex; justify-content:center; padding:28px 48px 0; }
 .mode-toggle { display:inline-flex; background:var(--slate); border:1px solid rgba(255,255,255,.06); padding:3px; gap:2px; }
 .mode-btn { padding:10px 32px; font-size:10px; font-weight:500; letter-spacing:2.5px; text-transform:uppercase; background:transparent; border:none; color:var(--fog); cursor:none; transition:all .25s; font-family:'DM Sans',sans-serif; position:relative; }
 .mode-btn.active { background:var(--fire); color:#fff; }
 .mode-btn .new-tag { position:absolute; top:-6px; right:6px; background:#fbbf24; color:#000; font-size:7px; font-weight:700; letter-spacing:1px; padding:1px 5px; border-radius:1px; text-transform:uppercase; }
 
-/* CONTENT */
 .content { max-width:960px; margin:0 auto; padding:36px 48px; }
 
-/* STATS ROW */
 .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:rgba(255,255,255,.04); margin-bottom:36px; }
 .stat-box { background:var(--coal); padding:28px 24px; text-align:center; transition:background .2s; }
 .stat-box:hover { background:var(--slate); }
 .stat-num { font-family:'Cormorant Garamond',serif; font-size:40px; font-weight:700; font-style:italic; line-height:1; margin-bottom:4px; }
 .stat-lbl { font-size:9px; letter-spacing:2.5px; text-transform:uppercase; color:#555; }
 
-/* TABS */
 .tabs-bar { display:flex; gap:0; border-bottom:1px solid rgba(255,255,255,.06); margin-bottom:28px; overflow-x:auto; }
 .tabs-bar::-webkit-scrollbar { display:none; }
 .tab-btn { padding:14px 24px; font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppercase; background:transparent; border:none; border-bottom:2px solid transparent; color:var(--fog); cursor:none; transition:all .2s; white-space:nowrap; font-family:'DM Sans',sans-serif; margin-bottom:-1px; }
@@ -111,15 +103,12 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
 .tab-panel.active { display:block; animation: fadeIn .3s ease; }
 @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 
-/* MODE PANELS */
 .mode-panel { display:none; }
 .mode-panel.active { display:block; }
 
-/* CARDS */
 .card { background:var(--slate); border:1px solid rgba(255,255,255,.05); padding:28px; margin-bottom:16px; }
 .card-title { font-family:'Cormorant Garamond',serif; font-size:22px; font-style:italic; font-weight:700; margin-bottom:20px; color:var(--snow); }
 
-/* ORDER ROW */
 .order-row { display:flex; align-items:center; gap:16px; padding:16px; border-bottom:1px solid rgba(255,255,255,.04); transition:background .2s; cursor:pointer; }
 .order-row:last-child { border-bottom:none; }
 .order-row:hover { background:rgba(255,255,255,.03); }
@@ -129,13 +118,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
 .order-meta { font-size:11px; color:var(--fog); }
 .order-price { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:600; color:var(--fire); white-space:nowrap; }
 
-/* LISTING ROW */
 .listing-row { display:flex; align-items:center; gap:16px; padding:16px; border-bottom:1px solid rgba(255,255,255,.04); transition:background .2s; }
 .listing-row:last-child { border-bottom:none; }
 .listing-row:hover { background:rgba(255,255,255,.03); }
 .listing-thumb { width:52px; height:52px; object-fit:cover; background:var(--smoke); flex-shrink:0; }
 
-/* FORM FIELDS */
 .field-label { font-size:9px; letter-spacing:2.5px; text-transform:uppercase; color:var(--fire); display:block; margin-bottom:6px; margin-left:2px; }
 .field-input { width:100%; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-bottom:2px solid rgba(255,107,43,.3); color:var(--snow); padding:12px 16px; font-size:13px; font-family:'DM Sans',sans-serif; outline:none; transition:border-color .2s; }
 .field-input:focus { border-bottom-color:var(--fire); background:rgba(255,255,255,.06); }
@@ -143,7 +130,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
 .field-group { margin-bottom:18px; }
 .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
 
-/* BUTTONS */
 .btn-fire { display:inline-flex; align-items:center; gap:8px; background:var(--fire); color:#fff; padding:12px 28px; font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppercase; border:none; cursor:none; clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px)); transition:background .2s, transform .15s; font-family:'DM Sans',sans-serif; }
 .btn-fire:hover { background:var(--ember); transform:translateY(-1px); }
 .btn-fire:active { transform:scale(.98); }
@@ -152,7 +138,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
 .btn-danger { display:inline-flex; align-items:center; gap:8px; background:transparent; color:#f87171; padding:11px 28px; font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppercase; border:1px solid rgba(248,113,113,.2); cursor:none; transition:all .2s; font-family:'DM Sans',sans-serif; }
 .btn-danger:hover { background:rgba(248,113,113,.08); border-color:#f87171; }
 
-/* TOGGLE */
 .toggle-wrap { display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid rgba(255,255,255,.04); }
 .toggle-wrap:last-child { border-bottom:none; }
 .toggle-info p:first-child { font-size:13px; font-weight:500; }
@@ -162,13 +147,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
 .toggle-thumb { width:16px; height:16px; background:#fff; border-radius:50%; position:absolute; top:3px; left:3px; transition:left .2s; box-shadow:0 1px 4px rgba(0,0,0,.3); }
 .toggle-track.on .toggle-thumb { left:23px; }
 
-/* VENDEUR PROMO */
 .vendeur-promo { position:relative; overflow:hidden; padding:40px; margin-bottom:24px; background:linear-gradient(135deg,#1a1000 0%,var(--slate) 60%,#1a0800 100%); border:1px solid rgba(255,107,43,.2); }
 .vendeur-promo-deco { position:absolute; right:-10px; top:-10px; font-size:180px; opacity:.06; line-height:1; pointer-events:none; }
 .vendeur-promo h2 { font-family:'Cormorant Garamond',serif; font-size:32px; font-weight:700; font-style:italic; margin-bottom:8px; }
 .vendeur-promo p { font-size:13px; color:var(--fog); max-width:400px; line-height:1.7; margin-bottom:24px; }
 
-/* FEATURE LIST */
 .feature-list { display:flex; flex-direction:column; gap:0; border-top:1px solid rgba(255,255,255,.05); }
 .feature-item { display:flex; align-items:flex-start; gap:14px; padding:16px 0; border-bottom:1px solid rgba(255,255,255,.05); }
 .feature-icon { width:36px; height:36px; background:var(--fire-dim); border:1px solid var(--fire-border); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
@@ -176,10 +159,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
 .feature-text p:first-child { font-size:13px; font-weight:500; margin-bottom:2px; }
 .feature-text p:last-child { font-size:11px; color:var(--fog); }
 
-/* UPGRADE FORM */
 .upgrade-form { display:flex; flex-direction:column; gap:16px; }
 
-/* SOLDE CARD */
 .solde-card { position:relative; overflow:hidden; padding:32px; background:linear-gradient(135deg,#0f2010 0%,#1a3020 60%,#0a1a10 100%); border:1px solid rgba(74,222,128,.15); margin-bottom:16px; }
 .solde-card::after { content:''; position:absolute; right:-30px; top:-30px; width:200px; height:200px; background:radial-gradient(circle, rgba(74,222,128,.06) 0%, transparent 70%); }
 .solde-label { font-size:9px; letter-spacing:3px; text-transform:uppercase; color:rgba(74,222,128,.6); margin-bottom:8px; }
@@ -188,20 +169,17 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
 .btn-green { display:inline-flex; align-items:center; gap:6px; background:rgba(74,222,128,.12); color:#4ade80; padding:10px 20px; font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppercase; border:1px solid rgba(74,222,128,.2); cursor:none; transition:all .2s; font-family:'DM Sans',sans-serif; }
 .btn-green:hover { background:rgba(74,222,128,.2); }
 
-/* DASHBOARD STATS */
 .dash-stats { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:rgba(255,255,255,.04); margin-bottom:16px; }
 .dash-stat { background:var(--coal); padding:22px; }
 .dash-stat-num { font-family:'Cormorant Garamond',serif; font-size:30px; font-weight:700; font-style:italic; margin-bottom:2px; }
 .dash-stat-lbl { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:#555; }
 
-/* PAYMENT MODAL */
 #payment-modal { position:fixed; inset:0; z-index:8000; display:flex; align-items:flex-end; justify-content:center; background:rgba(0,0,0,0); pointer-events:none; transition:background .3s; }
 #payment-modal.open { background:rgba(0,0,0,.7); pointer-events:all; }
 #payment-modal-sheet { background:var(--coal); border:1px solid rgba(255,107,43,.15); border-bottom:none; width:100%; max-width:480px; padding:28px 28px 48px; transform:translateY(100%); transition:transform .4s cubic-bezier(.22,1,.36,1); }
 #payment-modal.open #payment-modal-sheet { transform:translateY(0); }
 .drag-bar { width:40px; height:3px; background:rgba(255,255,255,.12); margin:0 auto 24px; }
 
-/* PAYMENT METHOD GRID — 3 colonnes */
 .pm-method-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:20px; }
 .pm-method-btn { padding:12px 8px; border:1px solid rgba(255,255,255,.1); background:transparent; cursor:none; transition:all .2s; display:flex; flex-direction:column; align-items:center; gap:5px; }
 .pm-method-btn:hover, .pm-method-btn.selected { border-color:var(--fire); background:var(--fire-dim); }
@@ -209,10 +187,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
 .pm-method-btn .pm-label { font-size:10px; font-weight:500; color:var(--snow); }
 .pm-method-btn .pm-sub { font-size:9px; color:var(--fog); text-align:center; line-height:1.3; }
 
-/* SINGPAY badge */
 .singpay-badge { display:inline-flex; align-items:center; gap:4px; background:var(--singpay-dim); border:1px solid var(--singpay-border); color:var(--singpay); font-size:8px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:2px 7px; border-radius:2px; }
 
-/* SINGPAY phone input */
 #singpay-section { display:none; margin-bottom:16px; }
 #singpay-section.visible { display:block; }
 
@@ -221,44 +197,38 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
 .amount-chip:hover, .amount-chip.selected { border-color:var(--fire); color:var(--fire); background:var(--fire-dim); }
 .pm-total-row { display:flex; justify-content:space-between; align-items:center; padding:14px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06); margin-bottom:16px; }
 
-/* WITHDRAW MODAL */
 #withdraw-modal { position:fixed; inset:0; z-index:8000; display:flex; align-items:flex-end; justify-content:center; background:rgba(0,0,0,0); pointer-events:none; transition:background .3s; }
 #withdraw-modal.open { background:rgba(0,0,0,.7); pointer-events:all; }
 #withdraw-modal-sheet { background:var(--coal); border:1px solid rgba(74,222,128,.1); border-bottom:none; width:100%; max-width:480px; padding:28px 28px 48px; transform:translateY(100%); transition:transform .4s cubic-bezier(.22,1,.36,1); }
 #withdraw-modal.open #withdraw-modal-sheet { transform:translateY(0); }
 
-/* AVATAR PROGRESS */
 #avatar-progress-wrap { height:2px; background:rgba(255,255,255,.08); overflow:hidden; margin-top:8px; display:none; }
 #avatar-progress-bar { height:2px; background:var(--fire); transition:width .3s; width:0%; }
 
-/* SPINNER */
 .spinner { width:18px; height:18px; border:2px solid rgba(255,255,255,.1); border-top-color:var(--fire); border-radius:50%; animation:spin .7s linear infinite; display:inline-block; }
 @keyframes spin { to{transform:rotate(360deg)} }
 
-/* TOAST */
 #toast { position:fixed; bottom:32px; left:50%; transform:translateX(-50%) translateY(8px); z-index:9000; background:var(--slate); border:1px solid rgba(255,107,43,.3); color:var(--snow); padding:14px 24px; font-size:12px; opacity:0; pointer-events:none; transition:all .3s; white-space:nowrap; letter-spacing:.5px; }
 #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 #toast.success { border-color:rgba(74,222,128,.3); background:#0f1f10; }
 #toast.error { border-color:rgba(248,113,113,.3); background:#1f0f10; }
 
-/* BOTTOM NAV */
 .bnav { display:none; position:fixed; bottom:0; left:0; right:0; z-index:100; background:rgba(8,8,8,.95); backdrop-filter:blur(20px); border-top:1px solid rgba(255,107,43,.15); padding:10px 0 22px; }
 .bnav-inner { display:flex; justify-content:space-around; }
 .bnav-item { display:flex; flex-direction:column; align-items:center; gap:4px; color:#555; text-decoration:none; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; transition:color .2s; cursor:none; }
 .bnav-item.active, .bnav-item:hover { color:var(--fire); }
 
-/* PAYMENTS LIST */
 .payment-row { display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid rgba(255,255,255,.04); }
 .payment-row:last-child { border-bottom:none; }
 
-/* EMPTY STATE */
 .empty-state { text-align:center; padding:48px 24px; }
 .empty-state .material-symbols-outlined { font-size:40px; color:#333; display:block; margin-bottom:12px; }
 .empty-state p { font-size:13px; color:var(--fog); }
 
-/* REVEAL */
 .reveal { opacity:0; transform:translateY(20px); transition:opacity .5s cubic-bezier(.22,1,.36,1), transform .5s cubic-bezier(.22,1,.36,1); }
 .reveal.vis { opacity:1; transform:translateY(0); }
+
+.hidden { display:none !important; }
 
 @media(max-width:768px){
   body { cursor:auto; }
@@ -283,13 +253,12 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
 <div class="cur-ring" id="curRing"></div>
 <div id="toast"></div>
 
-<!-- LOADING -->
 <div id="loading-overlay">
   <div class="load-logo">Wenna<b>Shop</b></div>
   <div class="load-bar"></div>
 </div>
 
-<!-- ══════════════════ PAYMENT MODAL ══════════════════ -->
+<!-- PAYMENT MODAL -->
 <div id="payment-modal">
   <div id="payment-modal-sheet">
     <div class="drag-bar"></div>
@@ -297,14 +266,10 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
       <p style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--fire);margin-bottom:4px;" id="pm-subtitle">Paiement sécurisé</p>
       <h3 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-style:italic;font-weight:700;" id="pm-title">Finaliser le paiement</h3>
     </div>
-
-    <!-- Récap commande -->
     <div id="pm-order-recap" class="hidden" style="padding:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);margin-bottom:16px;">
       <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:12px;color:var(--fog);">Commande</span><span style="font-weight:600;color:var(--fire);" id="pm-order-amount">—</span></div>
       <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;color:var(--fog);">Référence</span><span style="font-size:11px;font-family:monospace;color:var(--fog);" id="pm-order-ref">—</span></div>
     </div>
-
-    <!-- Recharge solde -->
     <div id="pm-topup-section" class="hidden" style="margin-bottom:16px;">
       <p style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--fog);margin-bottom:10px;">Montant à recharger</p>
       <div class="amount-chips">
@@ -318,8 +283,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
         <span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--fog);font-weight:500;">MAD</span>
       </div>
     </div>
-
-    <!-- Méthodes de paiement — 3 options -->
     <p style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--fog);margin-bottom:10px;">Moyen de paiement</p>
     <div class="pm-method-grid">
       <button id="pm-btn-mobile" onclick="selectChannel('MOBILE_MONEY')" class="pm-method-btn">
@@ -333,14 +296,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
         <span class="pm-sub">Visa · Mastercard</span>
       </button>
       <button id="pm-btn-singpay" onclick="selectChannel('SINGPAY')" class="pm-method-btn singpay-btn">
-        <!-- Logo SingPay via texte stylé -->
         <span style="font-size:14px;font-weight:700;color:var(--singpay);letter-spacing:-0.5px;line-height:1;">SING<span style="color:#fff;">PAY</span></span>
         <span class="pm-label">SingPay</span>
         <span class="pm-sub">Gabon · XAF</span>
       </button>
     </div>
-
-    <!-- Section SingPay : numéro de téléphone -->
     <div id="singpay-section">
       <div style="padding:12px 14px;background:var(--singpay-dim);border:1px solid var(--singpay-border);margin-bottom:12px;display:flex;align-items:center;gap:10px;">
         <span style="font-size:18px;font-weight:700;color:var(--singpay);">SING<span style="color:var(--snow);">PAY</span></span>
@@ -366,12 +326,10 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
         </select>
       </div>
     </div>
-
     <div class="pm-total-row">
       <span style="font-size:12px;font-weight:500;">Total à payer</span>
       <span style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--fire);" id="pm-total-display">—</span>
     </div>
-
     <button id="pm-pay-btn" onclick="launchPayment()" class="btn-fire" style="width:100%;justify-content:center;padding:16px;">
       <span class="material-symbols-outlined" style="font-size:16px;">lock</span>
       Payer maintenant
@@ -381,7 +339,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
   </div>
 </div>
 
-<!-- ══════════════════ WITHDRAW MODAL ══════════════════ -->
+<!-- WITHDRAW MODAL -->
 <div id="withdraw-modal">
   <div id="withdraw-modal-sheet">
     <div class="drag-bar"></div>
@@ -403,7 +361,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
   </div>
 </div>
 
-<!-- ══════════════════ HEADER ══════════════════ -->
+<!-- HEADER -->
 <header class="hd">
   <a href="boutique.html" class="logo">Wenna<b>Shop</b></a>
   <div class="hd-acts">
@@ -467,20 +425,17 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
       <div class="stat-box"><div class="stat-num" style="color:#60a5fa;" id="stat-favoris">—</div><div class="stat-lbl">Favoris</div></div>
       <div class="stat-box"><div class="stat-num" style="color:#fbbf24;" id="stat-reviews">—</div><div class="stat-lbl">Avis donnés</div></div>
     </div>
-
     <div class="tabs-bar reveal">
       <button class="tab-btn active" onclick="switchClientTab('commandes',this)">Commandes</button>
       <button class="tab-btn" onclick="switchClientTab('adresses',this)">Adresses</button>
       <button class="tab-btn" onclick="switchClientTab('parametres',this)">Paramètres</button>
     </div>
-
     <div id="client-commandes" class="tab-panel active reveal">
       <div class="card">
         <h2 class="card-title">Mes Commandes</h2>
         <div id="orders-list"><div style="display:flex;justify-content:center;padding:40px;"><div class="spinner"></div></div></div>
       </div>
     </div>
-
     <div id="client-adresses" class="tab-panel reveal">
       <div class="card">
         <h2 class="card-title">Mes Adresses</h2>
@@ -496,7 +451,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
         </button>
       </div>
     </div>
-
     <div id="client-parametres" class="tab-panel reveal">
       <div class="card">
         <h2 class="card-title">Paramètres du compte</h2>
@@ -507,13 +461,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
         </div>
         <div class="field-group" style="margin-bottom:24px;"><label class="field-label">Email</label><input id="input-email" class="field-input" type="email" disabled/></div>
         <button onclick="saveProfile()" class="btn-fire">Sauvegarder</button>
-
         <div style="border-top:1px solid rgba(255,255,255,.05);margin:28px 0;"></div>
         <p style="font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--fog);margin-bottom:16px;">Notifications</p>
         <div class="toggle-wrap"><div class="toggle-info"><p>Suivi de commande</p><p>Mises à jour en temps réel</p></div><div class="toggle-track on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div></div>
         <div class="toggle-wrap"><div class="toggle-info"><p>Nouvelles collections</p><p>Alertes drops & exclusivités</p></div><div class="toggle-track on" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div></div>
         <div class="toggle-wrap"><div class="toggle-info"><p>Offres promotionnelles</p><p>Codes promo & réductions</p></div><div class="toggle-track" onclick="this.classList.toggle('on')"><div class="toggle-thumb"></div></div></div>
-
         <div style="border-top:1px solid rgba(255,255,255,.05);margin:28px 0;"></div>
         <p style="font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--fog);margin-bottom:12px;">Sécurité</p>
         <button class="btn-ghost" style="width:100%;justify-content:space-between;margin-bottom:8px;">
@@ -561,8 +513,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
         </div>
       </div>
     </div>
-
-    <!-- DASHBOARD VENDEUR -->
     <div id="vendeur-dashboard-section" class="hidden">
       <div style="margin-top:24px;">
         <div class="dash-stats reveal">
@@ -574,14 +524,12 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
           <div class="stat-box"><div class="stat-num" id="stat-rating">—</div><div class="stat-lbl">Note moy.</div></div>
           <div class="stat-box"><div class="stat-num">—</div><div class="stat-lbl">Vues / mois</div></div>
         </div>
-
         <div class="tabs-bar reveal">
           <button class="tab-btn active" onclick="switchVendeurTab('annonces',this)">Annonces</button>
           <button class="tab-btn" onclick="switchVendeurTab('ventes',this)">Ventes</button>
           <button class="tab-btn" onclick="switchVendeurTab('paiements',this)">Paiements</button>
           <button class="tab-btn" onclick="switchVendeurTab('boutique',this)">Ma Boutique</button>
         </div>
-
         <div id="vendeur-annonces" class="tab-panel active reveal">
           <div class="card">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
@@ -591,14 +539,12 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
             <div id="listings-list"><div style="display:flex;justify-content:center;padding:40px;"><div class="spinner"></div></div></div>
           </div>
         </div>
-
         <div id="vendeur-ventes" class="tab-panel reveal">
           <div class="card">
             <h2 class="card-title">Historique des ventes</h2>
             <div id="sales-list"><div style="display:flex;justify-content:center;padding:40px;"><div class="spinner"></div></div></div>
           </div>
         </div>
-
         <div id="vendeur-paiements" class="tab-panel reveal">
           <div class="solde-card">
             <p class="solde-label">Solde disponible</p>
@@ -621,7 +567,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
             <div id="payments-list"><div style="display:flex;justify-content:center;padding:40px;"><div class="spinner"></div></div></div>
           </div>
         </div>
-
         <div id="vendeur-boutique" class="tab-panel reveal">
           <div class="card">
             <h2 class="card-title">Ma Boutique</h2>
@@ -636,7 +581,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
   </div>
 </div>
 
-<!-- BOTTOM NAV -->
 <nav class="bnav">
   <div class="bnav-inner">
     <a href="boutique.html" class="bnav-item"><span class="material-symbols-outlined">storefront</span><span>Shop</span></a>
@@ -650,7 +594,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
 // CONFIG
 // ══════════════════════════════════════════════
 const SUPABASE_URL = 'https://aakxoydznmybstfozjte.supabase.co'
-const db = window.db
+
+// ✅ FIX : getSb() résout window.db dynamiquement
+function getSb() {
+  return window.db || null
+}
 
 const CINETPAY_CONFIG = {
   apikey: 'VOTRE_APIKEY_CINETPAY',
@@ -659,7 +607,6 @@ const CINETPAY_CONFIG = {
   return_url: window.location.origin + '/compte.html',
   mode: 'PRODUCTION'
 }
-
 
 // ══════════════════════════════════════════════
 // ÉTAT
@@ -724,9 +671,10 @@ const statusChip = {
 // ══════════════════════════════════════════════
 async function updateCartBadge() {
   try {
+    const db = getSb(); if (!db) return
     const { data:{user} } = await db.auth.getUser()
     if (!user) return
-    let { data:profile } = await db.from('users').select('id').eq('auth_id', user.id).maybeSingle()
+    const { data:profile } = await db.from('users').select('id').eq('auth_id', user.id).maybeSingle()
     if (!profile) return
     const { data:items } = await db.from('cart_items').select('quantity').eq('user_id', profile.id)
     const n = (items||[]).reduce((s,i) => s+(i.quantity||1), 0)
@@ -740,6 +688,7 @@ async function updateCartBadge() {
 // UPLOAD AVATAR
 // ══════════════════════════════════════════════
 document.getElementById('avatar-input').addEventListener('change', async e => {
+  const db = getSb(); if (!db) return
   const file = e.target.files[0]
   if (!file || !currentUser) return
   if (file.size > 2*1024*1024) { showToast('Image trop lourde — max 2 Mo', 'error'); return }
@@ -770,17 +719,48 @@ document.getElementById('avatar-input').addEventListener('change', async e => {
 })
 
 // ══════════════════════════════════════════════
-// INIT
+// ✅ INIT — FIX REDIRECT
 // ══════════════════════════════════════════════
 async function init() {
+  const db = getSb()
+  if (!db) {
+    console.error('[WennaShop] window.db undefined — config.js non chargé')
+    hideOverlay()
+    return
+  }
+
   const { data:{ session } } = await db.auth.getSession()
-  if (!session) { window.location.href = 'login.html'; return }
+  const urlParams   = new URLSearchParams(window.location.search)
+
+  // ✅ FIX : lire le redirect depuis URL ou localStorage
+  const redirectTo  = urlParams.get('redirect') || localStorage.getItem('wenna_redirect_after_login')
+
+  if (!session) {
+    // Pas connecté → sauvegarder la destination et aller sur login
+    if (redirectTo) localStorage.setItem('wenna_redirect_after_login', redirectTo)
+    window.location.href = 'login.html'
+    return
+  }
+
   currentUser = session.user
-  const urlParams = new URLSearchParams(window.location.search)
+
+  // ✅ FIX PRINCIPAL : connecté + redirect en attente → y aller directement
+  if (redirectTo) {
+    localStorage.removeItem('wenna_redirect_after_login')
+    // Nettoyer l'URL sans recharger
+    const cleanUrl = window.location.pathname
+    window.history.replaceState({}, '', cleanUrl)
+    // Rediriger vers la destination
+    window.location.href = redirectTo
+    return
+  }
+
+  // Comportement normal
   const txStatus = urlParams.get('tx_status')
-  const txId = urlParams.get('tx_id')
+  const txId     = urlParams.get('tx_id')
   if (txStatus === 'success' && txId) showToast('✓ Paiement reçu', 'success')
   else if (txStatus === 'failed') showToast('Paiement échoué', 'error')
+
   await loadProfile()
   hideOverlay()
   if (urlParams.get('mode') === 'vendeur') switchMode('vendeur')
@@ -796,6 +776,7 @@ function hideOverlay() {
 // LOAD PROFILE
 // ══════════════════════════════════════════════
 async function loadProfile() {
+  const db = getSb()
   const { data, error } = await db.from('users').select('*').eq('auth_id', currentUser.id).single()
   if (error || !data) {
     document.getElementById('profile-name').textContent = currentUser.email
@@ -839,6 +820,7 @@ async function loadProfile() {
 // CLIENT STATS & COMMANDES
 // ══════════════════════════════════════════════
 async function loadClientStats(userId) {
+  const db = getSb()
   if (!userId) { ['stat-orders','stat-favoris','stat-reviews'].forEach(id => document.getElementById(id).textContent='0'); return }
   const [o, r] = await Promise.all([
     db.from('orders').select('id', { count:'exact', head:true }).eq('user_id', userId),
@@ -850,25 +832,17 @@ async function loadClientStats(userId) {
 }
 
 async function loadOrders(userId) {
+  const db = getSb()
   const container = document.getElementById('orders-list')
   if (!userId) {
     container.innerHTML = '<div class="empty-state"><span class="material-symbols-outlined">shopping_bag</span><p>Aucune commande.</p></div>'
     return
   }
-  let { data:orders } = await db.from('orders')
+  const { data:orders } = await db.from('orders')
     .select('id, status, total_amount, currency, created_at, order_items(quantity, unit_price, products(name, image_url))')
     .eq('user_id', userId)
     .order('created_at', { ascending:false })
     .limit(20)
-
-  if ((!orders || orders.length === 0) && currentUser?.id && currentUser.id !== userId) {
-    const { data:orders2 } = await db.from('orders')
-      .select('id, status, total_amount, currency, created_at, order_items(quantity, unit_price, products(name, image_url))')
-      .eq('user_id', currentUser.id)
-      .order('created_at', { ascending:false })
-      .limit(20)
-    orders = orders2
-  }
 
   if (!orders || orders.length === 0) {
     container.innerHTML = '<div class="empty-state"><span class="material-symbols-outlined">shopping_bag</span><p>Aucune commande pour l\'instant.</p></div>'
@@ -902,7 +876,7 @@ async function loadOrders(userId) {
 }
 
 // ══════════════════════════════════════════════
-// MODAL PAIEMENT — OUVERTURE
+// MODALS PAIEMENT
 // ══════════════════════════════════════════════
 function openOrderPaymentModal(orderId, amount, currency='MAD') {
   pmContext = { type:'order_payment', orderId, amount, currency, channel:'MOBILE_MONEY' }
@@ -930,31 +904,19 @@ function openTopupModal() {
 
 function closePaymentModal() { document.getElementById('payment-modal').classList.remove('open') }
 
-// ══════════════════════════════════════════════
-// SÉLECTION CANAL — avec toggle SingPay
-// ══════════════════════════════════════════════
 function selectChannel(ch) {
   pmContext.channel = ch
-
-  // Reset tous les boutons
   document.getElementById('pm-btn-mobile').classList.remove('selected')
   document.getElementById('pm-btn-card').classList.remove('selected')
   document.getElementById('pm-btn-singpay').classList.remove('selected')
-
-  // Activer le bouton sélectionné
   if (ch === 'MOBILE_MONEY') document.getElementById('pm-btn-mobile').classList.add('selected')
   else if (ch === 'CREDIT_CARD') document.getElementById('pm-btn-card').classList.add('selected')
   else if (ch === 'SINGPAY') document.getElementById('pm-btn-singpay').classList.add('selected')
-
-  // Afficher/masquer section SingPay
   const singpaySection = document.getElementById('singpay-section')
   singpaySection.classList.toggle('visible', ch === 'SINGPAY')
-
-  // Adapter la devise pour SingPay (XAF pour le Gabon)
   if (ch === 'SINGPAY') {
     pmContext.currency = 'XAF'
     document.getElementById('pm-security-note').textContent = '🔒 Sécurisé par SingPay · Gabon · 0% frais'
-    // Recalculer l'affichage si montant déjà défini
     if (pmContext.amount > 0) document.getElementById('pm-total-display').textContent = fmt(pmContext.amount, 'XAF')
   } else {
     pmContext.currency = 'MAD'
@@ -977,21 +939,13 @@ function customAmount(val) {
   document.getElementById('pm-total-display').textContent = pmContext.amount > 0 ? fmt(pmContext.amount, pmContext.currency) : '—'
 }
 
-// ══════════════════════════════════════════════
-// DISPATCHER PAIEMENT
-// ══════════════════════════════════════════════
 async function launchPayment() {
-  if (pmContext.channel === 'SINGPAY') {
-    await launchSingPay()
-  } else {
-    await launchCinetPay()
-  }
+  if (pmContext.channel === 'SINGPAY') await launchSingPay()
+  else await launchCinetPay()
 }
 
-// ══════════════════════════════════════════════
-// CINETPAY
-// ══════════════════════════════════════════════
 async function launchCinetPay() {
+  const db = getSb()
   if (!currentProfile) { showToast('Profil non chargé', 'error'); return }
   if (pmContext.amount < 50) { showToast('Montant minimum : 50 MAD', 'error'); return }
   const btn = document.getElementById('pm-pay-btn')
@@ -1039,49 +993,30 @@ async function launchCinetPay() {
   }
 }
 
-// ══════════════════════════════════════════════
-// SINGPAY — via Edge Function process-payment
-// ══════════════════════════════════════════════
 async function launchSingPay() {
+  const db = getSb()
   if (!currentProfile) { showToast('Profil non chargé', 'error'); return }
   if (!pmContext.orderId) { showToast('Aucune commande associée', 'error'); return }
   if (pmContext.amount < 100) { showToast('Montant minimum : 100 XAF', 'error'); return }
-
   const phone    = document.getElementById('singpay-phone').value.trim().replace(/\s/g, '')
   const operator = document.getElementById('singpay-operator').value
-
-  // Mapping opérateur → payment_method attendu par process-payment
   const methodMap = { AIRTEL: 'airtel_money', MOOV: 'moov_money', ECOBANK: 'mobile_money' }
   const payment_method = methodMap[operator] || 'mobile_money'
-
   const btn = document.getElementById('pm-pay-btn')
   btn.disabled = true
   btn.innerHTML = '<div class="spinner" style="border-top-color:#fff;"></div> Connexion SingPay…'
-
   try {
-    const invokeBody = {
-      order_id:       pmContext.orderId,
-      amount:         Math.round(pmContext.amount),
-      payment_method
-    }
-    // Si numéro fourni → USSD Push direct (Airtel ou Moov)
+    const invokeBody = { order_id: pmContext.orderId, amount: Math.round(pmContext.amount), payment_method }
     if (phone && phone.length >= 8 && operator !== 'ECOBANK') {
       invokeBody.client_msisdn = '+241' + phone
     }
-
-    const { data, error } = await window._wennaSb.functions.invoke('process-payment', {
-      body: invokeBody
-    })
-
+    const { data, error } = await window._wennaSb.functions.invoke('process-payment', { body: invokeBody })
     if (error) throw error
-
     if (data?.payment_url) {
-      // Lien de paiement externe → redirect
       closePaymentModal()
       showToast('Redirection vers SingPay…', 'success')
       setTimeout(() => { window.location.href = data.payment_url }, 800)
     } else if (data?.success) {
-      // USSD Push envoyé — attendre validation sur le téléphone
       closePaymentModal()
       showToast('✅ Demande envoyée — validez le paiement sur votre téléphone', 'success')
       resetPayBtn()
@@ -1089,17 +1024,14 @@ async function launchSingPay() {
     } else {
       throw new Error(data?.error || 'Réponse inattendue')
     }
-
   } catch (err) {
     showToast('Erreur SingPay : ' + (err.message || 'réessaie'), 'error')
     resetPayBtn()
   }
 }
 
-// ══════════════════════════════════════════════
-// SINGPAY — polling statut (max 3 min)
-// ══════════════════════════════════════════════
 async function pollSingPayStatus(transactionId, attempts = 0) {
+  const db = getSb()
   if (attempts > 18) { showToast('Délai dépassé — vérifiez votre téléphone', 'error'); return }
   setTimeout(async () => {
     const { data } = await db.from('payments').select('status').eq('transaction_id', transactionId).single()
@@ -1112,7 +1044,7 @@ async function pollSingPayStatus(transactionId, attempts = 0) {
     } else {
       pollSingPayStatus(transactionId, attempts + 1)
     }
-  }, 10000) // check toutes les 10s
+  }, 10000)
 }
 
 function resetPayBtn() {
@@ -1121,9 +1053,6 @@ function resetPayBtn() {
   btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;">lock</span> Payer maintenant'
 }
 
-// ══════════════════════════════════════════════
-// RETRAIT
-// ══════════════════════════════════════════════
 function openWithdrawModal() {
   document.getElementById('withdraw-balance-display').textContent = fmt(currentWalletBalance)
   document.getElementById('withdraw-modal').classList.add('open')
@@ -1131,6 +1060,7 @@ function openWithdrawModal() {
 function closeWithdrawModal() { document.getElementById('withdraw-modal').classList.remove('open') }
 
 async function submitWithdrawal() {
+  const db = getSb()
   const amount = parseFloat(document.getElementById('withdraw-amount').value)
   const method = document.getElementById('withdraw-method').value
   const account = document.getElementById('withdraw-account').value.trim()
@@ -1149,20 +1079,16 @@ async function submitWithdrawal() {
   } else showToast('Erreur lors de la demande', 'error')
 }
 
-// ══════════════════════════════════════════════
-// WALLET
-// ══════════════════════════════════════════════
 async function loadWalletBalance() {
+  const db = getSb()
   if (!currentProfile) return
   const { data } = await db.from('vendor_wallets').select('balance, currency').eq('user_id', currentProfile.id).single()
   currentWalletBalance = data?.balance || 0
   document.getElementById('solde-vendeur').textContent = fmt(currentWalletBalance, data?.currency || 'MAD')
 }
 
-// ══════════════════════════════════════════════
-// VENDEUR DATA
-// ══════════════════════════════════════════════
 async function loadVendeurData() {
+  const db = getSb()
   if (!currentProfile) return
   const sellerId = currentProfile.id
   const { data:products } = await db.from('products').select('id,name,price,currency,status,origin_city,country,image_url,created_at').eq('seller_id', sellerId).order('created_at', { ascending:false })
@@ -1184,6 +1110,7 @@ async function loadVendeurData() {
 }
 
 async function loadPaymentsHistory() {
+  const db = getSb()
   const container = document.getElementById('payments-list')
   if (!currentProfile) return
   const { data:payments } = await db.from('payments').select('id,amount,currency,status,created_at,method,type,transaction_id,provider').eq('user_id', currentProfile.id).order('created_at', { ascending:false }).limit(15)
@@ -1254,19 +1181,18 @@ function renderSales(sales) {
   }).join('')
 }
 
-// ══════════════════════════════════════════════
-// SAUVEGARDE
-// ══════════════════════════════════════════════
 async function saveProfile() {
+  const db = getSb()
   if (!currentProfile) return
   const first = document.getElementById('input-firstname').value.trim()
-  const last = document.getElementById('input-lastname').value.trim()
+  const last  = document.getElementById('input-lastname').value.trim()
   const { error } = await db.from('users').update({ first_name:first, last_name:last, full_name:[first,last].filter(Boolean).join(' '), updated_at:new Date().toISOString() }).eq('id', currentProfile.id)
   if (!error) { document.getElementById('profile-name').textContent=[first,last].filter(Boolean).join(' '); showToast('✓ Profil sauvegardé', 'success') }
   else showToast('Erreur de sauvegarde', 'error')
 }
 
 async function saveShop() {
+  const db = getSb()
   if (!currentProfile) return
   const { error } = await db.from('users').update({ specialty:document.getElementById('shop-specialty').value.trim(), country:document.getElementById('shop-country').value, updated_at:new Date().toISOString() }).eq('id', currentProfile.id)
   if (!error) showToast('✓ Boutique mise à jour', 'success')
@@ -1274,9 +1200,10 @@ async function saveShop() {
 }
 
 async function upgradeToVendeur() {
-  const shopName = document.getElementById('upgrade-shop-name').value.trim()
+  const db = getSb()
+  const shopName  = document.getElementById('upgrade-shop-name').value.trim()
   const specialty = document.getElementById('upgrade-specialty').value.trim()
-  const country = document.getElementById('upgrade-country').value
+  const country   = document.getElementById('upgrade-country').value
   if (!shopName || !specialty || !country) { showToast('Remplis tous les champs (*)', 'error'); return }
   const btn = document.getElementById('upgrade-btn')
   btn.disabled = true
@@ -1302,11 +1229,13 @@ async function upgradeToVendeur() {
   }
 }
 
-async function handleLogout() { await db.auth.signOut(); window.location.href = 'index.html' }
+async function handleLogout() {
+  const db = getSb()
+  await db.auth.signOut()
+  localStorage.removeItem('wenna_redirect_after_login')
+  window.location.href = 'index.html'
+}
 
-// ══════════════════════════════════════════════
-// NAVIGATION
-// ══════════════════════════════════════════════
 function switchMode(mode) {
   currentMode = mode
   document.querySelectorAll('.mode-panel').forEach(p => p.classList.remove('active'))
@@ -1330,11 +1259,9 @@ function switchVendeurTab(tab, btn) {
   if (btn) btn.classList.add('active')
 }
 
-// Fermer modals au clic fond
 document.getElementById('payment-modal').addEventListener('click', e => { if(e.target===e.currentTarget) closePaymentModal() })
 document.getElementById('withdraw-modal').addEventListener('click', e => { if(e.target===e.currentTarget) closeWithdrawModal() })
 
-// Reveal scroll
 const rObs = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('vis') }), { threshold:.07 })
 document.querySelectorAll('.reveal').forEach(el => rObs.observe(el))
 
