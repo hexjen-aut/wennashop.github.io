@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -118,7 +117,6 @@
     .tbl tbody tr{transition:background .15s;}
     .tbl tbody tr:hover{background:rgba(255,255,255,.03);}
     .tbl td:last-child{text-align:right;}
-    /* statuts standards */
     .status-pending{background:#3d2e00;color:#d0a600;padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
     .status-active{background:#0a2010;color:#73dc84;padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
     .status-inactive{background:#2a0a0a;color:#ef4444;padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
@@ -127,21 +125,10 @@
     .status-delivered{background:#0a2010;color:#73dc84;padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
     .status-cancelled,.status-returned{background:#2a0a0a;color:#ef4444;padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
     .status-paid,.status-approved{background:#0a2010;color:#73dc84;padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
-    /* MOD 1 — nouveaux statuts livraison */
     .status-picked_up{background:rgba(255,107,43,.1);color:var(--fire);padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
     .status-out_for_delivery{background:#2d2200;color:var(--gold);padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
-    /* MOD 1 — lien tracking */
     .tracking-link{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--green);text-decoration:none;background:var(--green-dim);border:1px solid var(--green-border);padding:2px 8px;transition:all .2s;white-space:nowrap;}
     .tracking-link:hover{background:rgba(76,175,125,.2);}
-    .btn-track{display:inline-flex;align-items:center;gap:6px;background:var(--green-dim);border:1px solid var(--green-border);color:var(--green);padding:8px 16px;font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s;font-family:'DM Sans',sans-serif;}
-    .btn-track:hover{background:rgba(76,175,125,.2);}
-    /* MOD 2 — bloc livraison dans modal */
-    .delivery-block{background:rgba(76,175,125,.04);border:1px solid var(--green-border);padding:16px 18px;margin-bottom:16px;}
-    .delivery-block-title{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--green);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
-    .delivery-block-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(76,175,125,.1);}
-    .delivery-block-row:last-child{border-bottom:none;}
-    .delivery-block-key{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;}
-    .delivery-block-val{font-size:12px;color:#888;}
     .order-row{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
     .order-row:last-child{border-bottom:none;}
     .order-row:hover{background:rgba(255,255,255,.03);}
@@ -278,18 +265,13 @@
       <div class="sb-country"><span class="sb-dot"></span><span id="seller-country">—</span></div>
     </div>
   </div>
-
-  <!-- PLAN BADGE SIDEBAR -->
   <div class="sb-plan-badge">
     <div id="sb-plan-pill" class="plan-pill starter">
       <span class="plan-pill-dot"></span>
       <span id="sb-plan-name">Starter</span>
     </div>
-    <button id="sb-plan-upgrade" class="plan-upgrade-cta" onclick="showSection('plan')">
-      Changer de plan →
-    </button>
+    <button id="sb-plan-upgrade" class="plan-upgrade-cta" onclick="showSection('plan')">Changer de plan →</button>
   </div>
-
   <nav class="sb-nav">
     <button onclick="showSection('overview')" data-nav="overview" class="nav-item active">
       <span class="nav-icon material-symbols-outlined">dashboard</span>Vue d'ensemble
@@ -313,7 +295,6 @@
     <button onclick="showSection('profile')" data-nav="profile" class="nav-item">
       <span class="nav-icon material-symbols-outlined">store</span>Ma Boutique
     </button>
-    <!-- BOUTON QUÊTES -->
     <a id="sb-quetes-btn" href="quetes.html" class="sb-quest-btn" style="margin-top:8px;">
       <span class="sb-quest-icon material-symbols-outlined">emoji_events</span>
       <span>Voir les Quêtes</span>
@@ -352,7 +333,6 @@
   </header>
 
   <main>
-
     <!-- OVERVIEW -->
     <section id="section-overview" class="section active">
       <div id="quetes-overview-banner" class="quetes-overview" onclick="location.href='quetes.html'">
@@ -374,73 +354,30 @@
           </a>
         </div>
       </div>
-
       <div class="stat-grid">
-        <div class="stat-card">
-          <div class="stat-icon"><span class="material-symbols-outlined" style="font-size:20px">inventory_2</span></div>
-          <div id="ov-products" class="stat-num">—</div>
-          <div class="stat-label">Produits actifs</div>
-          <div id="ov-products-trend" class="stat-trend">—</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon blue"><span class="material-symbols-outlined" style="font-size:20px">shopping_bag</span></div>
-          <div id="ov-orders" class="stat-num">—</div>
-          <div class="stat-label">Commandes</div>
-          <div id="ov-orders-trend" class="stat-trend">—</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon amber"><span class="material-symbols-outlined" style="font-size:20px">payments</span></div>
-          <div id="ov-revenue" class="stat-num">—</div>
-          <div class="stat-label">Revenus MAD</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon"><span class="material-symbols-outlined" style="font-size:20px">star</span></div>
-          <div id="ov-rating" class="stat-num">—</div>
-          <div class="stat-label">Note moyenne / 5</div>
-        </div>
+        <div class="stat-card"><div class="stat-icon"><span class="material-symbols-outlined" style="font-size:20px">inventory_2</span></div><div id="ov-products" class="stat-num">—</div><div class="stat-label">Produits actifs</div><div id="ov-products-trend" class="stat-trend">—</div></div>
+        <div class="stat-card"><div class="stat-icon blue"><span class="material-symbols-outlined" style="font-size:20px">shopping_bag</span></div><div id="ov-orders" class="stat-num">—</div><div class="stat-label">Commandes</div><div id="ov-orders-trend" class="stat-trend">—</div></div>
+        <div class="stat-card"><div class="stat-icon amber"><span class="material-symbols-outlined" style="font-size:20px">payments</span></div><div id="ov-revenue" class="stat-num">—</div><div class="stat-label">Revenus MAD</div></div>
+        <div class="stat-card"><div class="stat-icon"><span class="material-symbols-outlined" style="font-size:20px">star</span></div><div id="ov-rating" class="stat-num">—</div><div class="stat-label">Note moyenne / 5</div></div>
       </div>
       <div class="two-col">
-        <div class="card">
-          <div class="card-head">
-            <div class="card-title">Commandes récentes</div>
-            <button onclick="showSection('orders')" class="card-link">Voir tout</button>
-          </div>
-          <div id="recent-orders"><div class="card-empty">Chargement...</div></div>
-        </div>
-        <div class="card">
-          <div class="card-head">
-            <div class="card-title">Stock faible</div>
-            <span style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#ef4444;">Urgent</span>
-          </div>
-          <div id="low-stock"><div class="card-empty">Chargement...</div></div>
-        </div>
+        <div class="card"><div class="card-head"><div class="card-title">Commandes récentes</div><button onclick="showSection('orders')" class="card-link">Voir tout</button></div><div id="recent-orders"><div class="card-empty">Chargement...</div></div></div>
+        <div class="card"><div class="card-head"><div class="card-title">Stock faible</div><span style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#ef4444;">Urgent</span></div><div id="low-stock"><div class="card-empty">Chargement...</div></div></div>
       </div>
     </section>
 
     <!-- PRODUCTS -->
     <section id="section-products" class="section">
-      <!-- Barre limite plan -->
       <div class="plan-limit-bar" id="plan-limit-bar">
-        <div class="plan-limit-info">
-          <div>
-            <div class="plan-limit-label">Produits publiés</div>
-            <div id="plan-limit-count" class="plan-limit-count ok">— / —</div>
-          </div>
-        </div>
-        <div class="plan-limit-track">
-          <div id="plan-limit-fill" class="plan-limit-fill" style="width:0%"></div>
-        </div>
+        <div class="plan-limit-info"><div><div class="plan-limit-label">Produits publiés</div><div id="plan-limit-count" class="plan-limit-count ok">— / —</div></div></div>
+        <div class="plan-limit-track"><div id="plan-limit-fill" class="plan-limit-fill" style="width:0%"></div></div>
         <button onclick="showSection('plan')" style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--fire);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;">Changer de plan →</button>
       </div>
-
       <div class="toolbar">
         <div class="toolbar-left">
           <input id="prod-search" type="search" placeholder="Rechercher un produit…" oninput="filterProducts()" class="inp-dark" style="width:220px;"/>
           <select id="prod-filter-status" onchange="filterProducts()" class="sel-dark">
-            <option value="">Tous les statuts</option>
-            <option value="active">Actif</option>
-            <option value="pending">En attente</option>
-            <option value="inactive">Inactif</option>
+            <option value="">Tous les statuts</option><option value="active">Actif</option><option value="pending">En attente</option><option value="inactive">Inactif</option>
           </select>
         </div>
         <button id="new-product-btn" onclick="openProductModal()" class="btn-fire">
@@ -468,12 +405,7 @@
     <section id="section-orders" class="section">
       <div class="toolbar">
         <select id="order-filter" onchange="loadOrders()" class="sel-dark">
-          <option value="">Tous les statuts</option>
-          <option value="pending">En attente</option>
-          <option value="processing">En traitement</option>
-          <option value="shipped">Expédiée</option>
-          <option value="delivered">Livrée</option>
-          <option value="cancelled">Annulée</option>
+          <option value="">Tous les statuts</option><option value="pending">En attente</option><option value="processing">En traitement</option><option value="shipped">Expédiée</option><option value="delivered">Livrée</option><option value="cancelled">Annulée</option>
         </select>
       </div>
       <div class="card">
@@ -508,156 +440,55 @@
     <!-- REVIEWS -->
     <section id="section-reviews" class="section">
       <div class="stat-grid" style="margin-bottom:2px;">
-        <div class="stat-card" style="text-align:center;">
-          <div id="rev-avg-rating" style="font-family:'Cormorant Garamond',serif;font-size:56px;font-weight:700;font-style:italic;color:var(--fire);line-height:1;">—</div>
-          <div id="rev-stars" style="display:flex;justify-content:center;gap:3px;margin:10px 0;"></div>
-          <div class="stat-label">Note moyenne</div>
-        </div>
+        <div class="stat-card" style="text-align:center;"><div id="rev-avg-rating" style="font-family:'Cormorant Garamond',serif;font-size:56px;font-weight:700;font-style:italic;color:var(--fire);line-height:1;">—</div><div id="rev-stars" style="display:flex;justify-content:center;gap:3px;margin:10px 0;"></div><div class="stat-label">Note moyenne</div></div>
         <div class="stat-card" style="text-align:center;"><div id="rev-total-count" class="stat-num">—</div><div class="stat-label">Total avis</div></div>
         <div class="stat-card" style="text-align:center;"><div id="rev-approved-count" class="stat-num">—</div><div class="stat-label">Avis approuvés</div></div>
-        <div class="stat-card" style="display:flex;align-items:center;justify-content:center;">
-          <select id="review-filter" onchange="loadReviews()" class="sel-dark">
-            <option value="">Tous les avis</option>
-            <option value="approved">Approuvés</option>
-            <option value="pending">En attente</option>
-          </select>
-        </div>
+        <div class="stat-card" style="display:flex;align-items:center;justify-content:center;"><select id="review-filter" onchange="loadReviews()" class="sel-dark"><option value="">Tous les avis</option><option value="approved">Approuvés</option><option value="pending">En attente</option></select></div>
       </div>
-      <div class="card">
-        <div class="card-head"><div class="card-title">Avis reçus</div></div>
-        <div id="reviews-list"><div class="card-empty">Chargement...</div></div>
-      </div>
+      <div class="card"><div class="card-head"><div class="card-title">Avis reçus</div></div><div id="reviews-list"><div class="card-empty">Chargement...</div></div></div>
     </section>
 
-    <!-- ── SECTION MON PLAN ── -->
+    <!-- PLAN -->
     <section id="section-plan" class="section">
-      <!-- Info abonnement actif -->
       <div class="plan-sub-info" id="plan-sub-info" style="margin-bottom:24px;">
-        <div class="plan-sub-row">
-          <span class="plan-sub-key">Plan actuel</span>
-          <span id="psi-plan" class="plan-sub-val">—</span>
-        </div>
-        <div class="plan-sub-row">
-          <span class="plan-sub-key">Commission par vente</span>
-          <span id="psi-commission" class="plan-sub-val">—</span>
-        </div>
-        <div class="plan-sub-row">
-          <span class="plan-sub-key">Produits max</span>
-          <span id="psi-products" class="plan-sub-val">—</span>
-        </div>
-        <div class="plan-sub-row">
-          <span class="plan-sub-key">Photos par produit</span>
-          <span id="psi-photos" class="plan-sub-val">—</span>
-        </div>
-        <div class="plan-sub-row">
-          <span class="plan-sub-key">Accès Quêtes</span>
-          <span id="psi-quetes" class="plan-sub-val">—</span>
-        </div>
-        <div class="plan-sub-row">
-          <span class="plan-sub-key">Abonnement actif depuis</span>
-          <span id="psi-since" class="plan-sub-val">—</span>
-        </div>
-        <div class="plan-sub-row">
-          <span class="plan-sub-key">Expire le</span>
-          <span id="psi-expires" class="plan-sub-val">—</span>
-        </div>
+        <div class="plan-sub-row"><span class="plan-sub-key">Plan actuel</span><span id="psi-plan" class="plan-sub-val">—</span></div>
+        <div class="plan-sub-row"><span class="plan-sub-key">Commission par vente</span><span id="psi-commission" class="plan-sub-val">—</span></div>
+        <div class="plan-sub-row"><span class="plan-sub-key">Produits max</span><span id="psi-products" class="plan-sub-val">—</span></div>
+        <div class="plan-sub-row"><span class="plan-sub-key">Photos par produit</span><span id="psi-photos" class="plan-sub-val">—</span></div>
+        <div class="plan-sub-row"><span class="plan-sub-key">Accès Quêtes</span><span id="psi-quetes" class="plan-sub-val">—</span></div>
+        <div class="plan-sub-row"><span class="plan-sub-key">Abonnement actif depuis</span><span id="psi-since" class="plan-sub-val">—</span></div>
+        <div class="plan-sub-row"><span class="plan-sub-key">Expire le</span><span id="psi-expires" class="plan-sub-val">—</span></div>
       </div>
-
-      <!-- Grille des 3 plans -->
       <div class="plan-section-grid">
-
-        <!-- STARTER -->
-        <div class="plan-card-s" id="plan-card-starter">
-          <div class="plan-s-name">Starter</div>
-          <div class="plan-s-price">0 <span style="font-size:14px;color:#555;font-style:normal;font-weight:300;">MAD</span></div>
-          <div class="plan-s-period">Pour toujours gratuit</div>
-          <div class="plan-s-commission">Commission : <strong>10%</strong></div>
-          <ul class="plan-s-features">
-            <li><span class="feat-dot-s on"></span>5 produits max</li>
-            <li><span class="feat-dot-s on"></span>2 photos / produit</li>
-            <li><span class="feat-dot-s on"></span>Fiche boutique basique</li>
-            <li><span class="feat-dot-s off"></span><span style="color:#444">Quêtes non incluses</span></li>
-            <li><span class="feat-dot-s off"></span><span style="color:#444">Wallet non inclus</span></li>
-          </ul>
-          <button class="plan-s-cta" id="plan-cta-starter" onclick="requestPlanChange('starter')">Plan actuel</button>
-        </div>
-
-        <!-- PRO -->
-        <div class="plan-card-s" id="plan-card-pro">
-          <div class="plan-s-name">Pro</div>
-          <div class="plan-s-price">99 <span style="font-size:14px;color:#555;font-style:normal;font-weight:300;">MAD</span></div>
-          <div class="plan-s-period">par mois</div>
-          <div class="plan-s-commission">Commission : <strong>7%</strong></div>
-          <ul class="plan-s-features">
-            <li><span class="feat-dot-s on"></span>30 produits max</li>
-            <li><span class="feat-dot-s on"></span>5 photos / produit</li>
-            <li><span class="feat-dot-s on"></span>Boutique personnalisée</li>
-            <li><span class="feat-dot-s on"></span>Accès aux Quêtes</li>
-            <li><span class="feat-dot-s on"></span>Wallet vendeur activé</li>
-          </ul>
-          <button class="plan-s-cta" id="plan-cta-pro" onclick="requestPlanChange('pro')">Passer à Pro</button>
-        </div>
-
-        <!-- PREMIUM -->
-        <div class="plan-card-s" id="plan-card-premium">
-          <div class="plan-s-name">Premium</div>
-          <div class="plan-s-price">249 <span style="font-size:14px;color:#555;font-style:normal;font-weight:300;">MAD</span></div>
-          <div class="plan-s-period">par mois</div>
-          <div class="plan-s-commission">Commission : <strong>4%</strong></div>
-          <ul class="plan-s-features">
-            <li><span class="feat-dot-s on"></span>Produits illimités</li>
-            <li><span class="feat-dot-s on"></span>10 photos / produit</li>
-            <li><span class="feat-dot-s on"></span>Boutique premium</li>
-            <li><span class="feat-dot-s on"></span>Quêtes en priorité</li>
-            <li><span class="feat-dot-s on"></span>Badge vérifié</li>
-          </ul>
-          <button class="plan-s-cta gold" id="plan-cta-premium" onclick="requestPlanChange('premium')">Passer à Premium</button>
-        </div>
-
+        <div class="plan-card-s" id="plan-card-starter"><div class="plan-s-name">Starter</div><div class="plan-s-price">0 <span style="font-size:14px;color:#555;font-style:normal;font-weight:300;">MAD</span></div><div class="plan-s-period">Pour toujours gratuit</div><div class="plan-s-commission">Commission : <strong>10%</strong></div><ul class="plan-s-features"><li><span class="feat-dot-s on"></span>5 produits max</li><li><span class="feat-dot-s on"></span>2 photos / produit</li><li><span class="feat-dot-s on"></span>Fiche boutique basique</li><li><span class="feat-dot-s off"></span><span style="color:#444">Quêtes non incluses</span></li><li><span class="feat-dot-s off"></span><span style="color:#444">Wallet non inclus</span></li></ul><button class="plan-s-cta" id="plan-cta-starter" onclick="requestPlanChange('starter')">Plan actuel</button></div>
+        <div class="plan-card-s" id="plan-card-pro"><div class="plan-s-name">Pro</div><div class="plan-s-price">99 <span style="font-size:14px;color:#555;font-style:normal;font-weight:300;">MAD</span></div><div class="plan-s-period">par mois</div><div class="plan-s-commission">Commission : <strong>7%</strong></div><ul class="plan-s-features"><li><span class="feat-dot-s on"></span>30 produits max</li><li><span class="feat-dot-s on"></span>5 photos / produit</li><li><span class="feat-dot-s on"></span>Boutique personnalisée</li><li><span class="feat-dot-s on"></span>Accès aux Quêtes</li><li><span class="feat-dot-s on"></span>Wallet vendeur activé</li></ul><button class="plan-s-cta" id="plan-cta-pro" onclick="requestPlanChange('pro')">Passer à Pro</button></div>
+        <div class="plan-card-s" id="plan-card-premium"><div class="plan-s-name">Premium</div><div class="plan-s-price">249 <span style="font-size:14px;color:#555;font-style:normal;font-weight:300;">MAD</span></div><div class="plan-s-period">par mois</div><div class="plan-s-commission">Commission : <strong>4%</strong></div><ul class="plan-s-features"><li><span class="feat-dot-s on"></span>Produits illimités</li><li><span class="feat-dot-s on"></span>10 photos / produit</li><li><span class="feat-dot-s on"></span>Boutique premium</li><li><span class="feat-dot-s on"></span>Quêtes en priorité</li><li><span class="feat-dot-s on"></span>Badge vérifié</li></ul><button class="plan-s-cta gold" id="plan-cta-premium" onclick="requestPlanChange('premium')">Passer à Premium</button></div>
       </div>
-
       <div style="background:rgba(255,107,43,.04);border:1px solid var(--border-fire);padding:16px 20px;font-size:12px;color:#888;line-height:1.7;">
-        Pour changer de plan, contactez-nous sur WhatsApp ou par email. L'activation est effectuée manuellement après confirmation du paiement.
-        <br><strong style="color:var(--fog);">support@wennashop.com · +212 6XX XXX XXX</strong>
+        Pour changer de plan, contactez-nous sur WhatsApp ou par email.<br><strong style="color:var(--fog);">support@wennashop.com · +212 6XX XXX XXX</strong>
       </div>
     </section>
 
     <!-- PROFILE -->
     <section id="section-profile" class="section" style="max-width:640px;">
       <div class="card" style="margin-bottom:2px;">
-        <div class="card-head">
-          <div class="card-title">Informations de la boutique</div>
-          <span id="profile-status-badge" class="status-pending">—</span>
-        </div>
+        <div class="card-head"><div class="card-title">Informations de la boutique</div><span id="profile-status-badge" class="status-pending">—</span></div>
         <form id="profile-form" onsubmit="saveProfile(event)" style="padding:24px;display:flex;flex-direction:column;gap:18px;">
           <div style="display:flex;align-items:center;gap:16px;padding-bottom:18px;border-bottom:1px solid var(--border);">
             <div id="profile-avatar-display" class="sb-av" style="width:52px;height:52px;font-size:20px;">?</div>
-            <div>
-              <div id="profile-email-display" style="font-size:14px;font-weight:600;">—</div>
-              <div id="profile-role-display" style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-top:3px;">—</div>
-            </div>
+            <div><div id="profile-email-display" style="font-size:14px;font-weight:600;">—</div><div id="profile-role-display" style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-top:3px;">—</div></div>
           </div>
           <div class="form-grid">
             <div class="form-group"><label class="form-label">Prénom</label><input id="pf-first-name" type="text" class="inp-full"/></div>
             <div class="form-group"><label class="form-label">Nom</label><input id="pf-last-name" type="text" class="inp-full"/></div>
           </div>
           <div class="form-group"><label class="form-label">Spécialité / Boutique</label><input id="pf-specialty" type="text" placeholder="Ex: Huiles naturelles · Casablanca" class="inp-full"/></div>
-          <div class="form-group"><label class="form-label">Pays</label>
-            <select id="pf-country" class="inp-full sel-dark" style="appearance:none;">
-              <option value="Maroc">Maroc</option><option value="Gabon">Gabon</option>
-            </select>
-          </div>
+          <div class="form-group"><label class="form-label">Pays</label><select id="pf-country" class="inp-full sel-dark" style="appearance:none;"><option value="Maroc">Maroc</option><option value="Gabon">Gabon</option></select></div>
           <button type="submit" class="btn-fire" style="align-self:flex-start;">Enregistrer les modifications</button>
         </form>
       </div>
-      <div class="card">
-        <div class="card-head"><div class="card-title">Sécurité</div></div>
-        <div style="padding:24px;">
-          <button onclick="resetPassword()" class="btn-ghost">Envoyer un lien de réinitialisation</button>
-        </div>
-      </div>
+      <div class="card"><div class="card-head"><div class="card-title">Sécurité</div></div><div style="padding:24px;"><button onclick="resetPassword()" class="btn-ghost">Envoyer un lien de réinitialisation</button></div></div>
     </section>
-
   </main>
 </div>
 
@@ -670,47 +501,25 @@
     </div>
     <div class="modal-body">
       <input type="hidden" id="product-id"/>
-
-      <!-- TABS -->
       <div class="modal-tabs">
         <button class="modal-tab active" onclick="switchTab('info',this)">Informations</button>
         <button class="modal-tab" onclick="switchTab('photos',this)">Photos</button>
         <button class="modal-tab" onclick="switchTab('carac',this)">Caractéristiques</button>
       </div>
-
-      <!-- TAB INFO -->
       <div id="tab-info">
-        <div class="form-group" style="margin-bottom:16px;">
-          <label class="form-label">Nom du produit *</label>
-          <input id="product-name" type="text" class="inp-full" placeholder="ex: Bogolan traditionnel"/>
-        </div>
-        <div class="form-group" style="margin-bottom:16px;">
-          <label class="form-label">Description</label>
-          <textarea id="product-description" rows="3" class="inp-full" placeholder="Décrivez votre produit…"></textarea>
-        </div>
+        <div class="form-group" style="margin-bottom:16px;"><label class="form-label">Nom du produit *</label><input id="product-name" type="text" class="inp-full" placeholder="ex: Bogolan traditionnel"/></div>
+        <div class="form-group" style="margin-bottom:16px;"><label class="form-label">Description</label><textarea id="product-description" rows="3" class="inp-full" placeholder="Décrivez votre produit…"></textarea></div>
         <div class="form-grid" style="margin-bottom:16px;">
           <div class="form-group"><label class="form-label">Prix (MAD) *</label><input id="product-price" type="number" step="0.01" min="0" class="inp-full" placeholder="350"/></div>
           <div class="form-group"><label class="form-label">Stock *</label><input id="product-stock" type="number" min="0" class="inp-full" placeholder="10"/></div>
         </div>
         <div class="form-grid" style="margin-bottom:16px;">
-          <div class="form-group"><label class="form-label">Pays *</label>
-            <select id="product-country" class="inp-full sel-dark" style="appearance:none;">
-              <option value="Maroc">🇲🇦 Maroc</option><option value="Gabon">🇬🇦 Gabon</option>
-            </select>
-          </div>
+          <div class="form-group"><label class="form-label">Pays *</label><select id="product-country" class="inp-full sel-dark" style="appearance:none;"><option value="Maroc">🇲🇦 Maroc</option><option value="Gabon">🇬🇦 Gabon</option></select></div>
           <div class="form-group"><label class="form-label">Ville d'origine</label><input id="product-city" type="text" class="inp-full" placeholder="ex: Casablanca"/></div>
         </div>
         <div class="form-grid" style="margin-bottom:16px;">
-          <div class="form-group"><label class="form-label">Catégorie</label>
-            <select id="product-category" class="inp-full sel-dark" style="appearance:none;"><option value="">Sélectionner...</option></select>
-          </div>
-          <div class="form-group"><label class="form-label">Statut</label>
-            <select id="product-status" class="inp-full sel-dark" style="appearance:none;">
-              <option value="pending">En attente de validation</option>
-              <option value="active">Actif</option>
-              <option value="inactive">Inactif</option>
-            </select>
-          </div>
+          <div class="form-group"><label class="form-label">Catégorie</label><select id="product-category" class="inp-full sel-dark" style="appearance:none;"><option value="">Sélectionner...</option></select></div>
+          <div class="form-group"><label class="form-label">Statut</label><select id="product-status" class="inp-full sel-dark" style="appearance:none;"><option value="pending">En attente de validation</option><option value="active">Actif</option><option value="inactive">Inactif</option></select></div>
         </div>
         <div class="form-grid" style="margin-bottom:16px;">
           <div class="form-group"><label class="form-label">Marque</label><input id="product-brand" type="text" class="inp-full" placeholder="ex: Artisan Kofi"/></div>
@@ -721,8 +530,6 @@
           <div class="form-group"><label class="form-label">Délai de livraison (jours)</label><input id="product-delivery" type="number" min="1" class="inp-full" placeholder="7"/></div>
         </div>
       </div>
-
-      <!-- TAB PHOTOS -->
       <div id="tab-photos" style="display:none;">
         <div id="plan-photo-note" class="plan-photo-note"></div>
         <p style="font-size:12px;color:var(--fog);margin-bottom:16px;letter-spacing:.3px;">La première photo est l'image principale.</p>
@@ -738,15 +545,10 @@
           </div>
         </div>
       </div>
-
-      <!-- TAB CARACTÉRISTIQUES -->
       <div id="tab-carac" style="display:none;">
         <p style="font-size:12px;color:var(--fog);margin-bottom:16px;letter-spacing:.3px;">Ajoutez des attributs clé/valeur : matière, taille, couleur, poids…</p>
         <div id="caracContainer"></div>
-        <button type="button" onclick="addCarac()" class="btn-add-carac">
-          <span class="material-symbols-outlined" style="font-size:16px;">add</span>
-          Ajouter une caractéristique
-        </button>
+        <button type="button" onclick="addCarac()" class="btn-add-carac"><span class="material-symbols-outlined" style="font-size:16px;">add</span>Ajouter une caractéristique</button>
         <div style="border-top:1px solid var(--border);margin-top:20px;padding-top:20px;">
           <p style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:14px;">Champs dédiés</p>
           <div class="form-grid" style="margin-bottom:14px;">
@@ -760,7 +562,6 @@
         </div>
       </div>
     </div>
-
     <div class="modal-footer">
       <button type="button" onclick="closeProductModal()" class="btn-cancel">Annuler</button>
       <button type="button" id="modal-submit-btn" onclick="saveProduct()" class="btn-fire" style="flex:1;">Enregistrer</button>
@@ -771,21 +572,12 @@
 <!-- MODAL COMMANDE -->
 <div id="order-modal-overlay" class="modal-ov hidden">
   <div class="modal-box" onclick="event.stopPropagation()">
-    <div class="modal-head">
-      <h3 class="modal-title">Détail commande</h3>
-      <button onclick="closeOrderModal()" class="modal-close"><span class="material-symbols-outlined">close</span></button>
-    </div>
+    <div class="modal-head"><h3 class="modal-title">Détail commande</h3><button onclick="closeOrderModal()" class="modal-close"><span class="material-symbols-outlined">close</span></button></div>
     <div id="order-detail-content" class="modal-body">Chargement...</div>
     <div style="padding:0 24px 24px;">
       <div class="form-label" style="margin-bottom:8px;">Mettre à jour le statut</div>
       <div style="display:flex;gap:10px;">
-        <select id="order-status-update" class="sel-dark" style="flex:1;">
-          <option value="pending">En attente</option>
-          <option value="processing">En traitement</option>
-          <option value="shipped">Expédiée</option>
-          <option value="delivered">Livrée</option>
-          <option value="cancelled">Annulée</option>
-        </select>
+        <select id="order-status-update" class="sel-dark" style="flex:1;"><option value="pending">En attente</option><option value="processing">En traitement</option><option value="shipped">Expédiée</option><option value="delivered">Livrée</option><option value="cancelled">Annulée</option></select>
         <button onclick="updateOrderStatus()" class="btn-fire">Mettre à jour</button>
       </div>
     </div>
@@ -796,40 +588,23 @@
 <div id="delete-modal-overlay" class="modal-ov hidden">
   <div class="modal-box modal-sm" onclick="event.stopPropagation()">
     <div style="padding:32px 24px 24px;text-align:center;">
-      <div style="width:52px;height:52px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-        <span class="material-symbols-outlined" style="color:#ef4444;font-size:26px;">delete</span>
-      </div>
+      <div style="width:52px;height:52px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;"><span class="material-symbols-outlined" style="color:#ef4444;font-size:26px;">delete</span></div>
       <h3 class="modal-title" style="margin-bottom:10px;">Supprimer ce produit ?</h3>
       <p style="font-size:13px;color:#666;margin-bottom:24px;">Cette action est irréversible.</p>
-      <div style="display:flex;gap:10px;">
-        <button onclick="closeDeleteModal()" class="btn-cancel">Annuler</button>
-        <button onclick="confirmDelete()" class="btn-danger">Supprimer</button>
-      </div>
+      <div style="display:flex;gap:10px;"><button onclick="closeDeleteModal()" class="btn-cancel">Annuler</button><button onclick="confirmDelete()" class="btn-danger">Supprimer</button></div>
     </div>
   </div>
 </div>
 
-<!-- MODAL CHANGEMENT DE PLAN -->
+<!-- MODAL PLAN -->
 <div id="plan-modal-overlay" class="modal-ov hidden">
   <div class="modal-box modal-sm" onclick="event.stopPropagation()">
-    <div class="modal-head">
-      <h3 class="modal-title">Changer de plan</h3>
-      <button onclick="closePlanModal()" class="modal-close"><span class="material-symbols-outlined">close</span></button>
-    </div>
+    <div class="modal-head"><h3 class="modal-title">Changer de plan</h3><button onclick="closePlanModal()" class="modal-close"><span class="material-symbols-outlined">close</span></button></div>
     <div style="padding:24px;">
-      <p style="font-size:13px;color:#888;line-height:1.7;margin-bottom:20px;">
-        Pour passer au plan <strong id="plan-modal-name" style="color:var(--fire);">—</strong>, contactez notre équipe.<br>
-        L'activation est effectuée après confirmation du paiement.
-      </p>
+      <p style="font-size:13px;color:#888;line-height:1.7;margin-bottom:20px;">Pour passer au plan <strong id="plan-modal-name" style="color:var(--fire);">—</strong>, contactez notre équipe.<br>L'activation est effectuée après confirmation du paiement.</p>
       <div style="display:flex;flex-direction:column;gap:10px;">
-        <a id="plan-modal-whatsapp" href="#" target="_blank" class="btn-fire" style="text-decoration:none;justify-content:center;">
-          <span class="material-symbols-outlined" style="font-size:16px">chat</span>
-          Contacter sur WhatsApp
-        </a>
-        <a href="mailto:support@wennashop.com" class="btn-ghost" style="text-decoration:none;justify-content:center;">
-          <span class="material-symbols-outlined" style="font-size:16px">mail</span>
-          Envoyer un email
-        </a>
+        <a id="plan-modal-whatsapp" href="#" target="_blank" class="btn-fire" style="text-decoration:none;justify-content:center;"><span class="material-symbols-outlined" style="font-size:16px">chat</span>Contacter sur WhatsApp</a>
+        <a href="mailto:support@wennashop.com" class="btn-ghost" style="text-decoration:none;justify-content:center;"><span class="material-symbols-outlined" style="font-size:16px">mail</span>Envoyer un email</a>
       </div>
     </div>
   </div>
@@ -840,21 +615,18 @@
 <script>
 function getDb(){ return window.db }
 
-// ── PLAN CONFIG ──
 const PLAN_CONFIG = {
   starter:  { label:'Starter',  maxProducts:5,   maxPhotos:2,  commission:'10%', hasQuetes:false, hasWallet:false },
   pro:      { label:'Pro',      maxProducts:30,  maxPhotos:5,  commission:'7%',  hasQuetes:true,  hasWallet:true  },
   premium:  { label:'Premium',  maxProducts:9999,maxPhotos:10, commission:'4%',  hasQuetes:true,  hasWallet:true  }
 }
 
-let currentSeller = null
-let currentPlan = 'starter'
+let currentSeller = null, currentPlan = 'starter'
 let allProducts = [], prodPage = 1, currentOrderId = null, productToDelete = null
 let categories = [], prodImages = ['','','',''], caracList = []
-let totalProductCount = 0 // nb total de produits du vendeur
+let totalProductCount = 0
 const PROD_PER_PAGE = 10
 
-// ── UTILS ──
 function setInitMsg(m){ const e=document.getElementById('init-msg'); if(e) e.textContent=m }
 function hideInitScreen(){ document.getElementById('init-screen').classList.add('hidden') }
 function showToast(msg,type='default'){
@@ -873,39 +645,37 @@ function starsHtml(r){
   const n=Math.round(r||0)
   return Array.from({length:5},(_,i)=>`<span class="material-symbols-outlined ${i<n?'icon-fill':''}" style="font-size:16px;color:${i<n?'var(--fire)':'#333'}">${i<n?'star':'star'}</span>`).join('')
 }
+
+// ✅ FIX — parseImages gère URL directe, JSON stringifié et chemin relatif
 function parseImages(imgData){
   if(!imgData) return ['','','','']
-  try {
-    const p=JSON.parse(imgData)
-    if(Array.isArray(p)) return [...p,...Array(4).fill('')].slice(0,4)
-    return [imgData,'','','']
-  } catch { return [imgData,'','',''] }
+  // JSON stringifié
+  if(typeof imgData === 'string' && imgData.startsWith('[')){
+    try {
+      const p = JSON.parse(imgData)
+      if(Array.isArray(p)) return [...p,...Array(4).fill('')].slice(0,4)
+    } catch {}
+  }
+  // URL directe ou chemin simple
+  return [imgData,'','','']
 }
 
-// ── PLAN UI ──
 function applyPlanUI(plan) {
   currentPlan = plan || 'starter'
   const cfg = PLAN_CONFIG[currentPlan] || PLAN_CONFIG.starter
-
-  // Sidebar badge
   const pill = document.getElementById('sb-plan-pill')
   pill.className = 'plan-pill ' + currentPlan
   document.getElementById('sb-plan-name').textContent = cfg.label
   const upgradeBtn = document.getElementById('sb-plan-upgrade')
   upgradeBtn.classList.toggle('hidden', currentPlan === 'premium')
-
-  // Quêtes : lock si starter
   const sbQuestBtn = document.getElementById('sb-quetes-btn')
   const topbarQuestBtn = document.getElementById('topbar-quetes-btn')
   if (!cfg.hasQuetes) {
-    sbQuestBtn.classList.add('locked')
-    sbQuestBtn.removeAttribute('href')
-    sbQuestBtn.onclick = (e) => { e.preventDefault(); showToast('Les Quêtes sont disponibles dès le plan Pro.','error'); }
-    if (topbarQuestBtn) { topbarQuestBtn.style.opacity = '.35'; topbarQuestBtn.style.pointerEvents = 'none'; }
-    // Banner overview
+    sbQuestBtn.classList.add('locked'); sbQuestBtn.removeAttribute('href')
+    sbQuestBtn.onclick = (e) => { e.preventDefault(); showToast('Les Quêtes sont disponibles dès le plan Pro.','error') }
+    if (topbarQuestBtn) { topbarQuestBtn.style.opacity = '.35'; topbarQuestBtn.style.pointerEvents = 'none' }
     const banner = document.getElementById('quetes-overview-banner')
-    banner.classList.add('locked')
-    banner.onclick = null
+    banner.classList.add('locked'); banner.onclick = null
     document.getElementById('quetes-ov-icon').classList.add('locked')
     document.getElementById('quetes-ov-title').classList.add('locked')
     document.getElementById('quetes-ov-title').textContent = 'Quêtes — Plan Pro requis'
@@ -913,8 +683,6 @@ function applyPlanUI(plan) {
     const cta = document.getElementById('quetes-ov-cta-wrap')
     if (cta) cta.innerHTML = `<button onclick="showSection('plan')" class="btn-ghost" style="font-size:9px;letter-spacing:2px;">Voir les plans</button>`
   }
-
-  // Plan section : highlight la card active
   ;['starter','pro','premium'].forEach(p => {
     const card = document.getElementById('plan-card-' + p)
     const cta = document.getElementById('plan-cta-' + p)
@@ -928,8 +696,7 @@ function applyPlanUI(plan) {
         tag.textContent = 'Plan actuel'
         card.insertBefore(tag, card.firstChild)
       }
-      cta.textContent = 'Plan actuel'
-      cta.classList.add('current')
+      cta.textContent = 'Plan actuel'; cta.classList.add('current')
     } else {
       card.classList.remove('current','gold')
       const existing = card.querySelector('.plan-current-tag')
@@ -937,8 +704,6 @@ function applyPlanUI(plan) {
       cta.classList.remove('current')
     }
   })
-
-  // Section plan : info
   document.getElementById('psi-plan').textContent = cfg.label
   document.getElementById('psi-commission').textContent = cfg.commission
   document.getElementById('psi-products').textContent = cfg.maxProducts >= 9999 ? 'Illimités' : cfg.maxProducts + ' max'
@@ -953,26 +718,22 @@ function updatePlanLimitBar() {
   const pct = cfg.maxProducts >= 9999 ? 10 : Math.min((used / cfg.maxProducts) * 100, 100)
   const countEl = document.getElementById('plan-limit-count')
   const fillEl = document.getElementById('plan-limit-fill')
-  countEl.textContent = used + ' / ' + max
-  fillEl.style.width = pct + '%'
+  countEl.textContent = used + ' / ' + max; fillEl.style.width = pct + '%'
   const isWarn = cfg.maxProducts < 9999 && used >= cfg.maxProducts * 0.8
   const isFull = cfg.maxProducts < 9999 && used >= cfg.maxProducts
   countEl.className = 'plan-limit-count ' + (isFull ? 'full' : isWarn ? 'warn' : 'ok')
   fillEl.className = 'plan-limit-fill ' + (isFull ? 'full' : isWarn ? 'warn' : '')
-
-  // Désactiver le bouton "Nouveau produit" si limit atteinte
   const newBtn = document.getElementById('new-product-btn')
   const topBtn = document.getElementById('topbar-new-product-btn')
   if (isFull) {
-    if (newBtn) { newBtn.disabled = true; newBtn.title = 'Limite de produits atteinte. Changez de plan.' }
-    if (topBtn) { topBtn.disabled = true; topBtn.title = 'Limite de produits atteinte.' }
+    if (newBtn) { newBtn.disabled = true; newBtn.title = 'Limite atteinte.' }
+    if (topBtn) { topBtn.disabled = true }
   } else {
     if (newBtn) { newBtn.disabled = false; newBtn.title = '' }
-    if (topBtn) { topBtn.disabled = false; topBtn.title = '' }
+    if (topBtn) { topBtn.disabled = false }
   }
 }
 
-// ── PLAN CHANGE ──
 function requestPlanChange(plan) {
   if (plan === currentPlan) return
   const cfg = PLAN_CONFIG[plan]
@@ -985,7 +746,6 @@ function requestPlanChange(plan) {
 }
 function closePlanModal(){ document.getElementById('plan-modal-overlay').classList.add('hidden') }
 
-// ── ABONNEMENT ──
 async function loadSubscriptionInfo() {
   const db = getDb()
   try {
@@ -1000,26 +760,19 @@ async function loadSubscriptionInfo() {
   } catch(e) {}
 }
 
-// ── TABS MODAL ──
 function switchTab(name, btn){
   document.querySelectorAll('[id^="tab-"]').forEach(t=>t.style.display='none')
   document.getElementById('tab-'+name).style.display='block'
   document.querySelectorAll('.modal-tab').forEach(b=>b.classList.remove('active'))
   if(btn) btn.classList.add('active')
-  // Afficher la note photos selon le plan
   if(name === 'photos') {
     const cfg = PLAN_CONFIG[currentPlan]
     const noteEl = document.getElementById('plan-photo-note')
-    if(cfg.maxPhotos < 10) {
-      noteEl.style.display = 'block'
-      noteEl.textContent = `Plan ${cfg.label} : ${cfg.maxPhotos} photos max par produit.`
-    } else {
-      noteEl.style.display = 'none'
-    }
+    if(cfg.maxPhotos < 10) { noteEl.style.display = 'block'; noteEl.textContent = `Plan ${cfg.label} : ${cfg.maxPhotos} photos max par produit.` }
+    else noteEl.style.display = 'none'
   }
 }
 
-// ── MULTI-IMAGE (limité selon plan) ──
 function getMaxPhotos() { return (PLAN_CONFIG[currentPlan] || PLAN_CONFIG.starter).maxPhotos }
 
 function renderImgGrid(){
@@ -1038,12 +791,10 @@ function renderImgGrid(){
     </div>`
   }).join('')
 }
-
 function showPlanPhotoLimit(){
   const cfg = PLAN_CONFIG[currentPlan]
   showToast(`Plan ${cfg.label} : ${cfg.maxPhotos} photos max. Passez au plan supérieur.`, 'error')
 }
-
 function clickSlot(i){
   const maxPh = getMaxPhotos()
   if(i >= maxPh){ showPlanPhotoLimit(); return }
@@ -1051,13 +802,10 @@ function clickSlot(i){
   const f=document.getElementById('fileInput')
   f.removeAttribute('multiple'); f.click()
 }
-
 function handleFiles(files){
   const start = window._activeSlot != null ? window._activeSlot : 0
   const maxPh = getMaxPhotos()
-  Array.from(files).slice(0, maxPh-start).forEach((file, idx) => {
-    uploadImage(file, start+idx)
-  })
+  Array.from(files).slice(0, maxPh-start).forEach((file, idx) => uploadImage(file, start+idx))
   window._activeSlot=null
 }
 
@@ -1101,7 +849,6 @@ function addImgFromUrl(){
 }
 function removeImg(i){ prodImages[i]=''; renderImgGrid() }
 
-// ── CARACTÉRISTIQUES ──
 function renderCarac(){
   const c=document.getElementById('caracContainer'); if(!c) return
   c.innerHTML=caracList.map((item,i)=>`
@@ -1114,7 +861,6 @@ function renderCarac(){
 function addCarac(){ caracList.push({k:'',v:''}); renderCarac() }
 function removeCarac(i){ caracList.splice(i,1); renderCarac() }
 
-// ── NAV ──
 const pageTitles={overview:"Vue d'ensemble",products:'Mes Produits',orders:'Commandes',revenue:'Revenus',reviews:'Avis Clients',plan:'Mon Plan',profile:'Ma Boutique'}
 function showSection(name){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'))
@@ -1122,7 +868,7 @@ function showSection(name){
   document.querySelectorAll('.nav-item[data-nav]').forEach(b=>{b.classList.toggle('active',b.dataset.nav===name)})
   document.getElementById('page-title').textContent=pageTitles[name]||''
   closeSidebar()
-  if(name==='products'){ loadProducts() }
+  if(name==='products') loadProducts()
   if(name==='orders') loadOrders()
   if(name==='revenue') loadRevenue()
   if(name==='reviews') loadReviews()
@@ -1144,7 +890,6 @@ function checkMobile(){
 }
 window.addEventListener('resize',checkMobile); checkMobile()
 
-// ── AUTH ──
 async function initAuth(){
   const db=getDb()
   if(!db){ setTimeout(initAuth,100); return }
@@ -1170,10 +915,7 @@ async function initAuth(){
       return
     }
     currentSeller=user
-
-    // Appliquer le plan
     applyPlanUI(user.subscription_plan || 'starter')
-
     const initials=((user.first_name?.[0]||'')+(user.last_name?.[0]||'')).toUpperCase()||user.email?.[0]?.toUpperCase()||'?'
     document.getElementById('seller-avatar').textContent=initials
     document.getElementById('seller-name').textContent=user.full_name||`${user.first_name||''} ${user.last_name||''}`.trim()||user.email
@@ -1186,7 +928,6 @@ async function initAuth(){
 }
 async function logout(){ const db=getDb(); if(db) await db.auth.signOut(); window.location.href='login.html' }
 
-// ── CATEGORIES ──
 async function loadCategories(){
   const db=getDb()
   const { data } = await db.from('categories').select('id, name').order('name')
@@ -1201,7 +942,6 @@ async function getMyProductIds(){
   return (data||[]).map(p=>p.id)
 }
 
-// ── OVERVIEW ──
 async function loadOverview(){
   const db=getDb(); if(!currentSeller) return
   const sid=currentSeller.id
@@ -1212,7 +952,6 @@ async function loadOverview(){
   ])
   totalProductCount = totalProd || 0
   updatePlanLimitBar()
-
   let totalOrders=0, pendingOrders=0, totalRevenue=0, avgRating='—'
   if(productIds.length){
     const { data:items } = await db.from('order_items').select('order_id').in('product_id',productIds)
@@ -1237,15 +976,12 @@ async function loadOverview(){
   document.getElementById('ov-rating').textContent=avgRating
   const badge=document.getElementById('badge-orders')
   if(pendingOrders>0){ badge.textContent=pendingOrders; badge.classList.remove('hidden') }
-
-  // Stats quêtes (même si plan starter, on affiche les chiffres)
   try {
     const { count:qOpen } = await db.from('quests').select('id',{count:'exact',head:true}).eq('status','open')
     const { data:qRewards } = await db.from('quests').select('reward_amount').eq('status','open').order('reward_amount',{ascending:false}).limit(1)
     document.getElementById('ov-quests-open').textContent=qOpen??0
     document.getElementById('ov-quests-reward').textContent=qRewards?.[0]?.reward_amount ? Number(qRewards[0].reward_amount).toLocaleString('fr-FR')+' FCFA' : '—'
   } catch(e){}
-
   loadRecentOrders(); loadLowStock()
 }
 
@@ -1260,14 +996,8 @@ async function loadRecentOrders(){
   if(!data?.length){ el.innerHTML='<div class="card-empty">Aucune commande</div>'; return }
   el.innerHTML=data.map(o=>`
     <div class="order-row" onclick="showSection('orders')">
-      <div>
-        <div style="font-size:12px;font-weight:600;font-family:monospace;">#${o.id.slice(0,8).toUpperCase()}</div>
-        <div style="font-size:11px;color:#555;margin-top:3px;">${o.users?.full_name||o.users?.email||'—'} · ${fmtDate(o.created_at)}</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px;">
-        <span style="font-size:14px;font-weight:600;color:var(--fire);">${fmtAmount(o.total_amount)}</span>
-        ${statusBadge(o.status)}
-      </div>
+      <div><div style="font-size:12px;font-weight:600;font-family:monospace;">#${o.id.slice(0,8).toUpperCase()}</div><div style="font-size:11px;color:#555;margin-top:3px;">${o.users?.full_name||o.users?.email||'—'} · ${fmtDate(o.created_at)}</div></div>
+      <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:14px;font-weight:600;color:var(--fire);">${fmtAmount(o.total_amount)}</span>${statusBadge(o.status)}</div>
     </div>`).join('')
 }
 
@@ -1283,7 +1013,6 @@ async function loadLowStock(){
     </div>`).join('')
 }
 
-// ── PRODUCTS ──
 async function loadProducts(){
   const db=getDb(); if(!currentSeller) return
   const { data,error } = await db.from('products')
@@ -1310,21 +1039,20 @@ function renderProductsTable(data){
   }
   const total=data.length, totalPages=Math.ceil(total/PROD_PER_PAGE)
   if(prodPage>totalPages) prodPage=1
-  const imgs = p => {
-    if(Array.isArray(p.images)&&p.images.length) return p.images
-    return parseImages(p.image_url)
+  const getImgs = p => {
+    // ✅ Priorité : colonne images (ARRAY natif) si disponible et non vide
+    if(Array.isArray(p.images) && p.images.length) return p.images
+    // Sinon parser image_url (URL directe ou JSON stringifié)
+    return parseImages(p.image_url).filter(Boolean)
   }
   tbody.innerHTML=data.slice((prodPage-1)*PROD_PER_PAGE,prodPage*PROD_PER_PAGE).map(p=>{
-    const allImgs=imgs(p).filter(Boolean)
+    const allImgs=getImgs(p)
     return `<tr>
       <td>
         <div style="display:flex;align-items:center;gap:12px;">
           ${allImgs[0]?`<img src="${allImgs[0]}" class="prod-thumb" onerror="this.style.display='none'"/>`:
             `<div class="prod-thumb-ph"><span class="material-symbols-outlined" style="font-size:18px">image</span></div>`}
-          <div>
-            <div style="font-size:13px;font-weight:600;">${p.name}</div>
-            <div style="font-size:10px;color:#555;letter-spacing:1px;text-transform:uppercase;margin-top:2px;">${p.origin_city||p.country||'—'}</div>
-          </div>
+          <div><div style="font-size:13px;font-weight:600;">${p.name}</div><div style="font-size:10px;color:#555;letter-spacing:1px;text-transform:uppercase;margin-top:2px;">${p.origin_city||p.country||'—'}</div></div>
         </div>
       </td>
       <td>
@@ -1353,16 +1081,13 @@ function renderProductsTable(data){
 function changeProdPage(dir){ prodPage+=dir; filterProducts() }
 
 function openProductModal(p=null){
-  // Vérifier la limite plan avant d'ouvrir (seulement pour nouveau produit)
   if(!p) {
     const cfg = PLAN_CONFIG[currentPlan]
     if(cfg.maxProducts < 9999 && totalProductCount >= cfg.maxProducts) {
       showToast(`Limite atteinte (${cfg.maxProducts} produits max en plan ${cfg.label}). Passez au plan supérieur.`, 'error')
-      setTimeout(() => showSection('plan'), 1200)
-      return
+      setTimeout(() => showSection('plan'), 1200); return
     }
   }
-
   prodImages=['','','','']
   caracList=[]
   document.getElementById('product-id').value=p?.id||''
@@ -1382,7 +1107,6 @@ function openProductModal(p=null){
   document.getElementById('product-color').value=p?.color||''
   document.getElementById('product-weight').value=p?.weight||''
   document.getElementById('product-dimensions').value=p?.dimensions||''
-
   if(p){
     if(Array.isArray(p.images)&&p.images.length) prodImages=[...p.images,...Array(4).fill('')].slice(0,4)
     else prodImages=parseImages(p.image_url)
@@ -1394,7 +1118,6 @@ function openProductModal(p=null){
       } catch{}
     }
   }
-
   document.getElementById('modal-title').textContent=p?'Modifier le produit':'Nouveau produit'
   document.getElementById('modal-submit-btn').textContent=p?'Enregistrer':'Créer le produit'
   switchTab('info', document.querySelector('.modal-tab'))
@@ -1411,25 +1134,24 @@ async function saveProduct(){
   const price=parseFloat(document.getElementById('product-price').value)
   if(!name) return showToast('Le nom est obligatoire.','error')
   if(!price||price<=0) return showToast('Prix invalide.','error')
-
-  // Vérifier la limite plan pour nouveau produit
   if(!id){
     const cfg = PLAN_CONFIG[currentPlan]
     if(cfg.maxProducts < 9999 && totalProductCount >= cfg.maxProducts) {
-      showToast(`Limite atteinte pour le plan ${cfg.label}.`, 'error')
-      return
+      showToast(`Limite atteinte pour le plan ${cfg.label}.`, 'error'); return
     }
   }
-
   const btn=document.getElementById('modal-submit-btn')
   btn.disabled=true; btn.textContent='Enregistrement…'
 
   const maxPh = getMaxPhotos()
-  const imgs=prodImages.filter((img,i)=>img && i<maxPh)
-  const imageUrl=imgs.length>1?JSON.stringify(imgs):(imgs[0]||null)
-  const imagesArr=imgs.length?imgs:null
-  const carac=caracList.filter(c=>c.k&&c.v)
+  const imgs = prodImages.filter((img,i) => img && i < maxPh)
 
+  // ✅ FIX PRINCIPAL — image_url = toujours la 1ère URL (jamais JSON stringifié)
+  const imageUrl = imgs[0] || null
+  // images = tableau complet pour le multi-photo
+  const imagesArr = imgs.length ? imgs : null
+
+  const carac=caracList.filter(c=>c.k&&c.v)
   const payload={
     name, price,
     description: document.getElementById('product-description').value.trim()||null,
@@ -1439,8 +1161,8 @@ async function saveProduct(){
     status:      document.getElementById('product-status').value,
     category_id: document.getElementById('product-category').value||null,
     seller_id:   currentSeller.id,
-    image_url:   imageUrl,
-    images:      imagesArr,
+    image_url:   imageUrl,   // ✅ URL directe uniquement
+    images:      imagesArr,  // ✅ Tableau complet dans la colonne dédiée
     brand:       document.getElementById('product-brand').value.trim()||null,
     sku:         document.getElementById('product-sku').value.trim()||null,
     compare_price: parseFloat(document.getElementById('product-compare-price').value)||null,
@@ -1473,7 +1195,6 @@ async function confirmDelete(){
   else{ showToast('Produit supprimé','default'); loadProducts(); loadOverview() }
 }
 
-// ── ORDERS ──
 async function loadOrders(){
   const db=getDb(); if(!currentSeller) return
   const productIds=await getMyProductIds()
@@ -1529,7 +1250,6 @@ async function updateOrderStatus(){
   else{ showToast('Statut mis à jour','success'); closeOrderModal(); loadOrders() }
 }
 
-// ── REVENUE ──
 async function loadRevenue(){
   const db=getDb(); if(!currentSeller) return
   const productIds=await getMyProductIds()
@@ -1562,7 +1282,6 @@ async function loadRevenue(){
     </tr>`).join('')
 }
 
-// ── REVIEWS ──
 async function loadReviews(){
   const db=getDb(); if(!currentSeller) return
   const productIds=await getMyProductIds()
@@ -1583,10 +1302,7 @@ async function loadReviews(){
   list.innerHTML=all.map(r=>`
     <div style="padding:18px 22px;border-bottom:1px solid var(--border);">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:6px;">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div style="display:flex;gap:2px;">${starsHtml(r.rating)}</div>
-          <span style="font-size:13px;font-weight:600;">${r.reviewer_name||'Anonyme'}</span>
-        </div>
+        <div style="display:flex;align-items:center;gap:8px;"><div style="display:flex;gap:2px;">${starsHtml(r.rating)}</div><span style="font-size:13px;font-weight:600;">${r.reviewer_name||'Anonyme'}</span></div>
         <div style="display:flex;align-items:center;gap:10px;">${statusBadge(r.status)}<span style="font-size:11px;color:#555;">${fmtDate(r.created_at)}</span></div>
       </div>
       ${r.products?.name?`<p style="font-size:11px;color:#555;letter-spacing:1px;margin-bottom:4px;">Produit : <span style="color:#888;">${r.products.name}</span></p>`:''}
@@ -1594,7 +1310,6 @@ async function loadReviews(){
     </div>`).join('')
 }
 
-// ── PROFILE ──
 function loadProfileSection(){
   if(!currentSeller) return
   const u=currentSeller
@@ -1628,7 +1343,6 @@ async function resetPassword(){
   else showToast('Email de réinitialisation envoyé !','success')
 }
 
-// ── MODALS BACKDROP ──
 document.getElementById('modal-overlay').addEventListener('click',function(e){ if(e.target===this) closeProductModal() })
 document.getElementById('order-modal-overlay').addEventListener('click',function(e){ if(e.target===this) closeOrderModal() })
 document.getElementById('delete-modal-overlay').addEventListener('click',function(e){ if(e.target===this) closeDeleteModal() })
