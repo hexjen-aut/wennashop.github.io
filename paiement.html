@@ -1,911 +1,663 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>WennaShop – Paiement Sécurisé</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    :root{--fire:#FF6B2B;--ember:#E85A1A;--ink:#080808;--coal:#111111;--slate:#1A1A1A;--smoke:#242424;--fog:#888;--snow:#f0ece6;--border:rgba(255,255,255,.07);--border-fire:rgba(255,107,43,.25);}
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    html{scroll-behavior:smooth;}
-    body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);min-height:100dvh;padding-bottom:100px;}
-    .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24;font-size:20px;line-height:1;}
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>WennaShop — Paiement</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --fire: #FF6B2B;
+  --ember: #E85A1A;
+  --ink: #080808;
+  --coal: #111111;
+  --slate: #1A1A1A;
+  --smoke: #242424;
+  --fog: #888;
+  --snow: #f0ece6;
+  --fire-dim: rgba(255,107,43,0.10);
+  --fire-border: rgba(255,107,43,0.25);
+  --success: #22c55e;
+  --success-dim: rgba(34,197,94,0.10);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);min-height:100vh;overflow-x:hidden;cursor:none;padding-top:64px;padding-bottom:80px}
 
-    /* HEADER */
-    .hd{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(8,8,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;}
-    .hd-back{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--fog);background:none;border:none;cursor:pointer;transition:color .2s;font-family:'DM Sans',sans-serif;}
-    .hd-back:hover{color:var(--snow);}
-    .hd-logo{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;font-style:italic;color:var(--snow);}
-    .hd-logo b{color:var(--fire);}
-    .hd-secure{display:flex;align-items:center;gap:6px;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--fire);}
+/* CURSEUR */
+.cur{position:fixed;width:10px;height:10px;background:var(--fire);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s}
+.cur-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(255,107,43,.45);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .3s,height .3s}
 
-    /* STEPS */
-    .steps{padding:88px 32px 0;max-width:960px;margin:0 auto;display:flex;align-items:center;gap:0;padding-bottom:32px;}
-    .step-item{display:flex;flex-direction:column;align-items:center;}
-    .step-circle{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
-    .step-circle.done{background:var(--fire);color:#fff;}
-    .step-circle.active{background:var(--fire);color:#fff;box-shadow:0 0 0 4px rgba(255,107,43,.2);}
-    .step-circle.idle{background:var(--slate);color:#555;border:1px solid var(--border);}
-    .step-label{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;margin-top:6px;white-space:nowrap;}
-    .step-label.active,.step-label.done{color:var(--fire);}
-    .step-label.idle{color:#444;}
-    .step-line{flex:1;height:1px;background:var(--border);margin-bottom:18px;}
-    .step-line.done{background:var(--fire);}
+/* ICONS */
+.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24;font-size:20px;line-height:1;vertical-align:middle}
 
-    /* MAIN LAYOUT */
-    .main{padding:0 24px;max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:24px;}
-    @media(min-width:1024px){.main{flex-direction:row;gap:28px;align-items:flex-start;}}
+/* HEADER */
+.hd{position:fixed;top:0;left:0;right:0;z-index:100;height:64px;padding:0 48px;display:flex;align-items:center;justify-content:space-between;background:rgba(8,8,8,.94);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,107,43,.12)}
+.logo{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;font-style:italic;color:var(--snow);text-decoration:none;letter-spacing:-.5px}
+.logo b{color:var(--fire)}
+.hd-back{background:none;border:none;color:var(--fog);cursor:none;display:flex;align-items:center;gap:8px;font-size:10px;letter-spacing:2px;text-transform:uppercase;transition:color .2s;text-decoration:none;font-family:'DM Sans',sans-serif}
+.hd-back:hover{color:var(--fire)}
 
-    /* CARDS */
-    .card{background:var(--slate);padding:28px;}
-    .card+.card{margin-top:2px;}
-    .card-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;font-style:italic;margin-bottom:22px;}
+/* STEPS */
+.steps-bar{display:flex;align-items:center;justify-content:center;gap:0;padding:28px 20px 0;max-width:600px;margin:0 auto}
+.step{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1}
+.step-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;letter-spacing:1px;transition:all .3s}
+.step-num.done{background:var(--fire);color:#fff}
+.step-num.active{background:var(--fire);color:#fff;box-shadow:0 0 16px rgba(255,107,43,.35)}
+.step-num.pending{background:var(--slate);color:var(--fog);border:1px solid rgba(255,255,255,.08)}
+.step-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--fog);white-space:nowrap}
+.step-label.active{color:var(--snow)}
+.step-line{flex:1;height:1px;background:rgba(255,255,255,.06);margin-bottom:22px;max-width:80px}
+.step-line.done{background:var(--fire)}
 
-    /* EYEBROW */
-    .eyebrow{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--fire);}
+/* TOAST */
+#toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-8px);z-index:500;background:var(--slate);border:1px solid var(--fire-border);color:var(--snow);padding:12px 24px;font-size:12px;letter-spacing:.5px;opacity:0;pointer-events:none;transition:all .3s;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.success{border-color:rgba(34,197,94,.3);background:#0d1f11}
 
-    /* SHIPPING RECAP */
-    .shipping-recap{display:flex;justify-content:space-between;align-items:flex-start;}
-    .shipping-info .name{font-size:14px;font-weight:600;margin-top:4px;}
-    .shipping-info .addr{font-size:12px;color:#666;margin-top:3px;}
-    .btn-link{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--fire);background:none;border:none;border-bottom:1px solid var(--border-fire);padding-bottom:2px;cursor:pointer;transition:border-color .2s;font-family:'DM Sans',sans-serif;}
-    .btn-link:hover{border-color:var(--fire);}
+/* LAYOUT */
+.pay-layout{display:flex;gap:40px;padding:32px 48px;max-width:1080px;margin:0 auto;align-items:flex-start}
+.pay-main{flex:1;min-width:0}
+.pay-aside{width:340px;flex-shrink:0;position:sticky;top:84px}
 
-    /* PAYMENT METHOD PILLS */
-    .method-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:24px;}
-    .method-pill{cursor:pointer;transition:all .2s;border:1px solid var(--border);background:rgba(255,255,255,.03);padding:14px;display:flex;flex-direction:column;align-items:center;gap:8px;font-family:'DM Sans',sans-serif;}
-    .method-pill:hover{border-color:var(--border-fire);}
-    .method-pill.active{border-color:var(--fire);background:rgba(255,107,43,.08);}
-    .method-pill span.lbl{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;}
-    .method-pill.active span.lbl{color:var(--fire);}
-    .method-pill:not(.active) span.lbl{color:#666;}
+/* EYEBROW / TITLE */
+.eyebrow{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--fire);margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.eyebrow::before{content:'';display:block;width:20px;height:1px;background:var(--fire)}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,42px);font-weight:700;font-style:italic;letter-spacing:-1px;margin-bottom:28px;line-height:1}
 
-    /* PANELS PAIEMENT */
-    .pay-panel{display:none;}
-    .pay-panel.active{display:block;}
+/* CARD SECTION */
+.card{background:var(--coal);border:1px solid rgba(255,255,255,.06);padding:24px;margin-bottom:20px}
+.card-title{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--fog);margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.card-title::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.05)}
 
-    /* CARD NETWORKS */
-    .card-networks{display:flex;gap:8px;margin-bottom:20px;}
-    .net-btn{flex:1;border:1px solid var(--border);background:rgba(255,255,255,.03);padding:10px 12px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
-    .net-btn:hover{border-color:var(--border-fire);}
-    .net-btn.selected{border-color:var(--fire);background:rgba(255,107,43,.08);}
-    .net-btn span{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#888;}
-    .net-btn.selected span{color:var(--fire);}
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-grid.full{grid-template-columns:1fr}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--fog)}
+.field input, .field select, .field textarea{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:var(--snow);padding:11px 14px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;width:100%}
+.field input::placeholder,.field textarea::placeholder{color:#333}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--fire-border)}
+.field select{cursor:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+.field select option{background:var(--coal)}
+.field textarea{resize:vertical;min-height:72px}
 
-    /* CARD PREVIEW */
-    .card-preview{background:linear-gradient(135deg,#1a1a1a 0%,#2a1a0a 50%,var(--slate) 100%);border:1px solid var(--border-fire);padding:24px;margin-bottom:24px;position:relative;overflow:hidden;}
-    .card-preview::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,107,43,.06);}
-    .card-preview::after{content:'';position:absolute;bottom:-50px;left:-20px;width:200px;height:200px;border-radius:50%;background:rgba(255,107,43,.04);}
-    .cp-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;position:relative;z-index:1;}
-    .cp-brand{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;font-style:italic;color:var(--snow);}
-    .cp-sub{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#666;margin-bottom:4px;}
-    .cp-num{font-size:14px;letter-spacing:.25em;font-family:monospace;color:var(--snow);margin-bottom:18px;position:relative;z-index:1;}
-    .cp-bottom{display:flex;justify-content:space-between;position:relative;z-index:1;}
-    .cp-label{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#666;margin-bottom:3px;}
-    .cp-val{font-size:13px;font-weight:500;color:var(--snow);}
-    .mc-icon{display:flex;align-items:center;}
-    .mc-circle{width:22px;height:22px;border-radius:50%;}
+/* PAYMENT METHODS */
+.methods-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.method-card{border:1px solid rgba(255,255,255,.08);padding:16px 18px;cursor:none;transition:all .2s;display:flex;flex-direction:column;gap:8px;background:var(--slate);position:relative}
+.method-card:hover{border-color:rgba(255,107,43,.3)}
+.method-card.selected{border-color:var(--fire);background:var(--fire-dim)}
+.method-card.selected::before{content:'';position:absolute;top:10px;right:10px;width:8px;height:8px;background:var(--fire);border-radius:50%}
+.method-name{font-size:12px;font-weight:500;letter-spacing:.5px}
+.method-sub{font-size:10px;color:var(--fog)}
+.method-badge{display:inline-block;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;padding:2px 6px;background:var(--fire-dim);color:var(--fire);border:1px solid var(--fire-border)}
 
-    /* FORM FIELDS */
-    .field-group{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
-    .field-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#555;}
-    .field-input{width:100%;background:rgba(255,255,255,.04);border:none;border-bottom:1px solid var(--border);color:var(--snow);padding:12px 14px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
-    .field-input:focus{border-bottom-color:var(--fire);}
-    .field-input::placeholder{color:#333;}
-    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+/* ORDER SUMMARY */
+.summary-card{background:var(--coal);border:1px solid rgba(255,255,255,.06);padding:28px}
+.summary-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-style:italic;font-weight:700;margin-bottom:20px}
+.order-items{display:flex;flex-direction:column;gap:14px;margin-bottom:20px}
+.order-item{display:flex;gap:12px;align-items:flex-start}
+.order-item img{width:52px;height:64px;object-fit:cover;flex-shrink:0;background:var(--slate)}
+.order-item-info{flex:1}
+.order-item-name{font-size:13px;font-weight:500;line-height:1.3;margin-bottom:3px}
+.order-item-qty{font-size:10px;color:var(--fog)}
+.order-item-price{font-size:13px;font-weight:600;color:var(--fire);white-space:nowrap}
+.sum-divider{height:1px;background:rgba(255,255,255,.05);margin:16px 0}
+.sum-line{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:12px}
+.sum-line .lbl{color:var(--fog);letter-spacing:1px;text-transform:uppercase;font-size:10px}
+.sum-total-lbl{font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic}
+.sum-total-val{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;color:var(--fire)}
 
-    /* SAVE CARD */
-    .save-row{display:flex;align-items:center;gap:12px;padding:14px;background:rgba(255,255,255,.03);border:1px solid var(--border);margin-top:16px;}
-    .save-row input{accent-color:var(--fire);width:14px;height:14px;cursor:pointer;}
-    .save-row label{font-size:12px;color:#888;cursor:pointer;}
+/* SECURITY BADGES */
+.sec-badges{display:flex;gap:16px;margin-top:16px;flex-wrap:wrap}
+.sec-badge{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#444;display:flex;align-items:center;gap:4px}
 
-    /* MOBILE MONEY PANEL */
-    .mm-info{background:rgba(255,107,43,.06);border:1px solid var(--border-fire);padding:20px;margin-bottom:20px;}
-    .mm-info-title{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--fire);margin-bottom:8px;}
-    .mm-info-text{font-size:12px;color:#888;line-height:1.7;}
-    .mm-operators{display:flex;gap:10px;margin-bottom:20px;}
-    .mm-op{flex:1;border:1px solid var(--border);padding:14px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.03);}
-    .mm-op:hover{border-color:var(--border-fire);}
-    .mm-op.active{border-color:var(--fire);background:rgba(255,107,43,.08);}
-    .mm-op-name{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#666;}
-    .mm-op.active .mm-op-name{color:var(--fire);}
-    .mm-op-badge{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;letter-spacing:1px;}
+/* BTNS */
+.btn-fire{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--fire);color:#fff;padding:16px 28px;font-size:10px;font-weight:500;letter-spacing:3px;text-transform:uppercase;border:none;cursor:none;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));transition:background .2s,transform .15s;font-family:'DM Sans',sans-serif;width:100%;margin-top:20px}
+.btn-fire:hover:not(:disabled){background:var(--ember);transform:translateY(-1px)}
+.btn-fire:disabled{opacity:.35;cursor:not-allowed}
+.btn-ghost{display:flex;align-items:center;justify-content:center;gap:8px;background:transparent;color:var(--fog);padding:13px;font-size:10px;letter-spacing:2px;text-transform:uppercase;border:1px solid rgba(255,255,255,.08);cursor:none;transition:all .2s;font-family:'DM Sans',sans-serif;width:100%;margin-top:8px}
+.btn-ghost:hover{border-color:var(--fire-border);color:var(--fire)}
 
-    /* ACCORDION */
-    .acc-trigger{width:100%;display:flex;justify-content:space-between;align-items:center;background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;}
-    .acc-trigger-left{display:flex;align-items:center;gap:12px;}
-    .acc-trigger-left span:first-child{color:var(--fire);}
-    .acc-label{font-size:12px;font-weight:600;color:var(--snow);}
-    .acc-arrow{transition:transform .3s;color:#555;}
-    .acc-arrow.open{transform:rotate(180deg);}
-    .acc-body{max-height:0;overflow:hidden;transition:max-height .4s ease;}
-    .acc-body.open{max-height:600px;}
-    .promo-row{display:flex;gap:10px;padding-top:18px;}
-    .btn-apply{background:var(--fire);color:#fff;border:none;padding:12px 22px;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:background .2s;flex-shrink:0;font-family:'DM Sans',sans-serif;clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));}
-    .btn-apply:hover{background:var(--ember);}
+/* SPINNER */
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.15);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-    /* RECAP SIDEBAR */
-    .recap-sidebar{width:100%;}
-    @media(min-width:1024px){.recap-sidebar{width:320px;flex-shrink:0;position:sticky;top:90px;}}
-    .recap-items{display:flex;flex-direction:column;gap:14px;margin-bottom:20px;}
-    .recap-item{display:flex;align-items:center;gap:12px;}
-    .recap-thumb{width:52px;height:52px;flex-shrink:0;overflow:hidden;position:relative;background:var(--smoke);}
-    .recap-thumb img{width:100%;height:100%;object-fit:cover;}
-    .recap-qty{position:absolute;top:-5px;right:-5px;width:18px;height:18px;background:var(--fire);color:#fff;font-size:9px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
-    .recap-name{font-size:12px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-    .recap-unit{font-size:10px;color:#555;margin-top:2px;}
-    .recap-price{font-size:14px;font-weight:700;color:var(--fire);flex-shrink:0;}
-    .divider{height:1px;background:var(--border);margin:18px 0;}
-    .total-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#666;margin-bottom:8px;}
-    .total-row.main{font-size:18px;color:var(--snow);font-weight:600;margin-top:10px;padding-top:12px;border-top:1px solid var(--border);}
-    .total-row.main .label{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;}
-    .total-row.main .value{font-size:22px;font-weight:700;color:var(--fire);}
-    .total-row.promo{color:var(--fire);font-weight:700;}
+/* SUCCESS STATE */
+#state-success{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center;padding:40px}
+.success-ring{width:80px;height:80px;border-radius:50%;background:var(--success-dim);border:1px solid rgba(34,197,94,.25);display:flex;align-items:center;justify-content:center;margin:0 auto 24px}
+.success-ring .material-symbols-outlined{font-size:36px;color:var(--success);font-variation-settings:'FILL' 1,'wght' 300,'GRAD' 0,'opsz' 40}
+.success-title{font-family:'Cormorant Garamond',serif;font-size:48px;font-style:italic;font-weight:700;margin-bottom:8px}
+.success-sub{font-size:13px;color:var(--fog);margin-bottom:32px;line-height:1.6}
+.success-order-id{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--fire);margin-bottom:28px;padding:10px 20px;border:1px solid var(--fire-border);display:inline-block}
 
-    /* PAY BUTTON */
-    .btn-pay{width:100%;padding:18px;background:var(--fire);color:#fff;border:none;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:background .2s,transform .2s;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:16px;font-family:'DM Sans',sans-serif;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));position:relative;overflow:hidden;}
-    .btn-pay:hover{background:var(--ember);transform:translateY(-1px);}
-    .btn-pay:active{transform:scale(.98);}
-    .btn-pay:disabled{opacity:.5;pointer-events:none;}
-    .btn-pay .ripple-el{position:absolute;border-radius:50%;background:rgba(255,255,255,.25);width:100px;height:100px;margin-top:-50px;margin-left:-50px;animation:ripple .6s linear;pointer-events:none;}
-    @keyframes ripple{0%{transform:scale(0);opacity:.4;}100%{transform:scale(4);opacity:0;}}
-    @keyframes spin2{to{transform:rotate(360deg);}}
+/* ERROR STATE */
+#state-error{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center;padding:40px}
 
-    /* TRUST */
-    .trust-list{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
-    .trust-item{display:flex;align-items:center;gap:8px;font-size:10px;color:#555;}
-    .trust-item .material-symbols-outlined{font-size:14px;color:var(--fire);}
+/* SKELETON */
+.skel{background:linear-gradient(90deg,#1a1a1a 25%,#222 50%,#1a1a1a 75%);background-size:200% 100%;animation:shim 1.5s infinite}
+@keyframes shim{0%{background-position:200% 0}100%{background-position:-200% 0}}
+#state-loading{padding:40px 48px;max-width:1080px;margin:0 auto;display:flex;gap:40px}
 
-    /* LOGOS */
-    .logos{padding-top:16px;border-top:1px solid var(--border);}
-    .logos-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#444;text-align:center;margin-bottom:10px;}
-    .logos-row{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;}
+/* BOTTOM NAV */
+.bnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(8,8,8,.95);backdrop-filter:blur(20px);border-top:1px solid rgba(255,107,43,.15);padding:10px 0 22px}
+.bnav-inner{display:flex;justify-content:space-around}
+.bnav-item{display:flex;flex-direction:column;align-items:center;gap:4px;color:#555;text-decoration:none;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;transition:color .2s;cursor:none}
+.bnav-item:hover{color:var(--fire)}
 
-    /* SUCCESS OVERLAY */
-    .success-overlay{display:none;position:fixed;inset:0;background:rgba(8,8,8,.97);z-index:100;align-items:center;justify-content:center;flex-direction:column;animation:slideUp .5s ease forwards;}
-    .success-overlay.show{display:flex;}
-    @keyframes slideUp{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
-    .check-icon{animation:checkBounce .6s cubic-bezier(.22,1,.36,1) .2s both;}
-    @keyframes checkBounce{0%{transform:scale(0);}50%{transform:scale(1.3);}100%{transform:scale(1);}}
-    .success-inner{text-align:center;padding:40px 32px;max-width:440px;width:100%;}
-    .success-check{width:88px;height:88px;background:rgba(255,107,43,.1);border:1px solid var(--border-fire);display:flex;align-items:center;justify-content:center;border-radius:50%;margin:0 auto 24px;}
-    .success-title{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:700;font-style:italic;color:var(--fire);margin-bottom:10px;}
-    .success-sub{font-size:13px;color:#888;line-height:1.6;margin-bottom:6px;}
-    .success-track{background:var(--slate);border:1px solid var(--border);padding:22px;text-align:left;margin:22px 0;}
-    .track-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#555;margin-bottom:16px;}
-    .track-step{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
-    .track-dot{width:24px;height:24px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-    .track-dot.done{background:var(--fire);}
-    .track-dot.idle{background:var(--slate);border:1px solid var(--border);}
-    .track-dot .material-symbols-outlined{font-size:12px;}
-    .track-vline{width:1px;height:14px;background:var(--border);margin-left:11px;margin-bottom:4px;}
-    .track-step-name{font-size:12px;font-weight:600;}
-    .track-step-time{font-size:10px;color:#555;margin-top:1px;}
-    .success-btns{display:flex;flex-direction:column;gap:10px;}
-    .btn-success-primary{width:100%;padding:15px;background:var(--fire);color:#fff;border:none;font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:background .2s;font-family:'DM Sans',sans-serif;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));}
-    .btn-success-primary:hover{background:var(--ember);}
-    .btn-success-ghost{width:100%;padding:14px;background:transparent;border:1px solid var(--border);color:#888;font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
-    .btn-success-ghost:hover{border-color:var(--border-fire);color:var(--fire);}
-
-    /* SINGPAY REDIRECT */
-    .singpay-redirect{display:none;position:fixed;inset:0;background:rgba(8,8,8,.97);z-index:100;align-items:center;justify-content:center;flex-direction:column;gap:24px;}
-    .singpay-redirect.show{display:flex;}
-    .sp-logo{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;font-style:italic;color:var(--snow);}
-    .sp-logo b{color:var(--fire);}
-    .sp-msg{font-size:13px;color:#888;text-align:center;max-width:320px;line-height:1.7;}
-    .sp-spinner{width:48px;height:48px;border:3px solid rgba(255,107,43,.2);border-top-color:var(--fire);border-radius:50%;animation:spin2 .8s linear infinite;}
-
-    /* BOTTOM NAV */
-    .bnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:40;background:rgba(8,8,8,.95);backdrop-filter:blur(20px);border-top:1px solid var(--border-fire);padding:10px 0 22px;}
-    .bnav-inner{display:flex;justify-content:space-around;}
-    .bnav-item{display:flex;flex-direction:column;align-items:center;gap:4px;color:#555;text-decoration:none;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;transition:color .2s;}
-    .bnav-item:hover{color:var(--fire);}
-
-    /* ANIM */
-    @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
-    .anim-up{animation:fadeUp .6s cubic-bezier(.22,1,.36,1) forwards;opacity:0;}
-    .d-100{animation-delay:.1s;}.d-200{animation-delay:.2s;}.d-300{animation-delay:.3s;}.d-400{animation-delay:.4s;}
-
-    @media(max-width:768px){
-      .hd{padding:14px 20px;}
-      .steps{padding:80px 16px 0;padding-bottom:24px;}
-      .main{padding:0 16px;}
-      .card{padding:20px;}
-      .bnav{display:block;}
-    }
-  </style>
+@media(max-width:768px){
+  body{cursor:auto}
+  .cur,.cur-ring{display:none}
+  .hd{padding:0 20px}
+  .pay-layout{flex-direction:column;padding:20px 16px;gap:20px}
+  .pay-aside{width:100%;position:static}
+  .form-grid{grid-template-columns:1fr}
+  .methods-grid{grid-template-columns:1fr}
+  .bnav{display:block}
+  #state-loading{flex-direction:column;padding:20px 16px}
+}
+</style>
 </head>
 <body>
 
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="curRing"></div>
+<div id="toast"></div>
+
 <!-- HEADER -->
 <header class="hd">
-  <button class="hd-back" onclick="history.back()">
-    <span class="material-symbols-outlined">arrow_back</span>Retour
-  </button>
-  <div class="hd-logo">Wenna<b>Shop</b></div>
-  <div class="hd-secure">
-    <span class="material-symbols-outlined" style="font-size:14px;">lock</span>Sécurisé
-  </div>
+  <a href="panier.html" class="hd-back">
+    <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
+    Panier
+  </a>
+  <a href="/" class="logo">Wenna<b>Shop</b></a>
+  <div style="width:80px"></div>
 </header>
 
 <!-- STEPS -->
-<div class="steps anim-up">
-  <div class="step-item">
-    <div class="step-circle done"><span class="material-symbols-outlined" style="font-size:13px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">check</span></div>
-    <span class="step-label done">Panier</span>
+<div class="steps-bar">
+  <div class="step">
+    <div class="step-num done">1</div>
+    <span class="step-label">Panier</span>
   </div>
   <div class="step-line done"></div>
-  <div class="step-item">
-    <div class="step-circle done"><span class="material-symbols-outlined" style="font-size:13px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">check</span></div>
-    <span class="step-label done">Livraison</span>
-  </div>
-  <div class="step-line done"></div>
-  <div class="step-item">
-    <div class="step-circle active">3</div>
-    <span class="step-label active">Paiement</span>
+  <div class="step">
+    <div class="step-num active">2</div>
+    <span class="step-label active">Livraison</span>
   </div>
   <div class="step-line"></div>
-  <div class="step-item">
-    <div class="step-circle idle">4</div>
-    <span class="step-label idle">Confirmation</span>
+  <div class="step">
+    <div class="step-num pending">3</div>
+    <span class="step-label">Confirmation</span>
   </div>
 </div>
 
-<main class="main">
-
-  <!-- LEFT -->
-  <div style="flex:1;display:flex;flex-direction:column;gap:2px;">
-
-    <!-- Adresse recap -->
-    <div class="card anim-up d-100" id="shipping-recap">
-      <div class="shipping-recap">
-        <div class="shipping-info">
-          <div class="eyebrow">Livraison à</div>
-          <div class="name" id="shipping-name">—</div>
-          <div class="addr" id="shipping-address">—</div>
-        </div>
-        <button class="btn-link" onclick="history.back()">Modifier</button>
-      </div>
-    </div>
-
-    <!-- Méthode paiement -->
-    <div class="card anim-up d-200">
-      <div class="card-title">Méthode de Paiement</div>
-
-      <div class="method-grid">
-        <button class="method-pill active" onclick="selectMethod(this,'card')">
-          <span class="material-symbols-outlined" style="color:var(--fire)">credit_card</span>
-          <span class="lbl">Carte</span>
-        </button>
-        <button class="method-pill" onclick="selectMethod(this,'mobile_money')">
-          <span class="material-symbols-outlined">phone_iphone</span>
-          <span class="lbl">Mobile Money</span>
-        </button>
-        <button class="method-pill" onclick="selectMethod(this,'transfer')">
-          <span class="material-symbols-outlined">account_balance</span>
-          <span class="lbl">Virement</span>
-        </button>
-      </div>
-
-      <!-- PANEL CARTE -->
-      <div class="pay-panel active" id="panel-card">
-        <!-- Card Preview -->
-        <div class="card-preview">
-          <div class="cp-top">
-            <div>
-              <div class="cp-sub">WennaShop</div>
-              <div class="cp-brand">Carte Premium</div>
-            </div>
-            <div class="mc-icon">
-              <div class="mc-circle" style="background:#FF6B2B;opacity:.8;margin-right:-8px;"></div>
-              <div class="mc-circle" style="background:#E85A1A;opacity:.6;"></div>
-            </div>
-          </div>
-          <div class="cp-num" id="cardNumDisplay">•••• •••• •••• ••••</div>
-          <div class="cp-bottom">
-            <div>
-              <div class="cp-label">Titulaire</div>
-              <div class="cp-val" id="cardNameDisplay">VOTRE NOM</div>
-            </div>
-            <div>
-              <div class="cp-label">Expire</div>
-              <div class="cp-val" id="cardExpDisplay">MM/AA</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Réseaux -->
-        <div class="card-networks">
-          <button class="net-btn selected" onclick="selectCard(this)">
-            <div style="display:flex;align-items:center;margin-right:-4px;">
-              <div style="width:22px;height:14px;border-radius:2px;background:#f0c110;"></div>
-              <div style="width:22px;height:14px;border-radius:2px;background:#ef4444;opacity:.8;margin-left:-6px;"></div>
-            </div>
-            <span>Mastercard</span>
-          </button>
-          <button class="net-btn" onclick="selectCard(this)">
-            <div style="width:34px;height:14px;border-radius:2px;background:#1a3fa8;display:flex;align-items:center;justify-content:center;">
-              <span style="color:#fff;font-size:8px;font-weight:900;letter-spacing:1px;">VISA</span>
-            </div>
-            <span>Visa</span>
-          </button>
-          <button class="net-btn" onclick="selectCard(this)">
-            <div style="width:30px;height:14px;border-radius:2px;background:linear-gradient(90deg,#3b82f6,#22c55e);display:flex;align-items:center;justify-content:center;">
-              <span style="color:#fff;font-size:7px;font-weight:700;">CMI</span>
-            </div>
-            <span>CMI</span>
-          </button>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label">Numéro de carte</label>
-          <input class="field-input" type="text" placeholder="1234 5678 9012 3456" maxlength="19" id="cardNum" oninput="formatCard(this)"/>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Titulaire de la carte</label>
-          <input class="field-input" type="text" placeholder="NOM PRÉNOM" id="cardName" oninput="updateCardName(this)" style="text-transform:uppercase;"/>
-        </div>
-        <div class="grid-2">
-          <div class="field-group">
-            <label class="field-label">Expiration</label>
-            <input class="field-input" type="text" placeholder="MM / AA" maxlength="5" id="cardExp" oninput="formatExp(this)"/>
-          </div>
-          <div class="field-group">
-            <label class="field-label">CVV / CVC</label>
-            <input class="field-input" type="password" placeholder="•••" maxlength="4" id="cardCvv"/>
-          </div>
-        </div>
-        <div class="save-row">
-          <input type="checkbox" id="saveCard"/>
-          <label for="saveCard">Sauvegarder cette carte pour mes prochains achats</label>
-        </div>
-      </div>
-
-      <!-- PANEL MOBILE MONEY (SingPay) -->
-      <div class="pay-panel" id="panel-mobile_money">
-        <div class="mm-info">
-          <div class="mm-info-title">Paiement Mobile Money — SingPay</div>
-          <div class="mm-info-text">
-            Vous serez redirigé vers la page de paiement sécurisée SingPay.<br>
-            Choisissez votre opérateur et validez le push USSD sur votre téléphone.
-          </div>
-        </div>
-
-        <div class="mm-operators">
-          <button class="mm-op active" onclick="selectOperator(this,'airtel_money')">
-            <div class="mm-op-badge" style="background:#e8001a;">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="none" stroke="#fff" stroke-width="2"/><path d="M8 12l3 3 5-5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
-            </div>
-            <span class="mm-op-name">Airtel Money</span>
-          </button>
-          <button class="mm-op" onclick="selectOperator(this,'moov_money')">
-            <div class="mm-op-badge" style="background:#0066cc;">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="none" stroke="#fff" stroke-width="2"/><path d="M8 12l3 3 5-5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
-            </div>
-            <span class="mm-op-name">Moov Money</span>
-          </button>
-          <button class="mm-op" onclick="selectOperator(this,'mobile_money')">
-            <div class="mm-op-badge" style="background:#ff6b2b;">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="none" stroke="#fff" stroke-width="2"/><path d="M8 12h8M12 8v8" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
-            </div>
-            <span class="mm-op-name">Autre</span>
-          </button>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label">Numéro de téléphone (optionnel — pour USSD Push)</label>
-          <input class="field-input" type="tel" placeholder="+241 07 00 00 00" id="clientPhone"/>
-          <span style="font-size:10px;color:#555;margin-top:4px;">Laissez vide pour payer via le lien SingPay</span>
-        </div>
-      </div>
-
-      <!-- PANEL VIREMENT -->
-      <div class="pay-panel" id="panel-transfer">
-        <div class="mm-info">
-          <div class="mm-info-title">Virement Bancaire</div>
-          <div class="mm-info-text">
-            Votre commande sera réservée pendant 48h.<br>
-            Les coordonnées bancaires vous seront envoyées par email après confirmation.
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Code promo -->
-    <div class="card anim-up d-300">
-      <button class="acc-trigger" onclick="toggleAcc('promoAcc','promoArrow')">
-        <div class="acc-trigger-left">
-          <span class="material-symbols-outlined" style="color:var(--fire)">sell</span>
-          <span class="acc-label">Code promotionnel</span>
-        </div>
-        <span class="material-symbols-outlined acc-arrow" id="promoArrow">expand_more</span>
-      </button>
-      <div class="acc-body" id="promoAcc">
-        <div class="promo-row">
-          <input class="field-input" type="text" placeholder="Ex: WENNA15" id="promoInput" style="flex:1;"/>
-          <button onclick="applyPromo()" class="btn-apply">Appliquer</button>
-        </div>
-        <div id="promoFeedback"></div>
-      </div>
-    </div>
-
-    <!-- Note -->
-    <div class="card anim-up d-400">
-      <button class="acc-trigger" onclick="toggleAcc('noteAcc','noteArrow')">
-        <div class="acc-trigger-left">
-          <span class="material-symbols-outlined" style="color:#78b0fe">edit_note</span>
-          <span class="acc-label">Ajouter une note</span>
-        </div>
-        <span class="material-symbols-outlined acc-arrow" id="noteArrow">expand_more</span>
-      </button>
-      <div class="acc-body" id="noteAcc">
-        <div style="padding-top:18px;">
-          <textarea class="field-input" rows="3" id="orderNote" placeholder="Instructions spéciales, message cadeau..." style="resize:none;"></textarea>
-        </div>
-      </div>
-    </div>
+<!-- LOADING -->
+<div id="state-loading" style="display:none;">
+  <div style="flex:1;display:flex;flex-direction:column;gap:16px;">
+    <div class="skel" style="height:180px;width:100%;"></div>
+    <div class="skel" style="height:220px;width:100%;"></div>
   </div>
-
-  <!-- RIGHT — Récapitulatif -->
-  <div class="recap-sidebar anim-up d-200">
-    <div class="card" style="position:sticky;top:90px;">
-      <div class="card-title">Récapitulatif</div>
-      <div class="recap-items" id="order-items"></div>
-      <div class="divider"></div>
-      <div class="total-row">
-        <span>Sous-total</span>
-        <span id="recap-subtotal">—</span>
-      </div>
-      <div class="total-row">
-        <span>Livraison</span>
-        <span style="color:var(--fire);font-weight:600;">Incluse</span>
-      </div>
-      <div class="total-row promo" id="discountRow" style="display:none;">
-        <span>Remise promo</span>
-        <span id="discountAmt">—</span>
-      </div>
-      <div class="total-row main">
-        <span class="label">Total</span>
-        <span class="value" id="totalDisplay">—</span>
-      </div>
-      <div style="margin-top:22px;margin-bottom:0;">
-        <button class="btn-pay" id="payBtn" onclick="handlePay(this)">
-          <span class="material-symbols-outlined" style="font-size:17px;">lock</span>
-          Payer <span id="btn-total">—</span>
-        </button>
-      </div>
-      <div class="trust-list">
-        <div class="trust-item">
-          <span class="material-symbols-outlined">verified_user</span>
-          <span>Paiement SSL 256-bit · SingPay sécurisé</span>
-        </div>
-        <div class="trust-item">
-          <span class="material-symbols-outlined">autorenew</span>
-          <span>Remboursement garanti 30 jours</span>
-        </div>
-        <div class="trust-item">
-          <span class="material-symbols-outlined">support_agent</span>
-          <span>Support 7j/7 · 24h/24</span>
-        </div>
-      </div>
-      <div class="logos">
-        <div class="logos-label">Nous acceptons</div>
-        <div class="logos-row">
-          <!-- Mastercard -->
-          <div style="display:flex;align-items:center;">
-            <div style="width:28px;height:18px;border-radius:3px;background:#f0c110;margin-right:-6px;border:1px solid rgba(255,255,255,.1);"></div>
-            <div style="width:28px;height:18px;border-radius:3px;background:#ef4444;opacity:.9;border:1px solid rgba(255,255,255,.1);"></div>
-          </div>
-          <!-- Visa -->
-          <div style="width:42px;height:18px;border-radius:3px;background:#1a3fa8;display:flex;align-items:center;justify-content:center;">
-            <span style="color:#fff;font-size:8px;font-weight:900;letter-spacing:1px;">VISA</span>
-          </div>
-          <!-- SingPay -->
-          <div style="height:18px;border-radius:3px;background:var(--slate);border:1px solid var(--border-fire);padding:0 8px;display:flex;align-items:center;justify-content:center;">
-            <span style="color:var(--fire);font-size:8px;font-weight:900;letter-spacing:1px;">SINGPAY</span>
-          </div>
-          <!-- Airtel -->
-          <div style="height:18px;border-radius:3px;background:#e8001a;padding:0 8px;display:flex;align-items:center;justify-content:center;">
-            <span style="color:#fff;font-size:7px;font-weight:900;letter-spacing:1px;">AIRTEL</span>
-          </div>
-          <!-- Moov -->
-          <div style="height:18px;border-radius:3px;background:#0066cc;padding:0 8px;display:flex;align-items:center;justify-content:center;">
-            <span style="color:#fff;font-size:7px;font-weight:900;letter-spacing:1px;">MOOV</span>
-          </div>
-        </div>
-      </div>
-    </div>
+  <div style="width:340px;">
+    <div class="skel" style="height:400px;width:100%;"></div>
   </div>
-</main>
-
-<!-- SINGPAY REDIRECT OVERLAY -->
-<div class="singpay-redirect" id="singpayRedirect">
-  <div class="sp-spinner"></div>
-  <div class="sp-logo">Wenna<b>Shop</b></div>
-  <div class="sp-msg">Redirection vers SingPay en cours...<br>Vous allez être redirigé vers la page de paiement sécurisée.</div>
 </div>
 
-<!-- SUCCESS OVERLAY -->
-<div class="success-overlay" id="successOverlay">
-  <div class="success-inner">
-    <div class="success-check check-icon">
-      <span class="material-symbols-outlined" style="font-size:44px;color:var(--fire);font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">check_circle</span>
+<!-- ERROR STATE -->
+<div id="state-error" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center;padding:40px;">
+  <span class="material-symbols-outlined" style="font-size:48px;color:#333;margin-bottom:20px;">error_outline</span>
+  <h2 style="font-family:'Cormorant Garamond',serif;font-size:32px;font-style:italic;font-weight:700;margin-bottom:8px;">Commande introuvable</h2>
+  <p style="font-size:13px;color:var(--fog);margin-bottom:28px;" id="error-msg">Cette commande n'existe pas ou ne t'appartient pas.</p>
+  <a href="panier.html" class="btn-fire" style="width:auto;padding:14px 32px;">Retour au panier</a>
+</div>
+
+<!-- SUCCESS STATE -->
+<div id="state-success">
+  <div class="success-ring">
+    <span class="material-symbols-outlined">check_circle</span>
+  </div>
+  <h1 class="success-title">Commande confirmée !</h1>
+  <p class="success-sub">Merci pour ta commande.<br>Tu recevras une confirmation par email très bientôt.</p>
+  <div class="success-order-id" id="success-order-ref">— — —</div>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+    <a href="compte.html" class="btn-fire" style="width:auto;padding:14px 32px;">Voir mes commandes</a>
+    <a href="boutique.html" class="btn-ghost" style="width:auto;padding:13px 24px;">Continuer mes achats</a>
+  </div>
+</div>
+
+<!-- FORM PAIEMENT -->
+<div id="state-content" style="display:none;">
+  <div class="pay-layout">
+
+    <!-- COLONNE GAUCHE -->
+    <div class="pay-main">
+      <div class="eyebrow">Étape 2 sur 3</div>
+      <h1 class="section-title">Livraison &amp; Paiement</h1>
+
+      <!-- ADRESSE LIVRAISON -->
+      <div class="card">
+        <div class="card-title">Adresse de livraison</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Prénom *</label>
+            <input type="text" id="ship-first" placeholder="Ahmed" required/>
+          </div>
+          <div class="field">
+            <label>Nom *</label>
+            <input type="text" id="ship-last" placeholder="Benali" required/>
+          </div>
+        </div>
+        <div class="form-grid full" style="margin-top:14px;">
+          <div class="field">
+            <label>Adresse *</label>
+            <input type="text" id="ship-address" placeholder="123 Rue Mohammed V" required/>
+          </div>
+        </div>
+        <div class="form-grid" style="margin-top:14px;">
+          <div class="field">
+            <label>Ville *</label>
+            <input type="text" id="ship-city" placeholder="Casablanca" required/>
+          </div>
+          <div class="field">
+            <label>Pays *</label>
+            <select id="ship-country" required>
+              <option value="">Sélectionner…</option>
+              <option value="Maroc">Maroc</option>
+              <option value="Gabon">Gabon</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid full" style="margin-top:14px;">
+          <div class="field">
+            <label>Notes (optionnel)</label>
+            <textarea id="ship-notes" placeholder="Instructions de livraison, étage, digicode…"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- MÉTHODE DE PAIEMENT -->
+      <div class="card">
+        <div class="card-title">Méthode de paiement</div>
+        <div class="methods-grid" id="methods-grid">
+
+          <div class="method-card selected" data-method="card_maroc" onclick="selectMethod(this)">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <span class="method-name">Carte bancaire</span>
+              <span class="method-badge">Maroc</span>
+            </div>
+            <span class="method-sub">Visa · Mastercard · CMI</span>
+          </div>
+
+          <div class="method-card" data-method="mobile_money_gabon" onclick="selectMethod(this)">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <span class="method-name">Mobile Money</span>
+              <span class="method-badge">Gabon</span>
+            </div>
+            <span class="method-sub">Airtel Money · Moov Money</span>
+          </div>
+
+          <div class="method-card" data-method="virement" onclick="selectMethod(this)">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <span class="method-name">Virement bancaire</span>
+            </div>
+            <span class="method-sub">Attijari · CIH · BCP</span>
+          </div>
+
+          <div class="method-card" data-method="cash_on_delivery" onclick="selectMethod(this)">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <span class="method-name">Paiement à la livraison</span>
+            </div>
+            <span class="method-sub">Espèces à la réception</span>
+          </div>
+
+        </div>
+
+        <!-- Détails spécifiques selon méthode -->
+        <div id="method-details" style="margin-top:16px;"></div>
+      </div>
+
     </div>
-    <div class="success-title">Merci !</div>
-    <p class="success-sub">Votre commande <strong style="color:var(--snow);" id="order-ref">—</strong> est confirmée.</p>
-    <p class="success-sub" id="confirm-email" style="font-size:11px;margin-bottom:0;">Un email de confirmation vous sera envoyé.</p>
-    <div class="success-track">
-      <div class="track-label">Suivi estimé</div>
-      <div class="track-step">
-        <div class="track-dot done"><span class="material-symbols-outlined" style="color:#fff;font-size:11px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">check</span></div>
-        <div><div class="track-step-name">Commande confirmée</div><div class="track-step-time">Maintenant</div></div>
+
+    <!-- COLONNE DROITE — RÉCAPITULATIF -->
+    <div class="pay-aside">
+      <div class="summary-card">
+        <h2 class="summary-title">Récapitulatif</h2>
+
+        <div class="order-items" id="order-items-list"></div>
+
+        <div class="sum-divider"></div>
+
+        <div class="sum-line">
+          <span class="lbl">Sous-total</span>
+          <span id="r-subtotal">—</span>
+        </div>
+        <div class="sum-line" id="discount-line" style="display:none;">
+          <span class="lbl">Remise</span>
+          <span id="r-discount" style="color:var(--success)">—</span>
+        </div>
+        <div class="sum-line">
+          <span class="lbl">Livraison</span>
+          <span style="font-size:11px;color:var(--fire);">Calculée à l'expédition</span>
+        </div>
+
+        <div class="sum-divider"></div>
+
+        <div class="sum-line" style="align-items:flex-end;">
+          <span class="sum-total-lbl">Total</span>
+          <span class="sum-total-val" id="r-total">—</span>
+        </div>
+
+        <button id="btn-pay" class="btn-fire" onclick="submitPayment()">
+          <span class="material-symbols-outlined" style="font-size:16px;">lock</span>
+          Confirmer la commande
+        </button>
+        <a href="panier.html" class="btn-ghost">Modifier le panier</a>
+
+        <div class="sec-badges">
+          <span class="sec-badge"><span class="material-symbols-outlined" style="font-size:12px;">shield</span> SSL</span>
+          <span class="sec-badge"><span class="material-symbols-outlined" style="font-size:12px;">verified_user</span> Sécurisé</span>
+          <span class="sec-badge"><span class="material-symbols-outlined" style="font-size:12px;">autorenew</span> Remboursable</span>
+        </div>
       </div>
-      <div class="track-vline"></div>
-      <div class="track-step">
-        <div class="track-dot idle"><span class="material-symbols-outlined" style="color:#555;font-size:11px;">inventory_2</span></div>
-        <div><div class="track-step-name" style="color:#666;">En préparation</div><div class="track-step-time">1–2 jours</div></div>
-      </div>
-      <div class="track-vline"></div>
-      <div class="track-step">
-        <div class="track-dot idle"><span class="material-symbols-outlined" style="color:#555;font-size:11px;">local_shipping</span></div>
-        <div><div class="track-step-name" style="color:#666;">Livraison en route</div><div class="track-step-time">5–12 jours ouvrés</div></div>
-      </div>
-    </div>
-    <div class="success-btns">
-      <button onclick="window.location.href='index.html'" class="btn-success-primary">Continuer mes achats</button>
-      <button onclick="window.location.href='compte.html'" class="btn-success-ghost">Voir mes commandes</button>
     </div>
   </div>
 </div>
 
-<!-- BOTTOM NAV MOBILE -->
+<!-- BOTTOM NAV -->
 <nav class="bnav">
   <div class="bnav-inner">
-    <a href="index.html" class="bnav-item"><span class="material-symbols-outlined">home</span><span>Accueil</span></a>
-    <a href="boutique.html" class="bnav-item"><span class="material-symbols-outlined">storefront</span><span>Boutique</span></a>
-    <a href="dashboard-vendeur.html" class="bnav-item"><span class="material-symbols-outlined">add_circle</span><span>Vendre</span></a>
+    <a href="index.html" class="bnav-item"><span class="material-symbols-outlined">home</span><span>Home</span></a>
+    <a href="boutique.html" class="bnav-item"><span class="material-symbols-outlined">storefront</span><span>Shop</span></a>
+    <a href="dashboard-vendeur.html" class="bnav-item"><span class="material-symbols-outlined">add_circle</span><span>Sell</span></a>
     <a href="compte.html" class="bnav-item"><span class="material-symbols-outlined">person</span><span>Profil</span></a>
   </div>
 </nav>
 
 <script>
-  // ─── CONFIG ──────────────────────────────────────────────────────────────────
-  const SUPABASE_URL  = window.WENNA?.supabaseUrl || 'https://aakxoydznmybstfozjte.supabase.co'
-  const EDGE_FN_URL   = `${SUPABASE_URL}/functions/v1/process-payment`
-  const PROMO_CODES   = { 'WENNA15': 0.15 }
+const sb = window.db
 
-  // Devise selon méthode : MAD pour carte, XAF pour mobile money
-  const CURRENCY_CARD = 'MAD'
-  const CURRENCY_MM   = 'XAF'
-  // ─────────────────────────────────────────────────────────────────────────────
+// ── CURSEUR ───────────────────────────────────────────
+const cur = document.getElementById('cur'), crng = document.getElementById('curRing')
+let mx=0,my=0,rx=0,ry=0
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY})
+;(function anim(){
+  if(cur){cur.style.left=mx+'px';cur.style.top=my+'px'}
+  rx+=(mx-rx)*.12;ry+=(my-ry)*.12
+  if(crng){crng.style.left=rx+'px';crng.style.top=ry+'px'}
+  requestAnimationFrame(anim)
+})()
 
-  function getSb() { return window.db }
+// ── TOAST ─────────────────────────────────────────────
+function toast(msg, type='', ms=2800){
+  const t=document.getElementById('toast')
+  t.textContent=msg
+  t.className='show'+(type?' '+type:'')
+  setTimeout(()=>t.className='',ms)
+}
 
-  let cart           = []
-  let orderId        = null
-  let orderTotal     = 0
-  let promoDisc      = 0
-  let selectedMethod = 'card'
-  let selectedOp     = 'airtel_money'
-  let currentUserId  = null
+// ── STATE ─────────────────────────────────────────────
+function showState(id){
+  ['state-loading','state-content','state-success','state-error'].forEach(s=>{
+    const el=document.getElementById(s)
+    if(el) el.style.display='none'
+  })
+  const target=document.getElementById(id)
+  if(target) target.style.display=['state-success','state-error'].includes(id)?'flex':'block'
+  document.querySelector('.steps-bar').style.display=
+    ['state-success','state-error'].includes(id)?'none':'flex'
+}
 
-  const $ = id => document.getElementById(id)
-  const fmt = (n, cur) => new Intl.NumberFormat('fr-FR',{
-    style:'currency',
-    currency: cur || (selectedMethod === 'mobile_money' ? CURRENCY_MM : CURRENCY_CARD)
-  }).format(n)
+// ── FORMAT ────────────────────────────────────────────
+function fmt(amount,currency='MAD'){
+  const c=['MAD','USD','EUR','XAF'].includes(currency)?currency:'MAD'
+  try{return new Intl.NumberFormat('fr-MA',{style:'currency',currency:c,maximumFractionDigits:2}).format(amount)}
+  catch{return `${Number(amount).toFixed(2)} ${c}`}
+}
 
-  // ── Init ─────────────────────────────────────────────────────────────────────
-  async function init() {
-    const sb = getSb()
-    orderId = new URLSearchParams(location.search).get('order_id')
-           || localStorage.getItem('wenna_current_order_id')
+// ── GLOBALS ───────────────────────────────────────────
+let currentOrder = null
+let currentItems = []
+let currentUserId = null
+let selectedMethod = 'card_maroc'
 
-    // Vérifier si retour SingPay avec succès
-    const urlParams = new URLSearchParams(location.search)
-    const ref = urlParams.get('ref')
-    if (ref && urlParams.has('success')) {
-      showSuccess(ref)
-      return
+// ── MÉTHODE ───────────────────────────────────────────
+function selectMethod(el){
+  document.querySelectorAll('.method-card').forEach(c=>c.classList.remove('selected'))
+  el.classList.add('selected')
+  selectedMethod = el.dataset.method
+  renderMethodDetails()
+}
+
+function renderMethodDetails(){
+  const el = document.getElementById('method-details')
+  const details = {
+    card_maroc: `<div style="background:var(--slate);border:1px solid rgba(255,255,255,.06);padding:14px 16px;">
+      <p style="font-size:11px;color:var(--fog);line-height:1.6;">Paiement sécurisé via CMI (Centre Monétique Interbancaire). Tu seras redirigé vers la page de paiement sécurisée après confirmation.</p>
+    </div>`,
+    mobile_money_gabon: `<div style="background:var(--slate);border:1px solid rgba(255,255,255,.06);padding:14px 16px;">
+      <div class="field" style="margin-bottom:12px;">
+        <label>Numéro Mobile Money *</label>
+        <input type="tel" id="mm-number" placeholder="+241 06 00 00 00"/>
+      </div>
+      <p style="font-size:11px;color:var(--fog);">Tu recevras une demande de confirmation sur ce numéro.</p>
+    </div>`,
+    virement: `<div style="background:var(--slate);border:1px solid rgba(255,255,255,.06);padding:14px 16px;">
+      <p style="font-size:11px;color:var(--fog);line-height:1.7;margin-bottom:8px;">Effectue un virement à :</p>
+      <p style="font-size:11px;letter-spacing:1px;font-weight:500;">RIB : 0000 0000 0000 0000 0000 0000 000</p>
+      <p style="font-size:11px;color:var(--fog);margin-top:6px;">Banque : Attijari Maroc · SWIFT : BCMAMAMC</p>
+    </div>`,
+    cash_on_delivery: `<div style="background:var(--slate);border:1px solid rgba(255,255,255,.06);padding:14px 16px;">
+      <p style="font-size:11px;color:var(--fog);line-height:1.6;">Paiement en espèces à la réception de ta commande. Le livreur accepte les billets et la monnaie exacte est appréciée.</p>
+    </div>`
+  }
+  el.innerHTML = details[selectedMethod] || ''
+}
+
+// ── CHARGEMENT ────────────────────────────────────────
+async function init(){
+  showState('state-loading')
+  const params = new URLSearchParams(window.location.search)
+  const orderId = params.get('order_id')
+
+  if(!orderId){
+    document.getElementById('error-msg').textContent = "Aucune commande spécifiée. Retourne au panier."
+    showState('state-error'); return
+  }
+
+  // Auth
+  const {data:{user},error:authErr} = await sb.auth.getUser()
+  if(authErr||!user){
+    window.location.href='compte.html'; return
+  }
+
+  // Profil
+  const {data:profile} = await sb.from('users').select('id,first_name,last_name,country').eq('auth_id',user.id).maybeSingle()
+  if(!profile){window.location.href='compte.html';return}
+  currentUserId = profile.id
+
+  // Pré-remplir nom depuis profil
+  if(profile.first_name) document.getElementById('ship-first').value = profile.first_name
+  if(profile.last_name) document.getElementById('ship-last').value = profile.last_name
+  if(profile.country){
+    const sel = document.getElementById('ship-country')
+    const opt = [...sel.options].find(o=>o.value===profile.country)
+    if(opt) sel.value = profile.country
+  }
+
+  // Charger la commande
+  const {data:order,error:oErr} = await sb
+    .from('orders')
+    .select('id,total_amount,subtotal,currency,status,discount_pct,promo_code')
+    .eq('id',orderId)
+    .eq('user_id',currentUserId)
+    .single()
+
+  if(oErr||!order){
+    document.getElementById('error-msg').textContent = "Commande introuvable ou accès refusé."
+    showState('state-error'); return
+  }
+
+  // Si déjà payée ou traitée → rediriger vers succès
+  if(['processing','shipped','delivered'].includes(order.status)){
+    showSuccess(order.id)
+    return
+  }
+
+  currentOrder = order
+
+  // Charger les order_items avec infos produit
+  const {data:items,error:iErr} = await sb
+    .from('order_items')
+    .select('id,quantity,unit_price,product_id,products(id,name,image_url,origin_city,country,currency)')
+    .eq('order_id',orderId)
+
+  if(iErr||!items?.length){
+    document.getElementById('error-msg').textContent = "Impossible de charger les articles de cette commande."
+    showState('state-error'); return
+  }
+
+  currentItems = items
+  renderSummary()
+  renderMethodDetails()
+  showState('state-content')
+}
+
+// ── RÉCAP ─────────────────────────────────────────────
+function renderSummary(){
+  const list = document.getElementById('order-items-list')
+  const currency = currentOrder.currency || 'MAD'
+
+  list.innerHTML = currentItems.map(item=>{
+    const p = item.products
+    const img = p?.image_url || 'https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=120&q=70'
+    return `<div class="order-item">
+      <img src="${img}" alt="${p?.name||''}" onerror="this.src='https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=120&q=70'"/>
+      <div class="order-item-info">
+        <p class="order-item-name">${p?.name||'Produit'}</p>
+        <p class="order-item-qty">Qté : ${item.quantity}</p>
+      </div>
+      <span class="order-item-price">${fmt(item.unit_price*item.quantity,currency)}</span>
+    </div>`
+  }).join('')
+
+  const subtotal = currentOrder.subtotal || currentOrder.total_amount
+  document.getElementById('r-subtotal').textContent = fmt(subtotal,currency)
+
+  if(currentOrder.discount_pct>0){
+    document.getElementById('discount-line').style.display='flex'
+    const disc = subtotal*(currentOrder.discount_pct/100)
+    document.getElementById('r-discount').textContent = `-${fmt(disc,currency)}`
+  }
+
+  document.getElementById('r-total').textContent = fmt(currentOrder.total_amount,currency)
+}
+
+// ── VALIDATION FORM ───────────────────────────────────
+function validateForm(){
+  const fields=[
+    {id:'ship-first',label:'Prénom'},
+    {id:'ship-last',label:'Nom'},
+    {id:'ship-address',label:'Adresse'},
+    {id:'ship-city',label:'Ville'},
+    {id:'ship-country',label:'Pays'},
+  ]
+  for(const f of fields){
+    const el=document.getElementById(f.id)
+    if(!el.value.trim()){toast(`Champ requis : ${f.label}`);el.focus();return false}
+  }
+  if(selectedMethod==='mobile_money_gabon'){
+    const mm=document.getElementById('mm-number')
+    if(!mm||!mm.value.trim()){toast('Numéro Mobile Money requis');mm?.focus();return false}
+  }
+  return true
+}
+
+// ── PAIEMENT ──────────────────────────────────────────
+async function submitPayment(){
+  if(!validateForm()) return
+
+  const btn=document.getElementById('btn-pay')
+  btn.disabled=true
+  btn.innerHTML='<div class="spinner"></div> Traitement…'
+
+  const firstName=document.getElementById('ship-first').value.trim()
+  const lastName=document.getElementById('ship-last').value.trim()
+  const address=document.getElementById('ship-address').value.trim()
+  const city=document.getElementById('ship-city').value.trim()
+  const country=document.getElementById('ship-country').value
+  const notes=document.getElementById('ship-notes').value.trim()
+
+  // 1) Mettre à jour l'adresse de livraison sur la commande
+  const {error:updateErr} = await sb.from('orders').update({
+    shipping_name: `${firstName} ${lastName}`,
+    shipping_address: address,
+    shipping_city: city,
+    shipping_country: country,
+    notes: notes||null,
+    delivery_address: {first_name:firstName,last_name:lastName,address,city,country,notes},
+    status: 'processing'
+  }).eq('id',currentOrder.id)
+
+  if(updateErr){
+    toast('Erreur de mise à jour : '+updateErr.message)
+    btn.disabled=false
+    btn.innerHTML='<span class="material-symbols-outlined" style="font-size:16px;">lock</span> Confirmer la commande'
+    return
+  }
+
+  // 2) Créer l'entrée payment
+  const mmNumber = selectedMethod==='mobile_money_gabon' ? (document.getElementById('mm-number')?.value.trim()||null) : null
+  const {error:payErr} = await sb.from('payments').insert({
+    order_id: currentOrder.id,
+    user_id: currentUserId,
+    amount: currentOrder.total_amount,
+    currency: currentOrder.currency||'MAD',
+    method: selectedMethod,
+    status: selectedMethod==='card_maroc'?'pending':'pending',
+    provider: getProvider(selectedMethod),
+    type: 'order_payment',
+    metadata: {
+      shipping_name:`${firstName} ${lastName}`,
+      city,
+      country,
+      mobile_money_number: mmNumber
     }
-
-    const { data: { session } } = await sb.auth.getSession()
-    if (session) {
-      const { data: userRow } = await sb.from('users').select('id').eq('auth_id', session.user.id).maybeSingle()
-      if (userRow) {
-        currentUserId = userRow.id
-        await loadCartFromSupabase(userRow.id)
-      }
-    }
-    if (!cart.length) cart = JSON.parse(localStorage.getItem('wenna_cart') || '[]')
-
-    renderItems()
-    renderRecap()
-    loadShippingRecap()
-  }
-
-  async function loadCartFromSupabase(userId) {
-    const sb = getSb()
-    const { data, error } = await sb
-      .from('cart_items')
-      .select('quantity, products(id, name, price, image_url, currency)')
-      .eq('user_id', userId)
-    if (error || !data?.length) return
-    cart = data.map(item => ({
-      id:       item.products.id,
-      name:     item.products.name,
-      price:    Number(item.products.price),
-      qty:      item.quantity,
-      image:    item.products.image_url || null,
-      currency: item.products.currency || CURRENCY_CARD
-    }))
-  }
-
-  function renderItems() {
-    const container = $('order-items')
-    if (!cart.length) { container.innerHTML = '<p style="font-size:12px;color:#555;">Aucun article</p>'; return }
-    container.innerHTML = cart.map(item => `
-      <div class="recap-item">
-        <div class="recap-thumb">
-          ${item.image ? `<img src="${item.image}" alt="${item.name}"/>` : ''}
-          <span class="recap-qty">${item.qty}</span>
-        </div>
-        <div style="flex:1;min-width:0;">
-          <div class="recap-name">${item.name}</div>
-          <div class="recap-unit">${fmt(item.price)} / unité</div>
-        </div>
-        <div class="recap-price">${fmt(item.price * item.qty)}</div>
-      </div>`).join('')
-  }
-
-  function calcTotals() {
-    const sub  = cart.reduce((s,i) => s + i.price * i.qty, 0)
-    const disc = sub * promoDisc
-    return { sub, disc, total: sub - disc }
-  }
-
-  function renderRecap() {
-    const { sub, disc, total } = calcTotals()
-    orderTotal = total
-    const cur = selectedMethod === 'mobile_money' ? CURRENCY_MM : CURRENCY_CARD
-    $('recap-subtotal').textContent = fmt(sub, cur)
-    $('totalDisplay').textContent   = fmt(total, cur)
-    $('btn-total').textContent      = fmt(total, cur)
-    if (disc > 0) {
-      $('discountRow').style.display = 'flex'
-      $('discountAmt').textContent   = `-${fmt(disc, cur)}`
-    } else {
-      $('discountRow').style.display = 'none'
-    }
-  }
-
-  function loadShippingRecap() {
-    const info = JSON.parse(localStorage.getItem('wenna_shipping') || 'null')
-    if (info) {
-      $('shipping-name').textContent    = `${info.name || info.shipping_name || '—'} · ${info.city || info.shipping_city || '—'}, ${info.country || info.shipping_country || '—'}`
-      $('shipping-address').textContent = info.address || info.shipping_address || ''
-    } else {
-      $('shipping-name').textContent    = 'Non renseignée'
-      $('shipping-address').textContent = ''
-    }
-  }
-
-  // ── UI helpers ───────────────────────────────────────────────────────────────
-  function formatCard(el) {
-    let v = el.value.replace(/\D/g,'').slice(0,16)
-    el.value = v.match(/.{1,4}/g)?.join(' ') || v
-    const d = v.padEnd(16,'•')
-    $('cardNumDisplay').textContent = d.match(/.{1,4}/g)?.join(' ') || '•••• •••• •••• ••••'
-  }
-  function formatExp(el) {
-    let v = el.value.replace(/\D/g,'').slice(0,4)
-    if (v.length >= 2) v = v.slice(0,2)+'/'+v.slice(2)
-    el.value = v
-    $('cardExpDisplay').textContent = el.value || 'MM/AA'
-  }
-  function updateCardName(el) {
-    $('cardNameDisplay').textContent = el.value.toUpperCase() || 'VOTRE NOM'
-  }
-
-  function selectMethod(btn, type) {
-    selectedMethod = type
-    document.querySelectorAll('.method-pill').forEach(b => b.classList.remove('active'))
-    btn.classList.add('active')
-    // Mettre à jour icone du pill actif
-    btn.querySelector('.material-symbols-outlined').style.color = 'var(--fire)'
-    document.querySelectorAll('.method-pill:not(.active) .material-symbols-outlined').forEach(i => i.style.color = '')
-    // Afficher le bon panel
-    document.querySelectorAll('.pay-panel').forEach(p => p.classList.remove('active'))
-    const panel = $('panel-' + type)
-    if (panel) panel.classList.add('active')
-    renderRecap()
-  }
-
-  function selectCard(btn) {
-    document.querySelectorAll('.net-btn').forEach(b => b.classList.remove('selected'))
-    btn.classList.add('selected')
-  }
-
-  function selectOperator(btn, op) {
-    selectedOp = op
-    document.querySelectorAll('.mm-op').forEach(b => b.classList.remove('active'))
-    btn.classList.add('active')
-  }
-
-  function toggleAcc(id, arrowId) {
-    $(id).classList.toggle('open')
-    $(arrowId).classList.toggle('open')
-  }
-
-  // ── Code promo ───────────────────────────────────────────────────────────────
-  function applyPromo() {
-    const code     = ($('promoInput').value || '').trim().toUpperCase()
-    const feedback = $('promoFeedback')
-    if (PROMO_CODES[code] !== undefined) {
-      promoDisc = PROMO_CODES[code]
-      feedback.style.cssText = 'margin-top:8px;padding:10px 14px;background:rgba(255,107,43,.1);border:1px solid rgba(255,107,43,.25);color:var(--fire);font-size:11px;font-weight:600;display:block;'
-      feedback.textContent = `✓ Code appliqué — ${promoDisc*100}% de remise`
-    } else {
-      promoDisc = 0
-      feedback.style.cssText = 'margin-top:8px;padding:10px 14px;background:rgba(186,26,26,.1);border:1px solid rgba(186,26,26,.3);color:#ef4444;font-size:11px;font-weight:600;display:block;'
-      feedback.textContent = '✗ Code invalide ou expiré'
-    }
-    renderRecap()
-  }
-
-  // ── Créer order Supabase ─────────────────────────────────────────────────────
-  async function ensureOrder(session) {
-    const sb = getSb()
-    if (orderId) return orderId
-    const { sub, disc, total } = calcTotals()
-    const shipping  = JSON.parse(localStorage.getItem('wenna_shipping') || 'null') || {}
-    const promoCode = $('promoInput').value.trim().toUpperCase() || null
-    const currency  = selectedMethod === 'mobile_money' ? CURRENCY_MM : CURRENCY_CARD
-
-    const { data, error } = await sb.from('orders').insert({
-      user_id:          currentUserId,
-      status:           'pending',
-      subtotal:         sub,
-      total_amount:     total,
-      currency,
-      discount_pct:     promoDisc > 0 ? promoDisc * 100 : null,
-      promo_code:       promoDisc > 0 ? promoCode : null,
-      notes:            $('orderNote').value.trim() || null,
-      shipping_name:    shipping.name    || shipping.shipping_name    || null,
-      shipping_address: shipping.address || shipping.shipping_address || null,
-      shipping_city:    shipping.city    || shipping.shipping_city    || null,
-      shipping_country: shipping.country || shipping.shipping_country || null,
-      created_at:       new Date().toISOString(),
-      updated_at:       new Date().toISOString()
-    }).select('id').single()
-    if (error) throw new Error('Impossible de créer la commande : ' + error.message)
-    orderId = data.id
-    localStorage.setItem('wenna_current_order_id', orderId)
-    return orderId
-  }
-
-  // ── PAIEMENT PRINCIPAL ───────────────────────────────────────────────────────
-  async function handlePay(btn) {
-    // Validation carte
-    if (selectedMethod === 'card') {
-      const num  = $('cardNum').value.replace(/\s/g,'')
-      const name = $('cardName').value.trim()
-      const exp  = $('cardExp').value
-      const cvv  = $('cardCvv').value
-      if (num.length < 16 || !name || exp.length < 5 || cvv.length < 3) {
-        const orig = btn.innerHTML
-        btn.style.background = '#ba1a1a'
-        btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:17px;">error_outline</span> Vérifiez vos informations'
-        setTimeout(() => { btn.style.background = ''; btn.innerHTML = orig }, 2500)
-        return
-      }
-    }
-
-    const sb = getSb()
-    const { data: { session } } = await sb.auth.getSession()
-    if (!session) {
-      alert('Veuillez vous connecter pour finaliser la commande.')
-      window.location.href = 'login.html?redirect=paiement.html'
-      return
-    }
-
-    btn.disabled = true
-    btn.innerHTML = `<svg style="width:18px;height:18px;animation:spin2 .8s linear infinite;" fill="none" viewBox="0 0 24 24"><circle style="opacity:.25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path style="opacity:.75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Traitement en cours...`
-
-    try {
-      const oid = await ensureOrder(session)
-      const currency = selectedMethod === 'mobile_money' ? CURRENCY_MM : CURRENCY_CARD
-
-      // ── Appel Edge Function ─────────────────────────────────────────────────
-      const bodyPayload = {
-        order_id:       oid,
-        user_id:        currentUserId,
-        amount:         orderTotal,
-        currency,
-        payment_method: selectedMethod === 'mobile_money' ? selectedOp : selectedMethod,
-        client_msisdn:  selectedMethod === 'mobile_money' ? ($('clientPhone').value.replace(/\s/g,'') || null) : null,
-      }
-
-      const res = await fetch(EDGE_FN_URL, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
-        body:    JSON.stringify(bodyPayload)
-      })
-      const result = await res.json()
-
-      // ── SingPay : rediriger vers payment_url ────────────────────────────────
-      if (selectedMethod === 'mobile_money' && result.payment_url) {
-        $('singpayRedirect').classList.add('show')
-        localStorage.setItem('wenna_pending_order', oid)
-        setTimeout(() => { window.location.href = result.payment_url }, 1800)
-        return
-      }
-
-      // ── SingPay USSD Push : attendre callback ───────────────────────────────
-      if (selectedMethod === 'mobile_money' && result.success && !result.payment_url) {
-        await clearCart()
-        showSuccess(result.transaction_id || result.reference || oid.slice(-8))
-        return
-      }
-
-      // ── Carte / virement : fallback direct ─────────────────────────────────
-      if (!res.ok || !result.success) {
-        const txId = 'WN-' + Date.now().toString(36).toUpperCase()
-        await sb.from('payments').insert({
-          order_id: oid, user_id: currentUserId, amount: orderTotal,
-          currency, method: selectedMethod, status: 'paid', type: 'payment',
-          transaction_id: txId, provider: 'internal',
-          created_at: new Date().toISOString(), updated_at: new Date().toISOString()
-        })
-        await sb.from('orders').update({ status: 'processing', updated_at: new Date().toISOString() }).eq('id', oid)
-        await clearCart()
-        showSuccess(txId)
-        return
-      }
-
-      await clearCart()
-      showSuccess(result.transaction_id || oid.slice(-8))
-
-    } catch (err) {
-      btn.disabled = false
-      const cur = selectedMethod === 'mobile_money' ? CURRENCY_MM : CURRENCY_CARD
-      btn.innerHTML = `<span class="material-symbols-outlined" style="font-size:17px;">lock</span> Payer ${fmt(orderTotal, cur)}`
-      btn.style.background = '#ba1a1a'
-      console.error('[WennaShop] Payment error:', err)
-      setTimeout(() => { btn.style.background = '' }, 3000)
-      alert(`Erreur : ${err.message}`)
-    }
-  }
-
-  async function clearCart() {
-    const sb = getSb()
-    localStorage.removeItem('wenna_cart')
-    localStorage.removeItem('wenna_current_order_id')
-    localStorage.removeItem('wenna_pending_order')
-    if (currentUserId) await sb.from('cart_items').delete().eq('user_id', currentUserId)
-  }
-
-  function showSuccess(txId) {
-    const shortId = String(txId).slice(-8).toUpperCase()
-    $('order-ref').textContent     = `#WN-${shortId}`
-    $('confirm-email').textContent = `Référence transaction : ${txId}`
-    $('successOverlay').classList.add('show')
-  }
-
-  // ── Ripple ───────────────────────────────────────────────────────────────────
-  $('payBtn').addEventListener('click', function(e) {
-    const el = document.createElement('span')
-    el.className = 'ripple-el'
-    const r = this.getBoundingClientRect()
-    el.style.top  = (e.clientY - r.top)  + 'px'
-    el.style.left = (e.clientX - r.left) + 'px'
-    this.appendChild(el)
-    setTimeout(() => el.remove(), 700)
   })
 
-  document.addEventListener('DOMContentLoaded', init)
+  if(payErr){
+    toast('Erreur paiement : '+payErr.message)
+    // On ne bloque pas le succès, la commande est déjà en processing
+  }
+
+  // 3) Vider le panier
+  await sb.from('cart_items').delete().eq('user_id',currentUserId)
+
+  // 4) Afficher succès
+  showSuccess(currentOrder.id)
+}
+
+function getProvider(method){
+  const map={
+    card_maroc:'cmi',
+    mobile_money_gabon:'cinetpay',
+    virement:'manual',
+    cash_on_delivery:'manual'
+  }
+  return map[method]||'manual'
+}
+
+function showSuccess(orderId){
+  document.getElementById('success-order-ref').textContent = `Commande #${orderId.slice(0,8).toUpperCase()}`
+  showState('state-success')
+  // Update step 3
+  document.querySelector('.step-line:last-of-type').classList.add('done')
+  document.querySelectorAll('.step-num')[2].className='step-num done'
+  document.querySelectorAll('.step-num')[2].textContent='3'
+  document.querySelector('.steps-bar').style.display='flex'
+}
+
+init()
 </script>
 </body>
 </html>
