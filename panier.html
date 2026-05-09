@@ -4,11 +4,11 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>WennaShop — Mon Panier</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100.[...]
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const SUPABASE_URL = 'https://aakxoydznmybstfozjte.supabase.co'
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.nc[...]
   window.db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
   // ✅ FIX IMAGE — URL Supabase Storage complète pour les images produits
@@ -42,18 +42,18 @@ body {
 }
 
 .cur { position:fixed; width:10px; height:10px; background:var(--fire); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); transition:width .2s,height .2s; }
-.cur-ring { position:fixed; width:36px; height:36px; border:1px solid rgba(255,107,43,.45); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:width .3s,height .3s; }
+.cur-ring { position:fixed; width:36px; height:36px; border:1px solid rgba(255,107,43,.45); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:width .[...]
 .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24; font-size:22px; line-height:1; vertical-align:middle; }
 
-.hd { position:fixed; top:0; left:0; right:0; z-index:100; height:64px; padding:0 48px; display:flex; align-items:center; justify-content:space-between; background:rgba(8,8,8,.92); backdrop-filter:blur(20px); border-bottom:1px solid rgba(255,107,43,.12); }
+.hd { position:fixed; top:0; left:0; right:0; z-index:100; height:64px; padding:0 48px; display:flex; align-items:center; justify-content:space-between; background:rgba(8,8,8,.92); backdrop-filter[...]
 .logo { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:700; font-style:italic; color:var(--snow); text-decoration:none; letter-spacing:-.5px; }
 .logo b { color:var(--fire); }
-.hd-back { background:none; border:none; color:var(--fog); cursor:none; display:flex; align-items:center; gap:8px; font-size:10px; letter-spacing:2px; text-transform:uppercase; transition:color .2s; text-decoration:none; font-family:'DM Sans',sans-serif; }
+.hd-back { background:none; border:none; color:var(--fog); cursor:none; display:flex; align-items:center; gap:8px; font-size:10px; letter-spacing:2px; text-transform:uppercase; transition:color .2[...]
 .hd-back:hover { color:var(--fire); }
 .hd-right { display:flex; align-items:center; gap:20px; }
 .hd-icon-btn { background:none; border:none; color:var(--fog); cursor:none; display:flex; align-items:center; position:relative; transition:color .2s; text-decoration:none; }
 .hd-icon-btn:hover { color:var(--fire); }
-.cbadge { position:absolute; top:-6px; right:-6px; width:16px; height:16px; background:var(--fire); color:#fff; font-size:9px; font-weight:700; border-radius:50%; display:none; align-items:center; justify-content:center; }
+.cbadge { position:absolute; top:-6px; right:-6px; width:16px; height:16px; background:var(--fire); color:#fff; font-size:9px; font-weight:700; border-radius:50%; display:none; align-items:center;[...]
 
 #toast {
   position:fixed; top:80px; left:50%; transform:translateX(-50%) translateY(-8px);
@@ -71,9 +71,9 @@ body {
 .state-title { font-family:'Cormorant Garamond',serif; font-size:32px; font-style:italic; font-weight:700; margin-bottom:8px; }
 .state-sub { font-size:13px; color:var(--fog); margin-bottom:28px; line-height:1.6; }
 
-.btn-fire { display:inline-flex; align-items:center; gap:8px; background:var(--fire); color:#fff; padding:13px 28px; font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppercase; border:none; cursor:none; clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px)); transition:background .2s,transform .15s; font-family:'DM Sans',sans-serif; text-decoration:none; }
+.btn-fire { display:inline-flex; align-items:center; gap:8px; background:var(--fire); color:#fff; padding:13px 28px; font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppercase; [...]
 .btn-fire:hover { background:var(--ember); transform:translateY(-1px); }
-.btn-ghost { display:inline-flex; align-items:center; gap:8px; background:transparent; color:var(--fog); padding:12px 28px; font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppercase; border:1px solid rgba(255,255,255,.1); cursor:none; transition:all .2s; font-family:'DM Sans',sans-serif; }
+.btn-ghost { display:inline-flex; align-items:center; gap:8px; background:transparent; color:var(--fog); padding:12px 28px; font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppe[...]
 .btn-ghost:hover { border-color:var(--fire); color:var(--fire); }
 
 .skel { background:linear-gradient(90deg,#1a1a1a 25%,#222 50%,#1a1a1a 75%); background-size:200% 100%; animation:shim 1.5s infinite; }
@@ -103,7 +103,7 @@ body {
 .qty-btn { width:36px; height:36px; background:transparent; border:none; color:var(--fog); cursor:none; display:flex; align-items:center; justify-content:center; transition:color .2s; }
 .qty-btn:hover { color:var(--fire); }
 .qty-val { min-width:32px; text-align:center; font-size:13px; font-weight:500; padding:0 4px; }
-.item-remove { background:none; border:none; color:#444; cursor:none; display:flex; align-items:center; gap:6px; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; transition:color .2s; font-family:'DM Sans',sans-serif; }
+.item-remove { background:none; border:none; color:#444; cursor:none; display:flex; align-items:center; gap:6px; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; transition:color .[...]
 .item-remove:hover { color:#f87171; }
 
 .notice { padding:12px 16px; background:rgba(251,191,36,.06); border:1px solid rgba(251,191,36,.2); font-size:12px; color:#fbbf24; margin-top:16px; display:none; }
@@ -133,14 +133,14 @@ body {
 }
 .checkout-btn:hover:not(:disabled) { background:var(--ember); transform:translateY(-1px); }
 .checkout-btn:disabled { opacity:.35; cursor:not-allowed; }
-.clear-btn { width:100%; padding:13px; background:transparent; color:var(--fog); border:1px solid rgba(255,255,255,.08); cursor:none; font-size:10px; letter-spacing:2px; text-transform:uppercase; font-family:'DM Sans',sans-serif; transition:all .2s; }
+.clear-btn { width:100%; padding:13px; background:transparent; color:var(--fog); border:1px solid rgba(255,255,255,.08); cursor:none; font-size:10px; letter-spacing:2px; text-transform:uppercase;[...]
 .clear-btn:hover { border-color:rgba(248,113,113,.3); color:#f87171; }
 
 .promo-row { display:flex; margin-bottom:20px; }
-.promo-input { flex:1; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-right:none; color:var(--snow); padding:11px 14px; font-size:12px; font-family:'DM Sans',sans-serif; outline:none; transition:border-color .2s; }
+.promo-input { flex:1; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-right:none; color:var(--snow); padding:11px 14px; font-size:12px; font-family:'DM Sans',san[...]
 .promo-input::placeholder { color:#333; }
 .promo-input:focus { border-color:var(--fire-border); }
-.promo-btn { background:var(--slate); border:1px solid rgba(255,255,255,.08); color:var(--fog); padding:11px 16px; font-size:10px; letter-spacing:2px; text-transform:uppercase; cursor:none; transition:all .2s; white-space:nowrap; font-family:'DM Sans',sans-serif; }
+.promo-btn { background:var(--slate); border:1px solid rgba(255,255,255,.08); color:var(--fog); padding:11px 16px; font-size:10px; letter-spacing:2px; text-transform:uppercase; cursor:none; trans[...]
 .promo-btn:hover { color:var(--fire); border-color:var(--fire-border); }
 
 #checkout-error {
@@ -150,9 +150,9 @@ body {
 }
 #checkout-error.show { display:block; }
 
-.bnav { display:none; position:fixed; bottom:0; left:0; right:0; z-index:100; background:rgba(8,8,8,.95); backdrop-filter:blur(20px); border-top:1px solid rgba(255,107,43,.15); padding:10px 0 22px; }
+.bnav { display:none; position:fixed; bottom:0; left:0; right:0; z-index:100; background:rgba(8,8,8,.95); backdrop-filter:blur(20px); border-top:1px solid rgba(255,107,43,.15); padding:10px 0 22p[...]
 .bnav-inner { display:flex; justify-content:space-around; }
-.bnav-item { display:flex; flex-direction:column; align-items:center; gap:4px; color:#555; text-decoration:none; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; transition:color .2s; cursor:none; }
+.bnav-item { display:flex; flex-direction:column; align-items:center; gap:4px; color:#555; text-decoration:none; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; transition:color .2[...]
 .bnav-item.active, .bnav-item:hover { color:var(--fire); }
 
 .spinner { width:18px; height:18px; border:2px solid rgba(255,255,255,.15); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; display:inline-block; flex-shrink:0; }
@@ -323,7 +323,7 @@ body {
 <nav class="bnav">
   <div class="bnav-inner">
     <a href="index.html" class="bnav-item"><span class="material-symbols-outlined">home</span><span>Home</span></a>
-    <a href="boutique.html" class="bnav-item active"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">storefront</span><span>Shop</span></a>
+    <a href="boutique.html" class="bnav-item active"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">storefront</span><span>Shop</s[...]
     <a href="dashboard-vendeur.html" class="bnav-item"><span class="material-symbols-outlined">add_circle</span><span>Sell</span></a>
     <a href="compte.html" class="bnav-item"><span class="material-symbols-outlined">person</span><span>Profil</span></a>
   </div>
@@ -648,7 +648,7 @@ function applyPromo() {
 }
 
 // ── CHECKOUT ─────────────────────────────────────────────────
-// ✅ FIX PRINCIPAL — currentUserId garanti non-null avant INSERT
+// ✅ FIX PRINCIPAL — Logique correcte de redirection
 async function checkout() {
   clearCheckoutError()
 
@@ -658,12 +658,12 @@ async function checkout() {
   // ✅ Vérification auth
   const { data:{ user }, error:authErr } = await sb.auth.getUser()
   if (authErr || !user) {
-    localStorage.setItem('wenna_redirect_after_login', 'panier.html')
+    // Utilisateur non authentifié → rediriger vers connexion
     window.location.href = 'compte.html?redirect=panier.html'
     return
   }
 
-  // ✅ Vérification currentUserId — ne pas lancer le checkout si null
+  // ✅ Vérification currentUserId — récupérer le profil si nécessaire
   if (!currentUserId) {
     // Tentative de récupération du profil en temps réel
     const { data:byAuth } = await sb.from('users').select('id').eq('auth_id', user.id).maybeSingle()
@@ -678,7 +678,7 @@ async function checkout() {
     }
   }
 
-  // ✅ Si toujours null → afficher erreur sans rediriger vers compte
+  // ✅ Si toujours null → afficher erreur
   if (!currentUserId) {
     showCheckoutError('Profil introuvable. Contacte le support ou reconnecte-toi.')
     return
@@ -736,7 +736,7 @@ async function checkout() {
     return
   }
 
-  // Étape 3 : Rediriger
+  // ✅ Étape 3 : Rediriger vers PAIEMENT (fix principal)
   localStorage.setItem('wenna_current_order_id', order.id)
   console.log('[WennaShop] Commande créée :', order.id, '→ paiement.html')
   window.location.href = 'paiement.html?order_id=' + order.id
