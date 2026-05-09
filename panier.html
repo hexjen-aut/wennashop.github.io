@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>WennaShop — Mon Panier</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<!-- ✅ FIX 1 : SDK Supabase chargé en premier -->
+<!-- SDK Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<!-- ✅ FIX 2 : config.js chargé AVANT tout autre script — expose window.db -->
+<!-- config.js — expose window.db -->
 <script src="js/config.js"></script>
 <style>
 :root {
@@ -326,7 +326,6 @@ body {
           Passer au paiement
         </button>
 
-        <!-- ✅ FIX 3 : Zone d'erreur checkout visible, persistante -->
         <div id="checkout-error"></div>
 
         <button id="btn-clear" class="clear-btn">Vider le panier</button>
@@ -348,10 +347,16 @@ body {
 
 <script>
 // ══════════════════════════════════════════════════════════════
-// ✅ FIX PRINCIPAL : vérification que window.db est bien défini
-//    avant de faire quoi que ce soit
+// ✅ FIX PRINCIPAL : getSb() résout window.db dynamiquement
+//    au moment de l'appel, pas au chargement du script
 // ══════════════════════════════════════════════════════════════
-const sb = window.db
+function getSb() {
+  if (!window.db) {
+    console.error('[WennaShop] window.db undefined — config.js non chargé ?')
+    return null
+  }
+  return window.db
+}
 
 // ── CURSEUR ──────────────────────────────────────────────────
 const curEl  = document.getElementById('cur')
@@ -395,13 +400,15 @@ function toast(msg, type='default', ms=3000) {
   toastTimer = setTimeout(() => { t.className = '' }, ms)
 }
 
-// ── ERREUR CHECKOUT PERSISTANTE ───────────────────────────────
+// ── ERREUR CHECKOUT ───────────────────────────────────────────
 function showCheckoutError(msg) {
   errBox.textContent = '⚠ ' + msg
+  errBox.style.display = 'block'
   errBox.classList.add('show')
 }
 function clearCheckoutError() {
   errBox.textContent = ''
+  errBox.style.display = 'none'
   errBox.classList.remove('show')
 }
 
@@ -506,24 +513,23 @@ function renderCart() {
 
 // ── CHARGEMENT PANIER ─────────────────────────────────────────
 async function loadCart() {
-  // ✅ FIX : garde-fou si window.db n'est pas défini
+  const sb = getSb()
   if (!sb) {
-    console.error('[WennaShop] window.db est undefined. Vérifie que js/config.js est bien chargé.')
     showState(stateDbError)
     return
   }
 
   showState(stateLoading)
 
-  // Auth check
+  // ── Auth check ────────────────────────────────────────────────
   const { data:{ user }, error:authErr } = await sb.auth.getUser()
   if (authErr || !user) {
-    console.warn('[WennaShop] Utilisateur non connecté.', authErr)
+    console.warn('[WennaShop] Non connecté.')
     showState(stateAuth)
     return
   }
 
-  // Résolution profil users (auth_id ou email en fallback)
+  // ── Résolution profil users ───────────────────────────────────
   let profile = null
   const { data:byAuth, error:e1 } = await sb.from('users').select('id').eq('auth_id', user.id).maybeSingle()
   if (e1) console.warn('[WennaShop] Lookup auth_id:', e1.message)
@@ -531,26 +537,27 @@ async function loadCart() {
   if (byAuth) {
     profile = byAuth
   } else {
+    // Fallback email
     const { data:byEmail, error:e2 } = await sb.from('users').select('id').ilike('email', user.email).maybeSingle()
     if (e2) console.warn('[WennaShop] Lookup email:', e2.message)
     if (byEmail) {
       profile = byEmail
-      // Mise à jour silencieuse de auth_id
-      const { error:e3 } = await sb.from('users').update({ auth_id: user.id }).eq('id', profile.id)
-      if (e3) console.warn('[WennaShop] Update auth_id:', e3.message)
+      await sb.from('users').update({ auth_id: user.id }).eq('id', profile.id)
     }
   }
 
   if (!profile) {
-    console.warn('[WennaShop] Aucun profil trouvé pour cet utilisateur.')
-    showState(stateAuth)
+    // ✅ FIX : profil introuvable → NE PAS rediriger vers compte.html
+    // Afficher panier vide plutôt que bloquer l'accès
+    console.warn('[WennaShop] Profil introuvable pour', user.email, '— affichage panier vide')
+    showState(stateEmpty)
     return
   }
 
   currentUserId = profile.id
 
-  // Chargement des items
-  const { data:items, error:cartErr } = await sb
+  // ── Chargement items ──────────────────────────────────────────
+  const { data:items, error:cartErr } = await getSb()
     .from('cart_items')
     .select('id, quantity, product_id, products(id, name, price, image_url, origin_city, country, currency, stock, status)')
     .eq('user_id', currentUserId)
@@ -567,19 +574,15 @@ async function loadCart() {
     return
   }
 
-  // Nettoyage des produits supprimés
-  const validItems  = items.filter(i => i.products !== null)
-  const orphanIds   = items.filter(i => i.products === null).map(i => i.id)
-
+  // Nettoyage produits supprimés
+  const validItems = items.filter(i => i.products !== null)
+  const orphanIds  = items.filter(i => i.products === null).map(i => i.id)
   if (orphanIds.length) {
     document.getElementById('unavailable-notice').classList.add('show')
-    await sb.from('cart_items').delete().in('id', orphanIds)
+    await getSb().from('cart_items').delete().in('id', orphanIds)
   }
 
-  if (!validItems.length) {
-    showState(stateEmpty)
-    return
-  }
+  if (!validItems.length) { showState(stateEmpty); return }
 
   cartData = validItems.map(i => ({
     cart_item_id: i.id,
@@ -605,7 +608,7 @@ async function updateQuantity(id, newQty) {
   item.quantity = newQty
   document.getElementById(`qty-${id}`).textContent = newQty
   refreshTotals()
-  const { error } = await sb.from('cart_items').update({ quantity: newQty }).eq('id', id)
+  const { error } = await getSb().from('cart_items').update({ quantity: newQty }).eq('id', id)
   if (error) {
     item.quantity = prev
     document.getElementById(`qty-${id}`).textContent = prev
@@ -618,7 +621,7 @@ async function updateQuantity(id, newQty) {
 async function removeItem(id) {
   const el = document.getElementById(`item-${id}`)
   if (el) el.style.opacity = '0.2'
-  const { error } = await sb.from('cart_items').delete().eq('id', id)
+  const { error } = await getSb().from('cart_items').delete().eq('id', id)
   if (error) {
     if (el) el.style.opacity = '1'
     toast('Erreur de suppression.', 'error')
@@ -637,7 +640,7 @@ async function removeItem(id) {
 // ── VIDER PANIER ──────────────────────────────────────────────
 async function clearCart() {
   if (!confirm('Vider tout le panier ?')) return
-  const { error } = await sb.from('cart_items').delete().eq('user_id', currentUserId)
+  const { error } = await getSb().from('cart_items').delete().eq('user_id', currentUserId)
   if (error) { toast('Erreur.', 'error'); return }
   cartData = []
   showState(stateEmpty)
@@ -666,6 +669,19 @@ function applyPromo() {
 // ── CHECKOUT ──────────────────────────────────────────────────
 async function checkout() {
   clearCheckoutError()
+
+  const sb = getSb()
+  if (!sb) { showCheckoutError('Connexion base de données perdue.'); return }
+
+  // ✅ FIX : vérifier auth AVANT de désactiver le bouton
+  const { data:{ user }, error:authErr } = await sb.auth.getUser()
+  if (authErr || !user) {
+    // ✅ FIX : sauvegarder destination avant redirect login
+    localStorage.setItem('wenna_redirect_after_login', 'panier.html')
+    window.location.href = 'compte.html?redirect=panier.html'
+    return
+  }
+
   btnCheckout.disabled = true
   btnCheckout.innerHTML = '<div class="spinner"></div> Traitement…'
 
@@ -684,7 +700,9 @@ async function checkout() {
       currency:     currency,
       status:       'pending',
       promo_code:   promoCode || null,
-      discount_pct: discountPct
+      discount_pct: discountPct,
+      created_at:   new Date().toISOString(),
+      updated_at:   new Date().toISOString()
     })
     .select('id')
     .single()
@@ -709,7 +727,6 @@ async function checkout() {
 
   if (iErr) {
     console.error('[WennaShop] Erreur INSERT order_items:', iErr)
-    // Nettoyage de la commande orpheline
     await sb.from('orders').delete().eq('id', order.id)
     showCheckoutError(`Erreur lors de l'enregistrement des articles : ${iErr.message}`)
     btnCheckout.disabled = false
@@ -717,10 +734,12 @@ async function checkout() {
     return
   }
 
-  // ── Étape 3 : Redirection vers paiement ─────────────────────
-  // ✅ FIX : redirection effective — le panier reste intact jusqu'à confirmation
+  // ── Étape 3 : Sauvegarder l'order_id et rediriger ───────────
+  localStorage.setItem('wenna_current_order_id', order.id)
   console.log('[WennaShop] Commande créée :', order.id, '→ redirection paiement.html')
-  window.location.href = `paiement.html?order_id=${order.id}`
+
+  // ✅ FIX FINAL : redirection directe, pas de condition intermédiaire
+  window.location.href = 'paiement.html?order_id=' + order.id
 }
 
 // ── ÉVÉNEMENTS ────────────────────────────────────────────────
@@ -744,7 +763,12 @@ document.getElementById('promo-input').addEventListener('keydown', e => {
 })
 
 // ── INIT ──────────────────────────────────────────────────────
-loadCart()
+// ✅ FIX : attendre que le DOM + config.js soient prêts
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', loadCart)
+} else {
+  loadCart()
+}
 </script>
 </body>
 </html>
