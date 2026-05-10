@@ -18,12 +18,6 @@
     ::-webkit-scrollbar-track{background:var(--coal);}
     ::-webkit-scrollbar-thumb{background:rgba(255,107,43,.3);}
 
-    /* CURSOR */
-    *{cursor:none!important;}
-    #cur{position:fixed;width:10px;height:10px;background:var(--fire);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
-    #cur-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(255,107,43,.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .12s ease,top .12s ease;}
-    @media(hover:none){#cur,#cur-ring{display:none;}*{cursor:auto!important;}}
-
     /* MAINTENANCE */
     #maintenance-screen{display:none;position:fixed;inset:0;background:var(--ink);z-index:9999;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:40px;}
     #maintenance-screen.show{display:flex;}
@@ -50,271 +44,144 @@
     .hd-acts button,.hd-acts a{background:none;border:none;color:var(--fog);text-decoration:none;transition:color .2s;position:relative;display:flex;align-items:center;}
     .hd-acts button:hover,.hd-acts a:hover{color:var(--fire);}
     .cbadge{position:absolute;top:-6px;right:-6px;width:16px;height:16px;background:var(--fire);color:#fff;font-size:9px;font-weight:700;border-radius:50%;display:none;align-items:center;justify-content:center;}
+    .cbadge.show{display:flex;}
     @media(max-width:768px){.hd{padding:14px 20px;}.hd.scr{padding:10px 20px;}.nav{display:none;}}
 
     /* TICKER */
-    .ticker{position:fixed;top:58px;left:0;right:0;z-index:99;background:var(--fire);overflow:hidden;padding:4px 0;}
+    .ticker{position:fixed;top:58px;left:0;right:0;z-index:99;background:var(--fire);overflow:hidden;padding:4px 0;will-change:transform;}
     .ticker-t{display:flex;width:max-content;animation:tick 36s linear infinite;font-size:9px;font-weight:500;letter-spacing:2.5px;text-transform:uppercase;color:#fff;}
     .ticker-t span{padding:0 24px;}
     .ticker-t span.sep{opacity:.4;padding:0 6px;}
     @keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-    /* ══════════════════════════════════════════
-       PANNEAU CATÉGORIES (NOUVEAU)
-    ══════════════════════════════════════════ */
-    #cat-panel-overlay{
-      position:fixed;inset:0;z-index:400;
-      background:rgba(8,8,8,.7);backdrop-filter:blur(8px);
-      opacity:0;pointer-events:none;transition:opacity .3s;
-    }
+    /* PANNEAU CATÉGORIES */
+    #cat-panel-overlay{position:fixed;inset:0;z-index:400;background:rgba(8,8,8,.7);backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .3s;}
     #cat-panel-overlay.open{opacity:1;pointer-events:all;}
-
-    #cat-panel{
-      position:fixed;top:0;left:0;bottom:0;z-index:401;
-      width:340px;max-width:90vw;
-      background:var(--coal);
-      border-right:1px solid var(--border);
-      display:flex;flex-direction:column;
-      transform:translateX(-100%);
-      transition:transform .38s cubic-bezier(.22,1,.36,1);
-      overflow:hidden;
-    }
+    #cat-panel{position:fixed;top:0;left:0;bottom:0;z-index:401;width:340px;max-width:90vw;background:var(--coal);border-right:1px solid var(--border);display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .38s cubic-bezier(.22,1,.36,1);overflow:hidden;}
     #cat-panel.open{transform:translateX(0);}
-
-    .cp-head{
-      padding:20px 20px 16px;
-      border-bottom:1px solid var(--border);
-      display:flex;align-items:center;justify-content:space-between;
-      flex-shrink:0;
-    }
+    .cp-head{padding:20px 20px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
     .cp-head-left{display:flex;align-items:center;gap:12px;}
     .cp-eyebrow{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--fire);}
     .cp-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;font-style:italic;line-height:1.1;}
     .cp-close{background:none;border:1px solid var(--border);color:#555;width:28px;height:28px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
     .cp-close:hover{border-color:var(--border-fire);color:var(--fire);}
     .cp-close .material-symbols-outlined{font-size:15px;}
-
-    /* Recherche dans le panneau */
-    .cp-search{
-      padding:12px 16px;border-bottom:1px solid var(--border);flex-shrink:0;
-    }
-    .cp-search input{
-      width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);
-      color:var(--snow);padding:8px 12px;font-size:12px;font-family:'DM Sans',sans-serif;
-      outline:none;transition:border-color .2s;
-    }
+    .cp-search{padding:12px 16px;border-bottom:1px solid var(--border);flex-shrink:0;}
+    .cp-search input{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--snow);padding:8px 12px;font-size:12px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
     .cp-search input:focus{border-color:var(--border-fire);}
     .cp-search input::placeholder{color:#333;}
-
-    /* Stats rapides */
-    .cp-stats{
-      padding:10px 16px;border-bottom:1px solid var(--border);
-      display:flex;gap:16px;flex-shrink:0;
-    }
+    .cp-stats{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;gap:16px;flex-shrink:0;}
     .cp-stat{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#333;}
     .cp-stat b{color:var(--snow);font-weight:500;}
-
-    /* Scroll area */
     .cp-body{flex:1;overflow-y:auto;padding:8px 0;}
     .cp-body::-webkit-scrollbar{width:3px;}
     .cp-body::-webkit-scrollbar-thumb{background:rgba(255,107,43,.2);}
-
-    /* Parent category row */
-    .cp-parent{
-      display:flex;align-items:center;justify-content:space-between;
-      padding:10px 16px;transition:background .15s;position:relative;
-    }
+    .cp-parent{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;transition:background .15s;position:relative;}
     .cp-parent:hover{background:var(--slate);}
     .cp-parent-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0;}
-    .cp-parent-icon{
-      width:32px;height:32px;background:rgba(255,107,43,.08);border:1px solid var(--border);
-      display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;
-    }
+    .cp-parent-icon{width:32px;height:32px;background:rgba(255,107,43,.08);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;}
     .cp-parent-info{flex:1;min-width:0;}
     .cp-parent-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .cp-parent-count{font-size:9px;color:#444;letter-spacing:1px;margin-top:1px;}
-    .cp-parent-arrow{
-      display:flex;align-items:center;gap:6px;
-    }
-    .cp-toggle{
-      background:none;border:none;color:#444;width:24px;height:24px;
-      display:flex;align-items:center;justify-content:center;transition:color .2s,transform .2s;
-    }
+    .cp-parent-arrow{display:flex;align-items:center;gap:6px;}
+    .cp-toggle{background:none;border:none;color:#444;width:24px;height:24px;display:flex;align-items:center;justify-content:center;transition:color .2s,transform .2s;}
     .cp-toggle.open{transform:rotate(180deg);color:var(--fire);}
     .cp-toggle .material-symbols-outlined{font-size:14px;}
-    .cp-apply-btn{
-      background:none;border:none;color:#555;font-size:9px;letter-spacing:1.5px;
-      text-transform:uppercase;font-family:'DM Sans',sans-serif;
-      padding:4px 8px;transition:color .2s,background .2s;
-      white-space:nowrap;
-    }
+    .cp-apply-btn{background:none;border:none;color:#555;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;font-family:'DM Sans',sans-serif;padding:4px 8px;transition:color .2s,background .2s;white-space:nowrap;}
     .cp-apply-btn:hover{color:var(--fire);background:rgba(255,107,43,.06);}
-
-    /* Sous-catégories */
     .cp-children{display:none;background:rgba(0,0,0,.3);}
     .cp-children.open{display:block;}
-    .cp-child{
-      display:flex;align-items:center;justify-content:space-between;
-      padding:8px 16px 8px 56px;transition:background .15s;
-    }
+    .cp-child{display:flex;align-items:center;justify-content:space-between;padding:8px 16px 8px 56px;transition:background .15s;}
     .cp-child:hover{background:var(--slate);}
     .cp-child-name{font-size:12px;color:#aaa;flex:1;}
-    .cp-child-apply{
-      background:none;border:none;color:#444;font-size:9px;letter-spacing:1px;
-      text-transform:uppercase;font-family:'DM Sans',sans-serif;
-      padding:3px 6px;transition:color .2s;
-    }
+    .cp-child-apply{background:none;border:none;color:#444;font-size:9px;letter-spacing:1px;text-transform:uppercase;font-family:'DM Sans',sans-serif;padding:3px 6px;transition:color .2s;}
     .cp-child-apply:hover{color:var(--fire);}
-
-    /* Pied du panneau */
-    .cp-footer{
-      padding:12px 16px;border-top:1px solid var(--border);
-      display:flex;gap:8px;flex-shrink:0;
-    }
-    .cp-btn-all{
-      flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
-      background:rgba(255,107,43,.08);border:1px solid rgba(255,107,43,.2);
-      color:var(--fire);padding:9px;font-size:9px;font-weight:500;letter-spacing:2px;
-      text-transform:uppercase;font-family:'DM Sans',sans-serif;transition:all .2s;
-    }
+    .cp-footer{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;}
+    .cp-btn-all{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(255,107,43,.08);border:1px solid rgba(255,107,43,.2);color:var(--fire);padding:9px;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;font-family:'DM Sans',sans-serif;transition:all .2s;}
     .cp-btn-all:hover{background:rgba(255,107,43,.15);border-color:rgba(255,107,43,.4);}
-    .cp-btn-reset{
-      display:flex;align-items:center;justify-content:center;gap:6px;
-      background:transparent;border:1px solid var(--border);
-      color:#555;padding:9px 14px;font-size:9px;letter-spacing:1.5px;
-      text-transform:uppercase;font-family:'DM Sans',sans-serif;transition:all .2s;
-    }
+    .cp-btn-reset{display:flex;align-items:center;justify-content:center;gap:6px;background:transparent;border:1px solid var(--border);color:#555;padding:9px 14px;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;font-family:'DM Sans',sans-serif;transition:all .2s;}
     .cp-btn-reset:hover{border-color:var(--border-fire);color:var(--fire);}
-
-    /* Squelette catégories */
     .cp-skel-row{padding:10px 16px;display:flex;align-items:center;gap:10px;}
     .cp-skel-icon{width:32px;height:32px;background:var(--slate);}
     .cp-skel-lines{flex:1;display:flex;flex-direction:column;gap:5px;}
     .cp-skel-line{height:10px;background:var(--slate);border-radius:2px;}
     @keyframes shim{0%{background-position:-600px 0}100%{background-position:600px 0}}
     .skel-anim{background:linear-gradient(90deg,var(--slate) 25%,var(--smoke) 50%,var(--slate) 75%);background-size:600px 100%;animation:shim 1.5s infinite;}
-
-    /* Bouton ouvrir panneau catégories — dans toolbar */
-    .btn-cats-panel{
-      display:inline-flex;align-items:center;gap:7px;
-      background:rgba(255,107,43,.06);border:1px solid rgba(255,107,43,.2);
-      color:var(--fire);padding:5px 14px;font-size:9px;font-weight:500;letter-spacing:2px;
-      text-transform:uppercase;font-family:'DM Sans',sans-serif;transition:all .2s;
-      flex-shrink:0;white-space:nowrap;
-    }
+    .btn-cats-panel{display:inline-flex;align-items:center;gap:7px;background:rgba(255,107,43,.06);border:1px solid rgba(255,107,43,.2);color:var(--fire);padding:5px 14px;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;font-family:'DM Sans',sans-serif;transition:all .2s;flex-shrink:0;white-space:nowrap;}
     .btn-cats-panel:hover{background:rgba(255,107,43,.12);border-color:rgba(255,107,43,.4);}
     .btn-cats-panel .material-symbols-outlined{font-size:14px;}
 
     /* ══════════════════════════════════════════
-       SEARCH OVERLAY AMÉLIORÉ (NOUVEAU)
+       PANNEAU PUBLICITÉS (NOUVEAU)
     ══════════════════════════════════════════ */
-    .srch-ov{
-      position:fixed;inset:0;z-index:200;
-      background:rgba(8,8,8,.97);backdrop-filter:blur(24px);
-      display:flex;flex-direction:column;align-items:center;
-      padding-top:100px;
-      opacity:0;pointer-events:none;transition:opacity .25s;
-    }
+    #ads-panel-overlay{position:fixed;inset:0;z-index:400;background:rgba(8,8,8,.6);backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .3s;}
+    #ads-panel-overlay.open{opacity:1;pointer-events:all;}
+    #ads-panel{position:fixed;top:0;right:0;bottom:0;z-index:401;width:320px;max-width:90vw;background:var(--coal);border-left:1px solid var(--border);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .38s cubic-bezier(.22,1,.36,1);overflow:hidden;}
+    #ads-panel.open{transform:translateX(0);}
+    .ap-head{padding:20px 16px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+    .ap-eyebrow{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);}
+    .ap-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;font-style:italic;line-height:1.1;}
+    .ap-close{background:none;border:1px solid var(--border);color:#555;width:28px;height:28px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+    .ap-close:hover{border-color:rgba(208,166,0,.4);color:var(--gold);}
+    .ap-close .material-symbols-outlined{font-size:15px;}
+    .ap-body{flex:1;overflow-y:auto;padding:12px;}
+    .ap-body::-webkit-scrollbar{width:3px;}
+    .ap-body::-webkit-scrollbar-thumb{background:rgba(208,166,0,.2);}
+    /* Card pub */
+    .ad-card{background:var(--slate);margin-bottom:10px;overflow:hidden;border:1px solid var(--border);transition:border-color .2s;text-decoration:none;display:block;}
+    .ad-card:hover{border-color:rgba(208,166,0,.3);}
+    .ad-card-img{width:100%;height:140px;object-fit:cover;display:block;background:var(--smoke);}
+    .ad-card-body{padding:10px 12px 12px;}
+    .ad-card-label{font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
+    .ad-card-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;font-style:italic;line-height:1.2;margin-bottom:6px;}
+    .ad-card-desc{font-size:11px;color:#555;line-height:1.5;margin-bottom:10px;}
+    .ad-card-cta{display:inline-flex;align-items:center;gap:6px;background:var(--fire);color:#fff;padding:6px 14px;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;font-family:'DM Sans',sans-serif;transition:background .2s;}
+    .ad-card-cta:hover{background:var(--ember);}
+    .ad-empty{padding:32px;text-align:center;font-size:11px;color:#333;letter-spacing:1px;}
+    /* Bouton ouvrir pub dans header */
+    .btn-ads{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(208,166,0,.3);background:rgba(208,166,0,.06);color:var(--gold);padding:5px 14px;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;font-family:'DM Sans',sans-serif;transition:all .2s;flex-shrink:0;white-space:nowrap;}
+    .btn-ads:hover{background:rgba(208,166,0,.12);border-color:rgba(208,166,0,.6);}
+    .btn-ads .material-symbols-outlined{font-size:14px;}
+
+    /* SEARCH OVERLAY */
+    .srch-ov{position:fixed;inset:0;z-index:200;background:rgba(8,8,8,.97);backdrop-filter:blur(24px);display:flex;flex-direction:column;align-items:center;padding-top:100px;opacity:0;pointer-events:none;transition:opacity .25s;}
     .srch-ov.open{opacity:1;pointer-events:all;}
-
     .srch-container{width:100%;max-width:680px;padding:0 20px;}
-
-    .srch-hint{
-      font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#333;
-      margin-bottom:20px;display:flex;align-items:center;gap:16px;
-    }
+    .srch-hint{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#333;margin-bottom:20px;display:flex;align-items:center;gap:16px;}
     .srch-hint::before{content:'';width:20px;height:1px;background:#333;}
-
-    .srch-box{
-      border-bottom:2px solid var(--fire);display:flex;align-items:center;gap:14px;
-      padding-bottom:14px;
-      transform:translateY(-16px);transition:transform .3s;
-    }
+    .srch-box{border-bottom:2px solid var(--fire);display:flex;align-items:center;gap:14px;padding-bottom:14px;transform:translateY(-16px);transition:transform .3s;}
     .srch-ov.open .srch-box{transform:translateY(0);}
-    .srch-inp{
-      flex:1;background:none;border:none;outline:none;
-      font-family:'Cormorant Garamond',serif;font-size:30px;font-style:italic;
-      color:var(--snow);
-    }
+    .srch-inp{flex:1;background:none;border:none;outline:none;font-family:'Cormorant Garamond',serif;font-size:30px;font-style:italic;color:var(--snow);}
     .srch-inp::placeholder{color:#222;}
-
-    /* Actions sous la barre */
-    .srch-actions{
-      display:flex;align-items:center;justify-content:space-between;
-      margin-top:16px;flex-wrap:wrap;gap:10px;
-    }
+    .srch-actions{display:flex;align-items:center;justify-content:space-between;margin-top:16px;flex-wrap:wrap;gap:10px;}
     .srch-actions-left{display:flex;gap:8px;flex-wrap:wrap;}
-    .srch-tag{
-      display:inline-flex;align-items:center;gap:4px;
-      border:1px solid var(--border);background:transparent;
-      color:#555;padding:5px 12px;font-size:9px;letter-spacing:1.5px;
-      text-transform:uppercase;font-family:'DM Sans',sans-serif;
-      transition:all .2s;
-    }
+    .srch-tag{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--border);background:transparent;color:#555;padding:5px 12px;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;font-family:'DM Sans',sans-serif;transition:all .2s;}
     .srch-tag:hover,.srch-tag.active{border-color:var(--border-fire);color:var(--fire);background:rgba(255,107,43,.06);}
-    .srch-go-btn{
-      display:inline-flex;align-items:center;gap:8px;
-      background:var(--fire);border:none;color:#fff;
-      padding:8px 20px;font-size:9px;font-weight:500;letter-spacing:2px;
-      text-transform:uppercase;font-family:'DM Sans',sans-serif;
-      transition:background .2s;white-space:nowrap;
-    }
+    .srch-go-btn{display:inline-flex;align-items:center;gap:8px;background:var(--fire);border:none;color:#fff;padding:8px 20px;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;font-family:'DM Sans',sans-serif;transition:background .2s;white-space:nowrap;}
     .srch-go-btn:hover{background:var(--ember);}
     .srch-go-btn .material-symbols-outlined{font-size:14px;}
-
-    /* Résultats inline live */
-    .srch-results{
-      margin-top:24px;display:none;flex-direction:column;gap:2px;
-      max-height:50vh;overflow-y:auto;
-    }
+    .srch-results{margin-top:24px;display:none;flex-direction:column;gap:2px;max-height:50vh;overflow-y:auto;}
     .srch-results.show{display:flex;}
     .srch-results::-webkit-scrollbar{width:3px;}
     .srch-results::-webkit-scrollbar-thumb{background:rgba(255,107,43,.2);}
-
-    .srch-result-item{
-      display:flex;align-items:center;gap:14px;
-      padding:10px 14px;background:var(--slate);
-      text-decoration:none;color:inherit;
-      transition:background .15s;border-left:2px solid transparent;
-    }
+    .srch-result-item{display:flex;align-items:center;gap:14px;padding:10px 14px;background:var(--slate);text-decoration:none;color:inherit;transition:background .15s;border-left:2px solid transparent;}
     .srch-result-item:hover{background:var(--smoke);border-left-color:var(--fire);}
-    .srch-result-img{
-      width:44px;height:44px;object-fit:cover;flex-shrink:0;background:var(--smoke);
-    }
+    .srch-result-img{width:44px;height:44px;object-fit:cover;flex-shrink:0;background:var(--smoke);}
     .srch-result-info{flex:1;min-width:0;}
     .srch-result-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .srch-result-meta{font-size:10px;color:#444;margin-top:2px;}
     .srch-result-price{font-size:12px;color:var(--fire);flex-shrink:0;font-weight:500;}
-    .srch-result-more{
-      padding:12px;text-align:center;font-size:10px;color:var(--fire);
-      letter-spacing:1.5px;text-transform:uppercase;background:var(--slate);
-      transition:background .2s;
-    }
+    .srch-result-more{padding:12px;text-align:center;font-size:10px;color:var(--fire);letter-spacing:1.5px;text-transform:uppercase;background:var(--slate);transition:background .2s;}
     .srch-result-more:hover{background:var(--smoke);}
     .srch-loading{padding:20px;text-align:center;font-size:10px;color:#444;letter-spacing:2px;text-transform:uppercase;}
     .srch-empty{padding:20px;text-align:center;font-size:10px;color:#333;letter-spacing:2px;text-transform:uppercase;}
-
-    /* Suggestions rapides */
     .srch-suggestions{margin-top:28px;}
     .srch-sug-title{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#333;margin-bottom:12px;}
     .srch-sug-tags{display:flex;flex-wrap:wrap;gap:6px;}
-    .srch-sug-tag{
-      display:inline-flex;align-items:center;gap:4px;
-      border:1px solid var(--border);background:transparent;
-      color:#555;padding:5px 12px;font-size:10px;font-family:'DM Sans',sans-serif;
-      transition:all .2s;
-    }
+    .srch-sug-tag{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--border);background:transparent;color:#555;padding:5px 12px;font-size:10px;font-family:'DM Sans',sans-serif;transition:all .2s;}
     .srch-sug-tag:hover{border-color:var(--border-fire);color:var(--fire);}
-
-    /* Bouton recherche dans nav — indicateur actif */
     .srch-nav-btn{position:relative;}
-    .srch-nav-kbd{
-      position:absolute;top:-2px;right:-24px;
-      font-size:7px;letter-spacing:.5px;color:#333;
-      background:var(--slate);border:1px solid var(--border);
-      padding:1px 4px;pointer-events:none;
-      display:none;
-    }
+    .srch-nav-kbd{position:absolute;top:-2px;right:-24px;font-size:7px;letter-spacing:.5px;color:#333;background:var(--slate);border:1px solid var(--border);padding:1px 4px;pointer-events:none;display:none;}
     @media(min-width:1024px){.srch-nav-kbd{display:block;}}
 
     /* PAGE HERO */
@@ -335,13 +202,21 @@
     .quetes-strip-label .qs-sub{font-size:10px;color:#444;margin-top:1px;}
     .quetes-strip-cta{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(208,166,0,.3);background:transparent;color:var(--gold);padding:6px 16px;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s;white-space:nowrap;font-family:'DM Sans',sans-serif;flex-shrink:0;}
     .quetes-strip-cta:hover{background:rgba(208,166,0,.1);border-color:rgba(208,166,0,.6);}
+    .quetes-strip-actions{display:flex;align-items:center;gap:8px;}
+    .btn-chasseurs{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(255,107,43,.3);background:rgba(255,107,43,.06);color:var(--fire);padding:6px 16px;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s;white-space:nowrap;font-family:'DM Sans',sans-serif;flex-shrink:0;}
+    .btn-chasseurs:hover{background:rgba(255,107,43,.12);border-color:rgba(255,107,43,.6);}
     .quetes-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;}
     @media(max-width:900px){.quetes-cards{grid-template-columns:1fr 1fr;}}
     @media(max-width:600px){.quetes-cards{grid-template-columns:1fr;}}
-    .qcard{background:var(--slate);border-left:2px solid transparent;padding:14px 16px;text-decoration:none;color:inherit;transition:all .2s;display:flex;flex-direction:column;gap:8px;position:relative;}
-    .qcard:hover{border-left-color:var(--gold);background:var(--smoke);}
-    .qcard-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
-    .qcard-title{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:700;font-style:italic;line-height:1.2;flex:1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    /* Quête card avec image */
+    .qcard{background:var(--slate);border-left:2px solid transparent;text-decoration:none;color:inherit;transition:all .2s;display:flex;flex-direction:column;position:relative;overflow:hidden;}
+    .qcard:hover{border-left-color:var(--gold);}
+    .qcard-img{width:100%;height:90px;object-fit:cover;display:block;background:var(--smoke);}
+    .qcard-img-placeholder{width:100%;height:90px;background:linear-gradient(135deg,var(--smoke),var(--slate));display:flex;align-items:center;justify-content:center;}
+    .qcard-img-placeholder .material-symbols-outlined{font-size:28px;color:#333;}
+    .qcard-body{padding:10px 12px 12px;}
+    .qcard-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px;}
+    .qcard-title{font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:700;font-style:italic;line-height:1.2;flex:1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
     .qcard-reward{background:rgba(208,166,0,.1);border:1px solid rgba(208,166,0,.2);padding:3px 8px;flex-shrink:0;text-align:right;}
     .qcard-reward-lbl{font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);line-height:1;}
     .qcard-reward-val{font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:700;font-style:italic;color:var(--gold);line-height:1.2;}
@@ -368,8 +243,6 @@
     .view-btns{display:flex;gap:2px;}
     .view-btn{width:26px;height:26px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);background:transparent;color:var(--fog);transition:all .15s;}
     .view-btn.active{background:var(--fire);border-color:var(--fire);color:#fff;}
-
-    /* Quête btn dans toolbar */
     .btn-quete{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(208,166,0,.35);background:rgba(208,166,0,.06);color:var(--gold);padding:5px 14px;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .2s;white-space:nowrap;font-family:'DM Sans',sans-serif;flex-shrink:0;}
     .btn-quete:hover{background:rgba(208,166,0,.12);border-color:rgba(208,166,0,.6);}
 
@@ -485,7 +358,6 @@
     .bnav-item.gold{color:var(--gold)!important;}
     .reveal{opacity:0;transform:translateY(16px);transition:opacity .5s cubic-bezier(.22,1,.36,1),transform .5s cubic-bezier(.22,1,.36,1);}
     .reveal.vis{opacity:1;transform:translateY(0);}
-
     #toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(8px);z-index:300;background:var(--slate);border:1px solid var(--border-fire);color:var(--snow);padding:10px 20px;font-size:11px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;white-space:nowrap;}
     #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
@@ -500,6 +372,7 @@
       .prod-grid.cols-3{grid-template-columns:repeat(2,1fr);}
       .quetes-strip{padding:16px 20px;}
       #cat-panel{width:100%;max-width:100vw;}
+      #ads-panel{width:100%;max-width:100vw;}
     }
     @media(max-width:480px){
       .prod-grid.cols-4,.prod-grid.cols-3{grid-template-columns:repeat(2,1fr);}
@@ -508,15 +381,12 @@
 </head>
 <body>
 
-<!-- ÉCRAN MAINTENANCE -->
 <div id="maintenance-screen">
   <div class="maint-logo">Wenna<b>Shop</b></div>
   <div class="maint-title">Site en maintenance</div>
   <div class="maint-sub">Nous effectuons des mises à jour. La boutique sera de retour très bientôt.</div>
 </div>
 
-<div id="cur"></div>
-<div id="cur-ring"></div>
 <div id="toast"></div>
 
 <!-- BANNIÈRE PROMO -->
@@ -543,7 +413,7 @@
     </button>
     <a href="panier.html" style="position:relative;" aria-label="Panier">
       <span class="material-symbols-outlined">shopping_bag</span>
-      <span class="cbadge" id="cart-badge">0</span>
+      <span class="cbadge" id="cart-badge"></span>
     </a>
     <a href="compte.html" aria-label="Compte"><span class="material-symbols-outlined">person</span></a>
   </div>
@@ -552,7 +422,7 @@
 <!-- TICKER -->
 <div class="ticker">
   <div class="ticker-t" id="ticker-content">
-    <span>Chargement…</span>
+    <span>WennaShop</span><span class="sep">✦</span><span>Artisanat Gabon · Maroc</span><span class="sep">✦</span><span>WennaShop</span><span class="sep">✦</span><span>Artisanat Gabon · Maroc</span><span class="sep">✦</span>
   </div>
 </div>
 
@@ -573,12 +443,17 @@
         <div class="qs-sub">Produits recherchés par la communauté · Devenez chasseur</div>
       </div>
     </div>
-    <a href="quetes.html" class="quetes-strip-cta">Voir toutes<span class="material-symbols-outlined" style="font-size:12px;">arrow_forward</span></a>
+    <div class="quetes-strip-actions">
+      <a href="chasseurs.html" class="btn-chasseurs">
+        <span class="material-symbols-outlined" style="font-size:13px;">bolt</span>Chasseurs
+      </a>
+      <a href="quetes.html" class="quetes-strip-cta">Voir toutes<span class="material-symbols-outlined" style="font-size:12px;">arrow_forward</span></a>
+    </div>
   </div>
   <div class="quetes-cards" id="quetes-cards">
-    <div class="qcard-sk"><div class="qs-skel" style="height:14px;width:70%;border-radius:2px;"></div><div class="qs-skel" style="height:10px;width:50%;border-radius:2px;margin-top:6px;"></div></div>
-    <div class="qcard-sk"><div class="qs-skel" style="height:14px;width:60%;border-radius:2px;"></div><div class="qs-skel" style="height:10px;width:45%;border-radius:2px;margin-top:6px;"></div></div>
-    <div class="qcard-sk"><div class="qs-skel" style="height:14px;width:75%;border-radius:2px;"></div><div class="qs-skel" style="height:10px;width:55%;border-radius:2px;margin-top:6px;"></div></div>
+    <div class="qcard-sk"><div class="qs-skel" style="height:90px;margin-bottom:8px;"></div><div class="qs-skel" style="height:14px;width:70%;border-radius:2px;"></div><div class="qs-skel" style="height:10px;width:50%;border-radius:2px;margin-top:6px;"></div></div>
+    <div class="qcard-sk"><div class="qs-skel" style="height:90px;margin-bottom:8px;"></div><div class="qs-skel" style="height:14px;width:60%;border-radius:2px;"></div><div class="qs-skel" style="height:10px;width:45%;border-radius:2px;margin-top:6px;"></div></div>
+    <div class="qcard-sk"><div class="qs-skel" style="height:90px;margin-bottom:8px;"></div><div class="qs-skel" style="height:14px;width:75%;border-radius:2px;"></div><div class="qs-skel" style="height:10px;width:55%;border-radius:2px;margin-top:6px;"></div></div>
   </div>
 </div>
 
@@ -588,7 +463,6 @@
 <!-- TOOLBAR -->
 <div class="toolbar">
   <div class="toolbar-left">
-    <!-- Bouton panneau toutes les catégories -->
     <button class="btn-cats-panel" onclick="openCatPanel()" aria-label="Toutes les catégories">
       <span class="material-symbols-outlined">category</span>Catégories
     </button>
@@ -600,6 +474,9 @@
     <a href="quetes.html" class="btn-quete">
       <span class="material-symbols-outlined">search</span>Quêtes
     </a>
+    <button class="btn-ads" onclick="openAdsPanel()" aria-label="Offres spéciales">
+      <span class="material-symbols-outlined">campaign</span>Offres
+    </button>
     <span class="results-count" id="results-count"></span>
     <select class="sort-select" id="sort-select" onchange="applySort()">
       <option value="created_at:desc">Plus récents</option>
@@ -677,14 +554,13 @@
   <div class="bnav-inner">
     <a href="boutique.html" class="bnav-item active"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">storefront</span><span>Shop</span></a>
     <a href="quetes.html" class="bnav-item gold"><span class="material-symbols-outlined">search</span><span>Quêtes</span></a>
+    <a href="chasseurs.html" class="bnav-item"><span class="material-symbols-outlined">bolt</span><span>Chasse</span></a>
     <a href="dashboard-vendeur.html" class="bnav-item"><span class="material-symbols-outlined">add_circle</span><span>Sell</span></a>
     <a href="compte.html" class="bnav-item"><span class="material-symbols-outlined">person</span><span>Profil</span></a>
   </div>
 </nav>
 
-<!-- ═══════════════════════════════════
-     PANNEAU CATÉGORIES (NOUVEAU)
-═══════════════════════════════════ -->
+<!-- PANNEAU CATÉGORIES -->
 <div id="cat-panel-overlay" onclick="closeCatPanel()"></div>
 <div id="cat-panel">
   <div class="cp-head">
@@ -704,11 +580,9 @@
     <div class="cp-stat">Sélection : <b id="cp-selected-name" style="color:var(--fire);">Toutes</b></div>
   </div>
   <div class="cp-body" id="cp-body">
-    <!-- Squelettes -->
     <div class="cp-skel-row"><div class="cp-skel-icon skel-anim"></div><div class="cp-skel-lines"><div class="cp-skel-line skel-anim" style="width:70%;"></div><div class="cp-skel-line skel-anim" style="width:45%;"></div></div></div>
     <div class="cp-skel-row"><div class="cp-skel-icon skel-anim"></div><div class="cp-skel-lines"><div class="cp-skel-line skel-anim" style="width:60%;"></div><div class="cp-skel-line skel-anim" style="width:50%;"></div></div></div>
     <div class="cp-skel-row"><div class="cp-skel-icon skel-anim"></div><div class="cp-skel-lines"><div class="cp-skel-line skel-anim" style="width:80%;"></div><div class="cp-skel-line skel-anim" style="width:40%;"></div></div></div>
-    <div class="cp-skel-row"><div class="cp-skel-icon skel-anim"></div><div class="cp-skel-lines"><div class="cp-skel-line skel-anim" style="width:65%;"></div><div class="cp-skel-line skel-anim" style="width:55%;"></div></div></div>
   </div>
   <div class="cp-footer">
     <button class="cp-btn-all" onclick="selectAllCats()">
@@ -720,9 +594,25 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════
-     SEARCH OVERLAY AMÉLIORÉ (NOUVEAU)
-═══════════════════════════════════ -->
+<!-- PANNEAU PUBLICITÉS -->
+<div id="ads-panel-overlay" onclick="closeAdsPanel()"></div>
+<div id="ads-panel">
+  <div class="ap-head">
+    <div>
+      <div class="ap-eyebrow">Partenaires & Offres</div>
+      <div class="ap-title">Promotions</div>
+    </div>
+    <button class="ap-close" onclick="closeAdsPanel()">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+  </div>
+  <div class="ap-body" id="ap-body">
+    <div class="qcard-sk"><div class="qs-skel" style="height:140px;margin-bottom:8px;"></div><div class="qs-skel" style="height:12px;width:70%;border-radius:2px;"></div><div class="qs-skel" style="height:10px;width:50%;border-radius:2px;margin-top:6px;"></div></div>
+    <div class="qcard-sk"><div class="qs-skel" style="height:140px;margin-bottom:8px;"></div><div class="qs-skel" style="height:12px;width:60%;border-radius:2px;"></div><div class="qs-skel" style="height:10px;width:45%;border-radius:2px;margin-top:6px;"></div></div>
+  </div>
+</div>
+
+<!-- SEARCH OVERLAY -->
 <div class="srch-ov" id="srchOv">
   <div class="srch-container">
     <div class="srch-hint">Recherche produits</div>
@@ -735,7 +625,6 @@
         <span class="material-symbols-outlined" style="font-size:20px;">close</span>
       </button>
     </div>
-    <!-- Actions -->
     <div class="srch-actions">
       <div class="srch-actions-left">
         <button class="srch-tag" id="stag-gabon" onclick="toggleSearchTag('gabon')">Gabon</button>
@@ -745,9 +634,7 @@
         <span class="material-symbols-outlined">open_in_new</span>Page recherche
       </button>
     </div>
-    <!-- Résultats live -->
     <div class="srch-results" id="srch-results"></div>
-    <!-- Suggestions si pas de recherche -->
     <div class="srch-suggestions" id="srch-suggestions">
       <div class="srch-sug-title">Tendances</div>
       <div class="srch-sug-tags" id="srch-sug-tags">
@@ -793,156 +680,171 @@
 <script src="supabase.config.js"></script>
 <script src="cart.js"></script>
 <script>
-/* ══════════════════════════════════════════
+/* ══════════════════════════════════════
+   SCROLL HEADER
+══════════════════════════════════════ */
+const hd = document.getElementById('hd')
+window.addEventListener('scroll', () => hd.classList.toggle('scr', scrollY > 60), {passive:true})
+
+/* Reveal on scroll */
+const rObs = new IntersectionObserver(es => {
+  es.forEach(e => { if(e.isIntersecting) e.target.classList.add('vis') })
+}, {threshold:.07})
+document.querySelectorAll('.reveal').forEach(el => rObs.observe(el))
+
+/* ══════════════════════════════════════
    SITE CONFIG
-══════════════════════════════════════════ */
+══════════════════════════════════════ */
 let siteConfig = {}
 async function loadSiteConfig() {
-  if(typeof db==='undefined') return
+  if(typeof db === 'undefined') return
   try {
     const {data,error} = await db.from('site_config').select('key,value')
     if(error||!data) return
-    data.forEach(r => { siteConfig[r.key]=r.value })
+    data.forEach(r => { siteConfig[r.key] = r.value })
     applySiteConfig()
-  } catch(e) { console.warn('site_config:',e.message) }
+  } catch(e) { console.warn('site_config:', e.message) }
 }
 function applySiteConfig() {
   const cfg = siteConfig
-  if(cfg.maintenance_mode==='true') { document.getElementById('maintenance-screen').classList.add('show'); return }
+  if(cfg.maintenance_mode === 'true') {
+    document.getElementById('maintenance-screen').classList.add('show')
+    return
+  }
   if(cfg.ticker_messages) {
     try {
       const msgs = JSON.parse(cfg.ticker_messages)
       if(msgs.length) {
-        const items=[...msgs,...msgs]
-        document.getElementById('ticker-content').innerHTML=items.map(m=>`<span>${m}</span><span class="sep">✦</span>`).join('')
+        const items = [...msgs, ...msgs]
+        document.getElementById('ticker-content').innerHTML = items.map(m => `<span>${m}</span><span class="sep">✦</span>`).join('')
       }
     } catch(e) {}
   }
-  if(cfg.boutique_banner_enabled==='true'&&cfg.boutique_banner_url) {
-    const banner=document.getElementById('promo-banner')
+  if(cfg.boutique_banner_enabled === 'true' && cfg.boutique_banner_url) {
+    const banner = document.getElementById('promo-banner')
     banner.classList.add('show')
-    banner.style.backgroundImage=`url(${cfg.boutique_banner_url})`
-    banner.style.backgroundSize='cover';banner.style.backgroundPosition='center';banner.style.minHeight='80px'
-    if(cfg.boutique_banner_link) document.getElementById('promo-banner-link').href=cfg.boutique_banner_link
-    document.getElementById('promo-banner-text').textContent=''
+    if(cfg.boutique_banner_link) document.getElementById('promo-banner-link').href = cfg.boutique_banner_link
+    document.getElementById('promo-banner-text').textContent = cfg.boutique_banner_text || ''
   }
-  const threshold=cfg.shipping_threshold||'2500',cost=cfg.shipping_cost||'120',delay=cfg.shipping_delay||'5-12 jours ouvrés',currency=cfg.site_currency||'MAD'
-  const freeEl=document.getElementById('ship-free-label'),costEl=document.getElementById('ship-cost-label'),delayEl=document.getElementById('ship-delay-label')
-  if(freeEl) freeEl.textContent=`Livraison gratuite dès ${Number(threshold).toLocaleString('fr-FR')} ${currency}`
-  if(costEl) costEl.textContent=`${Number(cost).toLocaleString('fr-FR')} ${currency}`
-  if(delayEl) delayEl.textContent=delay
-  window.reviewsEnabled=cfg.reviews_enabled!=='false'
-  window.questModalEnabled=cfg.quest_modal_enabled!=='false'
-  window.defaultCurrency=cfg.site_currency||'MAD'
+  const threshold = cfg.shipping_threshold||'2500', cost = cfg.shipping_cost||'120',
+        delay = cfg.shipping_delay||'5-12 jours ouvrés', currency = cfg.site_currency||'MAD'
+  const freeEl = document.getElementById('ship-free-label')
+  const costEl = document.getElementById('ship-cost-label')
+  const delayEl = document.getElementById('ship-delay-label')
+  if(freeEl) freeEl.textContent = `Livraison gratuite dès ${Number(threshold).toLocaleString('fr-FR')} ${currency}`
+  if(costEl) costEl.textContent = `${Number(cost).toLocaleString('fr-FR')} ${currency}`
+  if(delayEl) delayEl.textContent = delay
+  window.reviewsEnabled = cfg.reviews_enabled !== 'false'
+  window.questModalEnabled = cfg.quest_modal_enabled !== 'false'
+  window.defaultCurrency = cfg.site_currency || 'MAD'
 }
 function watchSiteConfig() {
-  if(typeof db==='undefined') return
+  if(typeof db === 'undefined') return
   try {
     db.channel('boutique-config-watch')
-      .on('postgres_changes',{event:'*',schema:'public',table:'site_config'},async()=>{ await loadSiteConfig() })
+      .on('postgres_changes', {event:'*', schema:'public', table:'site_config'}, async () => { await loadSiteConfig() })
       .subscribe()
   } catch(e) {}
 }
 
-/* ══════════════════════════════════════════
-   CURSOR
-══════════════════════════════════════════ */
-const cur=document.getElementById('cur'),crng=document.getElementById('cur-ring')
-let mx=0,my=0,rx=0,ry=0
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY})
-;(function anim(){
-  if(cur){cur.style.left=mx+'px';cur.style.top=my+'px'}
-  rx+=(mx-rx)*.12;ry+=(my-ry)*.12
-  if(crng){crng.style.left=rx+'px';crng.style.top=ry+'px'}
-  requestAnimationFrame(anim)
-})()
-const hd=document.getElementById('hd')
-window.addEventListener('scroll',()=>hd.classList.toggle('scr',scrollY>60),{passive:true})
-const rObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis')})},{threshold:.07})
-document.querySelectorAll('.reveal').forEach(el=>rObs.observe(el))
-
-/* ══════════════════════════════════════════
+/* ══════════════════════════════════════
    UTILS
-══════════════════════════════════════════ */
-function showToast(msg,d=3000){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),d)}
-function fmtPrice(n,cur='MAD'){try{return new Intl.NumberFormat('fr-FR',{style:'currency',currency:cur,minimumFractionDigits:0}).format(n)}catch{return Number(n).toFixed(0)+' '+cur}}
-function fmtFcfa(n){return Number(n).toLocaleString('fr-FR')+' FCFA'}
-function daysLeft(d){return Math.max(0,Math.ceil((new Date(d)-new Date())/86400000))}
-function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+══════════════════════════════════════ */
+function showToast(msg, d=3000) {
+  const t = document.getElementById('toast')
+  t.textContent = msg; t.classList.add('show')
+  setTimeout(() => t.classList.remove('show'), d)
+}
+function fmtPrice(n, cur='MAD') {
+  try { return new Intl.NumberFormat('fr-FR',{style:'currency',currency:cur,minimumFractionDigits:0}).format(n) }
+  catch { return Number(n).toFixed(0)+' '+cur }
+}
+function fmtFcfa(n) { return Number(n).toLocaleString('fr-FR')+' FCFA' }
+function daysLeft(d) { return Math.max(0, Math.ceil((new Date(d)-new Date())/86400000)) }
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
 
-/* ══════════════════════════════════════════
-   CART
-══════════════════════════════════════════ */
-async function updateCartBadge(){if(typeof Cart!=='undefined') await Cart.updateBadge('cart-badge')}
-async function addToCart(p){
-  if(typeof Cart==='undefined'){showToast('Erreur panier');return}
-  const r=await Cart.add(p.id,p.name,p.price,null,p.currency||'MAD')
-  if(!r.success&&r.error==='not_logged_in'){showToast('Connecte-toi pour ajouter au panier');setTimeout(()=>window.location.href='login.html',1500);return}
-  showToast(r.success?`« ${p.name} » ajouté ✓`:r.message)
-  if(r.success) Cart.updateBadge('cart-badge')
+/* ══════════════════════════════════════
+   CART BADGE — FIX
+   On expose updateCartBadge et on l'appelle
+   après que Cart et db soient prêts
+══════════════════════════════════════ */
+async function updateCartBadge() {
+  if(typeof Cart === 'undefined') return
+  const badge = document.getElementById('cart-badge')
+  if(!badge) return
+  try {
+    const count = await Cart.getCount()   // Cart.getCount() doit retourner un nombre
+    if(count && count > 0) {
+      badge.textContent = count > 99 ? '99+' : count
+      badge.classList.add('show')
+    } else {
+      badge.textContent = ''
+      badge.classList.remove('show')
+    }
+  } catch(e) {
+    // fallback : utiliser Cart.updateBadge si getCount n'existe pas
+    if(typeof Cart.updateBadge === 'function') Cart.updateBadge('cart-badge')
+  }
 }
 
-/* ══════════════════════════════════════════
-   PANNEAU CATÉGORIES (NOUVEAU)
-══════════════════════════════════════════ */
-let allCatsData = []       // toutes les catégories chargées
-let catProductCounts = {}  // id → count produits
+async function addToCart(p) {
+  if(typeof Cart === 'undefined') { showToast('Erreur panier'); return }
+  const r = await Cart.add(p.id, p.name, p.price, null, p.currency || 'MAD')
+  if(!r.success && r.error === 'not_logged_in') {
+    showToast('Connecte-toi pour ajouter au panier')
+    setTimeout(() => window.location.href = 'login.html', 1500)
+    return
+  }
+  showToast(r.success ? `« ${p.name} » ajouté ✓` : r.message)
+  if(r.success) updateCartBadge()
+}
+
+/* ══════════════════════════════════════
+   PANNEAU CATÉGORIES
+══════════════════════════════════════ */
+let allCatsData = []
+let catProductCounts = {}
 
 async function loadCatPanelData() {
-  if(typeof db==='undefined') return
+  if(typeof db === 'undefined') return
   try {
-    // 1. Charger toutes les catégories actives
-    const {data:cats,error} = await db
+    const {data:cats, error} = await db
       .from('categories')
       .select('id,name,icon,description,parent_id,slug,sort_order')
-      .eq('is_active',true)
-      .order('sort_order',{ascending:true})
-
+      .eq('is_active', true)
+      .order('sort_order', {ascending:true})
     if(error||!cats) return
     allCatsData = cats
-
-    // 2. Compter les produits par catégorie
-    const {data:prods} = await db
-      .from('products')
-      .select('category_id')
-      .eq('status','active')
-
+    const {data:prods} = await db.from('products').select('category_id').eq('status','active')
     catProductCounts = {}
-    ;(prods||[]).forEach(p=>{
-      if(p.category_id) catProductCounts[p.category_id]=(catProductCounts[p.category_id]||0)+1
+    ;(prods||[]).forEach(p => {
+      if(p.category_id) catProductCounts[p.category_id] = (catProductCounts[p.category_id]||0)+1
     })
-
-    // Mettre à jour le compteur total
     document.getElementById('cp-total-count').textContent = cats.length
-
     renderCatPanel(cats)
   } catch(e) {
-    console.error('loadCatPanelData:',e.message)
-    document.getElementById('cp-body').innerHTML=`<div style="padding:20px;text-align:center;font-size:11px;color:#333;">Impossible de charger.</div>`
+    console.error('loadCatPanelData:', e.message)
+    document.getElementById('cp-body').innerHTML = `<div style="padding:20px;text-align:center;font-size:11px;color:#333;">Impossible de charger.</div>`
   }
 }
 
 function renderCatPanel(cats) {
   const body = document.getElementById('cp-body')
-  if(!cats||!cats.length){
-    body.innerHTML=`<div style="padding:20px;text-align:center;font-size:11px;color:#333;letter-spacing:1px;">Aucune catégorie</div>`
+  if(!cats||!cats.length) {
+    body.innerHTML = `<div style="padding:20px;text-align:center;font-size:11px;color:#333;letter-spacing:1px;">Aucune catégorie</div>`
     return
   }
-
-  // Construire arbre parent → enfants
-  const parents = cats.filter(c=>!c.parent_id)
+  const parents = cats.filter(c => !c.parent_id)
   const childrenMap = {}
-  cats.filter(c=>c.parent_id).forEach(c=>{
-    if(!childrenMap[c.parent_id]) childrenMap[c.parent_id]=[]
+  cats.filter(c => c.parent_id).forEach(c => {
+    if(!childrenMap[c.parent_id]) childrenMap[c.parent_id] = []
     childrenMap[c.parent_id].push(c)
   })
-
-  body.innerHTML = parents.map(parent=>{
+  body.innerHTML = parents.map(parent => {
     const children = childrenMap[parent.id]||[]
     const count = catProductCounts[parent.id]||0
     const icon = parent.icon || '◆'
-    const hasChildren = children.length>0
-
+    const hasChildren = children.length > 0
     return `<div class="cp-parent-group" data-id="${parent.id}" data-name="${esc(parent.name)}">
       <div class="cp-parent">
         <div class="cp-parent-left">
@@ -953,14 +855,12 @@ function renderCatPanel(cats) {
           </div>
         </div>
         <div class="cp-parent-arrow">
-          <button class="cp-apply-btn" onclick="applyCatFromPanel('${parent.id}','${esc(parent.name)}')" title="Filtrer par ${esc(parent.name)}">Voir</button>
-          ${hasChildren?`<button class="cp-toggle" onclick="toggleCatChildren(this,'${parent.id}')" title="Sous-catégories">
-            <span class="material-symbols-outlined">expand_more</span>
-          </button>`:''}
+          <button class="cp-apply-btn" onclick="applyCatFromPanel('${parent.id}','${esc(parent.name)}')" title="Filtrer">Voir</button>
+          ${hasChildren?`<button class="cp-toggle" onclick="toggleCatChildren(this,'${parent.id}')" title="Sous-catégories"><span class="material-symbols-outlined">expand_more</span></button>`:''}
         </div>
       </div>
       ${hasChildren?`<div class="cp-children" id="cpch-${parent.id}">
-        ${children.map(child=>{
+        ${children.map(child => {
           const cc = catProductCounts[child.id]||0
           return `<div class="cp-child" data-name="${esc(child.name)}">
             <div class="cp-child-name">${esc(child.name)} <span style="color:#333;">(${cc})</span></div>
@@ -979,393 +879,431 @@ function toggleCatChildren(btn, parentId) {
 }
 
 function applyCatFromPanel(catId, catName) {
-  // Mettre à jour le filtre boutique
-  state.catId = catId
-  state.page = 1
-
-  // Mettre à jour les boutons de la toolbar
-  document.querySelectorAll('.cat-btn').forEach(b=>{
+  state.catId = catId; state.page = 1
+  document.querySelectorAll('.cat-btn').forEach(b => {
     b.classList.remove('active')
-    if(b.dataset.id===catId) b.classList.add('active')
+    if(b.dataset.id === catId) b.classList.add('active')
   })
-
-  // Mettre à jour l'indicateur dans le panneau
   document.getElementById('cp-selected-name').textContent = catName
-
-  renderActiveFilters()
-  loadProducts()
-  closeCatPanel()
+  renderActiveFilters(); loadProducts(); closeCatPanel()
   showToast(`Catégorie : ${catName}`)
 }
 
 function selectAllCats() {
-  state.catId = ''
-  state.page = 1
-  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'))
+  state.catId = ''; state.page = 1
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'))
   document.querySelector('.cat-btn[data-id=""]')?.classList.add('active')
-  document.getElementById('cp-selected-name').textContent='Toutes'
-  renderActiveFilters()
-  loadProducts()
-  closeCatPanel()
+  document.getElementById('cp-selected-name').textContent = 'Toutes'
+  renderActiveFilters(); loadProducts(); closeCatPanel()
 }
 
 function filterCatPanel(val) {
   const q = val.trim().toLowerCase()
   if(!q) { renderCatPanel(allCatsData); return }
-  const filtered = allCatsData.filter(c=>c.name.toLowerCase().includes(q))
-  renderCatPanel(filtered)
+  renderCatPanel(allCatsData.filter(c => c.name.toLowerCase().includes(q)))
 }
 
 function openCatPanel() {
   document.getElementById('cat-panel').classList.add('open')
   document.getElementById('cat-panel-overlay').classList.add('open')
-  document.body.style.overflow='hidden'
-  // Charger si pas encore fait
+  document.body.style.overflow = 'hidden'
   if(!allCatsData.length) loadCatPanelData()
-  setTimeout(()=>document.getElementById('cp-search-inp').focus(),200)
+  setTimeout(() => document.getElementById('cp-search-inp').focus(), 200)
 }
 function closeCatPanel() {
   document.getElementById('cat-panel').classList.remove('open')
   document.getElementById('cat-panel-overlay').classList.remove('open')
-  document.body.style.overflow=''
+  document.body.style.overflow = ''
 }
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape') {
-    closeCatPanel()
-    closeSearch()
-  }
-})
 
-/* ══════════════════════════════════════════
-   SEARCH AMÉLIORÉ (NOUVEAU)
-══════════════════════════════════════════ */
+/* ══════════════════════════════════════
+   PANNEAU PUBLICITÉS
+   Table Supabase attendue : ads
+   Colonnes : id, title, description, image_url,
+              cta_label, cta_url, is_active,
+              sort_order, created_at
+══════════════════════════════════════ */
+let adsLoaded = false
+
+async function loadAds() {
+  if(typeof db === 'undefined') return
+  const body = document.getElementById('ap-body')
+  try {
+    const {data, error} = await db
+      .from('ads')
+      .select('id,title,description,image_url,cta_label,cta_url')
+      .eq('is_active', true)
+      .order('sort_order', {ascending:true})
+      .limit(10)
+    if(error) throw new Error(error.message)
+    if(!data||!data.length) {
+      body.innerHTML = `<div class="ad-empty">Aucune offre disponible pour le moment.</div>`
+      return
+    }
+    body.innerHTML = data.map(ad => `
+      <a class="ad-card" href="${esc(ad.cta_url||'#')}" target="_blank" rel="noopener">
+        ${ad.image_url
+          ? `<img class="ad-card-img" src="${esc(ad.image_url)}" alt="${esc(ad.title)}" loading="lazy" onerror="this.style.display='none'"/>`
+          : `<div style="height:140px;background:linear-gradient(135deg,var(--smoke),var(--slate));display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="font-size:32px;color:#333;">campaign</span></div>`
+        }
+        <div class="ad-card-body">
+          <div class="ad-card-label">Offre partenaire</div>
+          <div class="ad-card-title">${esc(ad.title)}</div>
+          ${ad.description ? `<div class="ad-card-desc">${esc(ad.description)}</div>` : ''}
+          <span class="ad-card-cta">${esc(ad.cta_label||'Découvrir')}<span class="material-symbols-outlined" style="font-size:13px;">arrow_forward</span></span>
+        </div>
+      </a>`).join('')
+    adsLoaded = true
+  } catch(e) {
+    console.error('loadAds:', e.message)
+    body.innerHTML = `<div class="ad-empty">Impossible de charger les offres.</div>`
+  }
+}
+
+function openAdsPanel() {
+  document.getElementById('ads-panel').classList.add('open')
+  document.getElementById('ads-panel-overlay').classList.add('open')
+  document.body.style.overflow = 'hidden'
+  if(!adsLoaded) loadAds()
+}
+function closeAdsPanel() {
+  document.getElementById('ads-panel').classList.remove('open')
+  document.getElementById('ads-panel-overlay').classList.remove('open')
+  document.body.style.overflow = ''
+}
+
+/* ══════════════════════════════════════
+   SEARCH OVERLAY
+══════════════════════════════════════ */
 let srchDebounce = null
 let srchTagGabon = false
 let srchTagMaroc = false
 
 function openSearch() {
   document.getElementById('srchOv').classList.add('open')
-  document.body.style.overflow='hidden'
-  setTimeout(()=>document.getElementById('search-input').focus(),80)
+  document.body.style.overflow = 'hidden'
+  setTimeout(() => document.getElementById('search-input').focus(), 80)
 }
 function closeSearch() {
   document.getElementById('srchOv').classList.remove('open')
-  document.body.style.overflow=''
+  document.body.style.overflow = ''
 }
 
 function handleSearchKey(e) {
-  if(e.key==='Escape') { closeSearch(); return }
-  if(e.key==='Enter') {
+  if(e.key === 'Escape') { closeSearch(); return }
+  if(e.key === 'Enter') {
     const val = document.getElementById('search-input').value.trim()
     if(val) {
-      // Applique le filtre inline ET propose de naviguer
-      onSearchInput(val)
-      state.search=val; state.page=1
-      renderActiveFilters(); loadProducts()
-      closeSearch()
+      state.search = val; state.page = 1
+      renderActiveFilters(); loadProducts(); closeSearch()
     }
   }
 }
-
-document.getElementById('srchOv').addEventListener('click',e=>{if(e.target===e.currentTarget) closeSearch()})
-
-document.addEventListener('keydown',e=>{
-  if((e.key==='/'||(e.ctrlKey&&e.key==='k'))&&document.activeElement.tagName!=='INPUT'){e.preventDefault();openSearch()}
+document.getElementById('srchOv').addEventListener('click', e => { if(e.target === e.currentTarget) closeSearch() })
+document.addEventListener('keydown', e => {
+  if((e.key==='/'||(e.ctrlKey&&e.key==='k')) && document.activeElement.tagName !== 'INPUT') {
+    e.preventDefault(); openSearch()
+  }
+  if(e.key === 'Escape') { closeCatPanel(); closeSearch(); closeAdsPanel() }
 })
 
 function toggleSearchTag(tag) {
-  if(tag==='gabon') {
-    srchTagGabon=!srchTagGabon
-    document.getElementById('stag-gabon').classList.toggle('active',srchTagGabon)
-  } else {
-    srchTagMaroc=!srchTagMaroc
-    document.getElementById('stag-maroc').classList.toggle('active',srchTagMaroc)
-  }
-  const val=document.getElementById('search-input').value.trim()
+  if(tag === 'gabon') { srchTagGabon = !srchTagGabon; document.getElementById('stag-gabon').classList.toggle('active', srchTagGabon) }
+  else { srchTagMaroc = !srchTagMaroc; document.getElementById('stag-maroc').classList.toggle('active', srchTagMaroc) }
+  const val = document.getElementById('search-input').value.trim()
   if(val) onLiveSearch(val)
 }
 
 function quickSearch(term) {
-  document.getElementById('search-input').value=term
+  document.getElementById('search-input').value = term
   onLiveSearch(term)
 }
 
 function goToSearch() {
-  const val=document.getElementById('search-input').value.trim()
-  const params=new URLSearchParams()
-  if(val) params.set('q',val)
-  if(srchTagGabon) params.set('pays','gabon')
-  if(srchTagMaroc) params.set('pays','maroc')
-  // Applique d'abord les filtres inline sur la boutique
-  if(val) { state.search=val; state.page=1; renderActiveFilters(); loadProducts() }
+  const val = document.getElementById('search-input').value.trim()
+  if(val) { state.search = val; state.page = 1; renderActiveFilters(); loadProducts() }
   closeSearch()
-  // Redirige vers page recherche si elle existe
-  const dest = 'recherche.html'+(params.toString()?'?'+params.toString():'')
-  // Tenter la navigation (si la page n'existe pas, on reste)
-  window.location.href = dest
+  const params = new URLSearchParams()
+  if(val) params.set('q', val)
+  if(srchTagGabon) params.set('pays', 'gabon')
+  if(srchTagMaroc) params.set('pays', 'maroc')
+  window.location.href = 'recherche.html' + (params.toString() ? '?'+params.toString() : '')
 }
 
 async function onLiveSearch(val) {
   const results = document.getElementById('srch-results')
   const suggestions = document.getElementById('srch-suggestions')
-
-  if(!val||val.length<2) {
-    results.classList.remove('show')
-    results.innerHTML=''
-    suggestions.style.display='block'
-    return
+  if(!val || val.length < 2) {
+    results.classList.remove('show'); results.innerHTML = ''; suggestions.style.display = 'block'; return
   }
-  suggestions.style.display='none'
-  results.classList.add('show')
-  results.innerHTML=`<div class="srch-loading">Recherche en cours…</div>`
-
+  suggestions.style.display = 'none'; results.classList.add('show')
+  results.innerHTML = `<div class="srch-loading">Recherche en cours…</div>`
   clearTimeout(srchDebounce)
-  srchDebounce = setTimeout(async()=>{
-    if(typeof db==='undefined') return
+  srchDebounce = setTimeout(async () => {
+    if(typeof db === 'undefined') return
     try {
       let q = db.from('products')
-        .select('id,name,price,currency,country,images,image_url,categories(name)')
-        .eq('status','active')
-        .ilike('name',`%${val}%`)
-        .limit(6)
-      if(srchTagGabon&&!srchTagMaroc) q=q.ilike('country','%gabon%')
-      if(srchTagMaroc&&!srchTagGabon) q=q.ilike('country','%maroc%')
-      const {data,count,error}=await q.select('id,name,price,currency,country,images,image_url,categories(name)',{count:'exact'})
-
-      if(error||!data||!data.length){
-        results.innerHTML=`<div class="srch-empty">Aucun résultat pour « ${esc(val)} »</div>`
-        return
+        .select('id,name,price,currency,country,images,image_url,categories(name)', {count:'exact'})
+        .eq('status','active').ilike('name',`%${val}%`).limit(6)
+      if(srchTagGabon && !srchTagMaroc) q = q.ilike('country','%gabon%')
+      if(srchTagMaroc && !srchTagGabon) q = q.ilike('country','%maroc%')
+      const {data, count, error} = await q
+      if(error||!data||!data.length) {
+        results.innerHTML = `<div class="srch-empty">Aucun résultat pour « ${esc(val)} »</div>`; return
       }
-
-      const cur=window.defaultCurrency||'MAD'
-      let html=data.map(p=>{
-        const img=Array.isArray(p.images)&&p.images.length?p.images[0]:(p.image_url||'https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=80&q=60')
+      const cur = window.defaultCurrency||'MAD'
+      let html = data.map(p => {
+        const img = Array.isArray(p.images)&&p.images.length ? p.images[0] : (p.image_url||'https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=80&q=60')
         return `<a class="srch-result-item" href="detail_produit.html?id=${p.id}" onclick="closeSearch()">
           <img class="srch-result-img" src="${img}" alt="${esc(p.name)}" onerror="this.src='https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=80&q=60'" loading="lazy"/>
           <div class="srch-result-info">
             <div class="srch-result-name">${esc(p.name)}</div>
             <div class="srch-result-meta">${p.categories?.name||''} · ${p.country||''}</div>
           </div>
-          <div class="srch-result-price">${fmtPrice(p.price,p.currency||cur)}</div>
+          <div class="srch-result-price">${fmtPrice(p.price, p.currency||cur)}</div>
         </a>`
       }).join('')
-
-      // Si plus de résultats → lien "voir tous"
-      if(count && count>6) {
-        html+=`<div class="srch-result-more" onclick="applySearchFromOverlay('${val}')">
-          Voir les ${count} résultats pour « ${esc(val)} »
-        </div>`
-      }
-
-      results.innerHTML=html
-    } catch(err){
-      results.innerHTML=`<div class="srch-empty">Erreur de recherche</div>`
-    }
+      if(count && count > 6) html += `<div class="srch-result-more" onclick="applySearchFromOverlay('${val}')">Voir les ${count} résultats</div>`
+      results.innerHTML = html
+    } catch(err) { results.innerHTML = `<div class="srch-empty">Erreur de recherche</div>` }
   }, 280)
 }
 
 function applySearchFromOverlay(val) {
-  state.search=val; state.page=1
-  const si=document.getElementById('search-inp'); if(si) si.value=val
-  renderActiveFilters(); loadProducts()
-  closeSearch()
+  state.search = val; state.page = 1
+  const si = document.getElementById('search-inp'); if(si) si.value = val
+  renderActiveFilters(); loadProducts(); closeSearch()
 }
-
 function onSearchInput(val) {
-  state.search=val.trim()
-  const si=document.getElementById('search-inp'),sio=document.getElementById('search-input')
-  if(si&&si!==document.activeElement) si.value=val
-  if(sio&&sio!==document.activeElement) sio.value=val
+  state.search = val.trim()
   clearTimeout(state.debounce)
-  state.debounce=setTimeout(()=>{state.page=1;renderActiveFilters();loadProducts()},350)
+  state.debounce = setTimeout(() => { state.page = 1; renderActiveFilters(); loadProducts() }, 350)
 }
 
-/* ══════════════════════════════════════════
-   QUÊTES STRIP
-══════════════════════════════════════════ */
+/* ══════════════════════════════════════
+   QUÊTES STRIP — avec images
+══════════════════════════════════════ */
 async function loadQuetesStrip() {
-  if(typeof db==='undefined') return
-  const container=document.getElementById('quetes-cards')
+  if(typeof db === 'undefined') return
+  const container = document.getElementById('quetes-cards')
   try {
-    const {data,error}=await db.from('quests').select('id,title,reward_amount,country_target,expires_at,currency').eq('status','open').order('created_at',{ascending:false}).limit(3)
+    const {data, error} = await db
+      .from('quests')
+      .select('id,title,reward_amount,country_target,expires_at,currency,image_url')
+      .eq('status','open')
+      .order('created_at', {ascending:false})
+      .limit(3)
     if(error) throw new Error(error.message)
-    if(!data||!data.length){container.innerHTML=`<div class="quetes-empty">Aucune quête ouverte — <a href="quetes.html" style="color:var(--gold);">soyez le premier</a></div>`;return}
-    const ids=data.map(q=>q.id)
-    const {data:props}=await db.from('quest_proposals').select('quest_id').in('quest_id',ids)
-    const proposalCount={}
-    ;(props||[]).forEach(p=>{proposalCount[p.quest_id]=(proposalCount[p.quest_id]||0)+1})
-    container.innerHTML=data.map(q=>{
-      const count=proposalCount[q.id]||0,exp=daysLeft(q.expires_at)
-      const reward=q.currency==='XAF'?fmtFcfa(q.reward_amount):fmtPrice(q.reward_amount,q.currency||'MAD')
+    if(!data||!data.length) {
+      container.innerHTML = `<div class="quetes-empty">Aucune quête ouverte — <a href="quetes.html" style="color:var(--gold);">soyez le premier</a></div>`
+      return
+    }
+    const ids = data.map(q => q.id)
+    const {data:props} = await db.from('quest_proposals').select('quest_id').in('quest_id', ids)
+    const proposalCount = {}
+    ;(props||[]).forEach(p => { proposalCount[p.quest_id] = (proposalCount[p.quest_id]||0)+1 })
+    container.innerHTML = data.map(q => {
+      const count = proposalCount[q.id]||0, exp = daysLeft(q.expires_at)
+      const reward = q.currency === 'XAF' ? fmtFcfa(q.reward_amount) : fmtPrice(q.reward_amount, q.currency||'MAD')
+      const imgHtml = q.image_url
+        ? `<img class="qcard-img" src="${esc(q.image_url)}" alt="${esc(q.title)}" loading="lazy" onerror="this.parentNode.innerHTML='<div class=\\'qcard-img-placeholder\\'><span class=\\'material-symbols-outlined\\'>search</span></div>'"/>`
+        : `<div class="qcard-img-placeholder"><span class="material-symbols-outlined">search</span></div>`
       return `<a class="qcard" href="detail_quete.html?id=${q.id}">
-        <div class="qcard-top"><div class="qcard-title">${esc(q.title)}</div><div class="qcard-reward"><div class="qcard-reward-lbl">Récompense</div><div class="qcard-reward-val">${reward}</div></div></div>
-        <div class="qcard-bottom"><span class="qcard-meta"><span class="material-symbols-outlined">group</span>${count} prop.</span><span class="qcard-meta"><span class="material-symbols-outlined">schedule</span>${exp<=1?'<span style="color:var(--fire)">Demain</span>':exp+'j'}</span>${q.country_target?`<span class="qcard-country">${q.country_target}</span>`:''}</div>
+        ${imgHtml}
+        <div class="qcard-body">
+          <div class="qcard-top">
+            <div class="qcard-title">${esc(q.title)}</div>
+            <div class="qcard-reward"><div class="qcard-reward-lbl">Récompense</div><div class="qcard-reward-val">${reward}</div></div>
+          </div>
+          <div class="qcard-bottom">
+            <span class="qcard-meta"><span class="material-symbols-outlined">group</span>${count} prop.</span>
+            <span class="qcard-meta"><span class="material-symbols-outlined">schedule</span>${exp<=1?'<span style="color:var(--fire)">Demain</span>':exp+'j'}</span>
+            ${q.country_target?`<span class="qcard-country">${q.country_target}</span>`:''}
+          </div>
+        </div>
       </a>`
     }).join('')
-  } catch(e){console.error('loadQuetesStrip:',e.message);container.innerHTML=`<div class="quetes-empty">Impossible de charger les quêtes.</div>`}
+  } catch(e) {
+    console.error('loadQuetesStrip:', e.message)
+    container.innerHTML = `<div class="quetes-empty">Impossible de charger les quêtes.</div>`
+  }
 }
 
-/* ══════════════════════════════════════════
+/* ══════════════════════════════════════
    MODAL QUÊTES
-══════════════════════════════════════════ */
-function openQModal(){const overlay=document.getElementById('qmodalOverlay');overlay.classList.add('open');document.body.style.overflow='hidden';const fill=document.getElementById('qCountdownFill');fill.style.animation='none';fill.offsetHeight;fill.style.animation=''}
-function dismissQModal(){document.getElementById('qmodalOverlay').classList.remove('open');document.body.style.overflow=''}
-function closeQModal(e){if(e.target===document.getElementById('qmodalOverlay')) dismissQModal()}
-function handleDismissCheck(cb){if(cb.checked) dismissQModal()}
-async function loadQModalQuests(){
-  if(typeof db==='undefined') return
-  const body=document.getElementById('qmodal-body')
-  try{
-    const activeCatBtn=document.querySelector('.cat-btn.active')
-    const catId=activeCatBtn?.dataset.id||'',catName=catId?(activeCatBtn?.textContent||''):''
-    document.getElementById('qmodal-title').textContent=catName?`Quêtes · ${catName}`:'Produits recherchés'
-    document.getElementById('qmodal-sub').textContent=catName?`Produits "${catName}" recherchés par la communauté`:'Des chasseurs attendent votre aide'
-    let q=db.from('quests').select('id,title,reward_amount,country_target,expires_at,currency').eq('status','open').order('created_at',{ascending:false}).limit(4)
-    if(catId) q=q.eq('category_id',catId)
-    const {data,error}=await q
-    if(error||!data||!data.length){body.innerHTML=`<div class="qm-empty">Aucune quête${catName?' pour "'+catName+'"':''} — <a href="quetes.html" style="color:var(--gold);">voir toutes</a></div>`;return}
-    const ids=data.map(q=>q.id)
-    const {data:props}=await db.from('quest_proposals').select('quest_id').in('quest_id',ids)
-    const proposalCount={}
-    ;(props||[]).forEach(p=>{proposalCount[p.quest_id]=(proposalCount[p.quest_id]||0)+1})
-    body.innerHTML=data.map(q=>{
-      const count=proposalCount[q.id]||0,exp=daysLeft(q.expires_at)
-      const reward=q.currency==='XAF'?fmtFcfa(q.reward_amount):fmtPrice(q.reward_amount,q.currency||'MAD')
+══════════════════════════════════════ */
+function openQModal() {
+  const overlay = document.getElementById('qmodalOverlay'); overlay.classList.add('open')
+  document.body.style.overflow = 'hidden'
+  const fill = document.getElementById('qCountdownFill'); fill.style.animation = 'none'
+  fill.offsetHeight; fill.style.animation = ''
+}
+function dismissQModal() {
+  document.getElementById('qmodalOverlay').classList.remove('open')
+  document.body.style.overflow = ''
+}
+function closeQModal(e) { if(e.target === document.getElementById('qmodalOverlay')) dismissQModal() }
+function handleDismissCheck(cb) { if(cb.checked) dismissQModal() }
+async function loadQModalQuests() {
+  if(typeof db === 'undefined') return
+  const body = document.getElementById('qmodal-body')
+  try {
+    const activeCatBtn = document.querySelector('.cat-btn.active')
+    const catId = activeCatBtn?.dataset.id||'', catName = catId ? (activeCatBtn?.textContent||'') : ''
+    document.getElementById('qmodal-title').textContent = catName ? `Quêtes · ${catName}` : 'Produits recherchés'
+    document.getElementById('qmodal-sub').textContent = catName ? `Produits "${catName}" recherchés` : 'Des chasseurs attendent votre aide'
+    let q = db.from('quests').select('id,title,reward_amount,country_target,expires_at,currency').eq('status','open').order('created_at',{ascending:false}).limit(4)
+    if(catId) q = q.eq('category_id', catId)
+    const {data, error} = await q
+    if(error||!data||!data.length) { body.innerHTML = `<div class="qm-empty">Aucune quête — <a href="quetes.html" style="color:var(--gold);">voir toutes</a></div>`; return }
+    const ids = data.map(q=>q.id)
+    const {data:props} = await db.from('quest_proposals').select('quest_id').in('quest_id', ids)
+    const proposalCount = {}
+    ;(props||[]).forEach(p => { proposalCount[p.quest_id] = (proposalCount[p.quest_id]||0)+1 })
+    body.innerHTML = data.map(q => {
+      const count = proposalCount[q.id]||0, exp = daysLeft(q.expires_at)
+      const reward = q.currency === 'XAF' ? fmtFcfa(q.reward_amount) : fmtPrice(q.reward_amount, q.currency||'MAD')
       return `<a class="qm-card" href="detail_quete.html?id=${q.id}">
         <div class="qm-card-top"><div class="qm-title">${esc(q.title)}</div><div class="qm-reward"><div class="qm-reward-lbl">Récompense</div><div class="qm-reward-val">${reward}</div></div></div>
         <div class="qm-meta"><span class="qm-meta-item"><span class="material-symbols-outlined">group</span>${count} prop.</span><span class="qm-meta-item"><span class="material-symbols-outlined">schedule</span>${exp<=1?'<span style="color:var(--fire)">Demain</span>':exp+'j'}</span>${q.country_target?`<span class="qm-country">${q.country_target}</span>`:''}</div>
       </a>`
     }).join('')
-  } catch(e){console.error('loadQModalQuests:',e.message);body.innerHTML=`<div class="qm-empty">Impossible de charger les quêtes.</div>`}
+  } catch(e) { console.error('loadQModalQuests:', e.message); body.innerHTML = `<div class="qm-empty">Impossible de charger.</div>` }
 }
-function scheduleQModal(){
-  if(window.questModalEnabled===false) return
-  setTimeout(async()=>{await loadQModalQuests();openQModal();setTimeout(()=>{if(document.getElementById('qmodalOverlay').classList.contains('open')) dismissQModal()},60000)},30000)
+function scheduleQModal() {
+  if(window.questModalEnabled === false) return
+  setTimeout(async () => {
+    await loadQModalQuests(); openQModal()
+    setTimeout(() => { if(document.getElementById('qmodalOverlay').classList.contains('open')) dismissQModal() }, 60000)
+  }, 30000)
 }
 
-/* ══════════════════════════════════════════
+/* ══════════════════════════════════════
    PRODUITS
-══════════════════════════════════════════ */
-const PAGE_SIZE=24
-let state={page:1,total:0,search:'',catId:'',pays:null,priceMin:0,priceMax:100000,stockOnly:false,sort:'created_at:desc',view:'grid4',debounce:null}
+══════════════════════════════════════ */
+const PAGE_SIZE = 24
+let state = {page:1, total:0, search:'', catId:'', pays:null, priceMin:0, priceMax:100000, stockOnly:false, sort:'created_at:desc', view:'grid4', debounce:null}
 
-function readURLParams(){
-  const p=new URLSearchParams(location.search)
-  if(p.get('pays')) state.pays=p.get('pays')==='gabon'?'Gabon':p.get('pays')==='maroc'?'Maroc':null
-  if(p.get('cat')) state.catId=p.get('cat')
-  if(p.get('q')){state.search=p.get('q');const si=document.getElementById('search-inp');if(si) si.value=state.search}
+function readURLParams() {
+  const p = new URLSearchParams(location.search)
+  if(p.get('pays')) state.pays = p.get('pays')==='gabon'?'Gabon':p.get('pays')==='maroc'?'Maroc':null
+  if(p.get('cat')) state.catId = p.get('cat')
+  if(p.get('q')) { state.search = p.get('q'); const si = document.getElementById('search-inp'); if(si) si.value = state.search }
 }
 
-async function loadCategories(){
-  if(typeof db==='undefined') return
-  const {data,error}=await db.from('categories').select('id,name').eq('is_active',true).order('sort_order',{ascending:true}).limit(12)
+async function loadCategories() {
+  if(typeof db === 'undefined') return
+  const {data, error} = await db.from('categories').select('id,name').eq('is_active',true).order('sort_order',{ascending:true}).limit(12)
   if(error||!data) return
-  const container=document.getElementById('cats-scroll')
-  data.forEach(cat=>{
-    const btn=document.createElement('button')
-    btn.className='cat-btn';btn.dataset.id=cat.id;btn.textContent=cat.name
-    if(state.catId===String(cat.id)) btn.classList.add('active')
-    btn.addEventListener('click',()=>selectCat(btn))
+  const container = document.getElementById('cats-scroll')
+  data.forEach(cat => {
+    const btn = document.createElement('button')
+    btn.className = 'cat-btn'; btn.dataset.id = cat.id; btn.textContent = cat.name
+    if(state.catId === String(cat.id)) btn.classList.add('active')
+    btn.addEventListener('click', () => selectCat(btn))
     container.appendChild(btn)
   })
 }
 
-function selectCat(btn){
-  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'))
+function selectCat(btn) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'))
   btn.classList.add('active')
-  state.catId=btn.dataset.id||'';state.page=1;renderActiveFilters();loadProducts()
+  state.catId = btn.dataset.id||''; state.page = 1; renderActiveFilters(); loadProducts()
 }
 
-function updatePriceDisplay(){
-  const mn=parseInt(document.getElementById('price-min').value),mx=parseInt(document.getElementById('price-max').value)
-  document.getElementById('price-display').textContent=`${mn.toLocaleString('fr-FR')} – ${mx.toLocaleString('fr-FR')} MAD`
+function updatePriceDisplay() {
+  const mn = parseInt(document.getElementById('price-min').value), mx = parseInt(document.getElementById('price-max').value)
+  document.getElementById('price-display').textContent = `${mn.toLocaleString('fr-FR')} – ${mx.toLocaleString('fr-FR')} MAD`
 }
 
-function applyFilters(){
-  const g=document.getElementById('f-gabon')?.checked,m=document.getElementById('f-maroc')?.checked
-  state.pays=(g&&m)||(!g&&!m)?null:g?'Gabon':'Maroc'
-  state.priceMin=parseInt(document.getElementById('price-min').value||0)
-  state.priceMax=parseInt(document.getElementById('price-max').value||100000)
-  state.stockOnly=document.getElementById('f-stock')?.checked||false
-  state.page=1;updatePriceDisplay();renderActiveFilters();loadProducts()
+function applyFilters() {
+  const g = document.getElementById('f-gabon')?.checked, m = document.getElementById('f-maroc')?.checked
+  state.pays = (g&&m)||(!g&&!m) ? null : g ? 'Gabon' : 'Maroc'
+  state.priceMin = parseInt(document.getElementById('price-min').value||0)
+  state.priceMax = parseInt(document.getElementById('price-max').value||100000)
+  state.stockOnly = document.getElementById('f-stock')?.checked||false
+  state.page = 1; updatePriceDisplay(); renderActiveFilters(); loadProducts()
 }
 
-function applySort(){state.sort=document.getElementById('sort-select').value;state.page=1;loadProducts()}
+function applySort() { state.sort = document.getElementById('sort-select').value; state.page = 1; loadProducts() }
 
-function resetFilters(){
-  state.search='';state.catId='';state.pays=null;state.priceMin=0;state.priceMax=100000;state.stockOnly=false;state.page=1
-  const si=document.getElementById('search-inp');if(si) si.value=''
-  const sio=document.getElementById('search-input');if(sio) sio.value=''
-  document.getElementById('f-gabon').checked=false;document.getElementById('f-maroc').checked=false;document.getElementById('f-stock').checked=false
-  document.getElementById('price-min').value=0;document.getElementById('price-max').value=100000
-  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'))
+function resetFilters() {
+  state.search = ''; state.catId = ''; state.pays = null; state.priceMin = 0; state.priceMax = 100000; state.stockOnly = false; state.page = 1
+  const si = document.getElementById('search-inp'); if(si) si.value = ''
+  const sio = document.getElementById('search-input'); if(sio) sio.value = ''
+  document.getElementById('f-gabon').checked = false; document.getElementById('f-maroc').checked = false
+  document.getElementById('f-stock').checked = false
+  document.getElementById('price-min').value = 0; document.getElementById('price-max').value = 100000
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'))
   document.querySelector('.cat-btn[data-id=""]')?.classList.add('active')
-  updatePriceDisplay();renderActiveFilters();loadProducts()
+  updatePriceDisplay(); renderActiveFilters(); loadProducts()
 }
 
-function renderActiveFilters(){
-  const container=document.getElementById('active-filters');const chips=[]
-  if(state.pays) chips.push({label:state.pays,clear:()=>{document.getElementById('f-gabon').checked=false;document.getElementById('f-maroc').checked=false;applyFilters()}})
-  if(state.priceMax<100000) chips.push({label:`≤ ${state.priceMax.toLocaleString('fr-FR')} MAD`,clear:()=>{document.getElementById('price-max').value=100000;applyFilters()}})
-  if(state.stockOnly) chips.push({label:'En stock',clear:()=>{document.getElementById('f-stock').checked=false;applyFilters()}})
-  if(state.search) chips.push({label:`"${state.search}"`,clear:()=>{state.search='';document.getElementById('search-inp').value='';state.page=1;renderActiveFilters();loadProducts()}})
-  if(state.catId){
-    const catBtn=document.querySelector(`.cat-btn[data-id="${state.catId}"]`)
-    const catName=catBtn?.textContent||'Catégorie'
-    chips.push({label:catName,clear:()=>{state.catId='';document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));document.querySelector('.cat-btn[data-id=""]')?.classList.add('active');state.page=1;renderActiveFilters();loadProducts()}})
+function renderActiveFilters() {
+  const container = document.getElementById('active-filters'); const chips = []
+  if(state.pays) chips.push({label:state.pays, clear:()=>{document.getElementById('f-gabon').checked=false;document.getElementById('f-maroc').checked=false;applyFilters()}})
+  if(state.priceMax < 100000) chips.push({label:`≤ ${state.priceMax.toLocaleString('fr-FR')} MAD`, clear:()=>{document.getElementById('price-max').value=100000;applyFilters()}})
+  if(state.stockOnly) chips.push({label:'En stock', clear:()=>{document.getElementById('f-stock').checked=false;applyFilters()}})
+  if(state.search) chips.push({label:`"${state.search}"`, clear:()=>{state.search='';document.getElementById('search-inp').value='';state.page=1;renderActiveFilters();loadProducts()}})
+  if(state.catId) {
+    const catBtn = document.querySelector(`.cat-btn[data-id="${state.catId}"]`)
+    const catName = catBtn?.textContent||'Catégorie'
+    chips.push({label:catName, clear:()=>{state.catId='';document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));document.querySelector('.cat-btn[data-id=""]')?.classList.add('active');state.page=1;renderActiveFilters();loadProducts()}})
   }
-  container.innerHTML=chips.map((c,i)=>`<button class="filter-pill" onclick="window.__clearF(${i})">${c.label} ×</button>`).join('')
-  window.__clearF=idx=>chips[idx].clear()
+  container.innerHTML = chips.map((c,i) => `<button class="filter-pill" onclick="window.__clearF(${i})">${c.label} ×</button>`).join('')
+  window.__clearF = idx => chips[idx].clear()
 }
 
-function setView(v){
-  state.view=v
-  const grid=document.getElementById('prod-grid');grid.className='prod-grid'
-  ;['btn-grid3','btn-grid4','btn-list'].forEach(id=>document.getElementById(id)?.classList.remove('active'))
-  if(v==='grid3'){grid.classList.add('cols-3');document.getElementById('btn-grid3')?.classList.add('active')}
-  else if(v==='grid4'){grid.classList.add('cols-4');document.getElementById('btn-grid4')?.classList.add('active')}
-  else if(v==='list'){grid.classList.add('list-view');document.getElementById('btn-list')?.classList.add('active')}
+function setView(v) {
+  state.view = v
+  const grid = document.getElementById('prod-grid'); grid.className = 'prod-grid'
+  ;['btn-grid3','btn-grid4','btn-list'].forEach(id => document.getElementById(id)?.classList.remove('active'))
+  if(v==='grid3') { grid.classList.add('cols-3'); document.getElementById('btn-grid3')?.classList.add('active') }
+  else if(v==='grid4') { grid.classList.add('cols-4'); document.getElementById('btn-grid4')?.classList.add('active') }
+  else if(v==='list') { grid.classList.add('list-view'); document.getElementById('btn-list')?.classList.add('active') }
 }
 
-async function loadProducts(){
-  if(typeof db==='undefined'){setTimeout(loadProducts,200);return}
-  const grid=document.getElementById('prod-grid')
-  const skCount=state.view==='list'?8:12
-  grid.innerHTML=Array(skCount).fill(0).map(()=>`<div class="prod-card"><div class="prod-img skel"></div><div class="prod-info"><div class="skel" style="height:7px;width:55%;margin-bottom:5px;"></div><div class="skel" style="height:11px;width:80%;margin-bottom:6px;"></div><div class="skel" style="height:9px;width:40%;"></div></div></div>`).join('')
-  document.getElementById('no-results').style.display='none'
-  document.getElementById('pagination').innerHTML=''
-  const [col,dir]=state.sort.split(':')
-  const offset=(state.page-1)*PAGE_SIZE
-  try{
-    let q=db.from('products')
-      .select('id,name,price,currency,country,origin_city,stock,images,image_url,category_id,categories(name)',{count:'exact'})
+async function loadProducts() {
+  if(typeof db === 'undefined') { setTimeout(loadProducts, 200); return }
+  const grid = document.getElementById('prod-grid')
+  const skCount = state.view === 'list' ? 8 : 12
+  grid.innerHTML = Array(skCount).fill(0).map(() => `<div class="prod-card"><div class="prod-img skel"></div><div class="prod-info"><div class="skel" style="height:7px;width:55%;margin-bottom:5px;"></div><div class="skel" style="height:11px;width:80%;margin-bottom:6px;"></div><div class="skel" style="height:9px;width:40%;"></div></div></div>`).join('')
+  document.getElementById('no-results').style.display = 'none'
+  document.getElementById('pagination').innerHTML = ''
+  const [col,dir] = state.sort.split(':')
+  const offset = (state.page-1)*PAGE_SIZE
+  try {
+    let q = db.from('products')
+      .select('id,name,price,currency,country,origin_city,stock,images,image_url,category_id,categories(name)', {count:'exact'})
       .eq('status','active').gte('price',state.priceMin).lte('price',state.priceMax)
-      .range(offset,offset+PAGE_SIZE-1).order(col,{ascending:dir==='asc'})
-    if(state.pays) q=q.ilike('country',state.pays)
-    if(state.catId) q=q.eq('category_id',state.catId)
-    if(state.stockOnly) q=q.gt('stock',0)
-    if(state.search) q=q.ilike('name',`%${state.search}%`)
-    const {data,count,error}=await q
-    if(error){grid.innerHTML=`<div style="padding:40px;text-align:center;color:#555;grid-column:1/-1;font-size:10px;letter-spacing:2px;text-transform:uppercase;">Erreur — ${error.message}</div>`;return}
-    state.total=count||0
-    const label=count?`${count} produit${count>1?'s':''}`:''
-    document.getElementById('total-label').textContent=label
-    document.getElementById('results-count').textContent=label
-    if(!data||!data.length){grid.innerHTML='';document.getElementById('no-results').style.display='block';return}
-    renderProducts(data);renderPagination(state.total)
-  } catch(err){grid.innerHTML=`<div style="padding:40px;text-align:center;color:#555;grid-column:1/-1;">Impossible de charger les produits.</div>`}
+      .range(offset, offset+PAGE_SIZE-1).order(col, {ascending:dir==='asc'})
+    if(state.pays) q = q.ilike('country', state.pays)
+    if(state.catId) q = q.eq('category_id', state.catId)
+    if(state.stockOnly) q = q.gt('stock', 0)
+    if(state.search) q = q.ilike('name', `%${state.search}%`)
+    const {data, count, error} = await q
+    if(error) { grid.innerHTML = `<div style="padding:40px;text-align:center;color:#555;grid-column:1/-1;font-size:10px;letter-spacing:2px;text-transform:uppercase;">Erreur — ${error.message}</div>`; return }
+    state.total = count||0
+    const label = count ? `${count} produit${count>1?'s':''}` : ''
+    document.getElementById('total-label').textContent = label
+    document.getElementById('results-count').textContent = label
+    if(!data||!data.length) { grid.innerHTML = ''; document.getElementById('no-results').style.display = 'block'; return }
+    renderProducts(data); renderPagination(state.total)
+  } catch(err) {
+    grid.innerHTML = `<div style="padding:40px;text-align:center;color:#555;grid-column:1/-1;">Impossible de charger les produits.</div>`
+  }
 }
 
-function renderProducts(products){
-  const grid=document.getElementById('prod-grid')
-  const cur=window.defaultCurrency||'MAD'
-  grid.innerHTML=products.map(p=>{
-    const img=Array.isArray(p.images)&&p.images.length?p.images[0]:(p.image_url||'https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=400&q=80')
-    const low=p.stock!=null&&p.stock>0&&p.stock<=5
-    const pays=(p.country||'').toLowerCase().includes('maroc')?'MA':'GA'
-    const catName=p.categories?.name||''
-    const sn=(p.name||'').replace(/'/g,"\\'").replace(/"/g,'&quot;')
-    const pCur=p.currency||cur
+function renderProducts(products) {
+  const grid = document.getElementById('prod-grid')
+  const cur = window.defaultCurrency||'MAD'
+  grid.innerHTML = products.map(p => {
+    const img = Array.isArray(p.images)&&p.images.length ? p.images[0] : (p.image_url||'https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=400&q=80')
+    const low = p.stock!=null && p.stock>0 && p.stock<=5
+    const pays = (p.country||'').toLowerCase().includes('maroc') ? 'MA' : 'GA'
+    const catName = p.categories?.name||''
+    const sn = (p.name||'').replace(/'/g,"\\'").replace(/"/g,'&quot;')
+    const pCur = p.currency||cur
     return `<div class="prod-card" onclick="location.href='detail_produit.html?id=${p.id}'">
       <div class="prod-img">
         <img src="${img}" alt="${sn}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=400&q=80'"/>
@@ -1379,7 +1317,7 @@ function renderProducts(products){
         <div class="prod-cat">${catName}${p.origin_city?' · '+p.origin_city:''}</div>
         <div class="prod-name">${p.name}</div>
         <div class="prod-ft">
-          <div class="prod-price">${fmtPrice(p.price,pCur)}</div>
+          <div class="prod-price">${fmtPrice(p.price, pCur)}</div>
           ${window.reviewsEnabled?'<div class="prod-stars">★★★★☆</div>':''}
         </div>
       </div>
@@ -1387,45 +1325,47 @@ function renderProducts(products){
   }).join('')
 }
 
-function renderPagination(total){
-  const totalPages=Math.ceil(total/PAGE_SIZE)
-  if(totalPages<=1) return
-  const p=state.page
-  let html=`<button class="page-btn" onclick="goPage(${p-1})" ${p===1?'disabled':''}><span class="material-symbols-outlined" style="font-size:13px;">chevron_left</span></button>`
-  for(let i=1;i<=totalPages;i++){
-    if(i===1||i===totalPages||(i>=p-1&&i<=p+1)) html+=`<button class="page-btn ${i===p?'active':''}" onclick="goPage(${i})">${i}</button>`
-    else if(i===p-2||i===p+2) html+=`<span style="display:flex;align-items:center;color:#555;font-size:.8rem;">…</span>`
+function renderPagination(total) {
+  const totalPages = Math.ceil(total/PAGE_SIZE)
+  if(totalPages <= 1) return
+  const p = state.page
+  let html = `<button class="page-btn" onclick="goPage(${p-1})" ${p===1?'disabled':''}><span class="material-symbols-outlined" style="font-size:13px;">chevron_left</span></button>`
+  for(let i=1; i<=totalPages; i++) {
+    if(i===1||i===totalPages||(i>=p-1&&i<=p+1)) html += `<button class="page-btn ${i===p?'active':''}" onclick="goPage(${i})">${i}</button>`
+    else if(i===p-2||i===p+2) html += `<span style="display:flex;align-items:center;color:#555;font-size:.8rem;">…</span>`
   }
-  html+=`<button class="page-btn" onclick="goPage(${p+1})" ${p===totalPages?'disabled':''}><span class="material-symbols-outlined" style="font-size:13px;">chevron_right</span></button>`
-  document.getElementById('pagination').innerHTML=html
+  html += `<button class="page-btn" onclick="goPage(${p+1})" ${p===totalPages?'disabled':''}><span class="material-symbols-outlined" style="font-size:13px;">chevron_right</span></button>`
+  document.getElementById('pagination').innerHTML = html
 }
 
-function goPage(p){state.page=p;loadProducts();window.scrollTo({top:0,behavior:'smooth'})}
+function goPage(p) { state.page = p; loadProducts(); window.scrollTo({top:0, behavior:'smooth'}) }
 
-/* ══════════════════════════════════════════
+/* ══════════════════════════════════════
    INIT
-══════════════════════════════════════════ */
-document.addEventListener('DOMContentLoaded',()=>{
-  updateCartBadge();updatePriceDisplay();readURLParams()
-  if(state.pays==='Gabon') document.getElementById('f-gabon').checked=true
-  if(state.pays==='Maroc') document.getElementById('f-maroc').checked=true
+══════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  updatePriceDisplay()
+  readURLParams()
+  if(state.pays === 'Gabon') document.getElementById('f-gabon').checked = true
+  if(state.pays === 'Maroc') document.getElementById('f-maroc').checked = true
 
-  function waitForDb(n=0){
-    if(typeof db!=='undefined'){
-      loadSiteConfig().then(()=>{
+  function waitForDb(n=0) {
+    if(typeof db !== 'undefined') {
+      loadSiteConfig().then(() => {
         loadCategories()
         loadProducts()
         loadQuetesStrip()
         renderActiveFilters()
         scheduleQModal()
         watchSiteConfig()
-        // Précharger les données du panneau catégories en arrière-plan
         setTimeout(loadCatPanelData, 1500)
       })
-    } else if(n<20){
-      setTimeout(()=>waitForDb(n+1),100)
+      // Badge panier après que tout soit prêt
+      updateCartBadge()
+    } else if(n < 20) {
+      setTimeout(() => waitForDb(n+1), 100)
     } else {
-      document.getElementById('prod-grid').innerHTML=`<div style="padding:40px;text-align:center;color:#555;grid-column:1/-1;font-size:10px;letter-spacing:2px;text-transform:uppercase;">Configuration Supabase manquante.</div>`
+      document.getElementById('prod-grid').innerHTML = `<div style="padding:40px;text-align:center;color:#555;grid-column:1/-1;font-size:10px;letter-spacing:2px;text-transform:uppercase;">Configuration Supabase manquante.</div>`
     }
   }
   waitForDb()
