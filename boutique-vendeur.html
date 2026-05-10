@@ -954,20 +954,21 @@ function renderShopHeader(s) {
 }
 
 // ── LOAD PRODUCTS ──
+let activeBoostedProducts = new Set();
+
 async function loadProducts(userId) {
   const db = await waitForDb();
-  const { data, error } = await db
-    .from('products')
-    .select('*, categories(name)')
-    .eq('seller_id', userId)
-    .eq('status', 'active')
-    .order('created_at', { ascending: false });
+  const [{ data, error }, boosts] = await Promise.all([
+    db.from('products').select('*, categories(name)').eq('seller_id', userId).eq('status', 'active').order('created_at', { ascending: false }),
+    window.WennaBoosts ? window.WennaBoosts.loadActiveBoosts() : Promise.resolve({ products: new Set() })
+  ]);
 
   if (error || !data) {
     document.getElementById('products-grid').innerHTML = `<div class="empty-state" style="grid-column:1/-1"><span class="material-symbols-outlined">inventory_2</span><p>Aucun produit disponible</p></div>`;
     return;
   }
 
+  activeBoostedProducts = boosts.products;
   allProducts = data;
   buildFilters(data);
   renderProducts();
