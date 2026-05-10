@@ -769,22 +769,37 @@ function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').repl
    après que Cart et db soient prêts
 ══════════════════════════════════════ */
 async function updateCartBadge() {
-  if(typeof Cart === 'undefined') return
   const badge = document.getElementById('cart-badge')
   if(!badge) return
   try {
-    const count = await Cart.getCount()   // Cart.getCount() doit retourner un nombre
-    if(count && count > 0) {
-      badge.textContent = count > 99 ? '99+' : count
+    // Essai 1 : Cart.updateBadge natif
+    if(typeof Cart !== 'undefined' && typeof Cart.updateBadge === 'function') {
+      await Cart.updateBadge('cart-badge')
+      // S'assurer que la classe show est bien là si le badge a un contenu
+      if(badge.textContent && badge.textContent !== '0') badge.classList.add('show')
+      else badge.classList.remove('show')
+      return
+    }
+    // Essai 2 : requête directe Supabase
+    if(typeof db === 'undefined') return
+    const {data: {user}} = await db.auth.getUser()
+    if(!user) return
+    const {data: uRow} = await db.from('users').select('id').eq('auth_id', user.id).single()
+    if(!uRow) return
+    const {data, error} = await db
+      .from('cart_items')
+      .select('quantity')
+      .eq('user_id', uRow.id)
+    if(error) return
+    const total = (data||[]).reduce((s, r) => s + (r.quantity||1), 0)
+    if(total > 0) {
+      badge.textContent = total > 99 ? '99+' : total
       badge.classList.add('show')
     } else {
       badge.textContent = ''
       badge.classList.remove('show')
     }
-  } catch(e) {
-    // fallback : utiliser Cart.updateBadge si getCount n'existe pas
-    if(typeof Cart.updateBadge === 'function') Cart.updateBadge('cart-badge')
-  }
+  } catch(e) { /* silencieux */ }
 }
 
 async function addToCart(p) {
