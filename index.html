@@ -6,6 +6,14 @@
 <title>WennaShop — Connexion / Inscription</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- ✅ Supabase initialisé ici directement, pas de dépendance à un fichier externe -->
+<script>
+  const SUPABASE_URL     = 'https://aakxoydznmybstfozjte.supabase.co'
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
+  window.db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+</script>
+
 <style>
 :root{
   --fire:#FF6B2B;--ember:#E85A1A;--ink:#080808;--coal:#111111;--slate:#1A1A1A;
@@ -28,13 +36,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
 @media(max-width:768px){.layout{grid-template-columns:1fr;}}
 
 /* LEFT PANEL */
-.left-panel{
-  position:relative;overflow:hidden;
-  background:var(--coal);
-}
+.left-panel{position:relative;overflow:hidden;background:var(--coal);}
 @media(max-width:768px){.left-panel{height:220px;}}
-
-/* Fond géométrique SVG */
 .left-panel-bg{
   position:absolute;inset:0;
   background:
@@ -42,14 +45,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
     radial-gradient(ellipse 50% 40% at 80% 20%, rgba(255,107,43,.04) 0%, transparent 60%),
     var(--coal);
 }
-.left-panel-bg svg{
-  position:absolute;inset:0;width:100%;height:100%;
-  opacity:.18;
-}
-.left-panel-overlay{
-  position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(8,8,8,0) 0%,rgba(8,8,8,.7) 100%);
-}
+.left-panel-bg svg{position:absolute;inset:0;width:100%;height:100%;opacity:.18;}
+.left-panel-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,8,0) 0%,rgba(8,8,8,.7) 100%);}
 .left-content{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding:48px;}
 @media(max-width:768px){.left-content{justify-content:center;padding:24px;text-align:center;}}
 .left-eyebrow{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--fire);display:flex;align-items:center;gap:12px;margin-bottom:20px;}
@@ -100,11 +97,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
 .field-icon.right{right:12px;pointer-events:all;color:#555;background:none;border:none;transition:color .2s;}
 .field-icon.right:hover{color:var(--snow);}
 
-/* 2-col grid */
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 @media(max-width:380px){.grid-2{grid-template-columns:1fr;}}
 
-/* CHOICE BTNS */
 .choice-group{display:flex;gap:8px;margin-bottom:4px;flex-wrap:wrap;}
 .choice-btn{flex:1;padding:11px 8px;border:1px solid var(--border);background:var(--slate);color:#666;font-size:11px;font-family:'DM Sans',sans-serif;transition:all .2s;text-align:center;min-width:0;}
 .choice-btn:hover{border-color:var(--border-fire);color:var(--snow);}
@@ -113,47 +108,29 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
 .role-btn:hover{border-color:var(--border-fire);color:var(--snow);}
 .role-btn.active{border-color:var(--fire);background:rgba(255,107,43,.1);color:var(--fire);}
 
-/* GENRE BTNS */
 .genre-group{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:4px;}
-.genre-btn{
-  display:flex;flex-direction:column;align-items:center;gap:5px;
-  padding:12px 6px 10px;
-  border:1px solid var(--border);background:var(--slate);
-  color:#555;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;
-  font-family:'DM Sans',sans-serif;transition:all .2s;
-  position:relative;overflow:hidden;
-}
-.genre-btn::before{
-  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
-  background:var(--fire);transform:scaleX(0);transition:transform .2s;
-}
+.genre-btn{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 6px 10px;border:1px solid var(--border);background:var(--slate);color:#555;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;font-family:'DM Sans',sans-serif;transition:all .2s;position:relative;overflow:hidden;}
+.genre-btn::before{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--fire);transform:scaleX(0);transition:transform .2s;}
 .genre-btn:hover{border-color:var(--border-fire);color:var(--snow);}
 .genre-btn:hover::before{transform:scaleX(1);}
 .genre-btn.active{border-color:var(--fire);background:rgba(255,107,43,.1);color:var(--fire);}
 .genre-btn.active::before{transform:scaleX(1);}
 .genre-icon{font-size:20px;line-height:1;}
-.genre-hint{
-  font-size:9px;color:#333;letter-spacing:.5px;margin-top:4px;line-height:1.5;
-  padding:6px 8px;background:rgba(255,107,43,.04);border-left:2px solid rgba(255,107,43,.2);
-}
+.genre-hint{font-size:9px;color:#333;letter-spacing:.5px;margin-top:4px;line-height:1.5;padding:6px 8px;background:rgba(255,107,43,.04);border-left:2px solid rgba(255,107,43,.2);}
 
-/* PWD STRENGTH */
 .pwd-bar-wrap{height:2px;background:rgba(255,255,255,.06);margin-top:6px;}
 #pwd-bar{height:2px;width:0;transition:width .3s,background .3s;}
 #pwd-hint{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-top:4px;}
 
-/* CGU */
 .cgu-wrap{display:flex;align-items:flex-start;gap:10px;margin-bottom:20px;}
 .cgu-check{width:16px;height:16px;margin-top:2px;accent-color:var(--fire);flex-shrink:0;}
 .cgu-text{font-size:11px;color:#555;line-height:1.6;}
 .cgu-text a{color:var(--fire);}
 
-/* DIVIDER */
 .divider{display:flex;align-items:center;gap:12px;margin:18px 0;}
 .divider-line{flex:1;height:1px;background:var(--border);}
 .divider-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#333;}
 
-/* BTNS */
 .btn-fire{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--fire);color:#fff;padding:14px;font-size:10px;font-weight:500;letter-spacing:3px;text-transform:uppercase;border:none;transition:background .2s,transform .15s;font-family:'DM Sans',sans-serif;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));margin-bottom:12px;}
 .btn-fire:hover{background:var(--ember);transform:translateY(-1px);}
 .btn-fire:active{transform:translateY(0);}
@@ -161,25 +138,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
 .btn-google{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:transparent;border:1px solid var(--border);color:#777;padding:13px;font-size:11px;font-family:'DM Sans',sans-serif;transition:all .2s;}
 .btn-google:hover{border-color:rgba(255,255,255,.15);color:var(--snow);}
 
-/* SPINNER */
 .spinner{display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .is-loading .spinner{display:block;}
 .is-loading .btn-label{display:none;}
 
-/* SWITCH LINK */
 .switch-link{text-align:center;margin-top:20px;font-size:11px;color:#555;}
 .switch-link button{background:none;border:none;color:var(--fire);font-size:11px;font-family:'DM Sans',sans-serif;}
 .switch-link button:hover{text-decoration:underline;}
 
-/* TOAST */
 #toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(10px);z-index:400;background:var(--slate);border:1px solid var(--border-fire);color:var(--snow);padding:12px 24px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 #toast.ok{border-color:rgba(115,220,132,.4);background:#0a1f0e;}
 #toast.ko{border-color:rgba(186,26,26,.4);background:#1f0a0a;}
-
-/* SUPABASE WARNING */
-#supabase-warning{display:none;background:rgba(208,166,0,.08);border:1px solid rgba(208,166,0,.3);padding:10px 14px;margin-bottom:16px;font-size:11px;color:#d0a600;font-family:'DM Sans',sans-serif;}
 </style>
 </head>
 <body>
@@ -193,20 +164,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
   <!-- LEFT -->
   <div class="left-panel">
     <div class="left-panel-bg">
-      <!-- Motif géométrique inspiré zellij marocain -->
       <svg viewBox="0 0 600 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
         <defs>
           <pattern id="geo" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
-            <!-- Losange central -->
             <polygon points="40,4 76,40 40,76 4,40" fill="none" stroke="#FF6B2B" stroke-width="0.6"/>
-            <!-- Carré intérieur -->
             <rect x="24" y="24" width="32" height="32" fill="none" stroke="#FF6B2B" stroke-width="0.4" transform="rotate(45 40 40)"/>
-            <!-- Points de jonction -->
             <circle cx="40" cy="4"  r="1.2" fill="#FF6B2B"/>
             <circle cx="76" cy="40" r="1.2" fill="#FF6B2B"/>
             <circle cx="40" cy="76" r="1.2" fill="#FF6B2B"/>
             <circle cx="4"  cy="40" r="1.2" fill="#FF6B2B"/>
-            <!-- Lignes diagonales fines -->
             <line x1="0" y1="0" x2="80" y2="80" stroke="#FF6B2B" stroke-width="0.2" opacity="0.5"/>
             <line x1="80" y1="0" x2="0" y2="80" stroke="#FF6B2B" stroke-width="0.2" opacity="0.5"/>
           </pattern>
@@ -231,8 +197,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
   <!-- RIGHT -->
   <div class="right-panel">
     <div class="form-wrap">
-
-      <div id="supabase-warning">⚠️ Supabase non configuré</div>
 
       <!-- TABS -->
       <div class="tabs">
@@ -398,7 +362,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
 </div>
 
 <script>
-// ── CURSOR
+// ── CURSOR ─────────────────────────────────────────────────────
 const cur  = document.getElementById('cursor')
 const ring = document.getElementById('cursor-ring')
 document.addEventListener('mousemove', e => {
@@ -406,17 +370,23 @@ document.addEventListener('mousemove', e => {
   ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px'
 })
 
-// ── SUPABASE
-const db = window.db
+// ── SUPABASE — référence directe à window.db (déjà initialisé dans <head>)
+function getSb() { return window.db || null }
+
+// Si déjà connecté → rediriger
 ;(async () => {
-  if (!db) return
+  const sb = getSb()
+  if (!sb) return
   try {
-    const { data: { session } } = await db.auth.getSession()
-    if (session) window.location.href = 'boutique.html'
-  } catch(e) {}
+    const { data: { session } } = await sb.auth.getSession()
+    if (session) {
+      const role = session.user?.user_metadata?.role
+      window.location.href = role === 'artisan' ? 'dashboard-vendeur.html' : 'boutique.html'
+    }
+  } catch(e) { console.warn('[compte] getSession:', e.message) }
 })()
 
-// ── STATE
+// ── STATE ──────────────────────────────────────────────────────
 let selectedCountry = null
 let selectedRole    = null
 let selectedGenre   = null
@@ -428,7 +398,7 @@ const GENRE_HINTS = {
   non_precise: 'Vous recevrez des suggestions générales sur toutes les catégories.'
 }
 
-// ── SWITCH
+// ── SWITCH MODE ────────────────────────────────────────────────
 function switchMode(mode) {
   const cnx = document.getElementById('panel-connexion')
   const ins  = document.getElementById('panel-inscription')
@@ -449,12 +419,10 @@ function selectCountry(val) {
   selectedCountry = val
   document.querySelectorAll('[data-country]').forEach(b => b.classList.toggle('active', b.dataset.country === val))
 }
-
 function selectRole(val) {
   selectedRole = val
   document.querySelectorAll('[data-role]').forEach(b => b.classList.toggle('active', b.dataset.role === val))
 }
-
 function selectGenre(val) {
   selectedGenre = val
   document.querySelectorAll('[data-genre]').forEach(b => b.classList.toggle('active', b.dataset.genre === val))
@@ -463,14 +431,12 @@ function selectGenre(val) {
   hint.style.borderLeftColor = 'rgba(255,107,43,.5)'
   hint.style.color = 'rgba(240,236,230,.6)'
 }
-
 function togglePwd(inputId, iconId) {
   const inp = document.getElementById(inputId)
   const ico = document.getElementById(iconId)
   inp.type = inp.type === 'password' ? 'text' : 'password'
   ico.textContent = inp.type === 'password' ? 'visibility' : 'visibility_off'
 }
-
 function evalStrength(pwd) {
   let score = 0
   if (pwd.length >= 8) score++
@@ -490,34 +456,34 @@ function evalStrength(pwd) {
   document.getElementById('pwd-hint').textContent = l.msg
 }
 
-function toast(msg, type = 'ok') {
+// ── TOAST ──────────────────────────────────────────────────────
+function toast(msg, type='ok') {
   const el = document.getElementById('toast')
   el.textContent = msg; el.className = `show ${type}`
   setTimeout(() => el.className = type, 3500)
 }
-
 function setLoading(btnId, on) {
   const btn = document.getElementById(btnId)
   if (!btn) return
   btn.disabled = on
   btn.classList.toggle('is-loading', on)
 }
-
 function need(id, label) {
   const v = document.getElementById(id)?.value?.trim()
   if (!v) { toast(`Champ requis : ${label}`, 'ko'); return null }
   return v
 }
 
-// ── CONNEXION
+// ── CONNEXION ──────────────────────────────────────────────────
 async function handleConnexion() {
+  const sb = getSb()
+  if (!sb) { toast('Erreur de connexion. Recharge la page.', 'ko'); return }
   const email = need('cnx-email', 'Email')
   const pwd   = need('cnx-pwd',   'Mot de passe')
   if (!email || !pwd) return
-  if (!db) { toast('Supabase non configuré', 'ko'); return }
   setLoading('btn-cnx', true)
   try {
-    const { data, error } = await db.auth.signInWithPassword({ email, password: pwd })
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pwd })
     if (error) throw error
     toast('Connexion réussie ✓', 'ok')
     setTimeout(() => {
@@ -533,25 +499,23 @@ async function handleConnexion() {
   } finally { setLoading('btn-cnx', false) }
 }
 
-// ── INSCRIPTION
+// ── INSCRIPTION ────────────────────────────────────────────────
 async function handleInscription() {
+  const sb = getSb()
+  if (!sb) { toast('Erreur de connexion. Recharge la page.', 'ko'); return }
   const prenom = need('ins-prenom', 'Prénom')
   const nom    = need('ins-nom', 'Nom')
   const email  = need('ins-email', 'Email')
   if (!prenom || !nom || !email) return
-
   const pwd = document.getElementById('ins-pwd')?.value || ''
   if (pwd.length < 8) { toast('Mot de passe : 8 caractères minimum', 'ko'); return }
   if (!selectedCountry) { toast("Sélectionnez votre pays d'origine", 'ko'); return }
   if (!selectedRole)    { toast('Sélectionnez votre rôle', 'ko'); return }
   if (!document.getElementById('cgu')?.checked) { toast('Acceptez les CGU pour continuer', 'ko'); return }
-  if (!db) { toast('Supabase non configuré', 'ko'); return }
-
   const genre = selectedGenre || 'non_precise'
-
   setLoading('btn-ins', true)
   try {
-    const { data: authData, error: authErr } = await db.auth.signUp({
+    const { data: authData, error: authErr } = await sb.auth.signUp({
       email, password: pwd,
       options: {
         data: {
@@ -565,21 +529,15 @@ async function handleInscription() {
       }
     })
     if (authErr) throw authErr
-
     if (authData?.user?.id) {
       await new Promise(r => setTimeout(r, 600))
-      await db
-        .from('users')
-        .update({ gender: genre })
-        .eq('auth_id', authData.user.id)
+      await sb.from('users').update({ gender: genre }).eq('auth_id', authData.user.id)
     }
-
     const msg = selectedRole === 'artisan'
       ? 'Compte créé ! Vérifiez votre email puis attendez validation. ✓'
       : 'Compte créé ! Vérifiez votre email ✓'
     toast(msg, 'ok')
     setTimeout(() => switchMode('connexion'), 2500)
-
   } catch(err) {
     let msg = "Erreur lors de l'inscription."
     if (err.message?.includes('already registered') || err.message?.includes('already exists')) msg = 'Cet email est déjà utilisé.'
@@ -589,22 +547,24 @@ async function handleInscription() {
   } finally { setLoading('btn-ins', false) }
 }
 
-// ── GOOGLE
+// ── GOOGLE ─────────────────────────────────────────────────────
 async function handleGoogle() {
-  if (!db) { toast('Supabase non configuré', 'ko'); return }
-  const { error } = await db.auth.signInWithOAuth({
+  const sb = getSb()
+  if (!sb) { toast('Erreur de connexion. Recharge la page.', 'ko'); return }
+  const { error } = await sb.auth.signInWithOAuth({
     provider: 'google',
     options: { redirectTo: window.location.origin + '/boutique.html' }
   })
   if (error) toast(error.message, 'ko')
 }
 
-// ── RESET MOT DE PASSE
+// ── RESET MOT DE PASSE ─────────────────────────────────────────
 async function sendReset() {
+  const sb = getSb()
+  if (!sb) { toast('Erreur de connexion. Recharge la page.', 'ko'); return }
   const email = document.getElementById('cnx-email')?.value?.trim()
   if (!email) { toast('Entrez votre email pour réinitialiser', 'ko'); return }
-  if (!db) { toast('Supabase non configuré', 'ko'); return }
-  const { error } = await db.auth.resetPasswordForEmail(email, {
+  const { error } = await sb.auth.resetPasswordForEmail(email, {
     redirectTo: window.location.origin + '/index.html'
   })
   if (error) toast(error.message, 'ko')
