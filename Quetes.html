@@ -5,9 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Quêtes — WennaShop</title>
   <meta name="description" content="Trouvez le produit que vous cherchez ou gagnez une récompense en chassant pour les autres."/>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase.config.js"></script>
+  <script>
+    window.db = window.supabase.createClient(
+      'https://aakxoydznmybstfozjte.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
+    )
+  </script>
   <style>
     :root{
       --fire:#FF6B2B;--ember:#E85A1A;--ink:#080808;--coal:#111111;--slate:#1A1A1A;
@@ -17,7 +23,8 @@
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     html{scroll-behavior:smooth;}
     body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);min-height:100dvh;overflow-x:hidden;padding-bottom:80px;}
-    .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24;font-size:20px;line-height:1;}
+    .mi{font-family:'Material Icons Outlined';font-size:20px;line-height:1;user-select:none;display:inline-block;vertical-align:middle;}
+    .mi.sm{font-size:16px;} .mi.xs{font-size:13px;}
     ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--coal);}::-webkit-scrollbar-thumb{background:rgba(255,107,43,.3);}
 
     nav{position:sticky;top:0;z-index:100;background:rgba(8,8,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
@@ -40,7 +47,7 @@
     .hero h1 span{color:var(--fire);}
     .hero p{color:var(--fog);max-width:520px;margin:0 auto 32px;font-size:14px;line-height:1.7;}
     .hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
-    .btn-fire{display:inline-flex;align-items:center;gap:8px;background:var(--fire);color:#fff;padding:13px 28px;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;transition:background .2s,transform .15s;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));font-family:'DM Sans',sans-serif;}
+    .btn-fire{display:inline-flex;align-items:center;gap:8px;background:var(--fire);color:#fff;padding:13px 28px;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;transition:background .2s,transform .15s;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));font-family:'DM Sans',sans-serif;text-decoration:none;}
     .btn-fire:hover{background:var(--ember);transform:translateY(-1px);}
     .btn-ghost{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border-fire);color:var(--fire);background:transparent;padding:12px 24px;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
     .btn-ghost:hover{background:rgba(255,107,43,.08);}
@@ -80,6 +87,8 @@
     .quest-card{background:var(--slate);border-left:2px solid transparent;padding:22px 24px;cursor:pointer;transition:all .2s;text-decoration:none;display:block;color:inherit;}
     .quest-card:hover{border-left-color:var(--fire);background:var(--smoke);}
     .quest-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:10px;}
+    .quest-card-top{display:flex;gap:16px;align-items:flex-start;flex:1;}
+    .quest-ref-img{width:64px;height:64px;object-fit:cover;flex-shrink:0;border:1px solid var(--border);}
     .quest-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;font-style:italic;line-height:1.2;flex:1;}
     .quest-badges{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;}
     .badge{padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
@@ -90,7 +99,6 @@
     .quest-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
     .quest-meta{display:flex;gap:20px;align-items:center;flex-wrap:wrap;}
     .meta-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#555;}
-    .meta-item .material-symbols-outlined{font-size:15px;}
     .meta-urgent{color:var(--fire)!important;}
     .reward-box{background:rgba(208,166,0,.07);border:1px solid rgba(208,166,0,.2);padding:8px 16px;text-align:right;flex-shrink:0;}
     .reward-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:2px;}
@@ -102,20 +110,20 @@
     .sk-line{border-radius:2px;margin-bottom:10px;}
 
     .empty-state{background:var(--slate);padding:64px 32px;text-align:center;}
-    .empty-state .material-symbols-outlined{font-size:48px;color:#333;display:block;margin-bottom:16px;}
+    .empty-state .mi{font-size:48px;color:#333;display:block;margin-bottom:16px;}
     .empty-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;font-style:italic;margin-bottom:8px;}
     .empty-sub{font-size:13px;color:var(--fog);}
 
+    /* MODAL */
     .modal-overlay{position:fixed;inset:0;background:rgba(8,8,8,.88);backdrop-filter:blur(14px);z-index:999;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .25s;}
     .modal-overlay.open{opacity:1;pointer-events:all;}
-    .modal-box{background:var(--coal);border:1px solid var(--border);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;transform:translateY(16px);transition:transform .25s;position:relative;}
+    .modal-box{background:var(--coal);border:1px solid var(--border);width:100%;max-width:580px;max-height:90vh;overflow-y:auto;transform:translateY(16px);transition:transform .25s;position:relative;}
     .modal-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--fire),transparent);}
     .modal-overlay.open .modal-box{transform:translateY(0);}
     .modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--coal);z-index:10;}
     .modal-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;font-style:italic;}
     .modal-close{background:none;border:1px solid var(--border);color:#555;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;}
     .modal-close:hover{border-color:var(--border-fire);color:var(--fire);}
-    .modal-close .material-symbols-outlined{font-size:16px;}
     .modal-body{padding:24px;display:flex;flex-direction:column;gap:16px;}
     .form-group{display:flex;flex-direction:column;gap:6px;}
     .form-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#555;}
@@ -125,6 +133,21 @@
     .inp-full::placeholder{color:#333;}
     textarea.inp-full{resize:vertical;min-height:80px;}
     .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+    /* Image upload zone */
+    .img-upload-zone{border:1px dashed var(--border);padding:20px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
+    .img-upload-zone:hover{border-color:var(--border-fire);}
+    .img-upload-zone.has-img{border-style:solid;border-color:var(--border-fire);padding:0;overflow:hidden;}
+    .img-upload-zone img{width:100%;max-height:200px;object-fit:cover;display:block;}
+    .img-upload-overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;gap:12px;opacity:0;transition:opacity .2s;}
+    .img-upload-zone.has-img:hover .img-upload-overlay{opacity:1;}
+    .img-upload-text{font-size:10px;color:#555;letter-spacing:1px;text-transform:uppercase;margin-top:8px;}
+    .img-url-row{display:flex;gap:8px;margin-top:8px;}
+    .img-url-input{flex:1;background:rgba(255,255,255,.04);border:none;border-bottom:1px solid var(--border);color:var(--snow);padding:9px 12px;font-size:12px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
+    .img-url-input:focus{border-bottom-color:var(--fire);}
+    .img-url-input::placeholder{color:#333;}
+    .btn-url-add{background:var(--slate);border:1px solid var(--border);color:var(--fog);padding:9px 14px;font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .2s;}
+    .btn-url-add:hover{border-color:var(--border-fire);color:var(--fire);}
 
     .budget-preview{background:rgba(208,166,0,.06);border:1px solid rgba(208,166,0,.2);padding:16px;display:none;}
     .budget-preview-title{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
@@ -137,7 +160,7 @@
     .btn-submit:disabled{opacity:.5;cursor:not-allowed;}
     .modal-hint{text-align:center;font-size:10px;color:#444;margin-top:10px;letter-spacing:.5px;}
 
-    #toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(10px);z-index:400;background:var(--slate);border:1px solid var(--border-fire);color:var(--snow);padding:12px 24px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
+    #toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(10px);z-index:1200;background:var(--slate);border:1px solid var(--border-fire);color:var(--snow);padding:12px 24px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
     #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
     #toast.success{border-color:rgba(115,220,132,.4);background:#0a1f0e;}
     #toast.error{border-color:rgba(186,26,26,.4);background:#1f0a0a;}
@@ -158,7 +181,7 @@
 <div id="toast"></div>
 
 <nav>
-  <a href="hero.html" class="nav-logo">Wenna<b>Shop</b></a>
+  <a href="index.html" class="nav-logo">Wenna<b>Shop</b></a>
   <div class="nav-links">
     <a href="boutique.html">Boutique</a>
     <a href="quetes.html" class="active">Quêtes</a>
@@ -170,14 +193,14 @@
 <section class="hero anim-up">
   <div class="hero-deco">Q</div>
   <div class="hero-eyebrow">
-    <span class="material-symbols-outlined" style="font-size:13px;">search</span>
+    <span class="mi xs">search</span>
     Système de chasse · Nouveau
   </div>
   <h1>Vous cherchez,<br/><span>on trouve.</span></h1>
   <p>Publiez une quête pour un produit introuvable. Des chasseurs du Gabon et du Maroc le dénichent pour vous. Le meilleur gagne la récompense.</p>
   <div class="hero-actions">
     <button class="btn-fire" onclick="openModal()">
-      <span class="material-symbols-outlined" style="font-size:16px;">add</span>
+      <span class="mi sm">add</span>
       Poster une quête
     </button>
     <button class="btn-ghost" onclick="document.getElementById('mainLayout').scrollIntoView({behavior:'smooth'})">
@@ -239,24 +262,56 @@
   </div>
 </div>
 
-<!-- MODAL -->
+<!-- ══ MODAL ══ -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
   <div class="modal-box" onclick="event.stopPropagation()">
     <div class="modal-head">
       <div class="modal-title">Poster une quête</div>
       <button class="modal-close" onclick="closeModal()">
-        <span class="material-symbols-outlined">close</span>
+        <span class="mi sm">close</span>
       </button>
     </div>
     <div class="modal-body">
+
+      <!-- Titre -->
       <div class="form-group">
         <label class="form-label">Titre de la quête <span>*</span></label>
         <input type="text" id="questTitle" class="inp-full" placeholder="ex: Cherche tissu wax rouge 6 yards" maxlength="120"/>
       </div>
+
+      <!-- Description -->
       <div class="form-group">
         <label class="form-label">Description <span>(facultatif)</span></label>
         <textarea id="questDesc" class="inp-full" placeholder="Précisez : couleur, taille, matière, usage..."></textarea>
       </div>
+
+      <!-- IMAGE DE RÉFÉRENCE -->
+      <div class="form-group">
+        <label class="form-label">Image de référence <span>(facultatif)</span></label>
+
+        <!-- Zone drag/click -->
+        <div class="img-upload-zone" id="imgUploadZone" onclick="document.getElementById('questImageFile').click()">
+          <img id="questImgTag" src="" alt="" style="display:none;width:100%;max-height:200px;object-fit:cover;"/>
+          <div class="img-upload-overlay" id="imgOverlay">
+            <button onclick="event.stopPropagation();clearQuestImage()" style="background:rgba(244,63,94,.2);border:1px solid rgba(244,63,94,.4);color:#f87171;padding:6px 12px;font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;">Supprimer</button>
+            <button onclick="event.stopPropagation();document.getElementById('questImageFile').click()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 12px;font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;">Changer</button>
+          </div>
+          <div id="imgUploadPlaceholder">
+            <span class="mi" style="font-size:32px;color:#333;display:block;margin-bottom:8px;">add_photo_alternate</span>
+            <div class="img-upload-text">Cliquer pour choisir une photo</div>
+            <div style="font-size:10px;color:#333;margin-top:4px;">JPG · PNG · WebP · max 2 MB</div>
+          </div>
+        </div>
+        <input type="file" id="questImageFile" accept="image/*" style="display:none" onchange="handleQuestImageFile(this)"/>
+
+        <!-- OU URL -->
+        <div class="img-url-row">
+          <input type="url" id="questImageUrl" class="img-url-input" placeholder="Ou coller une URL d'image…"/>
+          <button class="btn-url-add" onclick="applyImageUrl()">Utiliser</button>
+        </div>
+      </div>
+
+      <!-- Catégorie / Pays -->
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Catégorie</label>
@@ -273,6 +328,8 @@
           </select>
         </div>
       </div>
+
+      <!-- Budget / Récompense -->
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Budget produit (FCFA) <span>*</span></label>
@@ -283,6 +340,8 @@
           <input type="number" id="questReward" class="inp-full" placeholder="2500" min="500" oninput="updateBudgetPreview()"/>
         </div>
       </div>
+
+      <!-- Durée -->
       <div class="form-group">
         <label class="form-label">Durée</label>
         <select id="questDuration" class="inp-full" style="appearance:none;cursor:pointer;">
@@ -291,6 +350,8 @@
           <option value="14">14 jours — flexible</option>
         </select>
       </div>
+
+      <!-- Budget preview -->
       <div class="budget-preview" id="budgetPreview">
         <div class="budget-preview-title">Récapitulatif escrow</div>
         <div class="budget-line"><span>Budget produit</span><span id="prevBudget">0 FCFA</span></div>
@@ -298,10 +359,11 @@
         <div class="budget-line"><span>Frais de publication</span><span>500 FCFA</span></div>
         <div class="budget-line total"><span>Total à bloquer</span><span id="prevTotal">0 FCFA</span></div>
       </div>
+
     </div>
     <div class="modal-footer">
       <button class="btn-submit" id="submitBtn" onclick="submitQuest()">
-        <span class="material-symbols-outlined" style="font-size:16px;">lock</span>
+        <span class="mi sm">lock</span>
         Publier et bloquer les fonds
       </button>
       <p class="modal-hint">Fonds remboursés si aucune réponse dans le délai imparti.</p>
@@ -309,59 +371,42 @@
   </div>
 </div>
 
+<!-- BOTTOM NAV -->
 <nav class="bnav">
   <div class="bnav-inner">
-    <a href="hero.html" class="bnav-item"><span class="material-symbols-outlined">home</span><span>Accueil</span></a>
-    <a href="boutique.html" class="bnav-item"><span class="material-symbols-outlined">storefront</span><span>Boutique</span></a>
-    <a href="quetes.html" class="bnav-item active"><span class="material-symbols-outlined">search</span><span>Quêtes</span></a>
-    <a href="compte.html" class="bnav-item"><span class="material-symbols-outlined">person</span><span>Profil</span></a>
+    <a href="index.html" class="bnav-item"><span class="mi">home</span><span>Accueil</span></a>
+    <a href="boutique.html" class="bnav-item"><span class="mi">storefront</span><span>Boutique</span></a>
+    <a href="quetes.html" class="bnav-item active"><span class="mi">search</span><span>Quêtes</span></a>
+    <a href="compte.html" class="bnav-item"><span class="mi">person</span><span>Profil</span></a>
   </div>
 </nav>
 
 <script>
-function getSb() {
-  if (typeof window.db === 'undefined') throw new Error('[WennaShop] window.db non disponible')
-  return window.db
-}
-
+const sb = window.db
 let allQuests = [], categories = [], currentUser = null
 let activeCategory = 'all', activeCountry = 'all'
+let questImageDataUrl = null   // image locale base64
+let questImageFile = null      // fichier File object
 
+// ── INIT ──────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    await waitForDb()
     await checkAuth()
     await Promise.all([loadCategories(), loadQuests(), loadStats()])
   } catch(e) {
-    console.error('[WennaShop] Init error:', e)
-    showEmpty('Impossible de charger la page. Vérifiez votre connexion.')
+    console.error('[Wenna] Init error:', e)
+    showEmpty('Impossible de charger la page.')
   }
 })
 
-function waitForDb(n = 0) {
-  return new Promise((resolve, reject) => {
-    const check = (attempt) => {
-      if (typeof window.db !== 'undefined') return resolve()
-      if (attempt >= 40) return reject(new Error('Supabase non disponible après 4s'))
-      setTimeout(() => check(attempt + 1), 100)
-    }
-    check(n)
-  })
-}
-
 async function checkAuth() {
-  try {
-    const { data: { session } } = await getSb().auth.getSession()
-    currentUser = session?.user || null
-  } catch(e) {
-    console.error('[WennaShop] checkAuth:', e)
-    currentUser = null
-  }
+  const { data: { session } } = await sb.auth.getSession()
+  currentUser = session?.user || null
 }
 
+// ── CATÉGORIES ────────────────────────────────────────────────
 async function loadCategories() {
-  const { data, error } = await getSb().from('categories').select('id, name').order('name')
-  if (error) { console.error('[WennaShop] loadCategories:', error); return }
+  const { data } = await sb.from('categories').select('id, name').order('name')
   categories = data || []
   const chips = document.getElementById('categoryChips')
   const sel = document.getElementById('questCategory')
@@ -379,55 +424,35 @@ async function loadCategories() {
   })
 }
 
-// ✅ FIX PRINCIPAL : query séparée en 2 étapes
-// Étape 1 : récupérer les quêtes + catégories (sans jointure quest_proposals)
-// Étape 2 : récupérer les counts de proposals séparément
-// → évite que le RLS de quest_proposals bloque tout le résultat
+// ── QUÊTES ────────────────────────────────────────────────────
 async function loadQuests() {
-  // Query principale — sans quest_proposals(count) pour éviter le blocage RLS
-  const { data, error } = await getSb()
+  const { data, error } = await sb
     .from('quests')
-    .select(`
-      id, title, description, country_target, product_budget, reward_amount,
-      currency, duration_days, expires_at, status, created_at, category_id,
-      categories(name)
-    `)
+    .select(`id, title, description, country_target, product_budget, reward_amount,
+             currency, duration_days, expires_at, status, created_at, category_id,
+             reference_image, categories(name)`)
     .eq('status', 'open')
     .order('created_at', { ascending: false })
 
   if (error) {
-    console.error('[WennaShop] loadQuests:', error)
-    showEmpty('Erreur de chargement. Vérifiez votre connexion.')
+    console.error('[Wenna] loadQuests:', error)
+    showEmpty('Erreur de chargement.')
     return
   }
 
-  const quests = (data || []).map(q => ({
-    ...q,
-    category_id: String(q.category_id ?? ''),
-    proposals_count: 0  // valeur par défaut
-  }))
+  const quests = (data || []).map(q => ({ ...q, category_id: String(q.category_id ?? ''), proposals_count: 0 }))
 
-  // Query secondaire : count des proposals par quête (peut échouer sans impact)
+  // Count proposals séparé (non bloquant)
   try {
-    const questIds = quests.map(q => q.id)
-    if (questIds.length > 0) {
-      const { data: propData } = await getSb()
-        .from('quest_proposals')
-        .select('quest_id')
-        .in('quest_id', questIds)
-
-      if (propData) {
-        // Compter par quest_id
-        const countMap = {}
-        propData.forEach(p => {
-          countMap[p.quest_id] = (countMap[p.quest_id] || 0) + 1
-        })
-        quests.forEach(q => { q.proposals_count = countMap[q.id] || 0 })
+    if (quests.length) {
+      const { data: pd } = await sb.from('quest_proposals').select('quest_id').in('quest_id', quests.map(q => q.id))
+      if (pd) {
+        const cm = {}
+        pd.forEach(p => { cm[p.quest_id] = (cm[p.quest_id] || 0) + 1 })
+        quests.forEach(q => { q.proposals_count = cm[q.id] || 0 })
       }
     }
-  } catch(e) {
-    console.warn('[WennaShop] proposals count non disponible (non bloquant):', e)
-  }
+  } catch(e) { console.warn('[Wenna] proposals count:', e) }
 
   allQuests = quests
   renderQuests(allQuests)
@@ -435,14 +460,14 @@ async function loadQuests() {
 
 function renderQuests(quests) {
   const grid = document.getElementById('questsGrid')
-  const count = document.getElementById('questsCount')
-  count.textContent = quests.length === 0
+  const countEl = document.getElementById('questsCount')
+  countEl.textContent = quests.length === 0
     ? 'Aucune quête'
     : `${quests.length} quête${quests.length > 1 ? 's' : ''} ouverte${quests.length > 1 ? 's' : ''}`
 
   if (!quests.length) {
     grid.innerHTML = `<div class="empty-state">
-      <span class="material-symbols-outlined">search_off</span>
+      <span class="mi">search_off</span>
       <div class="empty-title">Aucune quête pour le moment</div>
       <div class="empty-sub">Soyez le premier à poster une quête !</div>
     </div>`
@@ -454,10 +479,15 @@ function renderQuests(quests) {
     const exp = daysUntil(q.expires_at)
     const cat = q.categories?.name || ''
     const hot = proposals >= 3
+    const refImg = q.reference_image
+
     return `
       <a class="quest-card" href="detail_quete.html?id=${q.id}">
         <div class="quest-card-header">
-          <div class="quest-title">${esc(q.title)}</div>
+          <div class="quest-card-top">
+            ${refImg ? `<img class="quest-ref-img" src="${esc(refImg)}" alt="Référence" onerror="this.style.display='none'"/>` : ''}
+            <div class="quest-title">${esc(q.title)}</div>
+          </div>
           <div class="quest-badges">
             ${hot ? '<span class="badge badge-hot">Populaire</span>' : ''}
             ${cat ? `<span class="badge badge-category">${cat}</span>` : ''}
@@ -468,15 +498,15 @@ function renderQuests(quests) {
         <div class="quest-footer">
           <div class="quest-meta">
             <span class="meta-item">
-              <span class="material-symbols-outlined">group</span>
+              <span class="mi" style="font-size:15px;">group</span>
               ${proposals} proposition${proposals !== 1 ? 's' : ''}
             </span>
             <span class="meta-item${exp <= 1 ? ' meta-urgent' : ''}">
-              <span class="material-symbols-outlined">schedule</span>
+              <span class="mi" style="font-size:15px;">schedule</span>
               ${exp <= 1 ? '<strong>Expire demain</strong>' : `${exp}j restants`}
             </span>
             <span class="meta-item">
-              <span class="material-symbols-outlined">payments</span>
+              <span class="mi" style="font-size:15px;">payments</span>
               Budget ${fmt(q.product_budget)} ${q.currency}
             </span>
           </div>
@@ -489,9 +519,9 @@ function renderQuests(quests) {
   }).join('')
 }
 
+// ── STATS ─────────────────────────────────────────────────────
 async function loadStats() {
   try {
-    const sb = getSb()
     const [open, resolved, props] = await Promise.all([
       sb.from('quests').select('id', { count: 'exact', head: true }).eq('status', 'open'),
       sb.from('quests').select('id', { count: 'exact', head: true }).eq('status', 'resolved'),
@@ -503,9 +533,10 @@ async function loadStats() {
     const { data: rd } = await sb.from('quests').select('reward_amount').eq('status', 'resolved')
     const tot = (rd || []).reduce((s, r) => s + Number(r.reward_amount || 0), 0)
     document.getElementById('statRewards').textContent = tot > 0 ? fmt(tot) + ' FCFA' : '0'
-  } catch(e) { console.error('[WennaShop] loadStats:', e) }
+  } catch(e) { console.error('[Wenna] loadStats:', e) }
 }
 
+// ── FILTRES ───────────────────────────────────────────────────
 function selectCat(el) {
   document.querySelectorAll('#categoryChips .chip').forEach(c => c.classList.remove('active'))
   el.classList.add('active')
@@ -544,20 +575,26 @@ function resetFilters() {
   document.getElementById('searchInput').value = ''
   document.getElementById('rewardMin').value = ''
   document.getElementById('sortSelect').value = 'created_at_desc'
-  activeCategory = 'all'
-  activeCountry = 'all'
+  activeCategory = 'all'; activeCountry = 'all'
   document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'))
   document.querySelector('[data-cat="all"]').classList.add('active')
   document.querySelector('[data-country="all"]').classList.add('active')
   renderQuests(allQuests)
 }
 
+// ── MODAL ─────────────────────────────────────────────────────
 function openModal() {
   if (!currentUser) {
     showToast('Connectez-vous pour poster une quête.', 'error')
-    setTimeout(() => location.href = 'index.html', 1500)
+    setTimeout(() => location.href = 'compte.html', 1500)
     return
   }
+  // Reset form
+  ;['questTitle','questDesc','questBudget','questReward','questImageUrl'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = ''
+  })
+  clearQuestImage()
+  document.getElementById('budgetPreview').style.display = 'none'
   document.getElementById('modalOverlay').classList.add('open')
   document.body.style.overflow = 'hidden'
 }
@@ -571,6 +608,52 @@ function closeModalOutside(e) {
   if (e.target === document.getElementById('modalOverlay')) closeModal()
 }
 
+// ── IMAGE HANDLING ────────────────────────────────────────────
+function handleQuestImageFile(input) {
+  const file = input.files[0]
+  if (!file) return
+  if (file.size > 2 * 1024 * 1024) {
+    showToast('Image trop lourde (max 2 MB)', 'error'); return
+  }
+  questImageFile = file
+  const reader = new FileReader()
+  reader.onload = e => showImagePreview(e.target.result)
+  reader.readAsDataURL(file)
+}
+
+function applyImageUrl() {
+  const url = document.getElementById('questImageUrl').value.trim()
+  if (!url) return
+  questImageFile = null
+  questImageDataUrl = null
+  showImagePreview(url)
+}
+
+function showImagePreview(src) {
+  questImageDataUrl = src
+  const zone = document.getElementById('imgUploadZone')
+  const img = document.getElementById('questImgTag')
+  const placeholder = document.getElementById('imgUploadPlaceholder')
+  img.src = src
+  img.style.display = 'block'
+  placeholder.style.display = 'none'
+  zone.classList.add('has-img')
+}
+
+function clearQuestImage() {
+  questImageFile = null
+  questImageDataUrl = null
+  const zone = document.getElementById('imgUploadZone')
+  const img = document.getElementById('questImgTag')
+  const placeholder = document.getElementById('imgUploadPlaceholder')
+  img.src = ''; img.style.display = 'none'
+  placeholder.style.display = 'block'
+  zone.classList.remove('has-img')
+  document.getElementById('questImageFile').value = ''
+  document.getElementById('questImageUrl').value = ''
+}
+
+// ── BUDGET PREVIEW ────────────────────────────────────────────
 function updateBudgetPreview() {
   const budget = parseFloat(document.getElementById('questBudget').value) || 0
   const reward = parseFloat(document.getElementById('questReward').value) || 0
@@ -585,6 +668,7 @@ function updateBudgetPreview() {
   }
 }
 
+// ── SUBMIT ────────────────────────────────────────────────────
 async function submitQuest() {
   const title = document.getElementById('questTitle').value.trim()
   const desc = document.getElementById('questDesc').value.trim()
@@ -600,10 +684,27 @@ async function submitQuest() {
 
   const btn = document.getElementById('submitBtn')
   btn.disabled = true
-  btn.innerHTML = '<span class="material-symbols-outlined" style="animation:spin 1s linear infinite;font-size:16px;">progress_activity</span> Publication…'
+  btn.innerHTML = '<span class="mi sm" style="animation:spin 1s linear infinite;">progress_activity</span> Publication…'
 
-  // ✅ buyer_id = auth.uid() directement (pas l'id de la table users)
-  const { error } = await getSb().from('quests').insert({
+  // ── Upload image si fichier sélectionné ──
+  let imageUrl = document.getElementById('questImageUrl').value.trim() || null
+
+  if (questImageFile) {
+    const ext = questImageFile.name.split('.').pop()
+    const path = `quests/${currentUser.id}_${Date.now()}.${ext}`
+    const { data: upData, error: upErr } = await sb.storage
+      .from('products')
+      .upload(path, questImageFile, { upsert: true })
+    if (!upErr) {
+      imageUrl = sb.storage.from('products').getPublicUrl(path).data.publicUrl
+    } else {
+      console.warn('[Wenna] upload image:', upErr.message)
+      // Non bloquant — on continue sans image
+    }
+  }
+
+  // ── Insert quête ──
+  const { error } = await sb.from('quests').insert({
     buyer_id: currentUser.id,
     title,
     description: desc || null,
@@ -613,32 +714,34 @@ async function submitQuest() {
     reward_amount: reward,
     duration_days: duration,
     currency: 'FCFA',
-    escrow_locked: false
+    escrow_locked: false,
+    reference_image: imageUrl || null
   })
 
   btn.disabled = false
-  btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;">lock</span> Publier et bloquer les fonds'
+  btn.innerHTML = '<span class="mi sm">lock</span> Publier et bloquer les fonds'
 
   if (error) { showToast('Erreur : ' + error.message, 'error'); return }
+
   showToast('Quête publiée avec succès !', 'success')
   closeModal()
   await loadQuests()
   await loadStats()
 }
 
+// ── HELPERS ───────────────────────────────────────────────────
 function daysUntil(d) { return Math.max(0, Math.ceil((new Date(d) - new Date()) / 86400000)) }
 function fmt(n) { return Number(n).toLocaleString('fr-FR') }
-function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }
+function esc(s) { return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
 function showEmpty(msg) {
   document.getElementById('questsGrid').innerHTML = `<div class="empty-state">
-    <span class="material-symbols-outlined">warning</span>
+    <span class="mi">warning</span>
     <div class="empty-title">${msg}</div>
   </div>`
 }
 function showToast(msg, type = 'success') {
   const t = document.getElementById('toast')
-  t.textContent = msg
-  t.className = 'show ' + type
+  t.textContent = msg; t.className = 'show ' + type
   setTimeout(() => t.className = '', 3500)
 }
 </script>
