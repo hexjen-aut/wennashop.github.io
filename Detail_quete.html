@@ -210,6 +210,54 @@
     .bnav-item:hover{color:var(--fire);}
     @media(max-width:768px){.bnav{display:block;}}
 
+
+    /* ── PROP STATUS BAR ── */
+    .prop-status-bar{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:6px 14px;margin:-24px -24px 16px;font-weight:600;}
+    .status-selected{background:rgba(208,166,0,.08);color:var(--gold);border-bottom:1px solid rgba(208,166,0,.15);}
+    .status-delivery{background:rgba(33,150,243,.06);color:#64b5f6;border-bottom:1px solid rgba(33,150,243,.12);}
+    .status-delivered{background:rgba(46,125,50,.06);color:#81c784;border-bottom:1px solid rgba(46,125,50,.12);}
+    .status-reward{background:rgba(46,125,50,.1);color:#a5d6a7;border-bottom:1px solid rgba(46,125,50,.2);}
+    .status-rejected{background:rgba(186,26,26,.06);color:#e57373;border-bottom:1px solid rgba(186,26,26,.1);}
+    .status-expired{background:rgba(255,255,255,.03);color:#444;border-bottom:1px solid var(--border);}
+
+    /* ── MINE SELECTED ── */
+    .proposal-card.mine-selected{border-left-color:var(--gold);background:rgba(208,166,0,.03);animation:pulse-gold 3s ease-in-out infinite;}
+    @keyframes pulse-gold{0%,100%{box-shadow:0 0 0 0 rgba(208,166,0,0)}50%{box-shadow:0 0 0 4px rgba(208,166,0,.06)}}
+
+    /* ── HUNTER NEXT STEPS ── */
+    .hunter-next-steps,.buyer-confirm-block{margin-top:16px;border:1px solid rgba(208,166,0,.2);background:rgba(208,166,0,.04);padding:16px 18px;}
+    .buyer-confirm-block{border-color:rgba(46,125,50,.25);background:rgba(46,125,50,.04);}
+    .steps-title{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.5px;margin-bottom:8px;color:var(--snow);}
+    .steps-body{font-size:12px;color:var(--fog);line-height:1.6;margin-bottom:14px;}
+    .steps-actions{display:flex;gap:8px;flex-wrap:wrap;}
+
+    .btn-wenna-express{display:inline-flex;align-items:center;gap:8px;background:var(--gold);color:var(--ink);padding:11px 20px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));font-family:'DM Sans',sans-serif;transition:background .2s;}
+    .btn-wenna-express:hover{background:#b8940e;}
+
+    .btn-confirm-delivery{display:inline-flex;align-items:center;gap:8px;background:rgba(46,125,50,.15);border:1px solid rgba(46,125,50,.35);color:#81c784;padding:10px 18px;font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+    .btn-confirm-delivery:hover{background:rgba(46,125,50,.25);}
+
+    /* ── NOTIFICATION BELL ── */
+    .notif-btn{position:relative;background:none;border:1px solid var(--border);color:var(--fog);width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;flex-shrink:0;}
+    .notif-btn:hover{border-color:var(--border-fire);color:var(--fire);}
+    .notif-btn .material-symbols-outlined{font-size:18px;}
+    .notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--fire);border:2px solid var(--ink);display:none;}
+    .notif-dot.active{display:block;}
+
+    .notif-panel{position:absolute;top:calc(100% + 10px);right:0;width:320px;background:var(--coal);border:1px solid var(--border);z-index:200;max-height:360px;overflow-y:auto;display:none;box-shadow:0 16px 48px rgba(0,0,0,.6);}
+    .notif-panel.open{display:block;}
+    .notif-panel-head{padding:14px 16px;border-bottom:1px solid var(--border);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--fire);display:flex;justify-content:space-between;align-items:center;}
+    .notif-mark-all{font-size:10px;color:#444;cursor:pointer;letter-spacing:1px;border-bottom:1px solid #333;padding-bottom:1px;}
+    .notif-mark-all:hover{color:var(--fog);}
+    .notif-item{padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
+    .notif-item:hover{background:var(--slate);}
+    .notif-item.unread{border-left:2px solid var(--fire);}
+    .notif-item-title{font-size:12px;font-weight:500;margin-bottom:4px;}
+    .notif-item-body{font-size:11px;color:var(--fog);line-height:1.5;}
+    .notif-item-date{font-size:10px;color:#444;margin-top:6px;letter-spacing:.5px;}
+    .notif-empty{padding:32px 16px;text-align:center;font-size:11px;color:#444;letter-spacing:1px;}
+
+    .nav-right{display:flex;align-items:center;gap:12px;position:relative;}
     @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
     .anim-up{animation:fadeUp .5s cubic-bezier(.22,1,.36,1) forwards;}
   </style>
@@ -230,10 +278,26 @@
 <!-- NAV -->
 <nav class="topnav">
   <a href="index.html" class="nav-logo">Wenna<b>Shop</b></a>
-  <a href="quetes.html" class="nav-back">
-    <span class="material-symbols-outlined">arrow_back</span>
-    Toutes les quêtes
-  </a>
+  <div class="nav-right">
+    <!-- Cloche notifications -->
+    <div style="position:relative;" id="notifWrapper">
+      <button class="notif-btn" onclick="toggleNotifPanel()" title="Notifications" id="notifBtn">
+        <span class="material-symbols-outlined">notifications</span>
+        <span class="notif-dot" id="notifDot"></span>
+      </button>
+      <div class="notif-panel" id="notifPanel">
+        <div class="notif-panel-head">
+          Notifications
+          <span class="notif-mark-all" onclick="markAllRead()">Tout lire</span>
+        </div>
+        <div id="notifList"><div class="notif-empty">Aucune notification</div></div>
+      </div>
+    </div>
+    <a href="quetes.html" class="nav-back">
+      <span class="material-symbols-outlined">arrow_back</span>
+      Toutes les quêtes
+    </a>
+  </div>
 </nav>
 
 <!-- LOADING -->
@@ -418,6 +482,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   await loadQuest()
   await loadProposals()
+  await loadNotifications()
 })
 
 function waitForDb(n = 0) {
@@ -601,12 +666,25 @@ async function loadProposals() {
 
   list.innerHTML = visible.map(p => {
     const isSelected = quest.winning_proposal_id === p.id
+    const isMyProposal = p.hunter_id === internalUserId
     const user = p._user
     const displayName = user?.full_name || (user?.first_name ? `${user.first_name} ${user.last_name || ''}`.trim() : 'Chasseur anonyme')
     const initial = displayName[0].toUpperCase()
-    const showActions = isBuyer && quest.status === 'open' && !quest.winning_proposal_id
+    const showBuyerActions = isBuyer && quest.status === 'open' && !quest.winning_proposal_id
 
-    // ── Images de la proposition ────────────────────
+    // Statut badge de la proposition
+    const propStatusMap = {
+      pending:     ['', ''],
+      selected:    ['status-selected',    '✓ Acceptée — En attente de livraison'],
+      in_delivery: ['status-delivery',    '🚚 En cours de livraison'],
+      delivered:   ['status-delivered',   '📦 Livré — Récompense en attente'],
+      reward_paid: ['status-reward',      '💰 Récompense versée'],
+      rejected:    ['status-rejected',    '✕ Refusée'],
+      expired:     ['status-expired',     'Expirée'],
+    }
+    const [stCls, stLbl] = propStatusMap[p.status] || ['','']
+
+    // Images
     const propImages = Array.isArray(p.product_images) ? p.product_images.filter(Boolean) : []
     const imgsHtml = propImages.length > 0 ? `
       <div class="proposal-images">
@@ -617,9 +695,40 @@ async function loadProposals() {
             title="Voir en grand"/>`).join('')}
       </div>` : ''
 
+    // Bloc post-acceptation visible par le chasseur (sa propre proposition sélectionnée)
+    const hunterNextSteps = (isMyProposal && p.status === 'selected') ? `
+      <div class="hunter-next-steps">
+        <div class="steps-title">
+          <span class="material-symbols-outlined" style="font-size:15px;color:var(--gold)">celebration</span>
+          Votre proposition a été acceptée !
+        </div>
+        <p class="steps-body">Procédez à la livraison via <strong>Wenna Express</strong>. Votre récompense sera versée automatiquement à réception confirmée par l'acheteur. Aucun paiement en espèces n'est accepté.</p>
+        <div class="steps-actions">
+          <button class="btn-wenna-express" onclick="openWennaExpress('${p.id}', '${quest.country_target || ''}')">
+            <span class="material-symbols-outlined" style="font-size:15px;">local_shipping</span>
+            Procéder via Wenna Express
+          </button>
+        </div>
+      </div>` : ''
+
+    // Bloc acheteur post-livraison — confirmer réception pour déclencher la récompense
+    const buyerConfirmBlock = (isBuyer && isSelected && p.status === 'in_delivery') ? `
+      <div class="buyer-confirm-block">
+        <div class="steps-title">
+          <span class="material-symbols-outlined" style="font-size:15px;color:#81c784">local_shipping</span>
+          Colis en route
+        </div>
+        <p class="steps-body">Confirmez la réception du colis pour déclencher le versement de la récompense au chasseur.</p>
+        <button class="btn-confirm-delivery" onclick="confirmDelivery('${p.id}')">
+          <span class="material-symbols-outlined" style="font-size:14px;">check_circle</span>
+          J'ai reçu mon colis
+        </button>
+      </div>` : ''
+
     return `
-      <div class="proposal-card ${isSelected ? 'selected' : ''}">
+      <div class="proposal-card ${isSelected ? 'selected' : ''} ${isMyProposal && p.status === 'selected' ? 'mine-selected' : ''}">
         ${isSelected ? '<div class="selected-badge">Proposition choisie</div>' : ''}
+        ${stLbl ? `<div class="prop-status-bar ${stCls}">${stLbl}</div>` : ''}
         <div class="proposal-header">
           <div class="hunter-info">
             <div class="hunter-avatar">${initial}</div>
@@ -636,8 +745,11 @@ async function loadProposals() {
           ${p.product_url ? `<a href="${p.product_url}" target="_blank" rel="noopener">Voir le produit →</a>` : ''}
           ${p.delivery_days ? `<span>Livraison estimée : ${p.delivery_days}j</span>` : ''}
           ${propImages.length ? `<span>${propImages.length} photo${propImages.length>1?'s':''}</span>` : ''}
+          ${p.tracking_ref ? `<span>Suivi : <strong style="color:var(--snow)">${esc(p.tracking_ref)}</strong></span>` : ''}
         </div>
-        ${showActions ? `
+        ${hunterNextSteps}
+        ${buyerConfirmBlock}
+        ${showBuyerActions ? `
           <div class="proposal-actions">
             <button class="btn-select" onclick="selectProposal('${p.id}')">
               <span class="material-symbols-outlined" style="font-size:14px;">check</span>
@@ -740,21 +852,32 @@ async function uploadProposalImages() {
 
 // ── ACTIONS ACHETEUR ─────────────────────────────────
 async function selectProposal(proposalId) {
-  if (!confirm('Choisir cette proposition ? La quête sera marquée résolue.')) return
+  if (!confirm('Choisir cette proposition ? Le chasseur sera notifié et devra livrer via Wenna Express.')) return
 
-  const { error } = await getSb()
+  // 1. Marquer la quête under_review (pas encore resolved — devient resolved à la livraison confirmée)
+  const { error: qErr } = await getSb()
     .from('quests')
-    .update({ winning_proposal_id: proposalId, status: 'resolved', resolved_at: new Date().toISOString() })
+    .update({ winning_proposal_id: proposalId, status: 'under_review' })
     .eq('id', questId)
-    .eq('buyer_id', currentUser.id)
+    .eq('buyer_id', internalUserId)
 
-  if (error) { showToast('Erreur : ' + error.message, 'error'); return }
+  if (qErr) { showToast('Erreur : ' + qErr.message, 'error'); return }
 
-  await getSb().from('quest_proposals')
+  // 2. Passer la proposition à 'selected' → déclenche le trigger DB qui notifie le chasseur
+  const { error: pErr } = await getSb().from('quest_proposals')
     .update({ status: 'selected' })
     .eq('id', proposalId)
 
-  showToast('Quête résolue ! La récompense est allouée.', 'success')
+  if (pErr) { showToast('Erreur : ' + pErr.message, 'error'); return }
+
+  // 3. Rejeter toutes les autres propositions
+  await getSb().from('quest_proposals')
+    .update({ status: 'rejected' })
+    .neq('id', proposalId)
+    .eq('quest_id', questId)
+    .eq('status', 'pending')
+
+  showToast('Proposition acceptée ! Le chasseur va être notifié.', 'success')
   await loadQuest()
   await loadProposals()
 }
@@ -766,6 +889,41 @@ async function rejectProposal(proposalId) {
     .eq('quest_id', questId)
   showToast('Proposition refusée.', 'success')
   await loadProposals()
+}
+
+// Acheteur confirme la réception → déclenche le versement de la récompense
+async function confirmDelivery(proposalId) {
+  if (!confirm('Confirmer la réception ? La récompense sera versée au chasseur.')) return
+
+  const { error: pErr } = await getSb().from('quest_proposals')
+    .update({ status: 'reward_paid' })
+    .eq('id', proposalId)
+    .eq('quest_id', questId)
+
+  if (pErr) { showToast('Erreur : ' + pErr.message, 'error'); return }
+
+  // Marquer la quête comme résolue
+  await getSb().from('quests')
+    .update({ status: 'resolved', resolved_at: new Date().toISOString() })
+    .eq('id', questId)
+
+  // TODO: appeler Edge Function pour le vrai versement wallet
+  showToast('Réception confirmée ! La récompense est versée au chasseur. 🎉', 'success')
+  await loadQuest()
+  await loadProposals()
+}
+
+// Redirection vers Wenna Express selon le type de livraison
+function openWennaExpress(proposalId, countryTarget) {
+  const isInternational = countryTarget === 'Les deux' || countryTarget === 'Gabon'
+  // Wenna Express — URL à adapter selon votre routing réel
+  const base = 'wenna-express.html'
+  const params = new URLSearchParams({
+    proposal_id: proposalId,
+    quest_id:    questId,
+    type:        isInternational ? 'international' : 'local'
+  })
+  location.href = base + '?' + params.toString()
 }
 
 // ── MODAL PROPOSITION ────────────────────────────────
@@ -857,6 +1015,75 @@ function showToast(msg, type = 'success') {
   t.className = 'show ' + type
   setTimeout(() => t.className = '', 3500)
 }
+
+// ── NOTIFICATIONS ─────────────────────────────────────────────────────────────
+let notifOpen = false
+
+async function loadNotifications() {
+  if (!internalUserId) return
+
+  const { data, error } = await getSb()
+    .from('notifications')
+    .select('*')
+    .eq('user_id', internalUserId)
+    .order('created_at', { ascending: false })
+    .limit(20)
+
+  if (error || !data) return
+
+  const unread = data.filter(n => !n.is_read)
+  const dot = document.getElementById('notifDot')
+  if (unread.length > 0) dot.classList.add('active')
+  else dot.classList.remove('active')
+
+  const list = document.getElementById('notifList')
+  if (!data.length) {
+    list.innerHTML = '<div class="notif-empty">Aucune notification</div>'
+    return
+  }
+
+  list.innerHTML = data.map(n => `
+    <div class="notif-item ${n.is_read ? '' : 'unread'}" onclick="clickNotif('${n.id}','${esc(n.link || '')}')">
+      <div class="notif-item-title">${esc(n.title)}</div>
+      ${n.body ? `<div class="notif-item-body">${esc(n.body)}</div>` : ''}
+      <div class="notif-item-date">${fmtDate(n.created_at)}</div>
+    </div>`).join('')
+}
+
+async function clickNotif(notifId, link) {
+  await getSb().from('notifications')
+    .update({ is_read: true })
+    .eq('id', notifId)
+  if (link) location.href = link
+  toggleNotifPanel()
+}
+
+async function markAllRead() {
+  if (!internalUserId) return
+  await getSb().from('notifications')
+    .update({ is_read: true })
+    .eq('user_id', internalUserId)
+    .eq('is_read', false)
+  await loadNotifications()
+}
+
+function toggleNotifPanel() {
+  const panel = document.getElementById('notifPanel')
+  notifOpen = !notifOpen
+  panel.classList.toggle('open', notifOpen)
+  if (notifOpen) loadNotifications()
+}
+
+// Fermer le panel si clic ailleurs
+document.addEventListener('click', e => {
+  const wrapper = document.getElementById('notifWrapper')
+  if (wrapper && !wrapper.contains(e.target)) {
+    document.getElementById('notifPanel').classList.remove('open')
+    notifOpen = false
+  }
+})
+
+// Polling léger toutes les 30s pour les notifs non lues
+setInterval(() => { if (internalUserId) loadNotifications() }, 30000)
+
 </script>
-</body>
-</html>
