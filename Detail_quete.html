@@ -38,6 +38,21 @@
     .page-wrap{max-width:1160px;margin:0 auto;padding:40px 24px;display:grid;grid-template-columns:1fr 300px;gap:28px;align-items:start;}
     @media(max-width:900px){.page-wrap{grid-template-columns:1fr;}}
 
+    /* ── QUEST IMAGE HERO ── */
+    .quest-image-hero{position:relative;width:100%;aspect-ratio:16/7;overflow:hidden;background:var(--slate);border:1px solid var(--border);margin-bottom:2px;}
+    .quest-image-hero img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s cubic-bezier(.22,1,.36,1);}
+    .quest-image-hero:hover img{transform:scale(1.03);}
+    .quest-image-hero .img-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(8,8,8,.7) 100%);pointer-events:none;}
+    .quest-image-hero .img-badge{position:absolute;top:16px;left:16px;background:rgba(8,8,8,.75);backdrop-filter:blur(8px);border:1px solid var(--border-fire);color:var(--fire);padding:5px 14px;font-size:9px;letter-spacing:2px;text-transform:uppercase;font-weight:600;}
+    .quest-image-hero .img-zoom{position:absolute;bottom:14px;right:14px;background:rgba(8,8,8,.7);backdrop-filter:blur(8px);border:1px solid var(--border);color:var(--fog);width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;}
+    .quest-image-hero .img-zoom:hover{border-color:var(--border-fire);color:var(--fire);}
+    .quest-image-hero .img-zoom .material-symbols-outlined{font-size:16px;}
+
+    /* image placeholder quand aucune image */
+    .quest-image-placeholder{width:100%;aspect-ratio:16/7;background:var(--slate);border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;margin-bottom:2px;color:#2a2a2a;}
+    .quest-image-placeholder .material-symbols-outlined{font-size:40px;}
+    .quest-image-placeholder span{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#333;}
+
     /* ── QUEST HEADER ── */
     .quest-header{background:var(--coal);border:1px solid var(--border);border-left:3px solid var(--fire);padding:32px 36px;margin-bottom:2px;position:relative;overflow:hidden;}
     .quest-header::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(255,107,43,.05) 0%,transparent 70%);pointer-events:none;}
@@ -83,6 +98,11 @@
     .proposal-meta a{font-size:11px;color:var(--fire);text-decoration:none;letter-spacing:1px;border-bottom:1px solid var(--border-fire);padding-bottom:1px;}
     .proposal-meta span{font-size:11px;color:#555;}
 
+    /* ── PROPOSAL IMAGES ── */
+    .proposal-images{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+    .proposal-img-thumb{width:72px;height:72px;object-fit:cover;border:1px solid var(--border);cursor:pointer;transition:all .2s;flex-shrink:0;}
+    .proposal-img-thumb:hover{border-color:var(--border-fire);transform:scale(1.04);}
+
     .proposal-actions{display:flex;gap:8px;}
     .btn-select{display:inline-flex;align-items:center;gap:8px;background:var(--fire);color:#fff;padding:10px 20px;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;transition:background .2s;clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));font-family:'DM Sans',sans-serif;}
     .btn-select:hover{background:var(--ember);}
@@ -96,6 +116,10 @@
 
     /* ── SIDEBAR ── */
     .quest-sidebar{position:sticky;top:88px;}
+
+    /* image miniature sidebar */
+    .sidebar-quest-img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;border:1px solid var(--border);margin-bottom:2px;cursor:pointer;transition:opacity .2s;}
+    .sidebar-quest-img:hover{opacity:.85;}
 
     .reward-card{background:var(--coal);border:1px solid var(--border-fire);padding:28px;margin-bottom:2px;text-align:center;position:relative;overflow:hidden;}
     .reward-card::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(208,166,0,.12) 0%,transparent 70%);}
@@ -125,7 +149,17 @@
     .bar-fill{height:100%;background:var(--fire);transition:width .6s cubic-bezier(.22,1,.36,1);}
     .bar-fill.urgent{background:#e57373;}
 
-    /* ── MODAL ── */
+    /* ── LIGHTBOX ── */
+    .lightbox{position:fixed;inset:0;background:rgba(8,8,8,.95);z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .25s;cursor:zoom-out;}
+    .lightbox.open{opacity:1;pointer-events:all;}
+    .lightbox img{max-width:90vw;max-height:88vh;object-fit:contain;transform:scale(.95);transition:transform .3s cubic-bezier(.22,1,.36,1);}
+    .lightbox.open img{transform:scale(1);}
+    .lightbox-close{position:absolute;top:20px;right:24px;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--fog);width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;}
+    .lightbox-close:hover{border-color:var(--border-fire);color:var(--fire);}
+    .lightbox-close .material-symbols-outlined{font-size:18px;}
+    .lightbox-caption{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);font-size:11px;color:#555;letter-spacing:2px;text-transform:uppercase;white-space:nowrap;}
+
+    /* ── MODAL PROPOSITION ── */
     .modal-overlay{position:fixed;inset:0;background:rgba(8,8,8,.88);backdrop-filter:blur(16px);z-index:999;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .25s;}
     .modal-overlay.open{opacity:1;pointer-events:all;}
     .modal-box{background:var(--coal);border:1px solid var(--border);width:100%;max-width:520px;max-height:90vh;overflow-y:auto;transform:translateY(16px);transition:transform .25s;position:relative;}
@@ -144,6 +178,20 @@
     .inp:focus{border-bottom-color:var(--gold);}
     .inp::placeholder{color:#2a2a2a;}
     textarea.inp{resize:vertical;min-height:80px;}
+
+    /* Zone upload images dans le modal */
+    .img-upload-zone{border:1px dashed rgba(255,255,255,.1);padding:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:border-color .2s;position:relative;}
+    .img-upload-zone:hover{border-color:var(--border-fire);}
+    .img-upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+    .img-upload-zone .material-symbols-outlined{font-size:28px;color:#333;}
+    .img-upload-zone p{font-size:11px;color:#444;letter-spacing:1px;text-transform:uppercase;text-align:center;}
+    .img-upload-zone small{font-size:10px;color:#2a2a2a;}
+    .img-previews{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+    .img-preview-item{position:relative;width:64px;height:64px;}
+    .img-preview-item img{width:64px;height:64px;object-fit:cover;border:1px solid var(--border);}
+    .img-preview-item button{position:absolute;top:-6px;right:-6px;background:var(--fire);border:none;color:#fff;width:18px;height:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;line-height:1;border-radius:0;}
+    .img-preview-item button .material-symbols-outlined{font-size:11px;}
+
     .modal-footer{padding:0 24px 24px;}
     .btn-submit-modal{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--gold);color:var(--ink);padding:14px;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;border:none;cursor:pointer;transition:background .2s;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));font-family:'DM Sans',sans-serif;}
     .btn-submit-modal:hover{background:#b8940e;}
@@ -170,6 +218,15 @@
 
 <div id="toast"></div>
 
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">
+    <span class="material-symbols-outlined">close</span>
+  </button>
+  <img id="lightboxImg" src="" alt=""/>
+  <div class="lightbox-caption" id="lightboxCaption"></div>
+</div>
+
 <!-- NAV -->
 <nav class="topnav">
   <a href="index.html" class="nav-logo">Wenna<b>Shop</b></a>
@@ -190,6 +247,10 @@
 
   <!-- COLONNE GAUCHE -->
   <div>
+
+    <!-- Image héro de la quête -->
+    <div id="questImageContainer"></div>
+
     <!-- En-tête quête -->
     <div class="quest-header anim-up">
       <div class="quest-badges" id="questBadges"></div>
@@ -217,6 +278,9 @@
 
   <!-- COLONNE DROITE / SIDEBAR -->
   <div class="quest-sidebar">
+
+    <!-- Miniature image dans sidebar (si image dispo) -->
+    <div id="sidebarImageContainer"></div>
 
     <div class="reward-card">
       <div class="reward-lbl">Récompense du chasseur</div>
@@ -281,6 +345,17 @@
         <label class="form-label">Délai de livraison <em>(jours)</em></label>
         <input type="number" id="propDelivery" class="inp" placeholder="ex: 5" min="1"/>
       </div>
+      <!-- Upload images proposition -->
+      <div class="form-group">
+        <label class="form-label">Photos du produit <em>(facultatif — max 4)</em></label>
+        <div class="img-upload-zone" id="uploadZone">
+          <input type="file" id="propImagesInput" accept="image/*" multiple onchange="handleImgSelect(event)"/>
+          <span class="material-symbols-outlined">add_photo_alternate</span>
+          <p>Cliquer ou glisser vos photos</p>
+          <small>JPG, PNG, WEBP — max 3 Mo chacune</small>
+        </div>
+        <div class="img-previews" id="imgPreviews"></div>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn-submit-modal" id="propSubmitBtn" onclick="submitProposal()">
@@ -313,6 +388,9 @@ let quest = null
 let currentUser = null
 let isBuyer = false
 let hasProposed = false
+
+// Gestion des images à uploader pour la proposition
+let selectedFiles = []
 
 // ── INIT ─────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
@@ -369,6 +447,40 @@ async function loadQuest() {
   document.getElementById('questCreated').textContent = fmtDate(quest.created_at)
   document.getElementById('questCountry').textContent = quest.country_target || 'Non précisé'
 
+  // ── IMAGE QUÊTE ────────────────────────────────────
+  // Priorité : reference_image > image_url
+  const imgSrc = quest.reference_image || quest.image_url || null
+
+  const heroContainer = document.getElementById('questImageContainer')
+  const sidebarImgContainer = document.getElementById('sidebarImageContainer')
+
+  if (imgSrc) {
+    // Hero image — colonne gauche
+    heroContainer.innerHTML = `
+      <div class="quest-image-hero anim-up">
+        <img src="${esc(imgSrc)}" alt="${esc(quest.title)}" onerror="this.closest('.quest-image-hero').style.display='none'"/>
+        <div class="img-overlay"></div>
+        <div class="img-badge">Image de référence</div>
+        <button class="img-zoom" onclick="openLightbox('${esc(imgSrc)}','Image de référence — ${esc(quest.title)}')" title="Voir en grand">
+          <span class="material-symbols-outlined">zoom_in</span>
+        </button>
+      </div>`
+
+    // Miniature dans la sidebar
+    sidebarImgContainer.innerHTML = `
+      <img class="sidebar-quest-img" src="${esc(imgSrc)}" alt="${esc(quest.title)}"
+        onclick="openLightbox('${esc(imgSrc)}','Image de référence — ${esc(quest.title)}')"
+        onerror="this.style.display='none'"
+        title="Voir en grand"/>`
+  } else {
+    // Placeholder si aucune image
+    heroContainer.innerHTML = `
+      <div class="quest-image-placeholder anim-up">
+        <span class="material-symbols-outlined">image_not_supported</span>
+        <span>Aucune image de référence</span>
+      </div>`
+  }
+
   // Badges
   const statusMap = { open: ['badge-open', 'Ouverte'], resolved: ['badge-resolved', 'Résolue'], expired: ['badge-expired', 'Expirée'] }
   const [cls, lbl] = statusMap[quest.status] || ['badge-expired', quest.status]
@@ -406,7 +518,6 @@ async function loadQuest() {
 }
 
 // ── LOAD PROPOSALS ───────────────────────────────────
-// ✅ Jointure sur table 'users' via hunter_id = users.auth_id
 async function loadProposals() {
   const { data, error } = await getSb()
     .from('quest_proposals')
@@ -414,21 +525,17 @@ async function loadProposals() {
     .eq('quest_id', questId)
     .order('created_at', { ascending: false })
 
-  if (error) {
-    console.error('[WennaShop] loadProposals:', error)
-    return
-  }
+  if (error) { console.error('[WennaShop] loadProposals:', error); return }
 
   const proposals = data || []
 
-  // Récupérer les infos des chasseurs séparément (table users, clé auth_id)
+  // Récupérer les infos des chasseurs (table users, clé auth_id)
   if (proposals.length > 0) {
     const hunterAuthIds = [...new Set(proposals.map(p => p.hunter_id))]
     const { data: usersData } = await getSb()
       .from('users')
       .select('auth_id, full_name, first_name, last_name, avatar_url')
       .in('auth_id', hunterAuthIds)
-
     const usersMap = {}
     ;(usersData || []).forEach(u => { usersMap[u.auth_id] = u })
     proposals.forEach(p => { p._user = usersMap[p.hunter_id] || null })
@@ -455,7 +562,6 @@ async function loadProposals() {
     return
   }
 
-  // Acheteur voit tout, chasseur voit juste la sienne
   const canSeeAll = isBuyer || quest.status === 'resolved'
   const visible = canSeeAll ? proposals : proposals.filter(p => p.hunter_id === currentUser?.id)
 
@@ -465,6 +571,17 @@ async function loadProposals() {
     const displayName = user?.full_name || (user?.first_name ? `${user.first_name} ${user.last_name || ''}`.trim() : 'Chasseur anonyme')
     const initial = displayName[0].toUpperCase()
     const showActions = isBuyer && quest.status === 'open' && !quest.winning_proposal_id
+
+    // ── Images de la proposition ────────────────────
+    const propImages = Array.isArray(p.product_images) ? p.product_images.filter(Boolean) : []
+    const imgsHtml = propImages.length > 0 ? `
+      <div class="proposal-images">
+        ${propImages.map((url, i) => `
+          <img class="proposal-img-thumb" src="${esc(url)}" alt="Photo ${i+1}"
+            onclick="openLightbox('${esc(url)}','Photo produit · ${esc(displayName)}')"
+            onerror="this.style.display='none'"
+            title="Voir en grand"/>`).join('')}
+      </div>` : ''
 
     return `
       <div class="proposal-card ${isSelected ? 'selected' : ''}">
@@ -480,9 +597,11 @@ async function loadProposals() {
           <div class="proposal-price">${fmt(p.proposed_price)} <span style="font-size:.6em;font-style:normal;color:#555;">${quest.currency}</span></div>
         </div>
         <p class="proposal-desc">${esc(p.description)}</p>
+        ${imgsHtml}
         <div class="proposal-meta">
           ${p.product_url ? `<a href="${p.product_url}" target="_blank" rel="noopener">Voir le produit →</a>` : ''}
           ${p.delivery_days ? `<span>Livraison estimée : ${p.delivery_days}j</span>` : ''}
+          ${propImages.length ? `<span>${propImages.length} photo${propImages.length>1?'s':''}</span>` : ''}
         </div>
         ${showActions ? `
           <div class="proposal-actions">
@@ -495,7 +614,6 @@ async function loadProposals() {
       </div>`
   }).join('')
 
-  // Afficher le compte des propositions cachées pour les chasseurs
   if (!canSeeAll && proposals.length > visible.length) {
     const others = proposals.length - visible.length
     list.innerHTML += `
@@ -503,6 +621,87 @@ async function loadProposals() {
         +${others} autre${others > 1 ? 's' : ''} proposition${others > 1 ? 's' : ''} en cours d'évaluation
       </div>`
   }
+}
+
+// ── LIGHTBOX ─────────────────────────────────────────
+function openLightbox(src, caption) {
+  const lb = document.getElementById('lightbox')
+  document.getElementById('lightboxImg').src = src
+  document.getElementById('lightboxCaption').textContent = caption || ''
+  lb.classList.add('open')
+  document.body.style.overflow = 'hidden'
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open')
+  document.body.style.overflow = ''
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeLightbox(); closeModal() }
+})
+
+// ── UPLOAD IMAGES (MODAL PROPOSITION) ────────────────
+function handleImgSelect(e) {
+  const files = Array.from(e.target.files)
+  const remaining = 4 - selectedFiles.length
+  if (remaining <= 0) { showToast('Maximum 4 photos.', 'error'); return }
+
+  const toAdd = files.slice(0, remaining)
+  for (const f of toAdd) {
+    if (f.size > 3 * 1024 * 1024) { showToast(`${f.name} dépasse 3 Mo.`, 'error'); continue }
+    selectedFiles.push(f)
+  }
+  renderImgPreviews()
+  // Reset input pour permettre re-sélection du même fichier
+  e.target.value = ''
+}
+
+function renderImgPreviews() {
+  const container = document.getElementById('imgPreviews')
+  container.innerHTML = selectedFiles.map((f, i) => {
+    const url = URL.createObjectURL(f)
+    return `
+      <div class="img-preview-item">
+        <img src="${url}" alt="Preview ${i+1}"/>
+        <button onclick="removeImg(${i})" title="Supprimer">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>`
+  }).join('')
+
+  // Mettre à jour la zone upload
+  const zone = document.getElementById('uploadZone')
+  if (selectedFiles.length >= 4) {
+    zone.style.opacity = '.4'
+    zone.style.pointerEvents = 'none'
+  } else {
+    zone.style.opacity = '1'
+    zone.style.pointerEvents = 'all'
+  }
+}
+
+function removeImg(index) {
+  selectedFiles.splice(index, 1)
+  renderImgPreviews()
+}
+
+async function uploadProposalImages() {
+  if (!selectedFiles.length) return []
+  const urls = []
+  for (const file of selectedFiles) {
+    const ext = file.name.split('.').pop()
+    const path = `proposals/${currentUser.id}_${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`
+    const { data, error } = await getSb().storage
+      .from('products')
+      .upload(path, file, { cacheControl: '3600', upsert: false })
+
+    if (error) { console.error('[Upload]', error); continue }
+
+    const { data: pub } = getSb().storage.from('products').getPublicUrl(data.path)
+    if (pub?.publicUrl) urls.push(pub.publicUrl)
+  }
+  return urls
 }
 
 // ── ACTIONS ACHETEUR ─────────────────────────────────
@@ -568,6 +767,13 @@ async function submitProposal() {
   btn.disabled = true
   btn.innerHTML = '<span class="material-symbols-outlined" style="animation:spin 1s linear infinite;font-size:16px;">progress_activity</span> Envoi…'
 
+  // Upload des images si sélectionnées
+  let imageUrls = []
+  if (selectedFiles.length > 0) {
+    btn.innerHTML = '<span class="material-symbols-outlined" style="animation:spin 1s linear infinite;font-size:16px;">progress_activity</span> Upload photos…'
+    imageUrls = await uploadProposalImages()
+  }
+
   const { error } = await getSb().from('quest_proposals').insert({
     quest_id:       questId,
     hunter_id:      currentUser.id,
@@ -575,7 +781,8 @@ async function submitProposal() {
     description:    desc,
     product_url:    url || null,
     delivery_days:  delivery,
-    status:         'pending'
+    status:         'pending',
+    product_images: imageUrls.length > 0 ? imageUrls : null
   })
 
   btn.disabled = false
@@ -587,6 +794,14 @@ async function submitProposal() {
     return
   }
 
+  // Reset
+  selectedFiles = []
+  renderImgPreviews()
+  document.getElementById('propPrice').value = ''
+  document.getElementById('propDesc').value = ''
+  document.getElementById('propUrl').value = ''
+  document.getElementById('propDelivery').value = ''
+
   showToast('Proposition envoyée ! L\'acheteur va la consulter.', 'success')
   closeModal()
   await loadProposals()
@@ -595,7 +810,7 @@ async function submitProposal() {
 // ── UTILS ─────────────────────────────────────────────
 function fmt(n) { return Number(n).toLocaleString('fr-FR') }
 function fmtDate(d) { return new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) }
-function esc(s) { return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+function esc(s) { return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
 function showToast(msg, type = 'success') {
   const t = document.getElementById('toast')
   t.textContent = msg
