@@ -4,11 +4,12 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>WennaShop — Mon Panier</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,1..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const SUPABASE_URL = 'https://aakxoydznmybstfozjte.supabase.co'
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncSMBnMuLqGTEqk2pSmA2HUPfHvQuN1l5oLJ5VB5OyM'
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
   window.db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
   window.STORAGE_URL = SUPABASE_URL + '/storage/v1/object/public/products/'
 </script>
@@ -41,7 +42,7 @@ body {
 
 .cur { position:fixed; width:10px; height:10px; background:var(--fire); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); transition:width .2s,height .2s; }
 .cur-ring { position:fixed; width:36px; height:36px; border:1px solid rgba(255,107,43,.45); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:width .3s,height .3s; }
-.material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24; font-size:22px; line-height:1; vertical-align:middle; }
+.material-icons-outlined {  font-size:22px; line-height:1; vertical-align:middle; }
 
 .hd { position:fixed; top:0; left:0; right:0; z-index:100; height:64px; padding:0 48px; display:flex; align-items:center; justify-content:space-between; background:rgba(8,8,8,.92); backdrop-filter:blur(20px); border-bottom:1px solid rgba(255,107,43,.12); }
 .logo { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:700; font-style:italic; color:var(--snow); text-decoration:none; letter-spacing:-.5px; }
@@ -189,47 +190,47 @@ body {
 
 <header class="hd">
   <a href="boutique.html" class="hd-back">
-    <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
+    <span class="material-icons-outlined" style="font-size:18px;">arrow_back</span>
     Boutique
   </a>
   <a href="/" class="logo">Wenna<b>Shop</b></a>
   <div class="hd-right">
     <a href="compte.html" class="hd-icon-btn" title="Mon compte">
-      <span class="material-symbols-outlined">person</span>
+      <span class="material-icons-outlined">person</span>
     </a>
     <a href="panier.html" class="hd-icon-btn" title="Panier" style="position:relative;">
-      <span class="material-symbols-outlined">shopping_bag</span>
+      <span class="material-icons-outlined">shopping_bag</span>
       <span id="badge-count" class="cbadge">0</span>
     </a>
   </div>
 </header>
 
 <div id="state-auth" class="state-screen">
-  <span class="material-symbols-outlined state-icon">lock</span>
+  <span class="material-icons-outlined state-icon">lock</span>
   <h2 class="state-title">Accès réservé</h2>
   <p class="state-sub">Connecte-toi pour accéder à ton panier.</p>
   <a href="compte.html" class="btn-fire">
-    <span class="material-symbols-outlined" style="font-size:16px;">login</span>
+    <span class="material-icons-outlined" style="font-size:16px;">login</span>
     Se connecter
   </a>
 </div>
 
 <div id="state-db-error" class="state-screen">
-  <span class="material-symbols-outlined state-icon" style="color:#f87171;">cloud_off</span>
+  <span class="material-icons-outlined state-icon" style="color:#f87171;">cloud_off</span>
   <h2 class="state-title" style="color:#f87171;">Connexion impossible</h2>
   <p class="state-sub">La base de données n'est pas accessible.<br><small id="db-error-msg" style="color:#555;"></small></p>
   <button class="btn-fire" onclick="location.reload()">
-    <span class="material-symbols-outlined" style="font-size:16px;">refresh</span>
+    <span class="material-icons-outlined" style="font-size:16px;">refresh</span>
     Réessayer
   </button>
 </div>
 
 <div id="state-empty" class="state-screen">
-  <span class="material-symbols-outlined state-icon">shopping_bag</span>
+  <span class="material-icons-outlined state-icon">shopping_bag</span>
   <h2 class="state-title">Panier vide</h2>
   <p class="state-sub">Tu n'as pas encore ajouté de produit.</p>
   <a href="boutique.html" class="btn-fire">
-    <span class="material-symbols-outlined" style="font-size:16px;">storefront</span>
+    <span class="material-icons-outlined" style="font-size:16px;">storefront</span>
     Explorer la boutique
   </a>
 </div>
@@ -265,19 +266,19 @@ body {
       </div>
       <div class="trust-grid">
         <div class="trust-item">
-          <span class="material-symbols-outlined trust-icon">verified_user</span>
+          <span class="material-icons-outlined trust-icon">verified_user</span>
           <div><p class="trust-name">Paiement sécurisé</p><p class="trust-sub">SSL · Transactions chiffrées</p></div>
         </div>
         <div class="trust-item">
-          <span class="material-symbols-outlined trust-icon">local_shipping</span>
+          <span class="material-icons-outlined trust-icon">local_shipping</span>
           <div><p class="trust-name">Livraison rapide</p><p class="trust-sub">4–7 jours ouvrés</p></div>
         </div>
         <div class="trust-item">
-          <span class="material-symbols-outlined trust-icon">autorenew</span>
+          <span class="material-icons-outlined trust-icon">autorenew</span>
           <div><p class="trust-name">Retours gratuits</p><p class="trust-sub">30 jours sans conditions</p></div>
         </div>
         <div class="trust-item">
-          <span class="material-symbols-outlined trust-icon">eco</span>
+          <span class="material-icons-outlined trust-icon">eco</span>
           <div><p class="trust-name">100% Authentique</p><p class="trust-sub">Sourcé & vérifié artisan</p></div>
         </div>
       </div>
@@ -315,7 +316,7 @@ body {
         <div style="margin-bottom:20px;"></div>
 
         <button id="btn-checkout" class="checkout-btn" disabled>
-          <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span>
+          <span class="material-icons-outlined" style="font-size:16px;">arrow_forward</span>
           Passer au paiement
         </button>
 
@@ -331,10 +332,10 @@ body {
 
 <nav class="bnav">
   <div class="bnav-inner">
-    <a href="index.html" class="bnav-item"><span class="material-symbols-outlined">home</span><span>Home</span></a>
-    <a href="boutique.html" class="bnav-item active"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">storefront</span><span>Shop</span></a>
-    <a href="dashboard-vendeur.html" class="bnav-item"><span class="material-symbols-outlined">add_circle</span><span>Sell</span></a>
-    <a href="compte.html" class="bnav-item"><span class="material-symbols-outlined">person</span><span>Profil</span></a>
+    <a href="index.html" class="bnav-item"><span class="material-icons-outlined">home</span><span>Home</span></a>
+    <a href="boutique.html" class="bnav-item active"><span class="material-icons-outlined" style="">storefront</span><span>Shop</span></a>
+    <a href="dashboard-vendeur.html" class="bnav-item"><span class="material-icons-outlined">add_circle</span><span>Sell</span></a>
+    <a href="compte.html" class="bnav-item"><span class="material-icons-outlined">person</span><span>Profil</span></a>
   </div>
 </nav>
 
@@ -488,10 +489,10 @@ function renderItem({ cart_item_id, quantity, product }) {
          loading="lazy"
          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
        <div class="item-img-placeholder" style="display:none;">
-         <span class="material-symbols-outlined" style="font-size:32px;color:#333;">image_not_supported</span>
+         <span class="material-icons-outlined" style="font-size:32px;color:#333;">image_not_supported</span>
        </div>`
     : `<div class="item-img-placeholder">
-         <span class="material-symbols-outlined" style="font-size:32px;color:#333;">image_not_supported</span>
+         <span class="material-icons-outlined" style="font-size:32px;color:#333;">image_not_supported</span>
        </div>`
 
   el.innerHTML = `
@@ -507,15 +508,15 @@ function renderItem({ cart_item_id, quantity, product }) {
       <div class="item-actions">
         <div class="qty-control">
           <button class="qty-btn" data-id="${cart_item_id}" data-action="dec">
-            <span class="material-symbols-outlined" style="font-size:16px;">remove</span>
+            <span class="material-icons-outlined" style="font-size:16px;">remove</span>
           </button>
           <span class="qty-val" id="qty-${cart_item_id}">${quantity}</span>
           <button class="qty-btn" data-id="${cart_item_id}" data-action="inc">
-            <span class="material-symbols-outlined" style="font-size:16px;">add</span>
+            <span class="material-icons-outlined" style="font-size:16px;">add</span>
           </button>
         </div>
         <button class="item-remove" data-id="${cart_item_id}" data-action="remove">
-          <span class="material-symbols-outlined" style="font-size:16px;">delete</span>
+          <span class="material-icons-outlined" style="font-size:16px;">delete</span>
           Retirer
         </button>
       </div>
@@ -791,7 +792,7 @@ async function checkout() {
     console.error('[Wenna] INSERT orders:', oErr)
     showCheckoutError(`Impossible de créer la commande : ${oErr.message}`)
     btnCheckout.disabled = false
-    btnCheckout.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span> Passer au paiement'
+    btnCheckout.innerHTML = '<span class="material-icons-outlined" style="font-size:16px;">arrow_forward</span> Passer au paiement'
     return
   }
 
@@ -809,7 +810,7 @@ async function checkout() {
     await sb.from('orders').delete().eq('id', order.id)
     showCheckoutError(`Erreur articles : ${iErr.message}`)
     btnCheckout.disabled = false
-    btnCheckout.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span> Passer au paiement'
+    btnCheckout.innerHTML = '<span class="material-icons-outlined" style="font-size:16px;">arrow_forward</span> Passer au paiement'
     return
   }
 
