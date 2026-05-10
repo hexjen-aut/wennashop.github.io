@@ -4,12 +4,11 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>WennaShop — Mon Panier</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,1..1,-50..200" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const SUPABASE_URL = 'https://aakxoydznmybstfozjte.supabase.co'
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncRs5I5xHMaEBMkI4FTfHKDCt1WpTbxZL2ZxJv4B2Xo'
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncSMBnMuLqGTEqk2pSmA2HUPfHvQuN1l5oLJ5VB5OyM'
   window.db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
   window.STORAGE_URL = SUPABASE_URL + '/storage/v1/object/public/products/'
 </script>
@@ -44,7 +43,7 @@ body {
 .cur-ring { position:fixed; width:36px; height:36px; border:1px solid rgba(255,107,43,.45); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:width .3s,height .3s; }
 .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24; font-size:22px; line-height:1; vertical-align:middle; }
 
-.hd { position:fixed; top:0; left:0; right:0; z-index:100; height:64px; padding:0 48px; display:flex; align-items:center; justify-content:space-between; background:rgba(8,8,8,.92); backdrop-filter:blur(20px); border-bottom:1px solid rgba(255,107,43,.1); }
+.hd { position:fixed; top:0; left:0; right:0; z-index:100; height:64px; padding:0 48px; display:flex; align-items:center; justify-content:space-between; background:rgba(8,8,8,.92); backdrop-filter:blur(20px); border-bottom:1px solid rgba(255,107,43,.12); }
 .logo { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:700; font-style:italic; color:var(--snow); text-decoration:none; letter-spacing:-.5px; }
 .logo b { color:var(--fire); }
 .hd-back { background:none; border:none; color:var(--fog); cursor:none; display:flex; align-items:center; gap:8px; font-size:10px; letter-spacing:2px; text-transform:uppercase; transition:color .2s; text-decoration:none; }
@@ -72,7 +71,7 @@ body {
 
 .btn-fire { display:inline-flex; align-items:center; gap:8px; background:var(--fire); color:#fff; padding:13px 28px; font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppercase; border:none; cursor:none; text-decoration:none; transition:background .2s,transform .15s; clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px)); }
 .btn-fire:hover { background:var(--ember); transform:translateY(-1px); }
-.btn-ghost { display:inline-flex; align-items:center; gap:8px; background:transparent; color:var(--fog); padding:12px 28px; font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppercase; border:1px solid rgba(255,255,255,.12); cursor:none; text-decoration:none; transition:all .2s; }
+.btn-ghost { display:inline-flex; align-items:center; gap:8px; background:transparent; color:var(--fog); padding:12px 28px; font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppercase; border:1px solid rgba(255,255,255,.1); cursor:none; text-decoration:none; transition:all .2s; }
 .btn-ghost:hover { border-color:var(--fire); color:var(--fire); }
 
 .skel { background:linear-gradient(90deg,#1a1a1a 25%,#222 50%,#1a1a1a 75%); background-size:200% 100%; animation:shim 1.5s infinite; }
@@ -139,7 +138,7 @@ body {
 .promo-input { flex:1; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-right:none; color:var(--snow); padding:11px 14px; font-size:12px; font-family:'DM Sans',sans-serif; outline:none; }
 .promo-input::placeholder { color:#333; }
 .promo-input:focus { border-color:var(--fire-border); }
-.promo-btn { background:var(--slate); border:1px solid rgba(255,255,255,.08); color:var(--fog); padding:11px 16px; font-size:10px; letter-spacing:2px; text-transform:uppercase; cursor:none; transition:all .2s; font-family:'DM Sans',sans-serif; }
+.promo-btn { background:var(--slate); border:1px solid rgba(255,255,255,.08); color:var(--fog); padding:11px 16px; font-size:10px; letter-spacing:2px; text-transform:uppercase; cursor:none; transition:color .2s,border-color .2s; font-family:'DM Sans',sans-serif; }
 .promo-btn:hover { color:var(--fire); border-color:var(--fire-border); }
 
 #checkout-error {
@@ -148,6 +147,16 @@ body {
   font-size:11px; color:#f87171; line-height:1.5; letter-spacing:.3px;
 }
 #checkout-error.show { display:block; }
+
+/* Debug panel */
+#debug-panel {
+  display:none;
+  position:fixed; bottom:80px; right:16px; z-index:200;
+  background:#0a0a0a; border:1px solid #333; padding:12px 16px;
+  font-size:10px; color:#888; max-width:300px; line-height:1.6;
+  font-family:monospace;
+}
+#debug-panel.show { display:block; }
 
 .bnav { display:none; position:fixed; bottom:0; left:0; right:0; z-index:100; background:rgba(8,8,8,.95); backdrop-filter:blur(20px); border-top:1px solid rgba(255,107,43,.15); padding:10px 0 22px; }
 .bnav-inner { display:flex; justify-content:space-around; }
@@ -176,6 +185,7 @@ body {
 <div class="cur" id="cur"></div>
 <div class="cur-ring" id="curRing"></div>
 <div id="toast"></div>
+<div id="debug-panel"></div>
 
 <header class="hd">
   <a href="boutique.html" class="hd-back">
@@ -194,18 +204,26 @@ body {
   </div>
 </header>
 
-<!-- État : DB inaccessible -->
+<div id="state-auth" class="state-screen">
+  <span class="material-symbols-outlined state-icon">lock</span>
+  <h2 class="state-title">Accès réservé</h2>
+  <p class="state-sub">Connecte-toi pour accéder à ton panier.</p>
+  <a href="compte.html" class="btn-fire">
+    <span class="material-symbols-outlined" style="font-size:16px;">login</span>
+    Se connecter
+  </a>
+</div>
+
 <div id="state-db-error" class="state-screen">
   <span class="material-symbols-outlined state-icon" style="color:#f87171;">cloud_off</span>
   <h2 class="state-title" style="color:#f87171;">Connexion impossible</h2>
-  <p class="state-sub">La base de données n'est pas accessible.</p>
+  <p class="state-sub">La base de données n'est pas accessible.<br><small id="db-error-msg" style="color:#555;"></small></p>
   <button class="btn-fire" onclick="location.reload()">
     <span class="material-symbols-outlined" style="font-size:16px;">refresh</span>
     Réessayer
   </button>
 </div>
 
-<!-- État : Panier vide -->
 <div id="state-empty" class="state-screen">
   <span class="material-symbols-outlined state-icon">shopping_bag</span>
   <h2 class="state-title">Panier vide</h2>
@@ -216,7 +234,6 @@ body {
   </a>
 </div>
 
-<!-- État : Chargement skeleton -->
 <div id="state-loading">
   <div class="skel-item">
     <div class="skel" style="width:120px;height:152px;flex-shrink:0;"></div>
@@ -236,7 +253,6 @@ body {
   </div>
 </div>
 
-<!-- État : Contenu panier -->
 <div id="state-content" style="display:none;">
   <div class="cart-layout">
 
@@ -306,7 +322,7 @@ body {
         <div id="checkout-error"></div>
 
         <button id="btn-clear" class="clear-btn">Vider le panier</button>
-        <p style="text-align:center;font-size:10px;color:#333;margin-top:14px;letter-spacing:1px;">🔒 Paiement sécurisé · PCI-DSS</p>
+        <p style="text-align:center;font-size:10px;color:#333;margin-top:14px;letter-spacing:1px;">Paiement sécurisé · PCI-DSS</p>
       </div>
     </div>
 
@@ -323,12 +339,24 @@ body {
 </nav>
 
 <script>
+// ─── HELPERS ──────────────────────────────────────────────────
 function getSb() {
-  if (!window.db) { console.error('[WennaShop] window.db undefined'); return null }
+  if (!window.db) { console.error('[Wenna] window.db undefined'); return null }
   return window.db
 }
 
-// Résout l'URL d'une image produit (3 cas : URL directe, JSON stringifié, chemin relatif)
+// Debug panel (désactiver en prod — passer DEBUG = false)
+const DEBUG = true
+const dbgEl = document.getElementById('debug-panel')
+function dbg(msg, color) {
+  if (!DEBUG) return
+  console.log('[Wenna] ' + msg)
+  if (dbgEl) {
+    dbgEl.classList.add('show')
+    dbgEl.innerHTML += `<div style="color:${color||'#888'}">${msg}</div>`
+  }
+}
+
 function resolveImageUrl(imageUrl) {
   if (!imageUrl) return null
   if (imageUrl.startsWith('[')) {
@@ -342,7 +370,7 @@ function resolveImageUrl(imageUrl) {
   return window.STORAGE_URL + imageUrl
 }
 
-// ── CURSEUR ──────────────────────────────────────────────────
+// ─── CURSEUR ──────────────────────────────────────────────────
 const curEl  = document.getElementById('cur')
 const curRng = document.getElementById('curRing')
 let mx=0, my=0, rx=0, ry=0
@@ -354,7 +382,8 @@ document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY })
   requestAnimationFrame(anim)
 })()
 
-// ── DOM ───────────────────────────────────────────────────────
+// ─── DOM ──────────────────────────────────────────────────────
+const stateAuth    = document.getElementById('state-auth')
 const stateDbError = document.getElementById('state-db-error')
 const stateEmpty   = document.getElementById('state-empty')
 const stateLoading = document.getElementById('state-loading')
@@ -373,12 +402,12 @@ let cartData      = []
 let promoCode     = null
 let discountPct   = 0
 
-// ── TOAST ─────────────────────────────────────────────────────
+// ─── TOAST ────────────────────────────────────────────────────
 let toastTimer = null
 function toast(msg, type='default', ms=3000) {
   const t = document.getElementById('toast')
   t.textContent = msg
-  t.className = 'show' + (type === 'error' ? ' toast-error' : type === 'success' ? ' toast-success' : '')
+  t.className = 'show' + (type==='error' ? ' toast-error' : type==='success' ? ' toast-success' : '')
   clearTimeout(toastTimer)
   toastTimer = setTimeout(() => { t.className = '' }, ms)
 }
@@ -394,9 +423,8 @@ function clearCheckoutError() {
   errBox.classList.remove('show')
 }
 
-// ── ÉTATS ─────────────────────────────────────────────────────
-// NOTE : stateAuth supprimé — le panier ne redirige plus vers compte.html
-const allStates = [stateDbError, stateEmpty, stateLoading, stateContent]
+// ─── ÉTATS ────────────────────────────────────────────────────
+const allStates = [stateAuth, stateDbError, stateEmpty, stateLoading, stateContent]
 function showState(target) {
   allStates.forEach(el => {
     if (!el) return
@@ -404,7 +432,7 @@ function showState(target) {
     el.classList.remove('active')
   })
   if (!target) return
-  if (target === stateEmpty || target === stateDbError) {
+  if (target === stateAuth || target === stateEmpty || target === stateDbError) {
     target.style.display = 'flex'
     target.classList.add('active')
   } else {
@@ -501,79 +529,148 @@ function renderCart() {
   refreshTotals()
 }
 
-// ── CHARGEMENT PANIER ─────────────────────────────────────────
+// ─── CHARGEMENT PANIER — VERSION CORRIGÉE ─────────────────────
 async function loadCart() {
   const sb = getSb()
   if (!sb) { showState(stateDbError); return }
 
   showState(stateLoading)
+  dbg('loadCart() démarré', '#888')
 
-  // Si pas connecté → panier vide, pas de redirection
-  const { data:{ user }, error:authErr } = await sb.auth.getUser()
-  if (authErr || !user) {
-    showState(stateEmpty)
+  // ── ÉTAPE 1 : Vérifier la session ──────────────────────────
+  const { data: sessionData, error: sessionErr } = await sb.auth.getSession()
+  dbg(`getSession → ${sessionData?.session ? 'session OK' : 'pas de session'} | err: ${sessionErr?.message || 'none'}`, sessionData?.session ? '#22c55e' : '#f87171')
+
+  if (sessionErr || !sessionData?.session) {
+    dbg('→ Affichage state-auth (pas de session)', '#f87171')
+    showState(stateAuth)
     return
   }
 
+  const user = sessionData.session.user
+  dbg(`user.id = ${user.id} | email = ${user.email}`, '#888')
+
+  // ── ÉTAPE 2 : Récupérer le profil public.users ─────────────
   let profile = null
-  const { data:byAuth, error:e1 } = await sb.from('users').select('id').eq('auth_id', user.id).maybeSingle()
-  if (e1) console.warn('[WennaShop] Lookup auth_id:', e1.message)
+
+  // Lookup 1 : par auth_id
+  const { data: byAuth, error: e1 } = await sb
+    .from('users')
+    .select('id, email, role')
+    .eq('auth_id', user.id)
+    .maybeSingle()
+
+  dbg(`lookup auth_id → ${byAuth ? 'trouvé id=' + byAuth.id : 'null'} | err: ${e1?.message || 'none'}`, byAuth ? '#22c55e' : '#fbbf24')
 
   if (byAuth) {
     profile = byAuth
   } else {
-    const { data:byEmail, error:e2 } = await sb.from('users').select('id').ilike('email', user.email).maybeSingle()
-    if (e2) console.warn('[WennaShop] Lookup email:', e2.message)
+    // Lookup 2 : par email exact (fallback)
+    const { data: byEmail, error: e2 } = await sb
+      .from('users')
+      .select('id, email, role')
+      .eq('email', user.email)
+      .maybeSingle()
+
+    dbg(`lookup email → ${byEmail ? 'trouvé id=' + byEmail.id : 'null'} | err: ${e2?.message || 'none'}`, byEmail ? '#22c55e' : '#f87171')
+
     if (byEmail) {
       profile = byEmail
-      await sb.from('users').update({ auth_id: user.id }).eq('id', profile.id)
+      // Corriger l'auth_id manquant
+      const { error: updateErr } = await sb
+        .from('users')
+        .update({ auth_id: user.id })
+        .eq('id', profile.id)
+      dbg(`update auth_id → ${updateErr ? 'ERREUR: ' + updateErr.message : 'OK'}`, updateErr ? '#f87171' : '#22c55e')
     }
   }
 
   if (!profile) {
-    console.warn('[WennaShop] Profil introuvable — panier vide affiché')
+    dbg('→ Profil introuvable, panier vide affiché', '#f87171')
     showState(stateEmpty)
     return
   }
 
   currentUserId = profile.id
+  dbg(`currentUserId = ${currentUserId}`, '#22c55e')
 
-  const { data:items, error:cartErr } = await getSb()
+  // ── ÉTAPE 3 : Charger les items du panier ──────────────────
+  // CORRECTION : on réutilise 'sb' (pas getSb() une 2ème fois)
+  // CORRECTION : on utilise le bon nom de relation Supabase
+  const { data: items, error: cartErr } = await sb
     .from('cart_items')
-    .select('id, quantity, product_id, products(id, name, price, image_url, origin_city, country, currency, stock, status)')
+    .select(`
+      id,
+      quantity,
+      product_id,
+      products (
+        id,
+        name,
+        price,
+        image_url,
+        origin_city,
+        country,
+        currency,
+        stock,
+        status
+      )
+    `)
     .eq('user_id', currentUserId)
     .order('added_at', { ascending: true })
 
+  dbg(`cart_items → ${items ? items.length + ' items' : 'null'} | err: ${cartErr?.message || 'none'}`, cartErr ? '#f87171' : '#22c55e')
+
   if (cartErr) {
-    console.error('[WennaShop] Erreur panier:', cartErr.message)
+    console.error('[Wenna] Erreur cart_items:', cartErr)
+    document.getElementById('db-error-msg').textContent = cartErr.message
+    showState(stateDbError)
+    return
+  }
+
+  if (!items || items.length === 0) {
+    dbg('→ Panier vide (0 items)', '#fbbf24')
     showState(stateEmpty)
     return
   }
 
-  if (!items?.length) { showState(stateEmpty); return }
+  // Log chaque item pour debug
+  items.forEach((it, i) => {
+    dbg(`  item[${i}] id=${it.id} | products=${it.products ? it.products.name : 'NULL'}`, it.products ? '#888' : '#f87171')
+  })
 
-  const validItems = items.filter(i => i.products !== null)
-  const orphanIds  = items.filter(i => i.products === null).map(i => i.id)
+  // Séparer items valides / orphelins (produit supprimé)
+  const validItems  = items.filter(i => i.products !== null)
+  const orphanIds   = items.filter(i => i.products === null).map(i => i.id)
+
   if (orphanIds.length) {
     document.getElementById('unavailable-notice').classList.add('show')
-    await getSb().from('cart_items').delete().in('id', orphanIds)
+    await sb.from('cart_items').delete().in('id', orphanIds)
+    dbg(`${orphanIds.length} orphan(s) supprimé(s)`, '#fbbf24')
   }
 
-  if (!validItems.length) { showState(stateEmpty); return }
+  if (!validItems.length) {
+    dbg('→ Tous les items sont orphelins', '#f87171')
+    showState(stateEmpty)
+    return
+  }
 
+  // ── ÉTAPE 4 : Mapper et afficher ───────────────────────────
   cartData = validItems.map(i => ({
     cart_item_id: i.id,
     quantity:     i.quantity,
     product_id:   i.product_id,
-    product:      i.products
+    product:      i.products   // ← clé "products" retournée par Supabase
   }))
 
+  dbg(`${cartData.length} produit(s) chargé(s) → affichage`, '#22c55e')
   renderCart()
   showState(stateContent)
 }
 
-// ── QUANTITÉ ──────────────────────────────────────────────────
+// ─── QUANTITÉ ─────────────────────────────────────────────────
 async function updateQuantity(id, newQty) {
+  const sb = getSb()
+  if (!sb) return
   if (newQty <= 0) { removeItem(id); return }
   const item = cartData.find(i => i.cart_item_id === id)
   if (!item) return
@@ -584,7 +681,7 @@ async function updateQuantity(id, newQty) {
   item.quantity = newQty
   document.getElementById(`qty-${id}`).textContent = newQty
   refreshTotals()
-  const { error } = await getSb().from('cart_items').update({ quantity: newQty }).eq('id', id)
+  const { error } = await sb.from('cart_items').update({ quantity: newQty }).eq('id', id)
   if (error) {
     item.quantity = prev
     document.getElementById(`qty-${id}`).textContent = prev
@@ -594,9 +691,11 @@ async function updateQuantity(id, newQty) {
 }
 
 async function removeItem(id) {
+  const sb = getSb()
+  if (!sb) return
   const el = document.getElementById(`item-${id}`)
   if (el) el.style.opacity = '0.2'
-  const { error } = await getSb().from('cart_items').delete().eq('id', id)
+  const { error } = await sb.from('cart_items').delete().eq('id', id)
   if (error) {
     if (el) el.style.opacity = '1'
     toast('Erreur de suppression.', 'error'); return
@@ -608,15 +707,17 @@ async function removeItem(id) {
 }
 
 async function clearCart() {
+  const sb = getSb()
+  if (!sb) return
   if (!confirm('Vider tout le panier ?')) return
-  const { error } = await getSb().from('cart_items').delete().eq('user_id', currentUserId)
+  const { error } = await sb.from('cart_items').delete().eq('user_id', currentUserId)
   if (error) { toast('Erreur.', 'error'); return }
   cartData = []
   showState(stateEmpty)
   toast('Panier vidé.', 'default')
 }
 
-// ── PROMO ─────────────────────────────────────────────────────
+// ─── PROMO ────────────────────────────────────────────────────
 const PROMO_CODES = { 'WENNA15': 15, 'WENNA10': 10, 'BIENVENUE': 20 }
 
 function applyPromo() {
@@ -633,16 +734,32 @@ function applyPromo() {
   }
 }
 
-// ── CHECKOUT — redirige UNIQUEMENT vers paiement.html ─────────
+// ─── CHECKOUT ─────────────────────────────────────────────────
 async function checkout() {
   clearCheckoutError()
-
   const sb = getSb()
   if (!sb) { showCheckoutError('Connexion base de données perdue.'); return }
 
-  // Vérification profil
+  const { data: sessionData } = await sb.auth.getSession()
+  if (!sessionData?.session) {
+    window.location.href = 'compte.html?redirect=panier.html'
+    return
+  }
+  const user = sessionData.session.user
+
+  // Récupérer currentUserId si null (cas reload page)
   if (!currentUserId) {
-    showCheckoutError('Session expirée. Recharge la page et réessaie.')
+    const { data: p } = await sb.from('users').select('id').eq('auth_id', user.id).maybeSingle()
+    if (p) {
+      currentUserId = p.id
+    } else {
+      const { data: p2 } = await sb.from('users').select('id').eq('email', user.email).maybeSingle()
+      if (p2) { currentUserId = p2.id; await sb.from('users').update({ auth_id: user.id }).eq('id', currentUserId) }
+    }
+  }
+
+  if (!currentUserId) {
+    showCheckoutError('Profil introuvable. Reconnecte-toi.')
     return
   }
 
@@ -654,8 +771,7 @@ async function checkout() {
   const discount = subtotal * (discountPct / 100)
   const total    = subtotal - discount
 
-  // Étape 1 : Créer la commande
-  const { data:order, error:oErr } = await sb
+  const { data: order, error: oErr } = await sb
     .from('orders')
     .insert({
       user_id:      currentUserId,
@@ -672,15 +788,14 @@ async function checkout() {
     .single()
 
   if (oErr) {
-    console.error('[WennaShop] Erreur INSERT orders:', oErr)
+    console.error('[Wenna] INSERT orders:', oErr)
     showCheckoutError(`Impossible de créer la commande : ${oErr.message}`)
     btnCheckout.disabled = false
     btnCheckout.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span> Passer au paiement'
     return
   }
 
-  // Étape 2 : Insérer les order_items
-  const { error:iErr } = await sb.from('order_items').insert(
+  const { error: iErr } = await sb.from('order_items').insert(
     cartData.map(i => ({
       order_id:   order.id,
       product_id: i.product_id,
@@ -690,21 +805,19 @@ async function checkout() {
   )
 
   if (iErr) {
-    console.error('[WennaShop] Erreur INSERT order_items:', iErr)
+    console.error('[Wenna] INSERT order_items:', iErr)
     await sb.from('orders').delete().eq('id', order.id)
-    showCheckoutError(`Erreur lors de l'enregistrement des articles : ${iErr.message}`)
+    showCheckoutError(`Erreur articles : ${iErr.message}`)
     btnCheckout.disabled = false
     btnCheckout.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span> Passer au paiement'
     return
   }
 
-  // ✅ Redirection directe vers paiement.html — aucune autre destination possible
   localStorage.setItem('wenna_current_order_id', order.id)
-  console.log('[WennaShop] Commande créée :', order.id, '→ paiement.html')
   window.location.href = 'paiement.html?order_id=' + order.id
 }
 
-// ── ÉVÉNEMENTS ────────────────────────────────────────────────
+// ─── ÉVÉNEMENTS ───────────────────────────────────────────────
 cartItemsEl.addEventListener('click', e => {
   const btn = e.target.closest('[data-action]')
   if (!btn) return
@@ -724,6 +837,7 @@ document.getElementById('promo-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') applyPromo()
 })
 
+// Lancer au chargement
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', loadCart)
 } else {
