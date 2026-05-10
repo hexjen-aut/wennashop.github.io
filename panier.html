@@ -71,7 +71,7 @@ body {
 .state-title { font-family:'Cormorant Garamond',serif; font-size:32px; font-style:italic; font-weight:700; margin-bottom:8px; }
 .state-sub { font-size:13px; color:var(--fog); margin-bottom:28px; line-height:1.6; }
 
-.btn-fire { display:inline-flex; align-items:center; gap:8px; background:var(--fire); color:#fff; padding:13px 28px; font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppercase; [...]
+.btn-fire { display:inline-flex; align-items:center; gap:8px; background:var(--fire); color:#fff; padding:13px 28px; font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppercase; [...[...]
 .btn-fire:hover { background:var(--ember); transform:translateY(-1px); }
 .btn-ghost { display:inline-flex; align-items:center; gap:8px; background:transparent; color:var(--fog); padding:12px 28px; font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppe[...]
 .btn-ghost:hover { border-color:var(--fire); color:var(--fire); }
@@ -648,24 +648,23 @@ function applyPromo() {
 }
 
 // ── CHECKOUT ─────────────────────────────────────────────────
-// ✅ FIX PRINCIPAL — Logique correcte de redirection
+// ✅ MODIFICATION — Suppression de la redirection vers compte.html
 async function checkout() {
   clearCheckoutError()
 
   const sb = getSb()
   if (!sb) { showCheckoutError('Connexion base de données perdue.'); return }
 
-  // ✅ Vérification auth
-  const { data:{ user }, error:authErr } = await sb.auth.getUser()
-  if (authErr || !user) {
-    // Utilisateur non authentifié → rediriger vers connexion
-    window.location.href = 'compte.html?redirect=panier.html'
-    return
-  }
-
   // ✅ Vérification currentUserId — récupérer le profil si nécessaire
   if (!currentUserId) {
     // Tentative de récupération du profil en temps réel
+    const { data:{ user }, error:authErr } = await sb.auth.getUser()
+    if (authErr || !user) {
+      // Pas d'authentification du tout
+      showCheckoutError('Connexion requise pour passer au paiement.')
+      return
+    }
+
     const { data:byAuth } = await sb.from('users').select('id').eq('auth_id', user.id).maybeSingle()
     if (byAuth) {
       currentUserId = byAuth.id
@@ -736,7 +735,7 @@ async function checkout() {
     return
   }
 
-  // ✅ Étape 3 : Rediriger vers PAIEMENT (fix principal)
+  // ✅ Étape 3 : Rediriger vers PAIEMENT (sans passer par compte.html)
   localStorage.setItem('wenna_current_order_id', order.id)
   console.log('[WennaShop] Commande créée :', order.id, '→ paiement.html')
   window.location.href = 'paiement.html?order_id=' + order.id
