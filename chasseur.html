@@ -33,7 +33,24 @@
     .nav-links a.active{color:var(--fire);}
     .btn-nav{background:var(--fire)!important;color:#fff!important;padding:8px 18px;font-size:9px!important;clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));}
     .btn-nav:hover{background:var(--ember)!important;}
-    @media(max-width:768px){nav{padding:14px 20px;}.nav-links a:not(.btn-nav):not(.active){display:none;}}
+    /* Cloche notifs */
+    .notif-bell{position:relative;cursor:pointer;display:flex;align-items:center;color:var(--fog);transition:color .2s;}
+    .notif-bell:hover{color:var(--snow);}
+    .notif-badge{position:absolute;top:-4px;right:-4px;background:var(--fire);color:#fff;font-size:9px;padding:1px 5px;border-radius:0;min-width:16px;text-align:center;display:none;}
+    .notif-badge.show{display:block;}
+    .notif-panel{position:absolute;top:calc(100% + 8px);right:0;width:320px;background:var(--coal);border:1px solid var(--border-fire);z-index:200;max-height:360px;overflow-y:auto;display:none;}
+    .notif-panel.open{display:block;}
+    .notif-panel-head{padding:12px 16px;border-bottom:1px solid var(--border);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--fire);display:flex;justify-content:space-between;align-items:center;}
+    .notif-panel-head button{background:none;border:none;color:#555;font-size:9px;letter-spacing:1px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:color .2s;}
+    .notif-panel-head button:hover{color:var(--snow);}
+    .notif-item{padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .2s;}
+    .notif-item:hover{background:rgba(255,107,43,.04);}
+    .notif-item.unread{border-left:2px solid var(--fire);}
+    .notif-item-title{font-size:12px;font-weight:500;margin-bottom:3px;}
+    .notif-item-body{font-size:11px;color:var(--fog);line-height:1.5;}
+    .notif-item-time{font-size:9px;color:#444;margin-top:4px;}
+    .notif-empty{padding:24px;text-align:center;font-size:12px;color:#444;}
+    @media(max-width:768px){nav{padding:14px 20px;}.nav-links a:not(.btn-nav):not(.active){display:none;}.notif-panel{right:-80px;}}
 
     /* HERO CHASSEUR */
     .hunter-hero{background:var(--coal);border-bottom:1px solid var(--border);padding:40px 40px 0;position:relative;overflow:hidden;}
@@ -52,17 +69,14 @@
     .htab .material-symbols-outlined{font-size:16px;}
     .htab-badge{background:var(--fire);color:#fff;font-size:9px;padding:1px 6px;border-radius:0;min-width:18px;text-align:center;}
 
-    /* MAIN LAYOUT */
+    /* MAIN */
     .dashboard-body{max-width:1200px;margin:0 auto;padding:32px 24px;}
-
-    /* TABS CONTENT */
     .tab-content{display:none;}
     .tab-content.active{display:block;}
 
-    /* KPI STRIP */
+    /* KPI */
     .kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-bottom:24px;}
     @media(max-width:900px){.kpi-strip{grid-template-columns:repeat(2,1fr);}}
-    @media(max-width:480px){.kpi-strip{grid-template-columns:1fr 1fr;}}
     .kpi{background:var(--slate);padding:20px 24px;border-left:2px solid transparent;transition:border-color .2s;}
     .kpi:hover{border-left-color:var(--fire);}
     .kpi-icon{display:flex;align-items:center;gap:8px;color:var(--fog);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
@@ -73,12 +87,12 @@
     .kpi-val.green{color:var(--green);}
     .kpi-sub{font-size:10px;color:#444;margin-top:4px;}
 
-    /* SECTION TITLES */
+    /* SECTION */
     .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
     .section-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;font-style:italic;display:flex;align-items:center;gap:12px;}
     .section-title::before{content:'';display:block;width:20px;height:1px;background:var(--fire);}
 
-    /* QUÊTES DISPONIBLES */
+    /* FILTRES */
     .quests-layout{display:grid;grid-template-columns:200px 1fr;gap:20px;align-items:start;}
     @media(max-width:900px){.quests-layout{grid-template-columns:1fr;}}
     .filter-panel{background:var(--coal);border:1px solid var(--border);padding:18px;position:sticky;top:72px;}
@@ -95,13 +109,12 @@
     .chip.active{border-color:var(--fire);background:rgba(255,107,43,.08);color:var(--fire);}
     .btn-reset{width:100%;padding:8px;border:1px solid var(--border);background:transparent;color:#555;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;margin-top:6px;}
     .btn-reset:hover{border-color:var(--border-fire);color:var(--fire);}
-
     .content-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
     .content-count{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;font-style:italic;}
-    .sort-select{background:rgba(255,255,255,.04);border:none;border-bottom:1px solid var(--border);color:var(--snow);padding:7px 11px;font-size:11px;font-family:'DM Sans',sans-serif;outline:none;appearance:none;cursor:pointer;transition:border-color .2s;}
-    .sort-select:focus{border-bottom-color:var(--fire);}
+    .sort-select{background:rgba(255,255,255,.04);border:none;border-bottom:1px solid var(--border);color:var(--snow);padding:7px 11px;font-size:11px;font-family:'DM Sans',sans-serif;outline:none;appearance:none;cursor:pointer;}
     .sort-select option{background:var(--slate);}
 
+    /* QUEST CARDS */
     .quests-list{display:flex;flex-direction:column;gap:2px;}
     .quest-card{background:var(--slate);border-left:2px solid transparent;padding:20px 22px;cursor:pointer;transition:all .2s;display:block;color:inherit;text-decoration:none;}
     .quest-card:hover{border-left-color:var(--fire);background:var(--smoke);}
@@ -122,25 +135,28 @@
     .reward-box{background:var(--gold-bg);border:1px solid rgba(208,166,0,.2);padding:7px 14px;text-align:right;flex-shrink:0;}
     .reward-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:1px;}
     .reward-amount{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;font-style:italic;color:var(--gold);}
-
-    /* ACTION BOUTON CHASSE */
     .btn-hunt{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--border-fire);color:var(--fire);padding:7px 16px;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;margin-top:8px;}
     .btn-hunt:hover{background:rgba(255,107,43,.08);}
     .btn-hunt .material-symbols-outlined{font-size:14px;}
 
-    /* PROPOSITIONS */
+    /* PROPOSITION CARDS */
     .proposals-list{display:flex;flex-direction:column;gap:2px;}
     .proposal-card{background:var(--slate);padding:20px 24px;border-left:2px solid transparent;transition:border-color .2s;}
     .proposal-card.status-pending{border-left-color:rgba(208,166,0,.4);}
-    .proposal-card.status-accepted{border-left-color:rgba(62,207,142,.5);}
+    .proposal-card.status-selected{border-left-color:rgba(62,207,142,.6);}
+    .proposal-card.status-in_delivery{border-left-color:rgba(129,140,248,.6);}
+    .proposal-card.status-delivered{border-left-color:rgba(62,207,142,.4);}
+    .proposal-card.status-reward_paid{border-left-color:rgba(208,166,0,.7);}
     .proposal-card.status-rejected{border-left-color:rgba(248,113,113,.3);}
     .proposal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:10px;flex-wrap:wrap;}
     .proposal-quest-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;font-style:italic;line-height:1.2;}
     .status-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 12px;font-size:9px;letter-spacing:2px;text-transform:uppercase;flex-shrink:0;}
     .status-pill.pending{background:var(--gold-bg);border:1px solid rgba(208,166,0,.25);color:var(--gold);}
-    .status-pill.accepted{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);}
+    .status-pill.selected{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);}
+    .status-pill.in_delivery{background:var(--blue-bg);border:1px solid var(--blue-border);color:var(--blue);}
+    .status-pill.delivered{background:rgba(62,207,142,.04);border:1px solid var(--green-border);color:var(--green);}
+    .status-pill.reward_paid{background:var(--gold-bg);border:1px solid rgba(208,166,0,.5);color:var(--gold);}
     .status-pill.rejected{background:var(--red-bg);border:1px solid var(--red-border);color:var(--red);}
-    .status-pill.paid{background:rgba(129,140,248,.08);border:1px solid rgba(129,140,248,.2);color:var(--blue);}
     .status-pill .material-symbols-outlined{font-size:13px;}
     .proposal-body{font-size:12px;color:#666;line-height:1.6;margin-bottom:12px;padding:12px;background:rgba(255,255,255,.02);border-left:2px solid var(--border);}
     .proposal-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
@@ -148,6 +164,17 @@
     .btn-delete{display:inline-flex;align-items:center;gap:5px;background:transparent;border:1px solid var(--red-border);color:var(--red);padding:6px 14px;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
     .btn-delete:hover{background:var(--red-bg);}
     .btn-delete .material-symbols-outlined{font-size:13px;}
+
+    /* BLOC ACCEPTÉ / WENNA EXPRESS */
+    .accepted-banner{margin:12px 0;background:rgba(62,207,142,.04);border:1px solid var(--green-border);padding:16px;}
+    .accepted-banner-title{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--green);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+    .accepted-banner-title .material-symbols-outlined{font-size:14px;}
+    .accepted-banner-text{font-size:12px;color:var(--fog);line-height:1.7;margin-bottom:12px;}
+    .wenna-express-btn{display:inline-flex;align-items:center;gap:8px;background:var(--fire);color:#fff;padding:10px 20px;font-size:9px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;text-decoration:none;clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));transition:background .2s;}
+    .wenna-express-btn:hover{background:var(--ember);}
+    .wenna-express-btn .material-symbols-outlined{font-size:14px;}
+    .reward-pending-note{display:inline-flex;align-items:center;gap:6px;font-size:10px;color:var(--gold);background:var(--gold-bg);border:1px solid rgba(208,166,0,.2);padding:6px 12px;margin-top:8px;}
+    .reward-pending-note .material-symbols-outlined{font-size:13px;}
 
     /* GAINS */
     .gains-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;}
@@ -169,6 +196,7 @@
     .tx-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
     .tx-icon.earned{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);}
     .tx-icon.pending{background:var(--gold-bg);border:1px solid rgba(208,166,0,.2);color:var(--gold);}
+    .tx-icon.selected{background:var(--blue-bg);border:1px solid var(--blue-border);color:var(--blue);}
     .tx-icon .material-symbols-outlined{font-size:16px;}
     .tx-info{}
     .tx-title{font-size:12px;color:var(--snow);font-weight:500;}
@@ -176,20 +204,19 @@
     .tx-amount{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;font-style:italic;}
     .tx-amount.earned{color:var(--green);}
     .tx-amount.pending{color:var(--gold);}
+    .tx-amount.selected{color:var(--blue);}
 
-    /* EMPTY */
+    /* EMPTY / SKELETON */
     .empty-state{background:var(--slate);padding:48px 32px;text-align:center;}
     .empty-state .material-symbols-outlined{font-size:40px;color:#333;display:block;margin-bottom:12px;}
     .empty-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;font-style:italic;margin-bottom:6px;}
     .empty-sub{font-size:12px;color:var(--fog);}
-
-    /* SKELETON */
     @keyframes shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}
     .skeleton{background:linear-gradient(90deg,var(--slate) 25%,var(--smoke) 50%,var(--slate) 75%);background-size:600px 100%;animation:shimmer 1.4s infinite linear;}
     .sk-card{background:var(--slate);padding:20px 22px;margin-bottom:2px;}
     .sk-line{border-radius:2px;margin-bottom:8px;}
 
-    /* MODAL PROPOSITION */
+    /* MODAL */
     .modal-overlay{position:fixed;inset:0;background:rgba(8,8,8,.88);backdrop-filter:blur(14px);z-index:999;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .25s;}
     .modal-overlay.open{opacity:1;pointer-events:all;}
     .modal-box{background:var(--coal);border:1px solid var(--border);width:100%;max-width:540px;max-height:90vh;overflow-y:auto;transform:translateY(16px);transition:transform .25s;position:relative;}
@@ -221,7 +248,7 @@
     .btn-submit:disabled{opacity:.5;cursor:not-allowed;}
     .modal-hint{text-align:center;font-size:10px;color:#444;margin-top:9px;letter-spacing:.5px;}
 
-    /* IMAGE UPLOAD */
+    /* UPLOAD */
     .upload-zone{border:1px dashed rgba(255,107,43,.3);background:rgba(255,107,43,.02);padding:20px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
     .upload-zone:hover,.upload-zone.dragover{border-color:var(--fire);background:rgba(255,107,43,.06);}
     .upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
@@ -234,13 +261,12 @@
     .preview-thumb .remove-img{position:absolute;top:3px;right:3px;background:rgba(8,8,8,.8);border:1px solid var(--red-border);color:var(--red);width:20px;height:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .2s;}
     .preview-thumb:hover .remove-img{opacity:1;}
     .preview-thumb .remove-img .material-symbols-outlined{font-size:12px;}
-    .preview-uploading{position:absolute;inset:0;background:rgba(8,8,8,.6);display:flex;align-items:center;justify-content:center;}
     .upload-counter{font-size:9px;color:#555;letter-spacing:2px;text-transform:uppercase;margin-top:8px;text-align:right;}
-    /* Images dans les cards propositions */
     .prop-images{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
     .prop-img-thumb{width:60px;height:60px;object-fit:cover;cursor:pointer;border:1px solid var(--border);transition:border-color .2s;}
     .prop-img-thumb:hover{border-color:var(--fire);}
-    /* Lightbox */
+
+    /* LIGHTBOX */
     .lightbox{position:fixed;inset:0;background:rgba(8,8,8,.95);z-index:2000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
     .lightbox.open{opacity:1;pointer-events:all;}
     .lightbox img{max-width:90vw;max-height:90vh;object-fit:contain;}
@@ -260,7 +286,6 @@
     .bnav-item.active,.bnav-item:hover{color:var(--fire);}
     @media(max-width:768px){.bnav{display:block;}}
 
-    /* ANIMATIONS */
     @keyframes spin{to{transform:rotate(360deg);}}
     @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
     .anim-up{animation:fadeUp .6s cubic-bezier(.22,1,.36,1) forwards;}
@@ -276,6 +301,18 @@
     <a href="boutique.html">Boutique</a>
     <a href="quetes.html">Quêtes</a>
     <a href="dashboard-chasseur.html" class="active">Espace Chasseur</a>
+    <!-- Cloche notifications -->
+    <div class="notif-bell" id="notifBell" onclick="toggleNotifPanel(event)" style="position:relative;">
+      <span class="material-symbols-outlined">notifications</span>
+      <span class="notif-badge" id="notifBadge"></span>
+      <div class="notif-panel" id="notifPanel">
+        <div class="notif-panel-head">
+          <span>Notifications</span>
+          <button onclick="markAllRead(event)">Tout lire</button>
+        </div>
+        <div id="notifList"><div class="notif-empty">Aucune notification</div></div>
+      </div>
+    </div>
     <a href="compte.html" class="btn-nav">Mon compte</a>
   </div>
 </nav>
@@ -312,10 +349,10 @@
   </div>
 </div>
 
-<!-- DASHBOARD BODY -->
+<!-- BODY -->
 <div class="dashboard-body">
 
-  <!-- KPI STRIP -->
+  <!-- KPI -->
   <div class="kpi-strip">
     <div class="kpi">
       <div class="kpi-icon"><span class="material-symbols-outlined">assignment</span>Propositions</div>
@@ -339,7 +376,7 @@
     </div>
   </div>
 
-  <!-- TAB: QUÊTES DISPONIBLES -->
+  <!-- TAB: QUÊTES -->
   <div class="tab-content active" id="tab-quests">
     <div class="section-header">
       <div class="section-title">Quêtes disponibles</div>
@@ -383,15 +420,15 @@
           </select>
         </div>
         <div class="quests-list" id="questsGrid">
-          <div class="sk-card"><div class="skeleton sk-line" style="height:18px;width:55%;"></div><div class="skeleton sk-line" style="height:12px;width:85%;"></div><div class="skeleton sk-line" style="height:12px;width:70%;"></div></div>
-          <div class="sk-card"><div class="skeleton sk-line" style="height:18px;width:45%;"></div><div class="skeleton sk-line" style="height:12px;width:90%;"></div><div class="skeleton sk-line" style="height:12px;width:65%;"></div></div>
-          <div class="sk-card"><div class="skeleton sk-line" style="height:18px;width:60%;"></div><div class="skeleton sk-line" style="height:12px;width:80%;"></div><div class="skeleton sk-line" style="height:12px;width:75%;"></div></div>
+          <div class="sk-card"><div class="skeleton sk-line" style="height:18px;width:55%;"></div><div class="skeleton sk-line" style="height:12px;width:85%;"></div></div>
+          <div class="sk-card"><div class="skeleton sk-line" style="height:18px;width:45%;"></div><div class="skeleton sk-line" style="height:12px;width:90%;"></div></div>
+          <div class="sk-card"><div class="skeleton sk-line" style="height:18px;width:60%;"></div><div class="skeleton sk-line" style="height:12px;width:80%;"></div></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- TAB: MES PROPOSITIONS -->
+  <!-- TAB: PROPOSITIONS -->
   <div class="tab-content" id="tab-proposals">
     <div class="section-header">
       <div class="section-title">Mes propositions</div>
@@ -419,12 +456,12 @@
             <div class="progress-bar"><div class="progress-fill" id="progAcceptBar" style="width:0%"></div></div>
           </div>
           <div class="progress-section">
-            <div class="progress-label"><span>Quêtes complétées</span><span id="progCompletedRate">0%</span></div>
+            <div class="progress-label"><span>Récompenses perçues</span><span id="progCompletedRate">0%</span></div>
             <div class="progress-bar"><div class="progress-fill" id="progCompletedBar" style="width:0%"></div></div>
           </div>
           <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
             <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:12px;">Niveau suivant</div>
-            <div style="font-size:12px;color:var(--fog);line-height:1.7;">Complétez <span id="nextLevelText" style="color:var(--fire)">5 quêtes</span> pour atteindre le rang <span style="color:var(--gold)">Chasseur Élite</span>.</div>
+            <div style="font-size:12px;color:var(--fog);line-height:1.7;">Complétez <span id="nextLevelText" style="color:var(--fire)">5 quêtes</span> pour atteindre le rang <span id="nextLevelName" style="color:var(--gold)">Chasseur Élite</span>.</div>
           </div>
         </div>
       </div>
@@ -449,7 +486,7 @@
     <div class="modal-head">
       <div>
         <div class="modal-title">Soumettre une proposition</div>
-        <div class="modal-quest-ref" id="modalQuestRef">Quête : —</div>
+        <div class="modal-quest-ref" id="modalQuestRef">—</div>
       </div>
       <button class="modal-close" onclick="closeModal()">
         <span class="material-symbols-outlined">close</span>
@@ -466,7 +503,7 @@
       </div>
       <div class="form-group">
         <label class="form-label">Votre proposition <span>*</span></label>
-        <textarea id="propMessage" class="inp-full" placeholder="Décrivez comment vous allez trouver ce produit, où, délai estimé, prix estimé…" rows="5"></textarea>
+        <textarea id="propMessage" class="inp-full" placeholder="Comment vous allez trouver ce produit, où, délai estimé…" rows="5"></textarea>
       </div>
       <div class="form-group">
         <label class="form-label">Prix estimé (FCFA) <span>*</span></label>
@@ -474,7 +511,7 @@
       </div>
       <div class="form-group">
         <label class="form-label">Lien ou référence <span>(facultatif)</span></label>
-        <input type="text" id="propLink" class="inp-full" placeholder="URL, numéro de référence, boutique…"/>
+        <input type="text" id="propLink" class="inp-full" placeholder="URL, référence boutique…"/>
       </div>
       <div class="form-group">
         <label class="form-label">Photos du produit <span>(max 5 · jpg/png/webp)</span></label>
@@ -492,7 +529,7 @@
         <span class="material-symbols-outlined" style="font-size:15px;">send</span>
         Envoyer ma proposition
       </button>
-      <p class="modal-hint">Le chasseur avec la meilleure proposition gagne la récompense.</p>
+      <p class="modal-hint">Aucun paiement en liquide. La récompense est versée à la réception du colis.</p>
     </div>
   </div>
 </div>
@@ -516,15 +553,35 @@
 </nav>
 
 <script>
-/* ─── GLOBALS ─── */
-let allQuests = [], myProposals = [], categories = [], currentUser = null
+/* ═══════════════════════════════════════════════
+   GLOBALS
+═══════════════════════════════════════════════ */
+let allQuests = [], myProposals = [], categories = []
+let currentUser = null
+let internalUserId = null   // ← users.id (PK interne), pas auth_id
+let currentUserRole = null
+let currentUserCountry = null
 let activeCategory = 'all', activeCountry = 'all'
 let currentQuestForModal = null
-let selectedFiles = []  // fichiers sélectionnés pour upload
+let selectedFiles = []
+let notifPollInterval = null
+
 const MAX_IMAGES = 5
 const BUCKET = 'quest-proposals'
+const WENNA_EXPRESS_URL = 'https://express.wennashop.com' // à adapter
 
-/* ─── INIT ─── */
+const STATUS_MAP = {
+  pending:     { label: 'En attente',    icon: 'hourglass_empty', cls: 'pending' },
+  selected:    { label: 'Acceptée ✓',    icon: 'check_circle',    cls: 'selected' },
+  in_delivery: { label: 'En livraison',  icon: 'local_shipping',  cls: 'in_delivery' },
+  delivered:   { label: 'Livrée',        icon: 'inventory_2',     cls: 'delivered' },
+  reward_paid: { label: 'Récompensé',    icon: 'payments',        cls: 'reward_paid' },
+  rejected:    { label: 'Non retenue',   icon: 'cancel',          cls: 'rejected' }
+}
+
+/* ═══════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     await waitForDb()
@@ -534,10 +591,21 @@ document.addEventListener('DOMContentLoaded', async () => {
       setTimeout(() => location.href = 'hero.html', 1800)
       return
     }
+    await resolveInternalUser()   // ← résout users.id, role, country
     setHunterIdentity()
     await Promise.all([loadCategories(), loadQuests(), loadMyProposals()])
     computeKPIs()
     initUploadZone()
+    loadNotifications()
+    notifPollInterval = setInterval(loadNotifications, 30000)
+    // Fermer panel notifs si clic dehors
+    document.addEventListener('click', (e) => {
+      const panel = document.getElementById('notifPanel')
+      const bell = document.getElementById('notifBell')
+      if (panel.classList.contains('open') && !bell.contains(e.target)) {
+        panel.classList.remove('open')
+      }
+    })
   } catch(e) {
     console.error('[Chasseur] Init error:', e)
     showToast('Erreur de chargement. Vérifiez votre connexion.', 'error')
@@ -565,16 +633,45 @@ async function checkAuth() {
   currentUser = session?.user || null
 }
 
-/* ─── IDENTITÉ ─── */
+/* ═══════════════════════════════════════════════
+   RÉSOLUTION users.id INTERNE
+   hunter_id FK → users.id, PAS auth_id
+═══════════════════════════════════════════════ */
+async function resolveInternalUser() {
+  const { data, error } = await getSb()
+    .from('users')
+    .select('id, role, full_name, first_name, last_name, country, avatar_url')
+    .eq('auth_id', currentUser.id)
+    .single()
+
+  if (error || !data) {
+    console.error('[Chasseur] resolveInternalUser:', error)
+    showToast('Profil introuvable. Contactez le support.', 'error')
+    throw new Error('Profil introuvable')
+  }
+
+  internalUserId   = data.id
+  currentUserRole  = data.role
+  currentUserCountry = data.country || ''
+
+  // Stocker pour setHunterIdentity
+  currentUser._internalData = data
+}
+
+/* ═══════════════════════════════════════════════
+   IDENTITÉ CHASSEUR
+═══════════════════════════════════════════════ */
 function setHunterIdentity() {
-  const email = currentUser.email || ''
-  const meta = currentUser.user_metadata || {}
-  const name = meta.full_name || meta.name || email.split('@')[0] || 'Chasseur'
+  const d = currentUser._internalData || {}
+  const name = d.full_name || (d.first_name ? `${d.first_name} ${d.last_name || ''}`.trim() : null)
+    || currentUser.email?.split('@')[0] || 'Chasseur'
   document.getElementById('hunterName').textContent = name
   document.getElementById('hunterAvatarLetter').textContent = name.charAt(0).toUpperCase()
 }
 
-/* ─── CATÉGORIES ─── */
+/* ═══════════════════════════════════════════════
+   CATÉGORIES
+═══════════════════════════════════════════════ */
 async function loadCategories() {
   const { data } = await getSb().from('categories').select('id, name').order('name')
   categories = data || []
@@ -589,7 +686,9 @@ async function loadCategories() {
   })
 }
 
-/* ─── QUÊTES ─── */
+/* ═══════════════════════════════════════════════
+   QUÊTES
+═══════════════════════════════════════════════ */
 async function loadQuests() {
   const { data, error } = await getSb()
     .from('quests')
@@ -601,11 +700,11 @@ async function loadQuests() {
 
   const quests = (data || []).map(q => ({ ...q, category_id: String(q.category_id ?? ''), proposals_count: 0 }))
 
-  // Count proposals
+  // Count propositions par quête
   try {
-    const questIds = quests.map(q => q.id)
-    if (questIds.length) {
-      const { data: pd } = await getSb().from('quest_proposals').select('quest_id').in('quest_id', questIds)
+    const ids = quests.map(q => q.id)
+    if (ids.length) {
+      const { data: pd } = await getSb().from('quest_proposals').select('quest_id').in('quest_id', ids)
       if (pd) {
         const map = {}
         pd.forEach(p => { map[p.quest_id] = (map[p.quest_id] || 0) + 1 })
@@ -633,24 +732,27 @@ function renderQuests(quests) {
     return
   }
 
-  // Vérifier quelles quêtes le chasseur a déjà proposées
+  // Quêtes déjà soumises par ce chasseur
   const myQuestIds = new Set(myProposals.map(p => p.quest_id))
-  const isNew = (createdAt) => (Date.now() - new Date(createdAt)) < 86400000 * 2
+  const isNew = (d) => (Date.now() - new Date(d)) < 86400000 * 2
 
   grid.innerHTML = quests.map(q => {
-    const proposals = q.proposals_count || 0
-    const exp = daysUntil(q.expires_at)
-    const cat = q.categories?.name || ''
-    const hot = proposals >= 3
-    const alreadyProposed = myQuestIds.has(q.id)
-    const fresh = isNew(q.created_at)
+    const props   = q.proposals_count || 0
+    const exp     = daysUntil(q.expires_at)
+    const cat     = q.categories?.name || ''
+    const hot     = props >= 3
+    const done    = myQuestIds.has(q.id)
+    const fresh   = isNew(q.created_at)
+    // Vérifier que le rôle permet de chasser
+    const canHunt = currentUserRole === 'artisan' || currentUserRole === 'admin'
+
     return `
-      <div class="quest-card" style="${alreadyProposed ? 'opacity:.55;' : ''}">
+      <div class="quest-card" style="${done ? 'opacity:.6;' : ''}">
         <div class="quest-card-head">
           <div class="quest-title">${esc(q.title)}</div>
           <div class="quest-badges">
-            ${alreadyProposed ? '<span class="badge" style="background:rgba(62,207,142,.08);color:#3ecf8e;border:1px solid rgba(62,207,142,.2);">Proposé ✓</span>' : ''}
-            ${fresh && !alreadyProposed ? '<span class="badge badge-new">Nouveau</span>' : ''}
+            ${done ? '<span class="badge" style="background:rgba(62,207,142,.08);color:#3ecf8e;border:1px solid rgba(62,207,142,.2);">Proposé ✓</span>' : ''}
+            ${fresh && !done ? '<span class="badge badge-new">Nouveau</span>' : ''}
             ${hot ? '<span class="badge badge-hot">Populaire</span>' : ''}
             ${cat ? `<span class="badge badge-cat">${cat}</span>` : ''}
             ${q.country_target ? `<span class="badge badge-country">${q.country_target}</span>` : ''}
@@ -661,7 +763,7 @@ function renderQuests(quests) {
           <div class="quest-meta">
             <span class="meta-item">
               <span class="material-symbols-outlined">group</span>
-              ${proposals} prop${proposals !== 1 ? 's' : ''}
+              ${props} prop${props !== 1 ? 's' : ''}
             </span>
             <span class="meta-item${exp <= 1 ? ' meta-urgent' : ''}">
               <span class="material-symbols-outlined">schedule</span>
@@ -673,13 +775,14 @@ function renderQuests(quests) {
             </span>
           </div>
           <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-            ${!alreadyProposed ? `<button class="btn-hunt" onclick="openModal(${JSON.stringify(q).replace(/"/g,'&quot;')})">
+            ${!done && canHunt ? `<button class="btn-hunt" onclick='openModal(${JSON.stringify(q)})'>
               <span class="material-symbols-outlined">gps_fixed</span>
               Je chasse
             </button>` : ''}
+            ${!done && !canHunt ? `<span style="font-size:10px;color:#555;font-style:italic;">Rôle chasseur requis</span>` : ''}
             <div class="reward-box">
               <div class="reward-label">Récompense</div>
-              <div class="reward-amount">${fmt(q.reward_amount)} <span style="font-size:.65em;font-style:normal;">${q.currency}</span></div>
+              <div class="reward-amount">${fmt(q.reward_amount)} <span style="font-size:.65em;font-style:normal;">${q.currency || 'FCFA'}</span></div>
             </div>
           </div>
         </div>
@@ -694,7 +797,9 @@ function showQuestsEmpty(msg) {
   </div>`
 }
 
-/* ─── FILTRES ─── */
+/* ═══════════════════════════════════════════════
+   FILTRES
+═══════════════════════════════════════════════ */
 function selectCat(el) {
   document.querySelectorAll('#categoryChips .chip').forEach(c => c.classList.remove('active'))
   el.classList.add('active')
@@ -710,9 +815,10 @@ function selectCountry(el) {
 }
 
 function applyFilters() {
-  const search = document.getElementById('searchInput').value.toLowerCase()
+  const search    = document.getElementById('searchInput').value.toLowerCase()
   const rewardMin = parseFloat(document.getElementById('rewardMin').value) || 0
-  const sort = document.getElementById('sortSelect').value
+  const sort      = document.getElementById('sortSelect').value
+
   let filtered = allQuests.filter(q => {
     if (activeCategory !== 'all' && q.category_id !== activeCategory) return false
     if (activeCountry !== 'all' && q.country_target !== activeCountry) return false
@@ -720,9 +826,11 @@ function applyFilters() {
     if (search && !q.title.toLowerCase().includes(search) && !(q.description || '').toLowerCase().includes(search)) return false
     return true
   })
+
   if (sort === 'reward_desc') filtered.sort((a, b) => b.reward_amount - a.reward_amount)
   else if (sort === 'expires_asc') filtered.sort((a, b) => new Date(a.expires_at) - new Date(b.expires_at))
   else filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+
   renderQuests(filtered)
 }
 
@@ -737,22 +845,35 @@ function resetFilters() {
   renderQuests(allQuests)
 }
 
-/* ─── MES PROPOSITIONS ─── */
+/* ═══════════════════════════════════════════════
+   MES PROPOSITIONS
+   hunter_id = internalUserId (users.id)
+═══════════════════════════════════════════════ */
 async function loadMyProposals() {
+  if (!internalUserId) return
+
   const { data, error } = await getSb()
     .from('quest_proposals')
-    .select(`id, quest_id, description, proposed_price, product_url, product_images, status, created_at, quests(title, reward_amount, currency)`)
-    .eq('hunter_id', currentUser.id)
+    .select(`id, quest_id, description, proposed_price, product_url, product_images,
+             status, created_at, selected_at, reward_paid_at, delivery_type, tracking_ref,
+             quests(title, reward_amount, currency, country_target)`)
+    .eq('hunter_id', internalUserId)   // ← users.id interne
     .order('created_at', { ascending: false })
 
   if (error) { console.error('[Chasseur] loadMyProposals:', error); return }
+
   myProposals = data || []
-  document.getElementById('propBadge').textContent = myProposals.filter(p => p.status === 'pending').length
+
+  // Badge : propositions pending
+  const pendingCount = myProposals.filter(p => p.status === 'pending').length
+  document.getElementById('propBadge').textContent = pendingCount
+
   renderProposals()
 }
 
 function renderProposals() {
   const list = document.getElementById('proposalsList')
+
   if (!myProposals.length) {
     list.innerHTML = `<div class="empty-state">
       <span class="material-symbols-outlined">assignment_late</span>
@@ -763,17 +884,21 @@ function renderProposals() {
   }
 
   list.innerHTML = myProposals.map(p => {
-    const statusMap = {
-      pending: { label: 'En attente', icon: 'hourglass_empty', cls: 'pending' },
-      accepted: { label: 'Acceptée', icon: 'check_circle', cls: 'accepted' },
-      rejected: { label: 'Refusée', icon: 'cancel', cls: 'rejected' },
-      paid: { label: 'Payée', icon: 'payments', cls: 'paid' }
-    }
-    const s = statusMap[p.status] || statusMap.pending
+    const s          = STATUS_MAP[p.status] || STATUS_MAP.pending
     const questTitle = p.quests?.title || 'Quête supprimée'
-    const reward = p.quests?.reward_amount || 0
-    const currency = p.quests?.currency || 'FCFA'
-    const images = Array.isArray(p.product_images) && p.product_images.length > 0 ? p.product_images : []
+    const reward     = p.quests?.reward_amount || 0
+    const currency   = p.quests?.currency || 'FCFA'
+    const images     = Array.isArray(p.product_images) ? p.product_images : []
+
+    // Déterminer type de livraison selon pays de la quête et profil chasseur
+    const questCountry   = p.quests?.country_target || ''
+    const isInternational = questCountry.toLowerCase().includes('gabon') || questCountry.toLowerCase().includes('maroc')
+      ? (currentUserCountry && !questCountry.toLowerCase().includes(currentUserCountry.toLowerCase()))
+      : false
+
+    // Bloc Wenna Express pour propositions acceptées/en livraison
+    const showExpressBlock = ['selected', 'in_delivery', 'delivered', 'reward_paid'].includes(p.status)
+
     return `
       <div class="proposal-card status-${p.status}">
         <div class="proposal-head">
@@ -783,11 +908,16 @@ function renderProposals() {
             ${s.label}
           </span>
         </div>
+
         ${p.description ? `<div class="proposal-body">${esc(p.description)}</div>` : ''}
+
         ${images.length > 0 ? `<div class="prop-images">
           ${images.map(url => `<img class="prop-img-thumb" src="${esc(url)}" alt="photo produit" onclick="openLightbox('${esc(url)}')" loading="lazy"/>`).join('')}
         </div>` : ''}
-        <div class="proposal-footer">
+
+        ${showExpressBlock ? renderExpressBlock(p, isInternational, reward, currency) : ''}
+
+        <div class="proposal-footer" style="margin-top:12px;">
           <div class="proposal-meta">
             <span class="meta-item">
               <span class="material-symbols-outlined">payments</span>
@@ -801,9 +931,13 @@ function renderProposals() {
               <span class="material-symbols-outlined">calendar_today</span>
               ${formatDate(p.created_at)}
             </span>
-            ${images.length > 0 ? `<span class="meta-item" style="color:var(--fog);">
-              <span class="material-symbols-outlined">photo_library</span>
-              ${images.length} photo${images.length > 1 ? 's' : ''}
+            ${p.selected_at ? `<span class="meta-item" style="color:var(--green);">
+              <span class="material-symbols-outlined">check_circle</span>
+              Sélectionnée le ${formatDate(p.selected_at)}
+            </span>` : ''}
+            ${p.reward_paid_at ? `<span class="meta-item" style="color:var(--gold);">
+              <span class="material-symbols-outlined">payments</span>
+              Récompense versée le ${formatDate(p.reward_paid_at)}
             </span>` : ''}
           </div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
@@ -821,9 +955,67 @@ function renderProposals() {
   }).join('')
 }
 
+/* Bloc Wenna Express affiché quand la proposition est acceptée */
+function renderExpressBlock(p, isInternational, reward, currency) {
+  const deliveryLabel = isInternational ? 'Wenna Express International (Gabon ↔ Maroc)' : 'Wenna Express Local'
+  const deliveryIcon  = isInternational ? 'flight' : 'local_shipping'
+
+  if (p.status === 'reward_paid') {
+    return `<div class="accepted-banner" style="border-color:rgba(208,166,0,.3);background:var(--gold-bg);">
+      <div class="accepted-banner-title" style="color:var(--gold);">
+        <span class="material-symbols-outlined">workspace_premium</span>
+        Récompense versée — ${fmt(reward)} ${currency}
+      </div>
+      <div class="accepted-banner-text">Félicitations ! Votre récompense a été versée suite à la réception du colis par l'acheteur.</div>
+    </div>`
+  }
+
+  if (p.status === 'delivered') {
+    return `<div class="accepted-banner" style="border-color:var(--green-border);">
+      <div class="accepted-banner-title">
+        <span class="material-symbols-outlined">inventory_2</span>
+        Colis livré — en attente de confirmation acheteur
+      </div>
+      <div class="accepted-banner-text">L'acheteur doit confirmer la réception. Votre récompense de <strong style="color:var(--gold);">${fmt(reward)} ${currency}</strong> sera versée dès confirmation.</div>
+      <div class="reward-pending-note">
+        <span class="material-symbols-outlined">hourglass_top</span>
+        Récompense en attente de confirmation
+      </div>
+    </div>`
+  }
+
+  return `<div class="accepted-banner">
+    <div class="accepted-banner-title">
+      <span class="material-symbols-outlined">check_circle</span>
+      Proposition acceptée — passez à l'étape suivante
+    </div>
+    <div class="accepted-banner-text">
+      Votre proposition a été retenue par l'acheteur. Vous devez maintenant procéder à l'envoi via 
+      <strong style="color:var(--fire);">${deliveryLabel}</strong>.<br/>
+      <span style="color:var(--fog);font-size:11px;margin-top:4px;display:block;">
+        Aucun paiement en liquide. La récompense de <strong style="color:var(--gold);">${fmt(reward)} ${currency}</strong> sera versée automatiquement à la réception du colis par l'acheteur.
+      </span>
+    </div>
+    <a href="${WENNA_EXPRESS_URL}?proposal=${p.id}&type=${isInternational ? 'international' : 'local'}" 
+       target="_blank" class="wenna-express-btn">
+      <span class="material-symbols-outlined">${deliveryIcon}</span>
+      Utiliser Wenna Express ${isInternational ? 'International' : 'Local'}
+    </a>
+    ${p.status === 'selected' ? `<div class="reward-pending-note">
+      <span class="material-symbols-outlined">info</span>
+      Récompense versée à la confirmation de réception par l'acheteur
+    </div>` : ''}
+  </div>`
+}
+
 async function deleteProposal(propId) {
   if (!confirm('Retirer cette proposition ?')) return
-  const { error } = await getSb().from('quest_proposals').delete().eq('id', propId).eq('hunter_id', currentUser.id)
+  const { error } = await getSb()
+    .from('quest_proposals')
+    .delete()
+    .eq('id', propId)
+    .eq('hunter_id', internalUserId)   // ← users.id interne
+
   if (error) { showToast('Erreur : ' + error.message, 'error'); return }
   showToast('Proposition retirée.', 'success')
   myProposals = myProposals.filter(p => p.id !== propId)
@@ -832,55 +1024,57 @@ async function deleteProposal(propId) {
   renderQuests(allQuests)
 }
 
-/* ─── KPIs ─── */
+/* ═══════════════════════════════════════════════
+   KPIs + GAINS
+═══════════════════════════════════════════════ */
 function computeKPIs() {
-  const total = myProposals.length
-  const accepted = myProposals.filter(p => p.status === 'accepted' || p.status === 'paid').length
-  const paid = myProposals.filter(p => p.status === 'paid')
-  const gains = paid.reduce((s, p) => s + Number(p.quests?.reward_amount || 0), 0)
-  const rate = total > 0 ? Math.round((accepted / total) * 100) : 0
+  const total    = myProposals.length
+  // "accepted" = selected + in_delivery + delivered + reward_paid
+  const accepted = myProposals.filter(p => ['selected','in_delivery','delivered','reward_paid'].includes(p.status)).length
+  const paid     = myProposals.filter(p => p.status === 'reward_paid')
+  const gains    = paid.reduce((s, p) => s + Number(p.quests?.reward_amount || 0), 0)
+  const rate     = total > 0 ? Math.round((accepted / total) * 100) : 0
 
   document.getElementById('kpiProposals').textContent = total
-  document.getElementById('kpiAccepted').textContent = accepted
-  document.getElementById('kpiGains').textContent = gains > 0 ? fmt(gains) : '0'
-  document.getElementById('kpiRate').textContent = rate + '%'
-  document.getElementById('propBadge').textContent = myProposals.filter(p => p.status === 'pending').length
+  document.getElementById('kpiAccepted').textContent  = accepted
+  document.getElementById('kpiGains').textContent     = gains > 0 ? fmt(gains) : '0'
+  document.getElementById('kpiRate').textContent      = rate + '%'
+  document.getElementById('propBadge').textContent    = myProposals.filter(p => p.status === 'pending').length
 
-  // Gains tab
+  // Tab gains
   document.getElementById('gainsTotalVal').innerHTML = `${fmt(gains)} <span class="gains-total-currency">FCFA</span>`
   const acceptPct = Math.min(rate, 100)
   document.getElementById('progAcceptRate').textContent = acceptPct + '%'
-  document.getElementById('progAcceptBar').style.width = acceptPct + '%'
+  document.getElementById('progAcceptBar').style.width  = acceptPct + '%'
   const completedPct = Math.min(Math.round((paid.length / Math.max(total, 1)) * 100), 100)
   document.getElementById('progCompletedRate').textContent = completedPct + '%'
-  document.getElementById('progCompletedBar').style.width = completedPct + '%'
+  document.getElementById('progCompletedBar').style.width  = completedPct + '%'
 
   // Niveau chasseur
   const completedCount = paid.length
   const levels = [
-    { name: 'Chasseur Initié', min: 0 },
-    { name: 'Chasseur Confirmé', min: 3 },
-    { name: 'Chasseur Élite', min: 8 },
-    { name: 'Chasseur Légendaire', min: 20 }
+    { name: 'Chasseur Initié',    min: 0 },
+    { name: 'Chasseur Confirmé',  min: 3 },
+    { name: 'Chasseur Élite',     min: 8 },
+    { name: 'Chasseur Légendaire',min: 20 }
   ]
-  const level = [...levels].reverse().find(l => completedCount >= l.min) || levels[0]
+  const level     = [...levels].reverse().find(l => completedCount >= l.min) || levels[0]
   const nextLevel = levels.find(l => l.min > completedCount)
   document.getElementById('hunterLevel').innerHTML = `<span class="material-symbols-outlined" style="font-size:12px;">verified</span> ${level.name}`
   if (nextLevel) {
     const needed = nextLevel.min - completedCount
     document.getElementById('nextLevelText').textContent = `${needed} quête${needed > 1 ? 's' : ''} de plus`
-    document.querySelector('[id="nextLevelText"]')?.closest('div')?.querySelector('span[style*="gold"]')
-    // Mise à jour du rang suivant
-    const nextSpan = document.querySelectorAll('.gains-card')[1]?.querySelectorAll('span')
-    document.getElementById('nextLevelText').textContent = `${needed} quête${needed > 1 ? 's' : ''} de plus`
+    document.getElementById('nextLevelName').textContent = nextLevel.name
   }
 
-  renderTransactions(paid)
+  renderTransactions(paid, myProposals)
 }
 
-function renderTransactions(paid) {
+function renderTransactions(paid, all) {
   const list = document.getElementById('transactionsList')
-  if (!paid.length) {
+  const selected = all.filter(p => p.status === 'selected').slice(0, 3)
+
+  if (!paid.length && !selected.length) {
     list.innerHTML = `<div class="empty-state" style="padding:32px;">
       <span class="material-symbols-outlined">receipt_long</span>
       <div class="empty-title">Aucune transaction</div>
@@ -888,44 +1082,123 @@ function renderTransactions(paid) {
     </div>`
     return
   }
-  list.innerHTML = paid.map(p => `
+
+  let html = ''
+
+  // Récompenses perçues
+  html += paid.map(p => `
     <div class="transaction-item">
       <div class="tx-left">
         <div class="tx-icon earned"><span class="material-symbols-outlined">payments</span></div>
         <div class="tx-info">
           <div class="tx-title">${esc(p.quests?.title || 'Quête')}</div>
-          <div class="tx-date">${formatDate(p.created_at)}</div>
+          <div class="tx-date">Versée le ${formatDate(p.reward_paid_at || p.created_at)}</div>
         </div>
       </div>
       <div class="tx-amount earned">+${fmt(p.quests?.reward_amount || 0)} FCFA</div>
     </div>`).join('')
 
-  // Ajouter propositions pending comme "en attente"
-  const pending = myProposals.filter(p => p.status === 'pending').slice(0, 3)
-  if (pending.length) {
-    list.innerHTML += pending.map(p => `
-      <div class="transaction-item">
-        <div class="tx-left">
-          <div class="tx-icon pending"><span class="material-symbols-outlined">hourglass_empty</span></div>
-          <div class="tx-info">
-            <div class="tx-title">${esc(p.quests?.title || 'Quête')} — en attente</div>
-            <div class="tx-date">${formatDate(p.created_at)}</div>
-          </div>
+  // Acceptées en cours
+  html += selected.map(p => `
+    <div class="transaction-item">
+      <div class="tx-left">
+        <div class="tx-icon selected"><span class="material-symbols-outlined">local_shipping</span></div>
+        <div class="tx-info">
+          <div class="tx-title">${esc(p.quests?.title || 'Quête')} — en livraison</div>
+          <div class="tx-date">Sélectionnée le ${formatDate(p.selected_at || p.created_at)}</div>
         </div>
-        <div class="tx-amount pending">${fmt(p.quests?.reward_amount || 0)} FCFA</div>
+      </div>
+      <div class="tx-amount selected">${fmt(p.quests?.reward_amount || 0)} FCFA</div>
+    </div>`).join('')
+
+  // Pending
+  const pending = all.filter(p => p.status === 'pending').slice(0, 3)
+  html += pending.map(p => `
+    <div class="transaction-item">
+      <div class="tx-left">
+        <div class="tx-icon pending"><span class="material-symbols-outlined">hourglass_empty</span></div>
+        <div class="tx-info">
+          <div class="tx-title">${esc(p.quests?.title || 'Quête')} — en attente</div>
+          <div class="tx-date">Soumise le ${formatDate(p.created_at)}</div>
+        </div>
+      </div>
+      <div class="tx-amount pending">${fmt(p.quests?.reward_amount || 0)} FCFA</div>
+    </div>`).join('')
+
+  list.innerHTML = html
+}
+
+/* ═══════════════════════════════════════════════
+   NOTIFICATIONS
+═══════════════════════════════════════════════ */
+async function loadNotifications() {
+  if (!internalUserId) return
+  try {
+    const { data } = await getSb()
+      .from('notifications')
+      .select('*')
+      .eq('user_id', internalUserId)
+      .order('created_at', { ascending: false })
+      .limit(20)
+
+    if (!data) return
+
+    const unread = data.filter(n => !n.is_read).length
+    const badge  = document.getElementById('notifBadge')
+    badge.textContent = unread > 9 ? '9+' : unread
+    badge.classList.toggle('show', unread > 0)
+
+    const listEl = document.getElementById('notifList')
+    if (!data.length) {
+      listEl.innerHTML = '<div class="notif-empty">Aucune notification</div>'
+      return
+    }
+
+    listEl.innerHTML = data.map(n => `
+      <div class="notif-item${n.is_read ? '' : ' unread'}" onclick="readNotif('${n.id}', '${n.link || ''}')">
+        <div class="notif-item-title">${esc(n.title)}</div>
+        ${n.body ? `<div class="notif-item-body">${esc(n.body)}</div>` : ''}
+        <div class="notif-item-time">${timeAgo(n.created_at)}</div>
       </div>`).join('')
+  } catch(e) {
+    console.error('[Notifs] loadNotifications:', e)
   }
 }
 
-/* ─── MODAL PROPOSITION ─── */
+async function readNotif(id, link) {
+  await getSb().from('notifications').update({ is_read: true }).eq('id', id)
+  if (link) window.location.href = link
+  else await loadNotifications()
+}
+
+async function markAllRead(e) {
+  e.stopPropagation()
+  if (!internalUserId) return
+  await getSb().from('notifications').update({ is_read: true }).eq('user_id', internalUserId)
+  await loadNotifications()
+}
+
+function toggleNotifPanel(e) {
+  e.stopPropagation()
+  document.getElementById('notifPanel').classList.toggle('open')
+}
+
+/* ═══════════════════════════════════════════════
+   MODAL PROPOSITION
+═══════════════════════════════════════════════ */
 function openModal(quest) {
+  // Vérifier le rôle avant d'ouvrir
+  if (currentUserRole !== 'artisan' && currentUserRole !== 'admin') {
+    showToast('Seuls les chasseurs (artisans) peuvent proposer.', 'error')
+    return
+  }
   currentQuestForModal = quest
   document.getElementById('modalQuestRef').textContent = 'Quête : ' + quest.title
   document.getElementById('questSummaryText').textContent = quest.description || 'Aucune description.'
   document.getElementById('modalReward').textContent = fmt(quest.reward_amount) + ' ' + (quest.currency || 'FCFA')
   document.getElementById('propMessage').value = ''
-  document.getElementById('propPrice').value = ''
-  document.getElementById('propLink').value = ''
+  document.getElementById('propPrice').value   = ''
+  document.getElementById('propLink').value    = ''
   resetImageUpload()
   document.getElementById('modalOverlay').classList.add('open')
   document.body.style.overflow = 'hidden'
@@ -944,31 +1217,32 @@ function closeModalOutside(e) {
 async function submitProposal() {
   if (!currentQuestForModal) return
   const message = document.getElementById('propMessage').value.trim()
-  const price = parseFloat(document.getElementById('propPrice').value)
-  const link = document.getElementById('propLink').value.trim()
+  const price   = parseFloat(document.getElementById('propPrice').value)
+  const link    = document.getElementById('propLink').value.trim()
 
-  if (!message) return showToast('Décrivez votre proposition.', 'error')
-  if (!price || price < 100) return showToast('Indiquez un prix estimé.', 'error')
+  if (!message)             return showToast('Décrivez votre proposition.', 'error')
+  if (!price || price < 100) return showToast('Indiquez un prix estimé valide.', 'error')
 
   const btn = document.getElementById('submitProposalBtn')
   btn.disabled = true
   btn.innerHTML = '<span class="material-symbols-outlined" style="animation:spin 1s linear infinite;font-size:15px;">progress_activity</span> Envoi…'
 
-  // Upload images → récupérer les URLs publiques
+  // Upload images
   let imageUrls = []
   if (selectedFiles.length > 0) {
     btn.innerHTML = '<span class="material-symbols-outlined" style="animation:spin 1s linear infinite;font-size:15px;">progress_activity</span> Upload photos…'
     imageUrls = await uploadImages()
   }
 
+  // INSERT avec hunter_id = internalUserId (users.id PK, pas auth_id)
   const { error } = await getSb().from('quest_proposals').insert({
-    quest_id: currentQuestForModal.id,
-    hunter_id: currentUser.id,
-    description: message,
+    quest_id:       currentQuestForModal.id,
+    hunter_id:      internalUserId,       // ← users.id interne
+    description:    message,
     proposed_price: price,
-    product_url: link || null,
+    product_url:    link || null,
     product_images: imageUrls.length > 0 ? imageUrls : null,
-    status: 'pending'
+    status:         'pending'
   })
 
   btn.disabled = false
@@ -983,16 +1257,17 @@ async function submitProposal() {
   renderQuests(allQuests)
 }
 
-/* ─── IMAGE UPLOAD ─── */
+/* ═══════════════════════════════════════════════
+   IMAGE UPLOAD
+═══════════════════════════════════════════════ */
 function initUploadZone() {
-  const zone = document.getElementById('uploadZone')
+  const zone  = document.getElementById('uploadZone')
   const input = document.getElementById('imageInput')
   if (!zone || !input) return
 
   input.addEventListener('change', () => handleFiles(input.files))
-
-  zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover') })
-  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'))
+  zone.addEventListener('dragover',  (e) => { e.preventDefault(); zone.classList.add('dragover') })
+  zone.addEventListener('dragleave', ()  => zone.classList.remove('dragover'))
   zone.addEventListener('drop', (e) => {
     e.preventDefault()
     zone.classList.remove('dragover')
@@ -1001,12 +1276,12 @@ function initUploadZone() {
 }
 
 function handleFiles(fileList) {
-  const files = Array.from(fileList)
-  const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+  const files     = Array.from(fileList)
+  const allowed   = ['image/jpeg','image/png','image/webp','image/gif']
   const remaining = MAX_IMAGES - selectedFiles.length
+  const valid     = files.filter(f => allowed.includes(f.type) && f.size <= 5 * 1024 * 1024)
 
-  const valid = files.filter(f => allowed.includes(f.type) && f.size <= 5 * 1024 * 1024)
-  if (valid.length < files.length) showToast('Certains fichiers ignorés (type ou taille > 5MB).', 'error')
+  if (valid.length < files.length) showToast('Fichiers ignorés (type ou taille > 5Mo).', 'error')
 
   const toAdd = valid.slice(0, remaining)
   if (valid.length > remaining) showToast(`Maximum ${MAX_IMAGES} photos par proposition.`, 'error')
@@ -1020,13 +1295,13 @@ function handleFiles(fileList) {
 
 function addPreview(file, idx) {
   const previews = document.getElementById('uploadPreviews')
-  const reader = new FileReader()
+  const reader   = new FileReader()
   reader.onload = (e) => {
     const thumb = document.createElement('div')
-    thumb.className = 'preview-thumb'
+    thumb.className   = 'preview-thumb'
     thumb.dataset.idx = idx
     thumb.innerHTML = `
-      <img src="${e.target.result}" alt="photo ${idx+1}"/>
+      <img src="${e.target.result}" alt="photo ${idx + 1}"/>
       <div class="remove-img" onclick="removeImage(${idx})">
         <span class="material-symbols-outlined">close</span>
       </div>`
@@ -1042,21 +1317,16 @@ function removeImage(idx) {
 }
 
 function rebuildPreviews() {
-  const previews = document.getElementById('uploadPreviews')
-  previews.innerHTML = ''
+  document.getElementById('uploadPreviews').innerHTML = ''
   selectedFiles.forEach((file, i) => addPreview(file, i))
 }
 
 function updateCounter() {
   document.getElementById('uploadCounter').textContent = `${selectedFiles.length} / ${MAX_IMAGES} photos`
   const zone = document.getElementById('uploadZone')
-  if (selectedFiles.length >= MAX_IMAGES) {
-    zone.style.opacity = '.4'
-    zone.style.pointerEvents = 'none'
-  } else {
-    zone.style.opacity = ''
-    zone.style.pointerEvents = ''
-  }
+  const full = selectedFiles.length >= MAX_IMAGES
+  zone.style.opacity = full ? '.4' : ''
+  zone.style.pointerEvents = full ? 'none' : ''
 }
 
 function resetImageUpload() {
@@ -1070,11 +1340,12 @@ function resetImageUpload() {
 }
 
 async function uploadImages() {
-  const sb = getSb()
+  const sb   = getSb()
   const urls = []
   for (const file of selectedFiles) {
-    const ext = file.name.split('.').pop()
-    const path = `${currentUser.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+    const ext  = file.name.split('.').pop()
+    // Utiliser internalUserId dans le path pour cohérence
+    const path = `${internalUserId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
     const { error } = await sb.storage.from(BUCKET).upload(path, file, { upsert: false })
     if (error) { console.error('[Chasseur] Upload error:', error); continue }
     const { data } = sb.storage.from(BUCKET).getPublicUrl(path)
@@ -1083,7 +1354,9 @@ async function uploadImages() {
   return urls
 }
 
-/* ─── LIGHTBOX ─── */
+/* ═══════════════════════════════════════════════
+   LIGHTBOX
+═══════════════════════════════════════════════ */
 function openLightbox(url) {
   document.getElementById('lightboxImg').src = url
   document.getElementById('lightbox').classList.add('open')
@@ -1094,7 +1367,9 @@ function closeLightbox() {
   document.body.style.overflow = ''
 }
 
-/* ─── TABS ─── */
+/* ═══════════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════════ */
 function switchTab(name, el) {
   document.querySelectorAll('.htab').forEach(t => t.classList.remove('active'))
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'))
@@ -1102,12 +1377,23 @@ function switchTab(name, el) {
   document.getElementById('tab-' + name).classList.add('active')
 }
 
-/* ─── UTILS ─── */
+/* ═══════════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════════ */
 function daysUntil(d) { return Math.max(0, Math.ceil((new Date(d) - new Date()) / 86400000)) }
 function fmt(n) { return Number(n).toLocaleString('fr-FR') }
-function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }
+function esc(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')
+}
 function formatDate(d) {
   return new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+function timeAgo(d) {
+  const diff = Date.now() - new Date(d)
+  if (diff < 60000)   return 'À l\'instant'
+  if (diff < 3600000) return `${Math.floor(diff / 60000)} min`
+  if (diff < 86400000)return `${Math.floor(diff / 3600000)}h`
+  return formatDate(d)
 }
 function showToast(msg, type = 'success') {
   const t = document.getElementById('toast')
@@ -1115,6 +1401,14 @@ function showToast(msg, type = 'success') {
   t.className = 'show ' + type
   setTimeout(() => t.className = '', 3500)
 }
+
+// Fermer lightbox avec Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeLightbox()
+    closeModal()
+  }
+})
 </script>
 </body>
 </html>
