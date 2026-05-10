@@ -385,7 +385,9 @@ function getSb() {
 
 let questId = null
 let quest = null
-let currentUser = null
+let currentUser = null      // session user (auth_id = currentUser.id)
+let internalUserId = null   // users.id (UUID interne — requis pour hunter_id)
+let userRole = null         // 'buyer' | 'artisan' | 'admin'
 let isBuyer = false
 let hasProposed = false
 
@@ -402,6 +404,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const { data: { session } } = await getSb().auth.getSession()
   currentUser = session?.user || null
+
+  // Résoudre users.id interne depuis auth_id
+  if (currentUser) {
+    const { data: uRow } = await getSb()
+      .from('users')
+      .select('id, role')
+      .eq('auth_id', currentUser.id)
+      .single()
+    internalUserId = uRow?.id || null
+    userRole       = uRow?.role || null
+  }
 
   await loadQuest()
   await loadProposals()
@@ -434,7 +447,7 @@ async function loadQuest() {
   }
 
   quest = data
-  isBuyer = currentUser?.id === quest.buyer_id
+  isBuyer = internalUserId !== null && internalUserId === quest.buyer_id
 
   document.title = quest.title + ' — WennaShop'
   document.getElementById('questTitle').textContent = quest.title
@@ -503,14 +516,35 @@ async function loadQuest() {
 
   // Bouton proposer
   const btn = document.getElementById('btnPropose')
+  const canHunt = userRole === 'artisan' || userRole === 'admin'
+
   if (quest.status !== 'open') {
     btn.disabled = true
     btn.innerHTML = quest.status === 'resolved'
       ? '<span class="material-symbols-outlined" style="font-size:16px;">check_circle</span> Quête résolue'
       : '<span class="material-symbols-outlined" style="font-size:16px;">timer_off</span> Quête expirée'
+  } else if (!currentUser) {
+    // Non connecté — bouton visible mais redirige vers login au clic
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;">login</span> Se connecter pour proposer'
   } else if (isBuyer) {
     btn.disabled = true
     btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;">person</span> Vous êtes l\'auteur'
+  } else if (!canHunt) {
+    // Acheteur (buyer) connecté — rôle insuffisant
+    btn.disabled = true
+    btn.style.clipPath = 'none'
+    btn.style.background = 'var(--smoke)'
+    btn.style.border = '1px solid rgba(255,107,43,.15)'
+    btn.style.color = 'var(--fog)'
+    btn.style.cursor = 'not-allowed'
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;">storefront</span> Réservé aux chasseurs & vendeurs'
+
+    // Afficher un encart d'info sous le bouton
+    const hint = document.createElement('div')
+    hint.style.cssText = 'background:rgba(255,107,43,.04);border:1px solid rgba(255,107,43,.12);padding:14px 16px;font-size:11px;color:#666;line-height:1.6;letter-spacing:.3px;margin-top:2px;'
+    hint.innerHTML = `Seuls les <strong style="color:var(--fire)">chasseurs</strong> et <strong style="color:var(--fire)">vendeurs</strong> peuvent répondre aux quêtes.<br/>
+      <a href="compte.html" style="color:var(--fire);text-decoration:none;border-bottom:1px solid rgba(255,107,43,.3);">Changer votre rôle →</a>`
+    btn.parentNode.insertBefore(hint, btn.nextSibling)
   }
 
   document.getElementById('loadingState').style.display = 'none'
@@ -544,7 +578,7 @@ async function loadProposals() {
   document.getElementById('proposalsCount').textContent = proposals.length
 
   // Vérifier si user a déjà proposé
-  hasProposed = proposals.some(p => p.hunter_id === currentUser?.id)
+  hasProposed = internalUserId !== null && proposals.some(p => p.hunter_id === internalUserId)
   const btn = document.getElementById('btnPropose')
   if (hasProposed && !btn.disabled) {
     btn.disabled = true
@@ -563,7 +597,7 @@ async function loadProposals() {
   }
 
   const canSeeAll = isBuyer || quest.status === 'resolved'
-  const visible = canSeeAll ? proposals : proposals.filter(p => p.hunter_id === currentUser?.id)
+  const visible = canSeeAll ? proposals : proposals.filter(p => p.hunter_id === internalUserId)
 
   list.innerHTML = visible.map(p => {
     const isSelected = quest.winning_proposal_id === p.id
@@ -691,7 +725,7 @@ async function uploadProposalImages() {
   const urls = []
   for (const file of selectedFiles) {
     const ext = file.name.split('.').pop()
-    const path = `proposals/${currentUser.id}_${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`
+    const path = `proposals/${internalUserId}_${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`
     const { data, error } = await getSb().storage
       .from('products')
       .upload(path, file, { cacheControl: '3600', upsert: false })
@@ -741,6 +775,11 @@ function openProposeModal() {
     setTimeout(() => location.href = 'login.html', 1500)
     return
   }
+  const canHunt = userRole === 'artisan' || userRole === 'admin'
+  if (!canHunt) {
+    showToast('Seuls les chasseurs et vendeurs peuvent proposer.', 'error')
+    return
+  }
   document.getElementById('modalOverlay').classList.add('open')
   document.body.style.overflow = 'hidden'
 }
@@ -762,6 +801,7 @@ async function submitProposal() {
 
   if (!price || price < 100) return showToast('Prix invalide (min 100 FCFA).', 'error')
   if (!desc) return showToast('Décrivez votre offre.', 'error')
+  if (!internalUserId) return showToast('Erreur d\'authentification. Reconnectez-vous.', 'error')
 
   const btn = document.getElementById('propSubmitBtn')
   btn.disabled = true
@@ -776,7 +816,7 @@ async function submitProposal() {
 
   const { error } = await getSb().from('quest_proposals').insert({
     quest_id:       questId,
-    hunter_id:      currentUser.id,
+    hunter_id:      internalUserId,   // users.id interne (requis par la FK et la RLS)
     proposed_price: price,
     description:    desc,
     product_url:    url || null,
