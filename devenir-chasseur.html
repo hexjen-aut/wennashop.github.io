@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Devenir Chasseur — WennaShop</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.config.js"></script>
+  <style>
+    :root{
+      --fire:#FF6B2B;--ember:#E85A1A;--ink:#080808;--coal:#111111;--slate:#1A1A1A;
+      --smoke:#242424;--fog:#888;--snow:#f0ece6;--border:rgba(255,255,255,.07);
+      --border-fire:rgba(255,107,43,.25);--gold:#d0a600;--gold-bg:rgba(208,166,0,.07);
+      --green:#3ecf8e;--green-bg:rgba(62,207,142,.07);--green-border:rgba(62,207,142,.2);
+      --red:#f87171;--red-bg:rgba(248,113,113,.07);--red-border:rgba(248,113,113,.2);
+      --blue:#818cf8;--blue-bg:rgba(129,140,248,.07);--blue-border:rgba(129,140,248,.2);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);min-height:100dvh;overflow-x:hidden;padding-bottom:60px;}
+    .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24;font-size:20px;line-height:1;}
+    ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--coal);}::-webkit-scrollbar-thumb{background:rgba(255,107,43,.3);}
+
+    /* NAV */
+    nav{position:sticky;top:0;z-index:100;background:rgba(8,8,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+    .nav-logo{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;font-style:italic;color:var(--snow);text-decoration:none;}
+    .nav-logo b{color:var(--fire);}
+    .nav-back{display:flex;align-items:center;gap:8px;color:var(--fog);text-decoration:none;font-size:10px;letter-spacing:2px;text-transform:uppercase;transition:color .2s;}
+    .nav-back:hover{color:var(--fire);}
+    @media(max-width:768px){nav{padding:14px 20px;}}
+
+    /* HERO */
+    .hero{background:var(--coal);border-bottom:1px solid var(--border);padding:56px 40px 48px;position:relative;overflow:hidden;}
+    .hero::before{content:'';position:absolute;top:-120px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(255,107,43,.07) 0%,transparent 70%);pointer-events:none;}
+    .hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--fire),transparent);}
+    .hero-inner{max-width:680px;margin:0 auto;text-align:center;}
+    .hero-eyebrow{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--fire);margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:12px;}
+    .hero-eyebrow::before,.hero-eyebrow::after{content:'';display:block;width:24px;height:1px;background:var(--fire);}
+    .hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,6vw,58px);font-weight:700;font-style:italic;letter-spacing:-1px;line-height:1.05;margin-bottom:16px;}
+    .hero-title b{color:var(--fire);}
+    .hero-sub{font-size:13px;color:var(--fog);line-height:1.8;max-width:480px;margin:0 auto 28px;}
+    .hero-badges{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;}
+    .hero-badge{display:flex;align-items:center;gap:6px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;padding:6px 14px;border:1px solid var(--border);}
+    .hero-badge .material-symbols-outlined{font-size:14px;color:var(--fire);}
+
+    /* STEPS */
+    .steps{display:flex;justify-content:center;gap:0;padding:32px 20px;max-width:680px;margin:0 auto;}
+    .step-item{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;cursor:pointer;}
+    .step-dot{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;letter-spacing:1px;transition:all .3s;border:1px solid var(--border);}
+    .step-dot.active{background:var(--fire);color:#fff;border-color:var(--fire);box-shadow:0 0 20px rgba(255,107,43,.3);}
+    .step-dot.done{background:rgba(62,207,142,.1);color:var(--green);border-color:var(--green-border);}
+    .step-dot.locked{background:var(--slate);color:#333;border-color:var(--border);}
+    .step-lbl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#444;transition:color .2s;}
+    .step-lbl.active{color:var(--snow);}
+    .step-lbl.done{color:var(--green);}
+    .step-connector{flex:1;height:1px;background:var(--border);margin-bottom:22px;max-width:60px;transition:background .3s;}
+    .step-connector.done{background:var(--green);}
+
+    /* FORM WRAPPER */
+    .form-wrapper{max-width:680px;margin:0 auto;padding:0 24px 40px;}
+
+    /* ÉTAPE */
+    .step-panel{display:none;}
+    .step-panel.active{display:block;animation:fadeUp .4s cubic-bezier(.22,1,.36,1);}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+    .panel-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;font-style:italic;margin-bottom:6px;}
+    .panel-sub{font-size:12px;color:var(--fog);margin-bottom:24px;line-height:1.7;}
+
+    /* CARD */
+    .card{background:var(--coal);border:1px solid var(--border);padding:24px;margin-bottom:16px;}
+    .card-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--fire);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+    .card-label::before{content:'';display:block;width:14px;height:1px;background:var(--fire);}
+
+    /* FORM FIELDS */
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+    .form-row.full{grid-template-columns:1fr;}
+    @media(max-width:540px){.form-row{grid-template-columns:1fr;}}
+    .field{display:flex;flex-direction:column;gap:6px;}
+    .field label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;}
+    .field label span{color:#333;text-transform:none;letter-spacing:0;font-size:10px;font-style:italic;}
+    .inp{width:100%;background:rgba(255,255,255,.04);border:none;border-bottom:1px solid var(--border);color:var(--snow);padding:11px 13px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
+    .inp:focus{border-bottom-color:var(--fire);}
+    .inp::placeholder{color:#333;}
+    .inp.error{border-bottom-color:var(--red);}
+    select.inp{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-color:rgba(255,255,255,.04);}
+    select.inp option{background:var(--coal);}
+
+    /* PHONE OTP */
+    .phone-row{display:flex;gap:8px;align-items:flex-end;}
+    .phone-row .inp{flex:1;}
+    .btn-otp{flex-shrink:0;padding:11px 16px;background:transparent;border:1px solid var(--border-fire);color:var(--fire);font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .2s;}
+    .btn-otp:hover{background:rgba(255,107,43,.08);}
+    .btn-otp:disabled{opacity:.4;cursor:not-allowed;}
+    .otp-code-row{display:flex;gap:8px;margin-top:10px;align-items:flex-end;}
+    .otp-code-row .inp{flex:1;letter-spacing:6px;font-size:18px;text-align:center;}
+    .btn-verify{padding:11px 14px;background:var(--fire);color:#fff;border:none;cursor:pointer;font-size:9px;letter-spacing:2px;text-transform:uppercase;font-family:'DM Sans',sans-serif;transition:background .2s;white-space:nowrap;}
+    .btn-verify:hover{background:var(--ember);}
+    .verified-badge{display:inline-flex;align-items:center;gap:6px;color:var(--green);font-size:11px;margin-top:8px;}
+    .verified-badge .material-symbols-outlined{font-size:15px;}
+
+    /* UPLOAD ID */
+    .upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px;}
+    @media(max-width:540px){.upload-grid{grid-template-columns:1fr;}}
+    .upload-box{border:1px dashed rgba(255,107,43,.25);background:rgba(255,107,43,.02);padding:20px 16px;text-align:center;cursor:pointer;transition:all .2s;position:relative;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;}
+    .upload-box:hover{border-color:var(--fire);background:rgba(255,107,43,.05);}
+    .upload-box.uploaded{border-color:var(--green-border);background:var(--green-bg);}
+    .upload-box input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+    .upload-box-icon{font-size:28px;color:#333;}
+    .upload-box.uploaded .upload-box-icon{color:var(--green);}
+    .upload-box-label{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#555;}
+    .upload-box.uploaded .upload-box-label{color:var(--green);}
+    .upload-box-hint{font-size:9px;color:#333;}
+    .upload-preview{width:100%;max-height:80px;object-fit:cover;display:none;margin-top:6px;}
+    .upload-box.uploaded .upload-preview{display:block;}
+
+    /* AVATAR */
+    .avatar-upload{display:flex;align-items:center;gap:20px;margin-bottom:6px;}
+    .avatar-circle{width:72px;height:72px;background:var(--slate);clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#333;position:relative;cursor:pointer;}
+    .avatar-circle img{width:100%;height:100%;object-fit:cover;display:none;}
+    .avatar-circle input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+    .avatar-info{font-size:11px;color:var(--fog);line-height:1.7;}
+    .avatar-info b{color:var(--snow);}
+
+    /* PAYOUT METHODS */
+    .payout-methods{display:flex;flex-direction:column;gap:8px;}
+    .payout-card{border:1px solid var(--border);padding:16px 18px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:14px;background:var(--slate);}
+    .payout-card:hover{border-color:var(--border-fire);}
+    .payout-card.selected{border-color:var(--fire);background:rgba(255,107,43,.04);}
+    .payout-radio{width:16px;height:16px;border:1px solid #444;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+    .payout-card.selected .payout-radio{border-color:var(--fire);}
+    .payout-radio-dot{width:8px;height:8px;background:var(--fire);border-radius:50%;opacity:0;transition:opacity .2s;}
+    .payout-card.selected .payout-radio-dot{opacity:1;}
+    .payout-card-info{}
+    .payout-card-name{font-size:12px;font-weight:500;margin-bottom:2px;}
+    .payout-card-sub{font-size:10px;color:var(--fog);}
+    .payout-badge{margin-left:auto;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;padding:2px 8px;border:1px solid var(--border-fire);color:var(--fire);flex-shrink:0;}
+    .payout-details{margin-top:16px;display:none;}
+    .payout-details.open{display:flex;flex-direction:column;gap:12px;}
+
+    /* RECAP */
+    .recap-block{background:var(--slate);border-left:2px solid var(--fire);padding:16px 18px;margin-bottom:14px;}
+    .recap-block-title{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--fire);margin-bottom:10px;}
+    .recap-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+    .recap-row:last-child{border-bottom:none;}
+    .recap-row .key{color:var(--fog);}
+    .recap-row .val{font-weight:500;text-align:right;max-width:200px;word-break:break-all;}
+    .recap-id-thumb{width:40px;height:28px;object-fit:cover;display:inline-block;vertical-align:middle;margin-left:6px;opacity:.7;}
+
+    /* ALERT */
+    .alert{padding:14px 18px;border:1px solid;font-size:12px;line-height:1.7;margin-bottom:16px;display:flex;gap:12px;align-items:flex-start;}
+    .alert.info{border-color:var(--blue-border);background:var(--blue-bg);color:#aab4ff;}
+    .alert.warning{border-color:rgba(208,166,0,.3);background:var(--gold-bg);color:var(--gold);}
+    .alert.success{border-color:var(--green-border);background:var(--green-bg);color:var(--green);}
+    .alert .material-symbols-outlined{font-size:16px;flex-shrink:0;margin-top:1px;}
+
+    /* NAVIGATION BOUTONS */
+    .nav-btns{display:flex;gap:10px;margin-top:24px;}
+    .btn-primary{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--fire);color:#fff;padding:14px;font-size:10px;letter-spacing:3px;text-transform:uppercase;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));transition:background .2s;}
+    .btn-primary:hover{background:var(--ember);}
+    .btn-primary:disabled{opacity:.4;cursor:not-allowed;}
+    .btn-primary .material-symbols-outlined{font-size:15px;}
+    .btn-secondary{padding:14px 20px;background:transparent;border:1px solid var(--border);color:var(--fog);font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+    .btn-secondary:hover{border-color:var(--border-fire);color:var(--fire);}
+
+    /* SUCCESS STATE */
+    #state-success{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center;padding:40px 24px;}
+    .success-ring{width:88px;height:88px;border-radius:50%;background:var(--gold-bg);border:1px solid rgba(208,166,0,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 28px;}
+    .success-ring .material-symbols-outlined{font-size:40px;color:var(--gold);font-variation-settings:'FILL' 1,'wght' 300,'GRAD' 0,'opsz' 40;}
+    .success-title{font-family:'Cormorant Garamond',serif;font-size:48px;font-style:italic;font-weight:700;margin-bottom:10px;line-height:1;}
+    .success-sub{font-size:13px;color:var(--fog);line-height:1.8;max-width:420px;margin:0 auto 28px;}
+    .success-steps{display:flex;flex-direction:column;gap:10px;max-width:380px;margin:0 auto 32px;text-align:left;}
+    .success-step{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--fog);}
+    .success-step .material-symbols-outlined{font-size:16px;color:var(--fire);}
+
+    /* SKELETON */
+    @keyframes shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}
+    .skel{background:linear-gradient(90deg,var(--slate) 25%,var(--smoke) 50%,var(--slate) 75%);background-size:600px 100%;animation:shimmer 1.4s infinite linear;}
+
+    /* TOAST */
+    #toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(10px);z-index:1400;background:var(--slate);border:1px solid var(--border-fire);color:var(--snow);padding:11px 22px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
+    #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    #toast.success{border-color:rgba(62,207,142,.4);background:#0a1f12;}
+    #toast.error{border-color:rgba(248,113,113,.4);background:#1f0a0a;}
+
+    @keyframes spin{to{transform:rotate(360deg);}}
+  </style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<nav>
+  <a href="boutique.html" class="nav-back">
+    <span class="material-symbols-outlined" style="font-size:16px;">arrow_back</span>
+    Boutique
+  </a>
+  <a href="hero.html" class="nav-logo">Wenna<b>Shop</b></a>
+  <div style="width:80px;"></div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Programme Chasseur</div>
+    <h1 class="hero-title">Devenez un<br/><b>Chasseur</b> WennaShop</h1>
+    <p class="hero-sub">Trouvez des produits introuvables entre le Gabon et le Maroc, et encaissez des récompenses. Inscription en 3 étapes, vérification sous 48h.</p>
+    <div class="hero-badges">
+      <div class="hero-badge"><span class="material-symbols-outlined">payments</span>Récompenses garanties</div>
+      <div class="hero-badge"><span class="material-symbols-outlined">shield</span>Identité vérifiée</div>
+      <div class="hero-badge"><span class="material-symbols-outlined">flight</span>Gabon ↔ Maroc</div>
+    </div>
+  </div>
+</div>
+
+<!-- STEPS INDICATOR -->
+<div class="steps" id="stepsBar">
+  <div class="step-item" onclick="goToStep(1)">
+    <div class="step-dot active" id="dot-1">1</div>
+    <span class="step-lbl active" id="lbl-1">Profil</span>
+  </div>
+  <div class="step-connector" id="conn-1"></div>
+  <div class="step-item" onclick="goToStep(2)">
+    <div class="step-dot locked" id="dot-2">2</div>
+    <span class="step-lbl" id="lbl-2">Identité</span>
+  </div>
+  <div class="step-connector" id="conn-2"></div>
+  <div class="step-item" onclick="goToStep(3)">
+    <div class="step-dot locked" id="dot-3">3</div>
+    <span class="step-lbl" id="lbl-3">Paiement</span>
+  </div>
+  <div class="step-connector" id="conn-3"></div>
+  <div class="step-item">
+    <div class="step-dot locked" id="dot-4">4</div>
+    <span class="step-lbl" id="lbl-4">Récap</span>
+  </div>
+</div>
+
+<!-- FORM -->
+<div class="form-wrapper" id="formWrapper">
+
+  <!-- ══════════════ ÉTAPE 1 — PROFIL & TÉLÉPHONE ══════════════ -->
+  <div class="step-panel active" id="panel-1">
+    <div class="panel-title">Informations de profil</div>
+    <p class="panel-sub">Ces informations nous permettent de vous identifier et de vous contacter en cas de besoin.</p>
+
+    <div class="card">
+      <div class="card-label">Photo de profil <span style="color:#333;font-style:italic;font-size:10px;letter-spacing:0;text-transform:none;">(recommandée)</span></div>
+      <div class="avatar-upload">
+        <div class="avatar-circle" id="avatarCircle">
+          <span class="material-symbols-outlined">person</span>
+          <img id="avatarPreview" src="" alt="avatar"/>
+          <input type="file" id="avatarInput" accept="image/jpeg,image/png,image/webp" onchange="previewAvatar(this)"/>
+        </div>
+        <div class="avatar-info">
+          <b>Ajoutez une photo</b><br/>
+          Humanise votre profil et rassure les acheteurs.<br/>
+          <span style="font-size:10px;color:#444;">JPG, PNG, WebP · max 3 Mo</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Coordonnées</div>
+      <div class="form-row">
+        <div class="field">
+          <label>Prénom *</label>
+          <input type="text" id="firstName" class="inp" placeholder="Jean-Pierre"/>
+        </div>
+        <div class="field">
+          <label>Nom *</label>
+          <input type="text" id="lastName" class="inp" placeholder="Moussavou"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>Pays de résidence *</label>
+          <select id="country" class="inp">
+            <option value="">Sélectionner…</option>
+            <option value="Gabon">Gabon</option>
+            <option value="Maroc">Maroc</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Ville *</label>
+          <input type="text" id="city" class="inp" placeholder="Libreville"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Téléphone</div>
+      <div class="alert info">
+        <span class="material-symbols-outlined">info</span>
+        Un code de vérification sera envoyé par SMS. Votre numéro doit être actif et capable de recevoir des SMS.
+      </div>
+      <div class="field">
+        <label>Numéro de téléphone *</label>
+        <div class="phone-row">
+          <input type="tel" id="phone" class="inp" placeholder="+241 06 00 00 00"/>
+          <button class="btn-otp" id="btnSendOtp" onclick="sendOtp()">Envoyer le code</button>
+        </div>
+        <div class="otp-code-row" id="otpRow" style="display:none;">
+          <input type="text" id="otpInput" class="inp" placeholder="000000" maxlength="6"/>
+          <button class="btn-verify" onclick="verifyOtp()">Vérifier</button>
+        </div>
+        <div class="verified-badge" id="phoneVerifiedBadge" style="display:none;">
+          <span class="material-symbols-outlined">check_circle</span>
+          Numéro vérifié
+        </div>
+      </div>
+      <p style="font-size:10px;color:#444;margin-top:10px;line-height:1.6;">
+        En l'absence d'un service SMS intégré, la vérification se fera manuellement lors de la validation de votre dossier.
+      </p>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-primary" onclick="goToStep(2)">
+        Étape suivante
+        <span class="material-symbols-outlined">arrow_forward</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════ ÉTAPE 2 — PIÈCE D'IDENTITÉ ══════════════ -->
+  <div class="step-panel" id="panel-2">
+    <div class="panel-title">Vérification d'identité</div>
+    <p class="panel-sub">Requis pour garantir la sécurité des transactions. Vos documents sont stockés de façon sécurisée et ne sont accessibles qu'à notre équipe de vérification.</p>
+
+    <div class="alert warning">
+      <span class="material-symbols-outlined">lock</span>
+      <span>Photos chiffrées et accessibles uniquement par l'équipe WennaShop. Elles ne seront jamais partagées ou vendues.</span>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Pièce d'identité</div>
+      <div class="form-row full" style="margin-bottom:14px;">
+        <div class="field">
+          <label>Type de pièce *</label>
+          <select id="idType" class="inp">
+            <option value="">Sélectionner…</option>
+            <option value="cni">Carte Nationale d'Identité</option>
+            <option value="passeport">Passeport</option>
+            <option value="sejour">Carte de séjour</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row full" style="margin-bottom:14px;">
+        <div class="field">
+          <label>Numéro de la pièce *</label>
+          <input type="text" id="idNumber" class="inp" placeholder="ex: 1234567AB"/>
+        </div>
+      </div>
+      <label style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;display:block;margin-bottom:10px;">Photos de la pièce *</label>
+      <div class="upload-grid">
+        <div class="upload-box" id="frontBox">
+          <input type="file" id="idFrontInput" accept="image/jpeg,image/png,image/webp" onchange="previewId(this,'front')"/>
+          <span class="material-symbols-outlined upload-box-icon">badge</span>
+          <span class="upload-box-label">Recto</span>
+          <span class="upload-box-hint">Face avant</span>
+          <img class="upload-preview" id="frontPreview" alt="recto"/>
+        </div>
+        <div class="upload-box" id="backBox">
+          <input type="file" id="idBackInput" accept="image/jpeg,image/png,image/webp" onchange="previewId(this,'back')"/>
+          <span class="material-symbols-outlined upload-box-icon">badge</span>
+          <span class="upload-box-label">Verso</span>
+          <span class="upload-box-hint">Face arrière</span>
+          <img class="upload-preview" id="backPreview" alt="verso"/>
+        </div>
+      </div>
+      <p style="font-size:10px;color:#444;margin-top:10px;line-height:1.6;">Photos nettes, bien éclairées. JPG, PNG · max 5 Mo chacune.</p>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-secondary" onclick="goToStep(1)">Retour</button>
+      <button class="btn-primary" onclick="goToStep(3)">
+        Étape suivante
+        <span class="material-symbols-outlined">arrow_forward</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════ ÉTAPE 3 — MOYEN DE PAIEMENT ══════════════ -->
+  <div class="step-panel" id="panel-3">
+    <div class="panel-title">Moyen de paiement</div>
+    <p class="panel-sub">Choisissez comment vous souhaitez recevoir vos récompenses. Aucun paiement en liquide — tout est traçable et sécurisé.</p>
+
+    <div class="alert info">
+      <span class="material-symbols-outlined">payments</span>
+      <span>La récompense est versée uniquement après confirmation de réception du colis par l'acheteur.</span>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Méthode de réception des récompenses *</div>
+      <div class="payout-methods">
+
+        <!-- Mobile Money Gabon -->
+        <div class="payout-card" data-method="mobile_money_gabon" onclick="selectPayout(this)">
+          <div class="payout-radio"><div class="payout-radio-dot"></div></div>
+          <div class="payout-card-info">
+            <div class="payout-card-name">Mobile Money Gabon</div>
+            <div class="payout-card-sub">Airtel Money · Moov Money</div>
+          </div>
+          <span class="payout-badge">Gabon</span>
+        </div>
+
+        <!-- Mobile Money Maroc -->
+        <div class="payout-card" data-method="mobile_money_maroc" onclick="selectPayout(this)">
+          <div class="payout-radio"><div class="payout-radio-dot"></div></div>
+          <div class="payout-card-info">
+            <div class="payout-card-name">Mobile Money Maroc</div>
+            <div class="payout-card-sub">Orange Money · Inwi Money</div>
+          </div>
+          <span class="payout-badge">Maroc</span>
+        </div>
+
+        <!-- Carte bancaire Maroc -->
+        <div class="payout-card" data-method="card_maroc" onclick="selectPayout(this)">
+          <div class="payout-radio"><div class="payout-radio-dot"></div></div>
+          <div class="payout-card-info">
+            <div class="payout-card-name">Carte bancaire</div>
+            <div class="payout-card-sub">Visa · Mastercard · CMI</div>
+          </div>
+          <span class="payout-badge">Maroc</span>
+        </div>
+
+        <!-- Virement bancaire -->
+        <div class="payout-card" data-method="virement" onclick="selectPayout(this)">
+          <div class="payout-radio"><div class="payout-radio-dot"></div></div>
+          <div class="payout-card-info">
+            <div class="payout-card-name">Virement bancaire</div>
+            <div class="payout-card-sub">Attijari · CIH · BCP · BGFI</div>
+          </div>
+        </div>
+
+        <!-- CinetPay -->
+        <div class="payout-card" data-method="cinetpay" onclick="selectPayout(this)">
+          <div class="payout-radio"><div class="payout-radio-dot"></div></div>
+          <div class="payout-card-info">
+            <div class="payout-card-name">CinetPay</div>
+            <div class="payout-card-sub">Portefeuille électronique</div>
+          </div>
+        </div>
+
+        <!-- PayDunia -->
+        <div class="payout-card" data-method="paydunia" onclick="selectPayout(this)">
+          <div class="payout-radio"><div class="payout-radio-dot"></div></div>
+          <div class="payout-card-info">
+            <div class="payout-card-name">PayDunia</div>
+            <div class="payout-card-sub">Portefeuille électronique</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Détails dynamiques -->
+      <div class="payout-details" id="payoutDetails">
+        <!-- injecté dynamiquement -->
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-secondary" onclick="goToStep(2)">Retour</button>
+      <button class="btn-primary" onclick="goToStep(4)">
+        Récapitulatif
+        <span class="material-symbols-outlined">arrow_forward</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════ ÉTAPE 4 — RÉCAPITULATIF ══════════════ -->
+  <div class="step-panel" id="panel-4">
+    <div class="panel-title">Récapitulatif de votre dossier</div>
+    <p class="panel-sub">Vérifiez vos informations avant de soumettre. Une fois envoyé, votre dossier sera examiné sous 48h.</p>
+
+    <div id="recapContent"></div>
+
+    <div class="alert warning">
+      <span class="material-symbols-outlined">gavel</span>
+      <span>En soumettant ce dossier, vous certifiez que les informations fournies sont exactes et que les documents sont authentiques. Toute fraude entraîne la suppression du compte et un signalement aux autorités.</span>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-secondary" onclick="goToStep(3)">Modifier</button>
+      <button class="btn-primary" id="btnSubmit" onclick="submitApplication()">
+        <span class="material-symbols-outlined" style="font-size:15px;">send</span>
+        Soumettre mon dossier
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- SUCCESS -->
+<div id="state-success">
+  <div class="success-ring">
+    <span class="material-symbols-outlined">hourglass_top</span>
+  </div>
+  <h1 class="success-title">Dossier soumis !</h1>
+  <p class="success-sub">Votre candidature a été reçue. Notre équipe la vérifie sous <strong style="color:var(--snow);">48h</strong>. Vous serez notifié par email et via la plateforme.</p>
+  <div class="success-steps">
+    <div class="success-step"><span class="material-symbols-outlined">check</span>Dossier envoyé et en attente de vérification</div>
+    <div class="success-step"><span class="material-symbols-outlined">schedule</span>Vérification de votre identité par notre équipe</div>
+    <div class="success-step"><span class="material-symbols-outlined">gps_fixed</span>Accès au Dashboard Chasseur une fois validé</div>
+  </div>
+  <a href="boutique.html" style="display:inline-flex;align-items:center;gap:8px;background:var(--fire);color:#fff;padding:14px 32px;font-size:10px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));">
+    Retour à la boutique
+  </a>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   GLOBALS
+═══════════════════════════════════════════════ */
+let currentUser     = null
+let internalUserId  = null
+let currentStep     = 1
+let phoneVerified   = false
+let selectedPayoutMethod = null
+let avatarFile      = null
+let idFrontFile     = null
+let idBackFile      = null
+// Données collectées par étape
+let formData = {}
+
+const BUCKETS = {
+  avatar:  'avatars',
+  id:      'hunter-kyc'   // bucket privé pour les pièces d'identité
+}
+
+/* ═══════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', async () => {
+  await waitForDb()
+  const { data: { session } } = getSb().auth.getSession()
+    .catch(() => ({ data: { session: null } }))
+  const { data: { session: sess } } = await getSb().auth.getSession()
+  currentUser = sess?.user || null
+
+  if (!currentUser) {
+    showToast('Connectez-vous pour devenir chasseur.', 'error')
+    setTimeout(() => location.href = 'hero.html', 1800)
+    return
+  }
+
+  await resolveInternalUser()
+
+  // Pré-remplir depuis profil existant
+  const d = currentUser._internalData || {}
+  if (d.first_name) document.getElementById('firstName').value = d.first_name
+  if (d.last_name)  document.getElementById('lastName').value  = d.last_name
+  if (d.country) {
+    const sel = document.getElementById('country')
+    ;[...sel.options].forEach(o => { if (o.value === d.country) sel.value = d.country })
+  }
+  if (d.phone) document.getElementById('phone').value = d.phone
+  if (d.avatar_url) {
+    const img = document.getElementById('avatarPreview')
+    img.src = d.avatar_url
+    img.style.display = 'block'
+  }
+
+  // Déjà candidat ?
+  if (d.hunter_status === 'pending_verification') {
+    showAlreadyApplied()
+    return
+  }
+  if (d.hunter_status === 'active') {
+    location.href = 'dashboard-chasseur.html'
+    return
+  }
+})
+
+function waitForDb(n = 0) {
+  return new Promise((resolve, reject) => {
+    const check = (attempt) => {
+      if (typeof window.db !== 'undefined') return resolve()
+      if (attempt >= 40) return reject(new Error('Supabase non disponible'))
+      setTimeout(() => check(attempt + 1), 100)
+    }
+    check(n)
+  })
+}
+
+function getSb() {
+  if (typeof window.db === 'undefined') throw new Error('window.db non disponible')
+  return window.db
+}
+
+async function resolveInternalUser() {
+  const { data } = await getSb()
+    .from('users')
+    .select('id, role, full_name, first_name, last_name, country, city, phone, avatar_url, hunter_status')
+    .eq('auth_id', currentUser.id)
+    .single()
+  if (data) {
+    internalUserId = data.id
+    currentUser._internalData = data
+  }
+}
+
+function showAlreadyApplied() {
+  document.getElementById('formWrapper').style.display = 'none'
+  document.getElementById('stepsBar').style.display    = 'none'
+  document.querySelector('.hero').style.display        = 'none'
+  const el = document.getElementById('state-success')
+  el.style.display = 'flex'
+  el.querySelector('.success-title').textContent = 'Dossier déjà soumis'
+  el.querySelector('.success-sub').innerHTML = 'Votre candidature est en cours d\'examen. Vous serez notifié dès validation.'
+}
+
+/* ═══════════════════════════════════════════════
+   NAVIGATION ÉTAPES
+═══════════════════════════════════════════════ */
+function goToStep(n) {
+  // Validation avant avancer
+  if (n > currentStep) {
+    if (!validateStep(currentStep)) return
+    // Sauvegarder les données de l'étape courante
+    collectStep(currentStep)
+  }
+
+  // Mettre à jour les panels
+  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'))
+  document.getElementById(`panel-${n}`).classList.add('active')
+
+  // Mettre à jour les indicateurs
+  for (let i = 1; i <= 4; i++) {
+    const dot = document.getElementById(`dot-${i}`)
+    const lbl = document.getElementById(`lbl-${i}`)
+    dot.className = 'step-dot ' + (i < n ? 'done' : i === n ? 'active' : 'locked')
+    lbl.className = 'step-lbl ' + (i < n ? 'done' : i === n ? 'active' : '')
+    if (i < 4) {
+      const conn = document.getElementById(`conn-${i}`)
+      conn.className = 'step-connector' + (i < n ? ' done' : '')
+    }
+  }
+
+  // Si récap → générer
+  if (n === 4) buildRecap()
+
+  currentStep = n
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+/* ═══════════════════════════════════════════════
+   VALIDATION PAR ÉTAPE
+═══════════════════════════════════════════════ */
+function validateStep(step) {
+  if (step === 1) {
+    if (!v('firstName', 'Prénom requis')) return false
+    if (!v('lastName',  'Nom requis'))    return false
+    if (!v('country',   'Pays requis'))   return false
+    if (!v('city',      'Ville requise')) return false
+    if (!v('phone',     'Numéro de téléphone requis')) return false
+    return true
+  }
+  if (step === 2) {
+    if (!v('idType',   'Type de pièce requis'))          return false
+    if (!v('idNumber', 'Numéro de pièce requis'))        return false
+    if (!idFrontFile) { showToast('Photo recto requise', 'error'); return false }
+    if (!idBackFile)  { showToast('Photo verso requise', 'error'); return false }
+    return true
+  }
+  if (step === 3) {
+    if (!selectedPayoutMethod) { showToast('Choisissez un moyen de paiement', 'error'); return false }
+    // Valider les détails selon la méthode
+    const details = getPayoutDetails()
+    if (!details) return false
+    return true
+  }
+  return true
+}
+
+function v(id, msg) {
+  const el = document.getElementById(id)
+  if (!el || !el.value.trim()) {
+    showToast(msg, 'error')
+    el?.classList.add('error')
+    el?.focus()
+    return false
+  }
+  el.classList.remove('error')
+  return true
+}
+
+/* ═══════════════════════════════════════════════
+   COLLECTER DONNÉES PAR ÉTAPE
+═══════════════════════════════════════════════ */
+function collectStep(step) {
+  if (step === 1) {
+    formData.firstName = document.getElementById('firstName').value.trim()
+    formData.lastName  = document.getElementById('lastName').value.trim()
+    formData.country   = document.getElementById('country').value
+    formData.city      = document.getElementById('city').value.trim()
+    formData.phone     = document.getElementById('phone').value.trim()
+  }
+  if (step === 2) {
+    formData.idType   = document.getElementById('idType').value
+    formData.idNumber = document.getElementById('idNumber').value.trim()
+  }
+  if (step === 3) {
+    formData.payoutMethod  = selectedPayoutMethod
+    formData.payoutDetails = getPayoutDetails()
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   PHONE OTP (simulé — à brancher sur un service SMS)
+═══════════════════════════════════════════════ */
+function sendOtp() {
+  const phone = document.getElementById('phone').value.trim()
+  if (!phone) { showToast('Entrez votre numéro de téléphone', 'error'); return }
+
+  const btn = document.getElementById('btnSendOtp')
+  btn.disabled = true
+  btn.textContent = 'Envoi…'
+
+  // Simulation — remplacer par un appel à votre service SMS (Twilio, Orange API…)
+  setTimeout(() => {
+    document.getElementById('otpRow').style.display = 'flex'
+    showToast('Code envoyé (simulation : utilisez 123456)', 'success')
+    btn.textContent = 'Renvoyer'
+    btn.disabled = false
+  }, 1200)
+}
+
+function verifyOtp() {
+  const code = document.getElementById('otpInput').value.trim()
+  // Simulation — en production, vérifier côté serveur
+  if (code === '123456' || code.length === 6) {
+    phoneVerified = true
+    document.getElementById('otpRow').style.display = 'none'
+    document.getElementById('phoneVerifiedBadge').style.display = 'flex'
+    showToast('Numéro vérifié !', 'success')
+  } else {
+    showToast('Code incorrect', 'error')
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   AVATAR PREVIEW
+═══════════════════════════════════════════════ */
+function previewAvatar(input) {
+  const file = input.files[0]
+  if (!file) return
+  if (file.size > 3 * 1024 * 1024) { showToast('Photo trop lourde (max 3 Mo)', 'error'); return }
+  avatarFile = file
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    const img = document.getElementById('avatarPreview')
+    img.src = e.target.result
+    img.style.display = 'block'
+    document.getElementById('avatarCircle').querySelector('.material-symbols-outlined').style.display = 'none'
+  }
+  reader.readAsDataURL(file)
+}
+
+/* ═══════════════════════════════════════════════
+   ID CARD PREVIEW
+═══════════════════════════════════════════════ */
+function previewId(input, side) {
+  const file = input.files[0]
+  if (!file) return
+  if (file.size > 5 * 1024 * 1024) { showToast('Photo trop lourde (max 5 Mo)', 'error'); return }
+
+  if (side === 'front') idFrontFile = file
+  else                  idBackFile  = file
+
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    const box     = document.getElementById(side === 'front' ? 'frontBox' : 'backBox')
+    const preview = document.getElementById(side === 'front' ? 'frontPreview' : 'backPreview')
+    preview.src = e.target.result
+    box.classList.add('uploaded')
+    box.querySelector('.upload-box-label').textContent = side === 'front' ? 'Recto ✓' : 'Verso ✓'
+  }
+  reader.readAsDataURL(file)
+}
+
+/* ═══════════════════════════════════════════════
+   PAYOUT METHOD
+═══════════════════════════════════════════════ */
+const PAYOUT_DETAILS_HTML = {
+  mobile_money_gabon: `
+    <div class="field"><label>Opérateur *</label>
+      <select id="mmOperatorGabon" class="inp">
+        <option value="">Sélectionner…</option>
+        <option value="Airtel Money">Airtel Money</option>
+        <option value="Moov Money">Moov Money</option>
+      </select>
+    </div>
+    <div class="field"><label>Numéro Mobile Money *</label>
+      <input type="tel" id="mmNumber" class="inp" placeholder="+241 06 00 00 00"/>
+    </div>`,
+  mobile_money_maroc: `
+    <div class="field"><label>Opérateur *</label>
+      <select id="mmOperatorMaroc" class="inp">
+        <option value="">Sélectionner…</option>
+        <option value="Orange Money">Orange Money</option>
+        <option value="Inwi Money">Inwi Money</option>
+      </select>
+    </div>
+    <div class="field"><label>Numéro Mobile Money *</label>
+      <input type="tel" id="mmNumber" class="inp" placeholder="+212 06 00 00 00"/>
+    </div>`,
+  card_maroc: `
+    <div class="field"><label>Numéro de carte *</label>
+      <input type="text" id="cardNumber" class="inp" placeholder="**** **** **** ****" maxlength="19"/>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>Expiration *</label>
+        <input type="text" id="cardExpiry" class="inp" placeholder="MM/AA" maxlength="5"/>
+      </div>
+      <div class="field"><label>Titulaire *</label>
+        <input type="text" id="cardHolder" class="inp" placeholder="NOM PRÉNOM"/>
+      </div>
+    </div>`,
+  virement: `
+    <div class="field"><label>Banque *</label>
+      <input type="text" id="bankName" class="inp" placeholder="ex: Attijari, BGFI, CIH…"/>
+    </div>
+    <div class="field"><label>RIB / IBAN *</label>
+      <input type="text" id="rib" class="inp" placeholder="MA** **** **** **** **** **** ***"/>
+    </div>
+    <div class="field"><label>Titulaire du compte *</label>
+      <input type="text" id="accountHolder" class="inp" placeholder="Nom complet du titulaire"/>
+    </div>`,
+  cinetpay: `
+    <div class="field"><label>Numéro de téléphone CinetPay *</label>
+      <input type="tel" id="cinetpayNumber" class="inp" placeholder="+241 / +212…"/>
+    </div>`,
+  paydunia: `
+    <div class="field"><label>Numéro de téléphone PayDunia *</label>
+      <input type="tel" id="payduniaNumber" class="inp" placeholder="+241 / +212…"/>
+    </div>`
+}
+
+function selectPayout(el) {
+  document.querySelectorAll('.payout-card').forEach(c => c.classList.remove('selected'))
+  el.classList.add('selected')
+  selectedPayoutMethod = el.dataset.method
+
+  const detailsEl = document.getElementById('payoutDetails')
+  detailsEl.innerHTML = PAYOUT_DETAILS_HTML[selectedPayoutMethod] || ''
+  detailsEl.className = 'payout-details open'
+}
+
+function getPayoutDetails() {
+  if (!selectedPayoutMethod) return null
+  const details = { method: selectedPayoutMethod }
+
+  try {
+    if (selectedPayoutMethod === 'mobile_money_gabon') {
+      const op = document.getElementById('mmOperatorGabon')?.value
+      const nb = document.getElementById('mmNumber')?.value.trim()
+      if (!op)  { showToast('Opérateur requis', 'error'); return null }
+      if (!nb)  { showToast('Numéro Mobile Money requis', 'error'); return null }
+      details.operator = op; details.number = nb
+    }
+    if (selectedPayoutMethod === 'mobile_money_maroc') {
+      const op = document.getElementById('mmOperatorMaroc')?.value
+      const nb = document.getElementById('mmNumber')?.value.trim()
+      if (!op)  { showToast('Opérateur requis', 'error'); return null }
+      if (!nb)  { showToast('Numéro Mobile Money requis', 'error'); return null }
+      details.operator = op; details.number = nb
+    }
+    if (selectedPayoutMethod === 'card_maroc') {
+      const nb = document.getElementById('cardNumber')?.value.trim()
+      const ex = document.getElementById('cardExpiry')?.value.trim()
+      const ho = document.getElementById('cardHolder')?.value.trim()
+      if (!nb || !ex || !ho) { showToast('Informations carte incomplètes', 'error'); return null }
+      details.card_number = nb; details.expiry = ex; details.holder = ho
+    }
+    if (selectedPayoutMethod === 'virement') {
+      const bk = document.getElementById('bankName')?.value.trim()
+      const rb = document.getElementById('rib')?.value.trim()
+      const ho = document.getElementById('accountHolder')?.value.trim()
+      if (!bk || !rb || !ho) { showToast('Informations bancaires incomplètes', 'error'); return null }
+      details.bank = bk; details.rib = rb; details.holder = ho
+    }
+    if (selectedPayoutMethod === 'cinetpay') {
+      const nb = document.getElementById('cinetpayNumber')?.value.trim()
+      if (!nb) { showToast('Numéro CinetPay requis', 'error'); return null }
+      details.number = nb
+    }
+    if (selectedPayoutMethod === 'paydunia') {
+      const nb = document.getElementById('payduniaNumber')?.value.trim()
+      if (!nb) { showToast('Numéro PayDunia requis', 'error'); return null }
+      details.number = nb
+    }
+  } catch(e) { console.error(e) }
+
+  return details
+}
+
+/* ═══════════════════════════════════════════════
+   RÉCAPITULATIF
+═══════════════════════════════════════════════ */
+const PAYOUT_LABELS = {
+  mobile_money_gabon: 'Mobile Money Gabon',
+  mobile_money_maroc: 'Mobile Money Maroc',
+  card_maroc:         'Carte bancaire Maroc',
+  virement:           'Virement bancaire',
+  cinetpay:           'CinetPay',
+  paydunia:           'PayDunia'
+}
+const ID_LABELS = { cni: 'CNI', passeport: 'Passeport', sejour: 'Carte de séjour' }
+
+function buildRecap() {
+  collectStep(3)
+  const d = formData
+  const pd = d.payoutDetails || {}
+
+  // Masquer données sensibles dans le récap
+  let payoutDetail = ''
+  if (pd.number)  payoutDetail = maskPhone(pd.number)
+  if (pd.rib)     payoutDetail = maskRib(pd.rib)
+  if (pd.card_number) payoutDetail = maskCard(pd.card_number)
+  if (pd.operator) payoutDetail = pd.operator + (pd.number ? ' · ' + maskPhone(pd.number) : '')
+
+  const frontSrc = idFrontFile ? URL.createObjectURL(idFrontFile) : ''
+  const backSrc  = idBackFile  ? URL.createObjectURL(idBackFile)  : ''
+
+  document.getElementById('recapContent').innerHTML = `
+    <div class="recap-block">
+      <div class="recap-block-title">Profil</div>
+      <div class="recap-row"><span class="key">Nom</span><span class="val">${esc(d.firstName)} ${esc(d.lastName)}</span></div>
+      <div class="recap-row"><span class="key">Pays</span><span class="val">${esc(d.country)}</span></div>
+      <div class="recap-row"><span class="key">Ville</span><span class="val">${esc(d.city)}</span></div>
+      <div class="recap-row"><span class="key">Téléphone</span>
+        <span class="val" style="display:flex;align-items:center;gap:6px;">
+          ${esc(d.phone)}
+          ${phoneVerified ? `<span style="color:var(--green);font-size:10px;display:inline-flex;align-items:center;gap:3px;"><span class="material-symbols-outlined" style="font-size:13px;">check_circle</span>Vérifié</span>` : '<span style="color:#555;font-size:10px;">Non vérifié</span>'}
+        </span>
+      </div>
+    </div>
+    <div class="recap-block">
+      <div class="recap-block-title">Pièce d'identité</div>
+      <div class="recap-row"><span class="key">Type</span><span class="val">${ID_LABELS[d.idType] || d.idType}</span></div>
+      <div class="recap-row"><span class="key">Numéro</span><span class="val">${esc(d.idNumber)}</span></div>
+      <div class="recap-row">
+        <span class="key">Photos</span>
+        <span class="val">
+          ${frontSrc ? `<img src="${frontSrc}" class="recap-id-thumb" alt="recto"/>` : ''}
+          ${backSrc  ? `<img src="${backSrc}"  class="recap-id-thumb" alt="verso"/>` : ''}
+        </span>
+      </div>
+    </div>
+    <div class="recap-block">
+      <div class="recap-block-title">Paiement des récompenses</div>
+      <div class="recap-row"><span class="key">Méthode</span><span class="val">${PAYOUT_LABELS[d.payoutMethod] || d.payoutMethod}</span></div>
+      ${payoutDetail ? `<div class="recap-row"><span class="key">Détails</span><span class="val">${esc(payoutDetail)}</span></div>` : ''}
+    </div>`
+}
+
+function maskPhone(p) { return p.length > 5 ? p.slice(0, -4).replace(/./g, '*') + p.slice(-4) : '****' }
+function maskRib(r)   { return r.length > 6 ? r.slice(0, 4) + ' **** **** ' + r.slice(-4) : '****' }
+function maskCard(c)  { return '**** **** **** ' + (c.replace(/\s/g,'').slice(-4) || '****') }
+
+/* ═══════════════════════════════════════════════
+   SUBMIT
+═══════════════════════════════════════════════ */
+async function submitApplication() {
+  if (!internalUserId) { showToast('Session invalide', 'error'); return }
+
+  const btn = document.getElementById('btnSubmit')
+  btn.disabled = true
+  btn.innerHTML = '<span class="material-symbols-outlined" style="animation:spin 1s linear infinite;font-size:15px;">progress_activity</span> Envoi en cours…'
+
+  const sb = getSb()
+  let avatarUrl   = null
+  let idFrontUrl  = null
+  let idBackUrl   = null
+
+  // 1. Upload avatar
+  if (avatarFile) {
+    const path = `${internalUserId}/avatar.${avatarFile.name.split('.').pop()}`
+    await sb.storage.from(BUCKETS.avatar).upload(path, avatarFile, { upsert: true })
+    const { data: pub } = sb.storage.from(BUCKETS.avatar).getPublicUrl(path)
+    avatarUrl = pub?.publicUrl || null
+  }
+
+  // 2. Upload pièce d'identité (bucket privé)
+  if (idFrontFile) {
+    const path = `${internalUserId}/id_front.${idFrontFile.name.split('.').pop()}`
+    const { error } = await sb.storage.from(BUCKETS.id).upload(path, idFrontFile, { upsert: true })
+    if (!error) {
+      const { data: pub } = sb.storage.from(BUCKETS.id).getPublicUrl(path)
+      idFrontUrl = pub?.publicUrl || null
+    }
+  }
+  if (idBackFile) {
+    const path = `${internalUserId}/id_back.${idBackFile.name.split('.').pop()}`
+    const { error } = await sb.storage.from(BUCKETS.id).upload(path, idBackFile, { upsert: true })
+    if (!error) {
+      const { data: pub } = sb.storage.from(BUCKETS.id).getPublicUrl(path)
+      idBackUrl = pub?.publicUrl || null
+    }
+  }
+
+  // 3. Mettre à jour le profil users
+  const updatePayload = {
+    first_name:           formData.firstName,
+    last_name:            formData.lastName,
+    full_name:            `${formData.firstName} ${formData.lastName}`,
+    country:              formData.country,
+    city:                 formData.city,
+    phone:                formData.phone,
+    phone_verified:       phoneVerified,
+    hunter_status:        'pending_verification',
+    hunter_payout_method: formData.payoutMethod,
+    hunter_payout_details: formData.payoutDetails,
+    hunter_applied_at:    new Date().toISOString(),
+    id_card_front_url:    idFrontUrl,
+    id_card_back_url:     idBackUrl,
+    updated_at:           new Date().toISOString()
+  }
+  if (avatarUrl) updatePayload.avatar_url = avatarUrl
+
+  // Stocker le type et numéro de pièce dans specialty (champ dispo)
+  // ou dans hunter_payout_details (on ajoute idType/idNumber)
+  updatePayload.hunter_payout_details = {
+    ...formData.payoutDetails,
+    id_type:   formData.idType,
+    id_number: formData.idNumber
+  }
+
+  const { error } = await sb.from('users').update(updatePayload).eq('id', internalUserId)
+
+  btn.disabled = false
+  btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:15px;">send</span> Soumettre mon dossier'
+
+  if (error) {
+    showToast('Erreur : ' + error.message, 'error')
+    console.error('[BecomeHunter] submit error:', error)
+    return
+  }
+
+  // 4. Créer une notification admin (optionnel — si table notifications)
+  try {
+    // Notifier l'admin — on peut stocker dans notifications avec un user_id admin
+    // Pour l'instant on log seulement
+    console.log('[BecomeHunter] Application submitted for', internalUserId)
+  } catch(e) {}
+
+  // 5. Afficher succès
+  document.getElementById('formWrapper').style.display = 'none'
+  document.getElementById('stepsBar').style.display    = 'none'
+  document.querySelector('.hero').style.display        = 'none'
+  document.getElementById('state-success').style.display = 'flex'
+}
+
+/* ═══════════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════════ */
+function esc(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.className = 'show ' + type
+  setTimeout(() => t.className = '', 3500)
+}
+</script>
+</body>
+</html>
