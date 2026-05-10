@@ -1,3 +1,5 @@
+html
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -68,6 +70,10 @@
     .btn-fire:disabled{opacity:.4;cursor:not-allowed;transform:none;}
     .btn-ghost{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border-fire);color:var(--fire);background:transparent;padding:9px 18px;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
     .btn-ghost:hover{background:rgba(255,107,43,.08);}
+    /* Bouton vert expédition */
+    .btn-ship{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;padding:10px 22px;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;transition:background .2s;font-family:'DM Sans',sans-serif;}
+    .btn-ship:hover{background:#3d9966;}
+    .btn-ship:disabled{opacity:.4;cursor:not-allowed;}
     main{flex:1;padding:28px 32px;}
     .section{display:none;}.section.active{display:block;}
     .plan-limit-bar{display:flex;align-items:center;justify-content:space-between;background:var(--slate);border:1px solid var(--border);padding:14px 20px;margin-bottom:16px;gap:16px;flex-wrap:wrap;}
@@ -222,6 +228,18 @@
     .plan-sub-val{font-size:13px;color:var(--snow);}
     .eyebrow{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--fire);display:flex;align-items:center;gap:12px;}
     .eyebrow::before{content:'';display:block;width:20px;height:1px;background:var(--fire);}
+    /* Bloc expédition dans modal commande */
+    .ship-block{border-top:1px solid var(--border);padding-top:14px;margin-top:4px;display:none;}
+    .ship-block.show{display:block;}
+    .ship-block-title{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--green);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+    .ship-block-title::before{content:'';display:block;width:12px;height:1px;background:var(--green);}
+    .ship-inputs{display:flex;gap:10px;flex-wrap:wrap;}
+    .ship-inputs .inp-dark{flex:1;min-width:160px;}
+    .ship-inputs input[type=date].inp-dark{width:160px;flex:0 0 auto;}
+    .ship-note{font-size:10px;color:#555;margin-top:6px;letter-spacing:.3px;}
+    /* Lien tracking dans tableau commandes */
+    .tracking-pill{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--green);text-decoration:none;background:var(--green-dim);border:1px solid var(--green-border);padding:2px 8px;transition:all .2s;}
+    .tracking-pill:hover{background:rgba(76,175,125,.2);}
     @media(max-width:1023px){
       #sidebar{transform:translateX(-100%);}
       #sidebar.open{transform:translateX(0);}
@@ -233,6 +251,8 @@
       .form-grid{grid-template-columns:1fr;}
       .plan-section-grid{grid-template-columns:1fr;}
       #menu-btn{display:block!important;}
+      .ship-inputs{flex-direction:column;}
+      .ship-inputs input[type=date].inp-dark{width:100%;}
     }
     @keyframes spin{to{transform:rotate(360deg);}}
   </style>
@@ -411,8 +431,8 @@
       <div class="card">
         <div style="overflow-x:auto;">
           <table class="tbl">
-            <thead><tr><th>Commande</th><th>Client</th><th>Montant</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
-            <tbody id="orders-table-body"><tr><td colspan="6" style="text-align:center;padding:48px;color:#444;font-size:11px;letter-spacing:2px;text-transform:uppercase;">Chargement...</td></tr></tbody>
+            <thead><tr><th>Commande</th><th>Client</th><th>Montant</th><th>Date</th><th>Statut</th><th>Suivi</th><th>Actions</th></tr></thead>
+            <tbody id="orders-table-body"><tr><td colspan="7" style="text-align:center;padding:48px;color:#444;font-size:11px;letter-spacing:2px;text-transform:uppercase;">Chargement...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -569,17 +589,60 @@
   </div>
 </div>
 
-<!-- MODAL COMMANDE -->
+<!-- ══════════════════════════════════════
+     MODAL COMMANDE — avec bloc expédition
+══════════════════════════════════════ -->
 <div id="order-modal-overlay" class="modal-ov hidden">
   <div class="modal-box" onclick="event.stopPropagation()">
-    <div class="modal-head"><h3 class="modal-title">Détail commande</h3><button onclick="closeOrderModal()" class="modal-close"><span class="material-symbols-outlined">close</span></button></div>
+    <div class="modal-head">
+      <h3 class="modal-title">Détail commande</h3>
+      <button onclick="closeOrderModal()" class="modal-close"><span class="material-symbols-outlined">close</span></button>
+    </div>
     <div id="order-detail-content" class="modal-body">Chargement...</div>
-    <div style="padding:0 24px 24px;">
-      <div class="form-label" style="margin-bottom:8px;">Mettre à jour le statut</div>
-      <div style="display:flex;gap:10px;">
-        <select id="order-status-update" class="sel-dark" style="flex:1;"><option value="pending">En attente</option><option value="processing">En traitement</option><option value="shipped">Expédiée</option><option value="delivered">Livrée</option><option value="cancelled">Annulée</option></select>
-        <button onclick="updateOrderStatus()" class="btn-fire">Mettre à jour</button>
+    <div style="padding:0 24px 24px;display:flex;flex-direction:column;gap:14px;">
+
+      <!-- Statut -->
+      <div>
+        <div class="form-label" style="margin-bottom:8px;">Mettre à jour le statut</div>
+        <div style="display:flex;gap:10px;">
+          <select id="order-status-update" class="sel-dark" style="flex:1;">
+            <option value="pending">En attente</option>
+            <option value="processing">En traitement</option>
+            <option value="shipped">Expédiée</option>
+            <option value="delivered">Livrée</option>
+            <option value="cancelled">Annulée</option>
+          </select>
+          <button onclick="updateOrderStatus()" class="btn-fire">Mettre à jour</button>
+        </div>
       </div>
+
+      <!-- Bloc expédition — visible si statut pending/processing -->
+      <div id="ship-block" class="ship-block">
+        <div class="ship-block-title">
+          <span class="material-symbols-outlined" style="font-size:16px;color:var(--green);">local_shipping</span>
+          Expédier cette commande
+        </div>
+        <div class="ship-inputs">
+          <input id="ship-tracking" type="text" class="inp-dark" placeholder="N° suivi · ex: WNS-20240501-ABCD"/>
+          <input id="ship-eta" type="date" class="inp-dark" title="Date de livraison estimée"/>
+          <button onclick="shipOrder()" id="btn-ship" class="btn-ship">
+            <span class="material-symbols-outlined" style="font-size:15px;">send</span>Expédier
+          </button>
+        </div>
+        <div class="ship-note">Crée la livraison en base · Passe le statut à "Expédiée" · Active le suivi client</div>
+      </div>
+
+      <!-- Lien tracking si déjà expédiée -->
+      <div id="tracking-info-block" style="display:none;border-top:1px solid var(--border);padding-top:12px;">
+        <div class="form-label" style="margin-bottom:8px;">Suivi actif</div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span id="tracking-number-display" style="font-family:monospace;font-size:12px;color:var(--green);background:var(--green-dim);border:1px solid var(--green-border);padding:4px 10px;">—</span>
+          <a id="tracking-link-btn" href="#" target="_blank" class="tracking-pill">
+            <span class="material-symbols-outlined" style="font-size:13px;">open_in_new</span>Voir le suivi
+          </a>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -645,18 +708,14 @@ function starsHtml(r){
   const n=Math.round(r||0)
   return Array.from({length:5},(_,i)=>`<span class="material-symbols-outlined ${i<n?'icon-fill':''}" style="font-size:16px;color:${i<n?'var(--fire)':'#333'}">${i<n?'star':'star'}</span>`).join('')
 }
-
-// ✅ FIX — parseImages gère URL directe, JSON stringifié et chemin relatif
 function parseImages(imgData){
   if(!imgData) return ['','','','']
-  // JSON stringifié
   if(typeof imgData === 'string' && imgData.startsWith('[')){
     try {
       const p = JSON.parse(imgData)
       if(Array.isArray(p)) return [...p,...Array(4).fill('')].slice(0,4)
     } catch {}
   }
-  // URL directe ou chemin simple
   return [imgData,'','','']
 }
 
@@ -1040,9 +1099,7 @@ function renderProductsTable(data){
   const total=data.length, totalPages=Math.ceil(total/PROD_PER_PAGE)
   if(prodPage>totalPages) prodPage=1
   const getImgs = p => {
-    // ✅ Priorité : colonne images (ARRAY natif) si disponible et non vide
     if(Array.isArray(p.images) && p.images.length) return p.images
-    // Sinon parser image_url (URL directe ou JSON stringifié)
     return parseImages(p.image_url).filter(Boolean)
   }
   tbody.innerHTML=data.slice((prodPage-1)*PROD_PER_PAGE,prodPage*PROD_PER_PAGE).map(p=>{
@@ -1145,10 +1202,7 @@ async function saveProduct(){
 
   const maxPh = getMaxPhotos()
   const imgs = prodImages.filter((img,i) => img && i < maxPh)
-
-  // ✅ FIX PRINCIPAL — image_url = toujours la 1ère URL (jamais JSON stringifié)
   const imageUrl = imgs[0] || null
-  // images = tableau complet pour le multi-photo
   const imagesArr = imgs.length ? imgs : null
 
   const carac=caracList.filter(c=>c.k&&c.v)
@@ -1161,8 +1215,8 @@ async function saveProduct(){
     status:      document.getElementById('product-status').value,
     category_id: document.getElementById('product-category').value||null,
     seller_id:   currentSeller.id,
-    image_url:   imageUrl,   // ✅ URL directe uniquement
-    images:      imagesArr,  // ✅ Tableau complet dans la colonne dédiée
+    image_url:   imageUrl,
+    images:      imagesArr,
     brand:       document.getElementById('product-brand').value.trim()||null,
     sku:         document.getElementById('product-sku').value.trim()||null,
     compare_price: parseFloat(document.getElementById('product-compare-price').value)||null,
@@ -1195,20 +1249,23 @@ async function confirmDelete(){
   else{ showToast('Produit supprimé','default'); loadProducts(); loadOverview() }
 }
 
+/* ══════════════════════════════════════
+   COMMANDES
+══════════════════════════════════════ */
 async function loadOrders(){
   const db=getDb(); if(!currentSeller) return
   const productIds=await getMyProductIds()
   const tbody=document.getElementById('orders-table-body')
-  if(!productIds.length){ tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:48px;color:#444;font-size:11px;letter-spacing:2px;text-transform:uppercase;">Aucun produit</td></tr>'; return }
+  if(!productIds.length){ tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:48px;color:#444;font-size:11px;letter-spacing:2px;text-transform:uppercase;">Aucun produit</td></tr>'; return }
   const { data:items } = await db.from('order_items').select('order_id').in('product_id',productIds)
   const orderIds=[...new Set((items||[]).map(i=>i.order_id))]
-  if(!orderIds.length){ tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:48px;color:#444;font-size:11px;letter-spacing:2px;text-transform:uppercase;">Aucune commande</td></tr>'; return }
+  if(!orderIds.length){ tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:48px;color:#444;font-size:11px;letter-spacing:2px;text-transform:uppercase;">Aucune commande</td></tr>'; return }
   const statusFilter=document.getElementById('order-filter').value
-  let q=db.from('orders').select('id, total_amount, status, created_at, users!orders_user_id_fkey(full_name, email)').in('id',orderIds).order('created_at',{ascending:false})
+  let q=db.from('orders').select('id, total_amount, status, created_at, tracking_number, users!orders_user_id_fkey(full_name, email)').in('id',orderIds).order('created_at',{ascending:false})
   if(statusFilter) q=q.eq('status',statusFilter)
   const { data,error } = await q
   if(error){ showToast('Erreur commandes: '+error.message,'error'); return }
-  if(!data?.length){ tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:48px;color:#444;font-size:11px;letter-spacing:2px;text-transform:uppercase;">Aucune commande</td></tr>'; return }
+  if(!data?.length){ tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:48px;color:#444;font-size:11px;letter-spacing:2px;text-transform:uppercase;">Aucune commande</td></tr>'; return }
   tbody.innerHTML=data.map(o=>`
     <tr>
       <td style="font-family:monospace;font-size:12px;font-weight:600;">#${o.id.slice(0,8).toUpperCase()}</td>
@@ -1216,6 +1273,12 @@ async function loadOrders(){
       <td style="font-weight:600;color:var(--fire);">${fmtAmount(o.total_amount)}</td>
       <td style="color:#666;font-size:12px;">${fmtDate(o.created_at)}</td>
       <td>${statusBadge(o.status)}</td>
+      <td>${o.tracking_number
+        ? `<a href="tracking.html?tracking=${encodeURIComponent(o.tracking_number)}" target="_blank" class="tracking-pill">
+             <span class="material-symbols-outlined" style="font-size:12px;">package_2</span>${o.tracking_number.slice(0,12)}…
+           </a>`
+        : '<span style="font-size:10px;color:#444;">—</span>'
+      }</td>
       <td><button onclick="openOrderModal('${o.id}')" style="background:none;border:none;color:var(--fire);font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;">Détails</button></td>
     </tr>`).join('')
 }
@@ -1223,10 +1286,29 @@ async function loadOrders(){
 async function openOrderModal(id){
   const db=getDb(); currentOrderId=id
   document.getElementById('order-modal-overlay').classList.remove('hidden')
+  // Reset blocs
+  document.getElementById('ship-block').classList.remove('show')
+  document.getElementById('tracking-info-block').style.display='none'
+  document.getElementById('ship-tracking').value=''
+  document.getElementById('ship-eta').value=''
+
   const { data:o,error } = await db.from('orders').select('*, users!orders_user_id_fkey(full_name, email), order_items(quantity, unit_price, products(name))').eq('id',id).single()
   const content=document.getElementById('order-detail-content')
   if(error||!o){ content.innerHTML='<p style="color:#555;font-size:13px;">Commande introuvable</p>'; return }
+
   document.getElementById('order-status-update').value=o.status
+
+  // ── Afficher bloc expédition ou lien tracking selon statut ──
+  if(['pending','processing'].includes(o.status)){
+    document.getElementById('ship-block').classList.add('show')
+    if(o.tracking_number) document.getElementById('ship-tracking').value=o.tracking_number
+  } else if(['shipped','in_transit','out_for_delivery','delivered'].includes(o.status) && o.tracking_number){
+    const tBlock=document.getElementById('tracking-info-block')
+    tBlock.style.display='block'
+    document.getElementById('tracking-number-display').textContent=o.tracking_number
+    document.getElementById('tracking-link-btn').href=`tracking.html?tracking=${encodeURIComponent(o.tracking_number)}`
+  }
+
   const itemsHtml=(o.order_items||[]).map(i=>`
     <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;">
       <span style="color:#888;">${i.products?.name||'—'} <strong style="color:var(--snow);">× ${i.quantity}</strong></span>
@@ -1237,17 +1319,76 @@ async function openOrderModal(id){
     <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);"><span style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#444;">Client</span><span style="font-size:13px;">${o.users?.full_name||o.users?.email||'—'}</span></div>
     <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);"><span style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#444;">Date</span><span style="color:#888;font-size:13px;">${fmtDate(o.created_at)}</span></div>
     <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);"><span style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#444;">Statut</span>${statusBadge(o.status)}</div>
+    ${o.tracking_number?`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);"><span style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#444;">N° suivi</span><span style="font-family:monospace;font-size:12px;color:var(--green);">${o.tracking_number}</span></div>`:''}
     <div style="padding-top:16px;"><div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#444;margin-bottom:8px;">Articles</div>${itemsHtml||'<p style="color:#555;font-size:13px;">—</p>'}</div>
     <div style="display:flex;justify-content:space-between;padding:16px 0 0;border-top:1px solid var(--border);margin-top:8px;"><span style="font-weight:600;">Total</span><span style="font-weight:700;color:var(--fire);font-size:16px;">${fmtAmount(o.total_amount)}</span></div>
   </div>`
 }
 function closeOrderModal(){ document.getElementById('order-modal-overlay').classList.add('hidden'); currentOrderId=null }
+
 async function updateOrderStatus(){
   const db=getDb(); if(!currentOrderId) return
   const status=document.getElementById('order-status-update').value
   const { error } = await db.from('orders').update({status,updated_at:new Date().toISOString()}).eq('id',currentOrderId)
   if(error) showToast('Erreur : '+error.message,'error')
   else{ showToast('Statut mis à jour','success'); closeOrderModal(); loadOrders() }
+}
+
+/* ══════════════════════════════════════
+   EXPÉDITION — crée la livraison en base
+   et active le suivi client
+══════════════════════════════════════ */
+async function shipOrder(){
+  const db=getDb(); if(!currentOrderId) return
+  const tracking = document.getElementById('ship-tracking').value.trim()
+  const eta = document.getElementById('ship-eta').value || null
+
+  if(!tracking) return showToast('Entrez un numéro de suivi.','error')
+
+  const btn=document.getElementById('btn-ship')
+  btn.disabled=true
+  btn.innerHTML='<span class="material-symbols-outlined" style="font-size:15px;">hourglass_empty</span>Envoi…'
+
+  try {
+    // 1 — Mettre à jour la commande (statut + tracking_number)
+    const { error:orderErr } = await db.from('orders').update({
+      status: 'shipped',
+      tracking_number: tracking,
+      updated_at: new Date().toISOString()
+    }).eq('id', currentOrderId)
+    if(orderErr) throw orderErr
+
+    // 2 — Créer ou mettre à jour la livraison
+    const { data:existing } = await db.from('deliveries')
+      .select('id').eq('order_id', currentOrderId).maybeSingle()
+
+    const deliveryPayload = {
+      status: 'picked_up',
+      picked_up_at: new Date().toISOString(),
+      estimated_delivery: eta,
+      updated_at: new Date().toISOString()
+    }
+
+    if(existing){
+      await db.from('deliveries').update(deliveryPayload).eq('id', existing.id)
+    } else {
+      await db.from('deliveries').insert({
+        order_id: currentOrderId,
+        ...deliveryPayload,
+        created_at: new Date().toISOString()
+      })
+    }
+
+    showToast('Commande expédiée ✓ · Suivi client activé','success')
+    closeOrderModal()
+    loadOrders()
+    loadOverview()
+  } catch(e){
+    showToast('Erreur : '+e.message,'error')
+  } finally {
+    btn.disabled=false
+    btn.innerHTML='<span class="material-symbols-outlined" style="font-size:15px;">send</span>Expédier'
+  }
 }
 
 async function loadRevenue(){
