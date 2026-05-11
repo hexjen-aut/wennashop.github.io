@@ -4,188 +4,620 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>WennaShop — Connexion / Inscription</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<!-- ✅ Supabase initialisé ici directement, pas de dépendance à un fichier externe -->
 <script>
-  const SUPABASE_URL     = 'https://aakxoydznmybstfozjte.supabase.co'
+  const SUPABASE_URL      = 'https://aakxoydznmybstfozjte.supabase.co'
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
   window.db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 </script>
-
 <style>
-:root{
-  --fire:#FF6B2B;--ember:#E85A1A;--ink:#080808;--coal:#111111;--slate:#1A1A1A;
-  --smoke:#242424;--fog:#888;--snow:#f0ece6;--border:rgba(255,255,255,.07);
-  --border-fire:rgba(255,107,43,.25);
+:root {
+  --accent:       #ff751f;
+  --accent-dark:  #cc5e18;
+  --accent-light: rgba(255,117,31,0.12);
+  --bg:           #0a0a0a;
+  --surface:      #141414;
+  --surface-2:    #1e1e1e;
+  --border:       #2a2a2a;
+  --border-accent:rgba(255,117,31,0.3);
+  --text:         #ffffff;
+  --text-muted:   #a0a0a0;
+  --text-faint:   #555555;
+  --success:      #22c55e;
+  --error:        #ef4444;
+  --font:         'Nunito', 'Varela Round', system-ui, sans-serif;
+  --radius-sm:    6px;
+  --radius-md:    12px;
+  --radius-lg:    16px;
+  --radius-pill:  9999px;
+  --shadow-orange:0 4px 24px rgba(255,117,31,.2);
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;}
-body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);min-height:100dvh;overflow-x:hidden;}
-.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24;font-size:20px;line-height:1;}
 
-/* CURSOR */
-*{cursor:none!important;}
-#cursor{position:fixed;width:10px;height:10px;background:var(--fire);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .1s;}
-#cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(255,107,43,.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .12s ease,top .12s ease,width .2s,height .2s;}
-@media(hover:none){#cursor,#cursor-ring{display:none;}*{cursor:auto!important;}}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
 
-/* LAYOUT */
-.layout{display:grid;grid-template-columns:1fr 1fr;min-height:100dvh;}
-@media(max-width:768px){.layout{grid-template-columns:1fr;}}
+/* ── LAYOUT ── */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100dvh;
+}
+@media (max-width: 768px) {
+  .layout { grid-template-columns: 1fr; }
+}
 
-/* LEFT PANEL */
-.left-panel{position:relative;overflow:hidden;background:var(--coal);}
-@media(max-width:768px){.left-panel{height:220px;}}
-.left-panel-bg{
-  position:absolute;inset:0;
+/* ── LEFT PANEL ── */
+.left-panel {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface);
+}
+@media (max-width: 768px) {
+  .left-panel { height: 200px; }
+}
+
+.left-panel-bg {
+  position: absolute;
+  inset: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 30% 70%, rgba(255,107,43,.07) 0%, transparent 70%),
-    radial-gradient(ellipse 50% 40% at 80% 20%, rgba(255,107,43,.04) 0%, transparent 60%),
-    var(--coal);
+    radial-gradient(ellipse 80% 60% at 30% 70%, rgba(255,117,31,.08) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 40% at 80% 20%, rgba(255,117,31,.04) 0%, transparent 60%),
+    var(--surface);
 }
-.left-panel-bg svg{position:absolute;inset:0;width:100%;height:100%;opacity:.18;}
-.left-panel-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,8,0) 0%,rgba(8,8,8,.7) 100%);}
-.left-content{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding:48px;}
-@media(max-width:768px){.left-content{justify-content:center;padding:24px;text-align:center;}}
-.left-eyebrow{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--fire);display:flex;align-items:center;gap:12px;margin-bottom:20px;}
-.left-eyebrow::before{content:'';display:block;width:20px;height:1px;background:var(--fire);}
-@media(max-width:768px){.left-eyebrow{justify-content:center;}}
-.left-logo{font-family:'Cormorant Garamond',serif;font-size:clamp(48px,6vw,80px);font-weight:700;font-style:italic;line-height:1;letter-spacing:-2px;color:var(--snow);margin-bottom:16px;}
-.left-logo b{color:var(--fire);}
-.left-tagline{font-size:13px;color:#666;letter-spacing:.5px;line-height:1.7;max-width:300px;}
-.left-flags{display:flex;gap:16px;margin-top:32px;align-items:center;}
-@media(max-width:768px){.left-flags{justify-content:center;}}
-.flag-item{display:flex;align-items:center;gap:8px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#444;}
-.flag-sep{width:1px;height:16px;background:var(--border);}
-.left-deco{position:absolute;top:-40px;right:-60px;font-family:'Cormorant Garamond',serif;font-size:320px;font-style:italic;font-weight:700;color:rgba(255,107,43,.03);line-height:1;pointer-events:none;user-select:none;}
 
-/* RIGHT PANEL */
-.right-panel{background:var(--ink);display:flex;align-items:center;justify-content:center;padding:40px 32px;overflow-y:auto;}
-@media(max-width:480px){.right-panel{padding:24px 16px;}}
-.form-wrap{width:100%;max-width:420px;}
+/* Motif géométrique SVG */
+.left-panel-bg svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: .12;
+}
 
-/* TABS */
-.tabs{display:flex;background:var(--slate);border:1px solid var(--border);padding:3px;margin-bottom:36px;}
-.tab{flex:1;padding:10px;font-size:9px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:#555;background:transparent;border:none;transition:all .2s;font-family:'DM Sans',sans-serif;}
-.tab.active{background:var(--fire);color:#fff;}
+.left-panel-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10,10,10,0) 0%, rgba(10,10,10,.65) 100%);
+}
 
-/* PANEL */
-.panel{animation:fadeUp .35s ease both;}
-.panel.hidden-panel{display:none;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.left-content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 48px;
+  gap: 0;
+}
+@media (max-width: 768px) {
+  .left-content {
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+  }
+}
 
-/* HEADING */
-.form-heading{margin-bottom:28px;}
-.form-eyebrow{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--fire);margin-bottom:10px;}
-.form-title{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:700;font-style:italic;line-height:1.1;color:var(--snow);}
-.form-sub{font-size:12px;color:#555;margin-top:6px;letter-spacing:.5px;}
+.left-logo-img {
+  width: 180px;
+  margin-bottom: 20px;
+}
+@media (max-width: 768px) {
+  .left-logo-img { width: 140px; margin-bottom: 12px; }
+}
 
-/* FORM FIELDS */
-.field{margin-bottom:18px;}
-.field-label{display:flex;justify-content:space-between;align-items:center;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#555;margin-bottom:8px;}
-.field-label a,.field-label button.forgot{background:none;border:none;color:var(--fire);font-size:9px;letter-spacing:2px;text-transform:uppercase;font-family:'DM Sans',sans-serif;}
-.field-label a:hover,.field-label button.forgot:hover{text-decoration:underline;}
-.input-wrap{position:relative;}
-.inp{width:100%;background:var(--slate);border:1px solid var(--border);border-bottom:1px solid rgba(255,107,43,.15);color:var(--snow);padding:13px 44px 13px 16px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s,background .2s;}
-.inp:focus{border-color:var(--border-fire);background:var(--smoke);}
-.inp::placeholder{color:#333;}
-.inp-icon-left .inp{padding-left:42px;}
-.field-icon{position:absolute;top:50%;transform:translateY(-50%);color:#444;pointer-events:none;}
-.field-icon.left{left:14px;}
-.field-icon.right{right:12px;pointer-events:all;color:#555;background:none;border:none;transition:color .2s;}
-.field-icon.right:hover{color:var(--snow);}
+.left-tagline {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  line-height: 1.7;
+  max-width: 280px;
+  margin-bottom: 28px;
+}
+@media (max-width: 768px) {
+  .left-tagline { display: none; }
+}
 
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-@media(max-width:380px){.grid-2{grid-template-columns:1fr;}}
+.left-flags {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+@media (max-width: 768px) {
+  .left-flags { justify-content: center; }
+}
 
-.choice-group{display:flex;gap:8px;margin-bottom:4px;flex-wrap:wrap;}
-.choice-btn{flex:1;padding:11px 8px;border:1px solid var(--border);background:var(--slate);color:#666;font-size:11px;font-family:'DM Sans',sans-serif;transition:all .2s;text-align:center;min-width:0;}
-.choice-btn:hover{border-color:var(--border-fire);color:var(--snow);}
-.choice-btn.active{border-color:var(--fire);background:rgba(255,107,43,.1);color:var(--fire);}
-.role-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border:1px solid var(--border);background:var(--slate);color:#666;font-size:10px;letter-spacing:1px;text-transform:uppercase;font-family:'DM Sans',sans-serif;transition:all .2s;}
-.role-btn:hover{border-color:var(--border-fire);color:var(--snow);}
-.role-btn.active{border-color:var(--fire);background:rgba(255,107,43,.1);color:var(--fire);}
+.flag-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
 
-.genre-group{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:4px;}
-.genre-btn{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 6px 10px;border:1px solid var(--border);background:var(--slate);color:#555;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;font-family:'DM Sans',sans-serif;transition:all .2s;position:relative;overflow:hidden;}
-.genre-btn::before{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--fire);transform:scaleX(0);transition:transform .2s;}
-.genre-btn:hover{border-color:var(--border-fire);color:var(--snow);}
-.genre-btn:hover::before{transform:scaleX(1);}
-.genre-btn.active{border-color:var(--fire);background:rgba(255,107,43,.1);color:var(--fire);}
-.genre-btn.active::before{transform:scaleX(1);}
-.genre-icon{font-size:20px;line-height:1;}
-.genre-hint{font-size:9px;color:#333;letter-spacing:.5px;margin-top:4px;line-height:1.5;padding:6px 8px;background:rgba(255,107,43,.04);border-left:2px solid rgba(255,107,43,.2);}
+.flag-sep {
+  width: 1px;
+  height: 16px;
+  background: var(--border);
+}
 
-.pwd-bar-wrap{height:2px;background:rgba(255,255,255,.06);margin-top:6px;}
-#pwd-bar{height:2px;width:0;transition:width .3s,background .3s;}
-#pwd-hint{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-top:4px;}
+/* ── RIGHT PANEL ── */
+.right-panel {
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 32px;
+  overflow-y: auto;
+}
+@media (max-width: 480px) {
+  .right-panel { padding: 32px 16px; }
+}
 
-.cgu-wrap{display:flex;align-items:flex-start;gap:10px;margin-bottom:20px;}
-.cgu-check{width:16px;height:16px;margin-top:2px;accent-color:var(--fire);flex-shrink:0;}
-.cgu-text{font-size:11px;color:#555;line-height:1.6;}
-.cgu-text a{color:var(--fire);}
+.form-wrap {
+  width: 100%;
+  max-width: 420px;
+}
 
-.divider{display:flex;align-items:center;gap:12px;margin:18px 0;}
-.divider-line{flex:1;height:1px;background:var(--border);}
-.divider-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#333;}
+/* ── TABS ── */
+.tabs {
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 4px;
+  margin-bottom: 36px;
+  gap: 4px;
+}
 
-.btn-fire{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--fire);color:#fff;padding:14px;font-size:10px;font-weight:500;letter-spacing:3px;text-transform:uppercase;border:none;transition:background .2s,transform .15s;font-family:'DM Sans',sans-serif;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));margin-bottom:12px;}
-.btn-fire:hover{background:var(--ember);transform:translateY(-1px);}
-.btn-fire:active{transform:translateY(0);}
-.btn-fire:disabled{opacity:.5;}
-.btn-google{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:transparent;border:1px solid var(--border);color:#777;padding:13px;font-size:11px;font-family:'DM Sans',sans-serif;transition:all .2s;}
-.btn-google:hover{border-color:rgba(255,255,255,.15);color:var(--snow);}
+.tab {
+  flex: 1;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font);
+  color: var(--text-faint);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-pill);
+  transition: all .2s;
+  letter-spacing: .3px;
+}
+.tab.active {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: var(--shadow-orange);
+}
+.tab:not(.active):hover {
+  color: var(--text-muted);
+  background: var(--surface-2);
+}
 
-.spinner{display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.is-loading .spinner{display:block;}
-.is-loading .btn-label{display:none;}
+/* ── PANEL ── */
+.panel { animation: fadeUp .3s ease both; }
+.panel.hidden-panel { display: none; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
-.switch-link{text-align:center;margin-top:20px;font-size:11px;color:#555;}
-.switch-link button{background:none;border:none;color:var(--fire);font-size:11px;font-family:'DM Sans',sans-serif;}
-.switch-link button:hover{text-decoration:underline;}
+/* ── HEADING ── */
+.form-heading { margin-bottom: 28px; }
 
-#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(10px);z-index:400;background:var(--slate);border:1px solid var(--border-fire);color:var(--snow);padding:12px 24px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
-#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-#toast.ok{border-color:rgba(115,220,132,.4);background:#0a1f0e;}
-#toast.ko{border-color:rgba(186,26,26,.4);background:#1f0a0a;}
+.form-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.form-title {
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.15;
+  margin-bottom: 6px;
+}
+
+.form-sub {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+/* ── FIELDS ── */
+.field { margin-bottom: 18px; }
+
+.field-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.input-wrap { position: relative; }
+
+.inp {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  padding: 13px 44px 13px 16px;
+  font-size: 14px;
+  font-family: var(--font);
+  font-weight: 500;
+  outline: none;
+  transition: border-color .2s, background .2s;
+}
+.inp:focus {
+  border-color: var(--accent);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px rgba(255,117,31,.1);
+}
+.inp::placeholder { color: var(--text-faint); }
+
+.inp-icon-left .inp { padding-left: 44px; }
+
+.field-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: var(--text-faint);
+  pointer-events: none;
+  user-select: none;
+}
+.field-icon.left  { left: 14px; }
+.field-icon.right {
+  right: 12px;
+  pointer-events: all;
+  background: none;
+  border: none;
+  font-family: var(--font);
+  font-size: 18px;
+  color: var(--text-faint);
+  transition: color .2s;
+}
+.field-icon.right:hover { color: var(--text); }
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 380px) {
+  .grid-2 { grid-template-columns: 1fr; }
+}
+
+/* ── CHOICE BUTTONS ── */
+.choice-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.choice-btn {
+  flex: 1;
+  padding: 11px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font);
+  transition: all .2s;
+  text-align: center;
+  min-width: 0;
+}
+.choice-btn:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+.choice-btn.active {
+  border-color: var(--accent);
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+.role-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 8px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  font-family: var(--font);
+  transition: all .2s;
+}
+.role-btn:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+.role-btn.active {
+  border-color: var(--accent);
+  background: var(--accent-light);
+  color: var(--accent);
+}
+.role-icon { font-size: 24px; }
+
+/* ── GENRE ── */
+.genre-group {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 6px;
+}
+
+.genre-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 12px 4px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  color: var(--text-faint);
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font);
+  transition: all .2s;
+}
+.genre-btn:hover { border-color: var(--accent); color: var(--text); }
+.genre-btn.active {
+  border-color: var(--accent);
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+.genre-hint {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-top: 8px;
+  line-height: 1.5;
+  padding: 8px 12px;
+  background: var(--surface-2);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+/* ── PASSWORD STRENGTH ── */
+.pwd-bar-wrap {
+  height: 3px;
+  background: var(--border);
+  border-radius: 99px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+#pwd-bar {
+  height: 3px;
+  width: 0;
+  border-radius: 99px;
+  transition: width .3s, background .3s;
+}
+#pwd-hint {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-faint);
+  margin-top: 4px;
+  letter-spacing: .04em;
+}
+
+/* ── CGU ── */
+.cgu-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.cgu-check {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+.cgu-text {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.cgu-text a { color: var(--accent); text-decoration: none; }
+.cgu-text a:hover { text-decoration: underline; }
+
+/* ── DIVIDER ── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+}
+.divider-line { flex: 1; height: 1px; background: var(--border); }
+.divider-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+/* ── BUTTONS ── */
+.btn-primary {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--accent);
+  color: #fff;
+  padding: 14px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--font);
+  border: none;
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-orange);
+  transition: background .2s, transform .15s, box-shadow .2s;
+  margin-bottom: 12px;
+  letter-spacing: .02em;
+}
+.btn-primary:hover {
+  background: var(--accent-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 28px rgba(255,117,31,.3);
+}
+.btn-primary:active { transform: translateY(0); }
+.btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+
+.btn-google {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-pill);
+  color: var(--text-muted);
+  padding: 13px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font);
+  transition: all .2s;
+}
+.btn-google:hover {
+  border-color: rgba(255,255,255,.2);
+  color: var(--text);
+}
+
+/* ── FORGOT BUTTON ── */
+button.forgot {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+button.forgot:hover { text-decoration: underline; }
+
+/* ── SPINNER / LOADING ── */
+.spinner {
+  display: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.is-loading .spinner   { display: block; }
+.is-loading .btn-label { display: none; }
+
+/* ── SWITCH LINK ── */
+.switch-link {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+.switch-link button {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font);
+}
+.switch-link button:hover { text-decoration: underline; }
+
+/* ── TOAST ── */
+#toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  z-index: 400;
+  background: var(--surface);
+  border: 1.5px solid var(--border-accent);
+  color: var(--text);
+  padding: 12px 24px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s, transform .3s;
+  white-space: nowrap;
+  box-shadow: var(--shadow-orange);
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#toast.ok   { border-color: rgba(34,197,94,.4); background: #061210; }
+#toast.ko   { border-color: rgba(239,68,68,.4);  background: #130606; }
 </style>
 </head>
 <body>
 
-<div id="cursor"></div>
-<div id="cursor-ring"></div>
 <div id="toast"></div>
 
 <div class="layout">
 
-  <!-- LEFT -->
+  <!-- ── LEFT PANEL ── -->
   <div class="left-panel">
     <div class="left-panel-bg">
       <svg viewBox="0 0 600 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
         <defs>
           <pattern id="geo" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
-            <polygon points="40,4 76,40 40,76 4,40" fill="none" stroke="#FF6B2B" stroke-width="0.6"/>
-            <rect x="24" y="24" width="32" height="32" fill="none" stroke="#FF6B2B" stroke-width="0.4" transform="rotate(45 40 40)"/>
-            <circle cx="40" cy="4"  r="1.2" fill="#FF6B2B"/>
-            <circle cx="76" cy="40" r="1.2" fill="#FF6B2B"/>
-            <circle cx="40" cy="76" r="1.2" fill="#FF6B2B"/>
-            <circle cx="4"  cy="40" r="1.2" fill="#FF6B2B"/>
-            <line x1="0" y1="0" x2="80" y2="80" stroke="#FF6B2B" stroke-width="0.2" opacity="0.5"/>
-            <line x1="80" y1="0" x2="0" y2="80" stroke="#FF6B2B" stroke-width="0.2" opacity="0.5"/>
+            <circle cx="40" cy="40" r="28" fill="none" stroke="#ff751f" stroke-width="0.5"/>
+            <circle cx="40" cy="40" r="14" fill="none" stroke="#ff751f" stroke-width="0.4"/>
+            <line x1="40" y1="0"  x2="40" y2="80" stroke="#ff751f" stroke-width="0.3" opacity=".6"/>
+            <line x1="0"  y1="40" x2="80" y2="40" stroke="#ff751f" stroke-width="0.3" opacity=".6"/>
+            <circle cx="40" cy="0"  r="1.5" fill="#ff751f"/>
+            <circle cx="40" cy="80" r="1.5" fill="#ff751f"/>
+            <circle cx="0"  cy="40" r="1.5" fill="#ff751f"/>
+            <circle cx="80" cy="40" r="1.5" fill="#ff751f"/>
           </pattern>
         </defs>
         <rect width="600" height="800" fill="url(#geo)"/>
       </svg>
     </div>
     <div class="left-panel-overlay"></div>
-    <div class="left-deco">W</div>
     <div class="left-content">
-      <div class="left-eyebrow">Marketplace Premium</div>
-      <div class="left-logo">Wenna<b>Shop</b></div>
-      <div class="left-tagline">La plateforme qui connecte le Gabon et le Maroc — artisans, acheteurs, cultures.</div>
+      <img src="wenna_logo01.png" alt="WennaShop" class="left-logo-img"/>
+      <p class="left-tagline">La marketplace qui connecte vendeurs et acheteurs à travers toute l'Afrique.</p>
       <div class="left-flags">
         <div class="flag-item">🇬🇦 Gabon</div>
         <div class="flag-sep"></div>
@@ -194,7 +626,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
     </div>
   </div>
 
-  <!-- RIGHT -->
+  <!-- ── RIGHT PANEL ── -->
   <div class="right-panel">
     <div class="form-wrap">
 
@@ -204,19 +636,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
         <button id="tab-ins" class="tab" onclick="switchMode('inscription')">Inscription</button>
       </div>
 
-      <!-- PANEL CONNEXION -->
+      <!-- ── PANEL CONNEXION ── -->
       <div id="panel-connexion" class="panel">
         <div class="form-heading">
           <div class="form-eyebrow">Accès sécurisé</div>
-          <div class="form-title">Bon retour.</div>
+          <div class="form-title">Bon retour 👋</div>
           <div class="form-sub">Connectez-vous à votre espace WennaShop.</div>
         </div>
 
         <div class="field inp-icon-left">
           <div class="field-label">Email</div>
           <div class="input-wrap">
-            <span class="material-symbols-outlined field-icon left">mail</span>
-            <input id="cnx-email" type="email" placeholder="amira@exemple.com" class="inp" autocomplete="email"/>
+            <span class="field-icon left">✉</span>
+            <input id="cnx-email" type="email" placeholder="votre@email.com" class="inp" autocomplete="email"/>
           </div>
         </div>
 
@@ -226,13 +658,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
             <button class="forgot" onclick="sendReset()">Oublié ?</button>
           </div>
           <div class="input-wrap">
-            <span class="material-symbols-outlined field-icon left">lock</span>
+            <span class="field-icon left">🔒</span>
             <input id="cnx-pwd" type="password" placeholder="••••••••" class="inp" autocomplete="current-password"/>
-            <button class="material-symbols-outlined field-icon right" onclick="togglePwd('cnx-pwd','eye-cnx')" id="eye-cnx">visibility</button>
+            <button class="field-icon right" onclick="togglePwd('cnx-pwd','eye-cnx')" id="eye-cnx">👁</button>
           </div>
         </div>
 
-        <button id="btn-cnx" class="btn-fire" onclick="handleConnexion()">
+        <button id="btn-cnx" class="btn-primary" onclick="handleConnexion()">
           <div class="spinner"></div>
           <span class="btn-label">Se connecter</span>
         </button>
@@ -250,16 +682,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
 
         <div class="switch-link">
           Pas encore de compte ?
-          <button onclick="switchMode('inscription')">S'inscrire</button>
+          <button onclick="switchMode('inscription')">S'inscrire gratuitement</button>
         </div>
       </div>
 
-      <!-- PANEL INSCRIPTION -->
+      <!-- ── PANEL INSCRIPTION ── -->
       <div id="panel-inscription" class="panel hidden-panel">
         <div class="form-heading">
           <div class="form-eyebrow">Nouveau compte</div>
-          <div class="form-title">Rejoignez-nous.</div>
-          <div class="form-sub">Créez votre espace vendeur ou acheteur.</div>
+          <div class="form-title">Rejoignez-nous 🌍</div>
+          <div class="form-sub">Inscription gratuite — acheteur ou vendeur.</div>
         </div>
 
         <div class="grid-2" style="margin-bottom:18px;">
@@ -276,7 +708,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
         <div class="field inp-icon-left">
           <div class="field-label">Email</div>
           <div class="input-wrap">
-            <span class="material-symbols-outlined field-icon left">mail</span>
+            <span class="field-icon left">✉</span>
             <input id="ins-email" type="email" class="inp" autocomplete="email"/>
           </div>
         </div>
@@ -284,30 +716,27 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
         <div class="field inp-icon-left">
           <div class="field-label">Mot de passe</div>
           <div class="input-wrap">
-            <span class="material-symbols-outlined field-icon left">lock</span>
+            <span class="field-icon left">🔒</span>
             <input id="ins-pwd" type="password" placeholder="Min. 8 caractères" class="inp" autocomplete="new-password" oninput="evalStrength(this.value)"/>
-            <button class="material-symbols-outlined field-icon right" onclick="togglePwd('ins-pwd','eye-ins')" id="eye-ins">visibility</button>
+            <button class="field-icon right" onclick="togglePwd('ins-pwd','eye-ins')" id="eye-ins">👁</button>
           </div>
           <div class="pwd-bar-wrap"><div id="pwd-bar"></div></div>
           <div id="pwd-hint"></div>
         </div>
 
         <div class="field">
-          <div class="field-label">
-            Genre
-            <span style="color:#333;font-size:8px;letter-spacing:1px;">Personnalise vos recommandations</span>
-          </div>
+          <div class="field-label">Genre <span style="font-size:10px;color:var(--text-faint);text-transform:none;letter-spacing:0;">Personnalise vos recommandations</span></div>
           <div class="genre-group">
-            <button class="genre-btn" data-genre="homme" onclick="selectGenre('homme')"><span>Homme</span></button>
-            <button class="genre-btn" data-genre="femme" onclick="selectGenre('femme')"><span>Femme</span></button>
-            <button class="genre-btn" data-genre="autre" onclick="selectGenre('autre')"><span class="genre-icon">✦</span><span>Autre</span></button>
-            <button class="genre-btn" data-genre="non_precise" onclick="selectGenre('non_precise')"><span class="genre-icon">◎</span><span>Ne pas dire</span></button>
+            <button class="genre-btn" data-genre="homme" onclick="selectGenre('homme')">Homme</button>
+            <button class="genre-btn" data-genre="femme" onclick="selectGenre('femme')">Femme</button>
+            <button class="genre-btn" data-genre="autre" onclick="selectGenre('autre')">Autre</button>
+            <button class="genre-btn" data-genre="non_precise" onclick="selectGenre('non_precise')">Discret</button>
           </div>
-          <div class="genre-hint" id="genre-hint">Sélectionnez pour recevoir des suggestions adaptées à vos préférences.</div>
+          <div class="genre-hint" id="genre-hint">Sélectionnez pour recevoir des suggestions adaptées.</div>
         </div>
 
         <div class="field">
-          <div class="field-label">Pays d'origine</div>
+          <div class="field-label">Pays</div>
           <div class="choice-group">
             <button class="choice-btn" data-country="gabon" onclick="selectCountry('gabon')">🇬🇦 Gabon</button>
             <button class="choice-btn" data-country="maroc" onclick="selectCountry('maroc')">🇲🇦 Maroc</button>
@@ -318,12 +747,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
           <div class="field-label">Vous êtes</div>
           <div class="choice-group">
             <button class="role-btn" data-role="buyer" onclick="selectRole('buyer')">
-              <span class="material-symbols-outlined" style="font-size:22px;">shopping_bag</span>
+              <span class="role-icon">🛍️</span>
               Acheteur
             </button>
             <button class="role-btn" data-role="artisan" onclick="selectRole('artisan')">
-              <span class="material-symbols-outlined" style="font-size:22px;">storefront</span>
-              Artisan / Vendeur
+              <span class="role-icon">🏪</span>
+              Vendeur
             </button>
           </div>
         </div>
@@ -335,9 +764,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
           </label>
         </div>
 
-        <button id="btn-ins" class="btn-fire" onclick="handleInscription()">
+        <button id="btn-ins" class="btn-primary" onclick="handleInscription()">
           <div class="spinner"></div>
-          <span class="btn-label">Créer mon compte</span>
+          <span class="btn-label">Créer mon compte gratuitement</span>
         </button>
 
         <div class="divider">
@@ -362,18 +791,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
 </div>
 
 <script>
-// ── CURSOR ─────────────────────────────────────────────────────
-const cur  = document.getElementById('cursor')
-const ring = document.getElementById('cursor-ring')
-document.addEventListener('mousemove', e => {
-  cur.style.left  = e.clientX + 'px'; cur.style.top  = e.clientY + 'px'
-  ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px'
-})
-
-// ── SUPABASE — référence directe à window.db (déjà initialisé dans <head>)
+// ── SUPABASE ──
 function getSb() { return window.db || null }
 
-// Si déjà connecté → rediriger
+// Rediriger si déjà connecté
 ;(async () => {
   const sb = getSb()
   if (!sb) return
@@ -386,7 +807,7 @@ function getSb() { return window.db || null }
   } catch(e) { console.warn('[compte] getSession:', e.message) }
 })()
 
-// ── STATE ──────────────────────────────────────────────────────
+// ── STATE ──
 let selectedCountry = null
 let selectedRole    = null
 let selectedGenre   = null
@@ -394,24 +815,24 @@ let selectedGenre   = null
 const GENRE_HINTS = {
   homme      : 'Vous verrez en priorité : bijoux hommes, accessoires, djellabas, art traditionnel masculin.',
   femme      : 'Vous verrez en priorité : tissu, bijoux, maroquinerie, cosmétiques, art textile féminin.',
-  autre      : "Recommandations variées sur l'ensemble des catégories, sans distinction.",
-  non_precise: 'Vous recevrez des suggestions générales sur toutes les catégories.'
+  autre      : "Recommandations variées sur l'ensemble des catégories.",
+  non_precise: 'Suggestions générales sur toutes les catégories.'
 }
 
-// ── SWITCH MODE ────────────────────────────────────────────────
+// ── MODE ──
 function switchMode(mode) {
-  const cnx = document.getElementById('panel-connexion')
+  const cnx  = document.getElementById('panel-connexion')
   const ins  = document.getElementById('panel-inscription')
   const tCnx = document.getElementById('tab-cnx')
   const tIns = document.getElementById('tab-ins')
   if (mode === 'connexion') {
     cnx.classList.remove('hidden-panel'); ins.classList.add('hidden-panel')
-    tCnx.classList.add('active'); tIns.classList.remove('active')
-    cnx.style.animation='none'; cnx.offsetHeight; cnx.style.animation=''
+    tCnx.classList.add('active');         tIns.classList.remove('active')
+    cnx.style.animation = 'none'; cnx.offsetHeight; cnx.style.animation = ''
   } else {
     ins.classList.remove('hidden-panel'); cnx.classList.add('hidden-panel')
-    tIns.classList.add('active'); tCnx.classList.remove('active')
-    ins.style.animation='none'; ins.offsetHeight; ins.style.animation=''
+    tIns.classList.add('active');         tCnx.classList.remove('active')
+    ins.style.animation = 'none'; ins.offsetHeight; ins.style.animation = ''
   }
 }
 
@@ -428,14 +849,12 @@ function selectGenre(val) {
   document.querySelectorAll('[data-genre]').forEach(b => b.classList.toggle('active', b.dataset.genre === val))
   const hint = document.getElementById('genre-hint')
   hint.textContent = GENRE_HINTS[val] || ''
-  hint.style.borderLeftColor = 'rgba(255,107,43,.5)'
-  hint.style.color = 'rgba(240,236,230,.6)'
 }
 function togglePwd(inputId, iconId) {
   const inp = document.getElementById(inputId)
   const ico = document.getElementById(iconId)
   inp.type = inp.type === 'password' ? 'text' : 'password'
-  ico.textContent = inp.type === 'password' ? 'visibility' : 'visibility_off'
+  ico.textContent = inp.type === 'password' ? '👁' : '🙈'
 }
 function evalStrength(pwd) {
   let score = 0
@@ -444,22 +863,24 @@ function evalStrength(pwd) {
   if (/[0-9]/.test(pwd)) score++
   if (/[^A-Za-z0-9]/.test(pwd)) score++
   const levels = [
-    {w:'0%',bg:'transparent',msg:''},
-    {w:'25%',bg:'#ba1a1a',msg:'Faible'},
-    {w:'50%',bg:'#d0a600',msg:'Moyen'},
-    {w:'75%',bg:'var(--fire)',msg:'Bon'},
-    {w:'100%',bg:'#22c55e',msg:'Excellent'},
+    { w:'0%',   bg:'transparent', msg:'' },
+    { w:'25%',  bg:'#ef4444',     msg:'Faible' },
+    { w:'50%',  bg:'#f59e0b',     msg:'Moyen' },
+    { w:'75%',  bg:'var(--accent)',msg:'Bon' },
+    { w:'100%', bg:'#22c55e',     msg:'Excellent' },
   ]
   const l = levels[score] || levels[0]
-  document.getElementById('pwd-bar').style.width = l.w
+  document.getElementById('pwd-bar').style.width      = l.w
   document.getElementById('pwd-bar').style.background = l.bg
-  document.getElementById('pwd-hint').textContent = l.msg
+  document.getElementById('pwd-hint').textContent     = l.msg
+  document.getElementById('pwd-hint').style.color     = l.bg === 'transparent' ? 'var(--text-faint)' : l.bg
 }
 
-// ── TOAST ──────────────────────────────────────────────────────
-function toast(msg, type='ok') {
+// ── TOAST ──
+function toast(msg, type = 'ok') {
   const el = document.getElementById('toast')
-  el.textContent = msg; el.className = `show ${type}`
+  el.textContent = msg
+  el.className = `show ${type}`
   setTimeout(() => el.className = type, 3500)
 }
 function setLoading(btnId, on) {
@@ -474,12 +895,12 @@ function need(id, label) {
   return v
 }
 
-// ── CONNEXION ──────────────────────────────────────────────────
+// ── CONNEXION ──
 async function handleConnexion() {
   const sb = getSb()
   if (!sb) { toast('Erreur de connexion. Recharge la page.', 'ko'); return }
   const email = need('cnx-email', 'Email')
-  const pwd   = need('cnx-pwd',   'Mot de passe')
+  const pwd   = need('cnx-pwd', 'Mot de passe')
   if (!email || !pwd) return
   setLoading('btn-cnx', true)
   try {
@@ -499,7 +920,7 @@ async function handleConnexion() {
   } finally { setLoading('btn-cnx', false) }
 }
 
-// ── INSCRIPTION ────────────────────────────────────────────────
+// ── INSCRIPTION ──
 async function handleInscription() {
   const sb = getSb()
   if (!sb) { toast('Erreur de connexion. Recharge la page.', 'ko'); return }
@@ -508,9 +929,9 @@ async function handleInscription() {
   const email  = need('ins-email', 'Email')
   if (!prenom || !nom || !email) return
   const pwd = document.getElementById('ins-pwd')?.value || ''
-  if (pwd.length < 8) { toast('Mot de passe : 8 caractères minimum', 'ko'); return }
-  if (!selectedCountry) { toast("Sélectionnez votre pays d'origine", 'ko'); return }
-  if (!selectedRole)    { toast('Sélectionnez votre rôle', 'ko'); return }
+  if (pwd.length < 8)      { toast('Mot de passe : 8 caractères minimum', 'ko'); return }
+  if (!selectedCountry)    { toast("Sélectionnez votre pays", 'ko'); return }
+  if (!selectedRole)       { toast('Sélectionnez votre rôle', 'ko'); return }
   if (!document.getElementById('cgu')?.checked) { toast('Acceptez les CGU pour continuer', 'ko'); return }
   const genre = selectedGenre || 'non_precise'
   setLoading('btn-ins', true)
@@ -519,12 +940,12 @@ async function handleInscription() {
       email, password: pwd,
       options: {
         data: {
-          full_name: `${prenom} ${nom}`,
+          full_name:  `${prenom} ${nom}`,
           first_name: prenom,
-          last_name: nom,
-          country: selectedCountry,
-          role: selectedRole,
-          gender: genre
+          last_name:  nom,
+          country:    selectedCountry,
+          role:       selectedRole,
+          gender:     genre
         }
       }
     })
@@ -547,7 +968,7 @@ async function handleInscription() {
   } finally { setLoading('btn-ins', false) }
 }
 
-// ── GOOGLE ─────────────────────────────────────────────────────
+// ── GOOGLE ──
 async function handleGoogle() {
   const sb = getSb()
   if (!sb) { toast('Erreur de connexion. Recharge la page.', 'ko'); return }
@@ -558,7 +979,7 @@ async function handleGoogle() {
   if (error) toast(error.message, 'ko')
 }
 
-// ── RESET MOT DE PASSE ─────────────────────────────────────────
+// ── RESET MOT DE PASSE ──
 async function sendReset() {
   const sb = getSb()
   if (!sb) { toast('Erreur de connexion. Recharge la page.', 'ko'); return }
