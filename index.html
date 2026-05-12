@@ -4,8 +4,9 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>WennaShop — Connexion / Inscription</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css"/>
+<style>.ph { font-size: 18px; line-height: 1; }</style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const SUPABASE_URL      = 'https://aakxoydznmybstfozjte.supabase.co'
@@ -647,7 +648,7 @@ button.forgot:hover { text-decoration: underline; }
         <div class="field inp-icon-left">
           <div class="field-label">Email</div>
           <div class="input-wrap">
-            <span class="field-icon left">✉</span>
+            <i class="ph ph-envelope field-icon left"></i>
             <input id="cnx-email" type="email" placeholder="votre@email.com" class="inp" autocomplete="email"/>
           </div>
         </div>
@@ -658,9 +659,9 @@ button.forgot:hover { text-decoration: underline; }
             <button class="forgot" onclick="sendReset()">Oublié ?</button>
           </div>
           <div class="input-wrap">
-            <span class="field-icon left">🔒</span>
+            <i class="ph ph-lock field-icon left"></i>
             <input id="cnx-pwd" type="password" placeholder="••••••••" class="inp" autocomplete="current-password"/>
-            <button class="field-icon right" onclick="togglePwd('cnx-pwd','eye-cnx')" id="eye-cnx">👁</button>
+            <button class="field-icon right" onclick="togglePwd('cnx-pwd','eye-cnx')" id="eye-cnx"><i class="ph ph-eye"></i></button>
           </div>
         </div>
 
@@ -708,7 +709,7 @@ button.forgot:hover { text-decoration: underline; }
         <div class="field inp-icon-left">
           <div class="field-label">Email</div>
           <div class="input-wrap">
-            <span class="field-icon left">✉</span>
+            <i class="ph ph-envelope field-icon left"></i>
             <input id="ins-email" type="email" class="inp" autocomplete="email"/>
           </div>
         </div>
@@ -716,7 +717,7 @@ button.forgot:hover { text-decoration: underline; }
         <div class="field inp-icon-left">
           <div class="field-label">Mot de passe</div>
           <div class="input-wrap">
-            <span class="field-icon left">🔒</span>
+            <i class="ph ph-lock field-icon left"></i>
             <input id="ins-pwd" type="password" placeholder="Min. 8 caractères" class="inp" autocomplete="new-password" oninput="evalStrength(this.value)"/>
             <button class="field-icon right" onclick="togglePwd('ins-pwd','eye-ins')" id="eye-ins">👁</button>
           </div>
@@ -854,7 +855,7 @@ function togglePwd(inputId, iconId) {
   const inp = document.getElementById(inputId)
   const ico = document.getElementById(iconId)
   inp.type = inp.type === 'password' ? 'text' : 'password'
-  ico.textContent = inp.type === 'password' ? '👁' : '🙈'
+  ico.innerHTML = inp.type === 'password' ? '<i class="ph ph-eye"></i>' : '<i class="ph ph-eye-slash"></i>'
 }
 function evalStrength(pwd) {
   let score = 0
