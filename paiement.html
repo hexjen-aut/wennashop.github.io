@@ -1,154 +1,212 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>WennaShop — Paiement</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  const SUPABASE_URL = 'https://aakxoydznmybstfozjte.supabase.co'
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
-  window.db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-</script>
-<style>
-:root {
-  --fire: #FF6B2B;
-  --ember: #E85A1A;
-  --ink: #080808;
-  --coal: #111111;
-  --slate: #1A1A1A;
-  --smoke: #242424;
-  --fog: #888;
-  --snow: #f0ece6;
-  --fire-dim: rgba(255,107,43,0.10);
-  --fire-border: rgba(255,107,43,0.25);
-  --success: #22c55e;
-  --success-dim: rgba(34,197,94,0.10);
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);min-height:100vh;overflow-x:hidden;cursor:none;padding-top:64px;padding-bottom:80px}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WennaShop — Paiement</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.config.js"></script>
+  <style>
+    :root {
+      --accent: #ff751f;
+      --accent-dark: #cc5e18;
+      --accent-light: rgba(255,117,31,0.12);
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --surface-2: #1e1e1e;
+      --border: #2a2a2a;
+      --text: #ffffff;
+      --text-muted: #a0a0a0;
+      --text-faint: #555555;
+      --success: #22c55e;
+      --success-dim: rgba(34,197,94,0.10);
+      --error: #ef4444;
+      --font: 'Nunito', system-ui, sans-serif;
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-pill: 9999px;
+      --shadow-orange: 0 4px 24px rgba(255,117,31,.25);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-top: 64px;
+      padding-bottom: 100px;
+      overflow-x: hidden;
+      cursor: none;
+    }
 
-.cur{position:fixed;width:10px;height:10px;background:var(--fire);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s}
-.cur-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(255,107,43,.45);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .3s,height .3s}
-.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24;font-size:20px;line-height:1;vertical-align:middle}
+    /* ── CURSEUR ── */
+    .cur { position:fixed; width:10px; height:10px; background:var(--accent); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); }
+    .cur-ring { position:fixed; width:36px; height:36px; border:1px solid rgba(255,117,31,.4); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:width .3s,height .3s; }
 
-.hd{position:fixed;top:0;left:0;right:0;z-index:100;height:64px;padding:0 48px;display:flex;align-items:center;justify-content:space-between;background:rgba(8,8,8,.94);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,107,43,.12)}
-.logo{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;font-style:italic;color:var(--snow);text-decoration:none;letter-spacing:-.5px}
-.logo b{color:var(--fire)}
-.hd-back{background:none;border:none;color:var(--fog);cursor:none;display:flex;align-items:center;gap:8px;font-size:10px;letter-spacing:2px;text-transform:uppercase;transition:color .2s;text-decoration:none;font-family:'DM Sans',sans-serif}
-.hd-back:hover{color:var(--fire)}
+    /* ── TOAST ── */
+    #toast {
+      position:fixed; top:80px; left:50%; transform:translateX(-50%) translateY(-8px);
+      z-index:500; border-radius:var(--radius-sm); padding:12px 24px;
+      font-size:12px; font-weight:600; letter-spacing:.5px;
+      opacity:0; pointer-events:none; transition:all .3s; white-space:nowrap;
+      background:var(--surface); border:1px solid var(--border); color:var(--text);
+    }
+    #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+    #toast.toast-error { background:#1a0808; border-color:rgba(239,68,68,.4); color:#ef4444; }
+    #toast.toast-success { background:#081a08; border-color:rgba(34,197,94,.3); color:#22c55e; }
 
-.steps-bar{display:flex;align-items:center;justify-content:center;gap:0;padding:28px 20px 0;max-width:600px;margin:0 auto}
-.step{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1}
-.step-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;letter-spacing:1px;transition:all .3s}
-.step-num.done{background:var(--fire);color:#fff}
-.step-num.active{background:var(--fire);color:#fff;box-shadow:0 0 16px rgba(255,107,43,.35)}
-.step-num.pending{background:var(--slate);color:var(--fog);border:1px solid rgba(255,255,255,.08)}
-.step-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--fog);white-space:nowrap}
-.step-label.active{color:var(--snow)}
-.step-line{flex:1;height:1px;background:rgba(255,255,255,.06);margin-bottom:22px;max-width:80px}
-.step-line.done{background:var(--fire)}
+    /* ── NAVBAR ── */
+    .hd {
+      position:fixed; top:0; left:0; right:0; z-index:100; height:64px;
+      padding:0 48px; display:flex; align-items:center; justify-content:space-between;
+      background:rgba(10,10,10,.94); backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(255,117,31,.1);
+    }
+    .logo { font-family:var(--font); font-size:22px; font-weight:900; color:var(--text); text-decoration:none; letter-spacing:-1px; }
+    .logo span { color:var(--accent); }
+    .hd-back { background:none; border:none; color:var(--text-muted); cursor:none; display:flex; align-items:center; gap:8px; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; transition:color .2s; text-decoration:none; }
+    .hd-back:hover { color:var(--accent); }
 
-#toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-8px);z-index:500;background:var(--slate);border:1px solid var(--fire-border);color:var(--snow);padding:12px 24px;font-size:12px;letter-spacing:.5px;opacity:0;pointer-events:none;transition:all .3s;white-space:nowrap}
-#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-#toast.success{border-color:rgba(34,197,94,.3);background:#0d1f11}
+    /* ── STEPS ── */
+    .steps-bar { display:flex; align-items:center; justify-content:center; padding:28px 20px 0; max-width:600px; margin:0 auto; }
+    .step { display:flex; flex-direction:column; align-items:center; gap:6px; flex:1; }
+    .step-num { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; letter-spacing:1px; transition:all .3s; }
+    .step-num.done { background:var(--accent); color:#fff; }
+    .step-num.active { background:var(--accent); color:#fff; box-shadow:0 0 16px rgba(255,117,31,.35); }
+    .step-num.pending { background:var(--surface-2); color:var(--text-faint); border:1px solid var(--border); }
+    .step-label { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--text-faint); white-space:nowrap; font-weight:700; }
+    .step-label.active { color:var(--text); }
+    .step-line { flex:1; height:1px; background:var(--border); margin-bottom:22px; max-width:80px; }
+    .step-line.done { background:var(--accent); }
 
-.pay-layout{display:flex;gap:40px;padding:32px 48px;max-width:1080px;margin:0 auto;align-items:flex-start}
-.pay-main{flex:1;min-width:0}
-.pay-aside{width:340px;flex-shrink:0;position:sticky;top:84px}
+    /* ── SKELETON ── */
+    .skel { background:linear-gradient(90deg,#1a1a1a 25%,#222 50%,#1a1a1a 75%); background-size:200% 100%; animation:shim 1.5s infinite; border-radius:var(--radius-sm); }
+    @keyframes shim { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-.eyebrow{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--fire);margin-bottom:8px;display:flex;align-items:center;gap:12px}
-.eyebrow::before{content:'';display:block;width:20px;height:1px;background:var(--fire)}
-.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,42px);font-weight:700;font-style:italic;letter-spacing:-1px;margin-bottom:28px;line-height:1}
+    /* ── ÉTATS ── */
+    #state-loading { display:none; padding:32px 48px; max-width:1080px; margin:0 auto; gap:40px; }
+    #state-success { display:none; flex-direction:column; align-items:center; justify-content:center; min-height:70vh; text-align:center; padding:40px; }
+    #state-error { display:none; flex-direction:column; align-items:center; justify-content:center; min-height:70vh; text-align:center; padding:40px; }
+    #state-content { display:none; }
 
-.card{background:var(--coal);border:1px solid rgba(255,255,255,.06);padding:24px;margin-bottom:20px}
-.card-title{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--fog);margin-bottom:18px;display:flex;align-items:center;gap:10px}
-.card-title::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.05)}
+    /* ── SUCCESS ── */
+    .success-ring { width:80px; height:80px; border-radius:50%; background:var(--success-dim); border:1px solid rgba(34,197,94,.25); display:flex; align-items:center; justify-content:center; margin:0 auto 24px; }
+    .success-icon { font-size:40px; }
+    .success-title { font-size:52px; font-weight:900; letter-spacing:-2px; margin-bottom:8px; }
+    .success-sub { font-size:14px; color:var(--text-muted); margin-bottom:32px; line-height:1.7; font-weight:500; }
+    .success-order-id { font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--accent); margin-bottom:28px; padding:10px 20px; border:1px solid rgba(255,117,31,.25); display:inline-block; font-weight:800; }
 
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.form-grid.full{grid-template-columns:1fr}
-.field{display:flex;flex-direction:column;gap:6px}
-.field label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--fog)}
-.field input,.field select,.field textarea{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:var(--snow);padding:11px 14px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;width:100%}
-.field input::placeholder,.field textarea::placeholder{color:#333}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--fire-border)}
-.field select{cursor:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
-.field select option{background:var(--coal)}
-.field textarea{resize:vertical;min-height:72px}
+    /* ── LAYOUT ── */
+    .pay-layout { display:flex; gap:40px; padding:32px 48px; max-width:1100px; margin:0 auto; align-items:flex-start; }
+    .pay-main { flex:1; min-width:0; }
+    .pay-aside { width:340px; flex-shrink:0; position:sticky; top:84px; }
 
-.methods-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.method-card{border:1px solid rgba(255,255,255,.08);padding:16px 18px;cursor:none;transition:all .2s;display:flex;flex-direction:column;gap:8px;background:var(--slate);position:relative}
-.method-card:hover{border-color:rgba(255,107,43,.3)}
-.method-card.selected{border-color:var(--fire);background:var(--fire-dim)}
-.method-card.selected::before{content:'';position:absolute;top:10px;right:10px;width:8px;height:8px;background:var(--fire);border-radius:50%}
-.method-name{font-size:12px;font-weight:500;letter-spacing:.5px}
-.method-sub{font-size:10px;color:var(--fog)}
-.method-badge{display:inline-block;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;padding:2px 6px;background:var(--fire-dim);color:var(--fire);border:1px solid var(--fire-border)}
+    .page-label { font-size:9px; letter-spacing:3px; text-transform:uppercase; color:var(--accent); margin-bottom:8px; font-weight:700; }
+    .section-title { font-size:clamp(28px,4vw,44px); font-weight:900; letter-spacing:-1.5px; margin-bottom:28px; line-height:1; }
 
-.summary-card{background:var(--coal);border:1px solid rgba(255,255,255,.06);padding:28px}
-.summary-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-style:italic;font-weight:700;margin-bottom:20px}
-.order-items{display:flex;flex-direction:column;gap:14px;margin-bottom:20px}
-.order-item{display:flex;gap:12px;align-items:flex-start}
-.order-item img{width:52px;height:64px;object-fit:cover;flex-shrink:0;background:var(--slate)}
-.order-item-info{flex:1}
-.order-item-name{font-size:13px;font-weight:500;line-height:1.3;margin-bottom:3px}
-.order-item-qty{font-size:10px;color:var(--fog)}
-.order-item-price{font-size:13px;font-weight:600;color:var(--fire);white-space:nowrap}
-.sum-divider{height:1px;background:rgba(255,255,255,.05);margin:16px 0}
-.sum-line{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:12px}
-.sum-line .lbl{color:var(--fog);letter-spacing:1px;text-transform:uppercase;font-size:10px}
-.sum-total-lbl{font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic}
-.sum-total-val{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;color:var(--fire)}
+    /* ── CARDS ── */
+    .card { background:var(--surface); border:1px solid var(--border); padding:24px; margin-bottom:20px; border-radius:var(--radius-md); }
+    .card-title { font-size:10px; letter-spacing:2.5px; text-transform:uppercase; color:var(--text-muted); margin-bottom:18px; display:flex; align-items:center; gap:10px; font-weight:700; }
+    .card-title::after { content:''; flex:1; height:1px; background:var(--border); }
 
-.sec-badges{display:flex;gap:16px;margin-top:16px;flex-wrap:wrap}
-.sec-badge{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#444;display:flex;align-items:center;gap:4px}
+    /* ── FORM ── */
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .form-grid.full { grid-template-columns:1fr; }
+    .field { display:flex; flex-direction:column; gap:6px; }
+    .field label { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); font-weight:700; }
+    .field input, .field select, .field textarea {
+      background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+      padding:11px 14px; font-size:13px; font-family:var(--font); outline:none;
+      transition:border-color .2s; width:100%; border-radius:var(--radius-sm); font-weight:500;
+    }
+    .field input::placeholder, .field textarea::placeholder { color:var(--text-faint); }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color:var(--accent); }
+    .field select { cursor:none; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a0a0a0' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; }
+    .field select option { background:var(--surface); }
+    .field textarea { resize:vertical; min-height:72px; }
 
-.btn-fire{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--fire);color:#fff;padding:16px 28px;font-size:10px;font-weight:500;letter-spacing:3px;text-transform:uppercase;border:none;cursor:none;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));transition:background .2s,transform .15s;font-family:'DM Sans',sans-serif;width:100%;margin-top:20px}
-.btn-fire:hover:not(:disabled){background:var(--ember);transform:translateY(-1px)}
-.btn-fire:disabled{opacity:.35;cursor:not-allowed}
-.btn-ghost{display:flex;align-items:center;justify-content:center;gap:8px;background:transparent;color:var(--fog);padding:13px;font-size:10px;letter-spacing:2px;text-transform:uppercase;border:1px solid rgba(255,255,255,.08);cursor:none;transition:all .2s;font-family:'DM Sans',sans-serif;width:100%;margin-top:8px;text-decoration:none}
-.btn-ghost:hover{border-color:var(--fire-border);color:var(--fire)}
+    /* ── MÉTHODES ── */
+    .methods-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .method-card {
+      border:1px solid var(--border); padding:16px 18px; cursor:none;
+      transition:all .2s; display:flex; flex-direction:column; gap:8px;
+      background:var(--surface-2); position:relative; border-radius:var(--radius-md);
+    }
+    .method-card:hover { border-color:rgba(255,117,31,.35); }
+    .method-card.selected { border-color:var(--accent); background:var(--accent-light); }
+    .method-card.selected::before { content:''; position:absolute; top:10px; right:10px; width:8px; height:8px; background:var(--accent); border-radius:50%; }
+    .method-name { font-size:13px; font-weight:700; }
+    .method-sub { font-size:11px; color:var(--text-muted); font-weight:500; }
+    .method-badge { display:inline-block; font-size:8px; letter-spacing:1.5px; text-transform:uppercase; padding:2px 8px; background:var(--accent-light); color:var(--accent); border:1px solid rgba(255,117,31,.25); border-radius:var(--radius-pill); font-weight:700; }
+    .method-details { background:var(--surface-2); border:1px solid var(--border); padding:14px 16px; margin-top:14px; border-radius:var(--radius-sm); }
+    .method-details p { font-size:12px; color:var(--text-muted); line-height:1.6; font-weight:500; }
 
-.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.15);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
-@keyframes spin{to{transform:rotate(360deg)}}
+    /* ── SUMMARY ── */
+    .summary-card { background:var(--surface); border:1px solid var(--border); padding:28px; border-radius:var(--radius-lg); }
+    .summary-title { font-size:22px; font-weight:900; margin-bottom:20px; letter-spacing:-.5px; }
+    .order-items { display:flex; flex-direction:column; gap:14px; margin-bottom:20px; }
+    .order-item { display:flex; gap:12px; align-items:flex-start; }
+    .order-item img { width:52px; height:64px; object-fit:cover; flex-shrink:0; background:var(--surface-2); border-radius:var(--radius-sm); }
+    .order-item-ph { width:52px; height:64px; flex-shrink:0; background:var(--surface-2); border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; font-size:20px; opacity:.3; }
+    .order-item-info { flex:1; }
+    .order-item-name { font-size:13px; font-weight:700; line-height:1.3; margin-bottom:3px; }
+    .order-item-qty { font-size:11px; color:var(--text-muted); font-weight:600; }
+    .order-item-price { font-size:14px; font-weight:800; color:var(--accent); white-space:nowrap; }
+    .sum-divider { height:1px; background:var(--border); margin:16px 0; }
+    .sum-line { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+    .sum-lbl { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); font-weight:700; }
+    .sum-val { font-size:13px; font-weight:700; }
+    .sum-total-lbl { font-size:16px; font-weight:800; }
+    .sum-total-val { font-size:32px; font-weight:900; color:var(--accent); }
 
-/* Skeleton */
-.skel{background:linear-gradient(90deg,#1a1a1a 25%,#222 50%,#1a1a1a 75%);background-size:200% 100%;animation:shim 1.5s infinite}
-@keyframes shim{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    /* ── BOUTONS ── */
+    .btn-primary {
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      background:var(--accent); color:#fff; padding:16px 28px;
+      font-size:11px; font-weight:700; letter-spacing:3px; text-transform:uppercase;
+      border:none; cursor:none; font-family:var(--font); width:100%; margin-top:20px;
+      transition:background .2s,transform .15s,box-shadow .2s;
+      clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));
+    }
+    .btn-primary:hover:not(:disabled) { background:var(--accent-dark); transform:translateY(-1px); box-shadow:var(--shadow-orange); }
+    .btn-primary:disabled { opacity:.35; cursor:not-allowed; }
+    .btn-ghost {
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      background:transparent; color:var(--text-muted); padding:13px;
+      font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+      border:1px solid var(--border); cursor:none; font-family:var(--font);
+      width:100%; margin-top:8px; text-decoration:none; transition:all .2s; border-radius:var(--radius-sm);
+    }
+    .btn-ghost:hover { border-color:rgba(255,117,31,.35); color:var(--accent); }
 
-/* Success */
-#state-success{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center;padding:40px}
-.success-ring{width:80px;height:80px;border-radius:50%;background:var(--success-dim);border:1px solid rgba(34,197,94,.25);display:flex;align-items:center;justify-content:center;margin:0 auto 24px}
-.success-ring .material-symbols-outlined{font-size:36px;color:var(--success);font-variation-settings:'FILL' 1,'wght' 300,'GRAD' 0,'opsz' 40}
-.success-title{font-family:'Cormorant Garamond',serif;font-size:48px;font-style:italic;font-weight:700;margin-bottom:8px}
-.success-sub{font-size:13px;color:var(--fog);margin-bottom:32px;line-height:1.6}
-.success-order-id{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--fire);margin-bottom:28px;padding:10px 20px;border:1px solid var(--fire-border);display:inline-block}
+    .sec-badges { display:flex; gap:16px; margin-top:16px; flex-wrap:wrap; }
+    .sec-badge { font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-faint); display:flex; align-items:center; gap:4px; font-weight:700; }
 
-/* Error */
-#state-error{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center;padding:40px}
+    .spinner { width:16px; height:16px; border:2px solid rgba(255,255,255,.2); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; display:inline-block; flex-shrink:0; }
+    @keyframes spin { to { transform:rotate(360deg) } }
 
-/* Loading */
-#state-loading{padding:40px 48px;max-width:1080px;margin:0 auto;display:none;gap:40px}
+    /* ── BOTTOM NAV MOBILE ── */
+    .bnav { display:none; position:fixed; bottom:0; left:0; right:0; z-index:100; background:rgba(10,10,10,.96); backdrop-filter:blur(20px); border-top:1px solid rgba(255,117,31,.12); padding:10px 0 24px; }
+    .bnav-inner { display:flex; justify-content:space-around; }
+    .bnav-item { display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--text-faint); text-decoration:none; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; transition:color .2s; }
+    .bnav-item:hover { color:var(--accent); }
 
-.bnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(8,8,8,.95);backdrop-filter:blur(20px);border-top:1px solid rgba(255,107,43,.15);padding:10px 0 22px}
-.bnav-inner{display:flex;justify-content:space-around}
-.bnav-item{display:flex;flex-direction:column;align-items:center;gap:4px;color:#555;text-decoration:none;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;transition:color .2s;cursor:none}
-.bnav-item:hover{color:var(--fire)}
-
-@media(max-width:768px){
-  body{cursor:auto}
-  .cur,.cur-ring{display:none}
-  .hd{padding:0 20px}
-  .pay-layout{flex-direction:column;padding:20px 16px;gap:20px}
-  .pay-aside{width:100%;position:static}
-  .form-grid{grid-template-columns:1fr}
-  .methods-grid{grid-template-columns:1fr}
-  .bnav{display:block}
-  #state-loading{flex-direction:column;padding:20px 16px}
-}
-</style>
+    @media(max-width:768px){
+      body { cursor:auto; padding-bottom:100px; }
+      .cur, .cur-ring { display:none; }
+      .hd { padding:0 20px; }
+      .pay-layout { flex-direction:column; padding:20px 16px; gap:20px; }
+      .pay-aside { width:100%; position:static; }
+      .form-grid { grid-template-columns:1fr; }
+      .methods-grid { grid-template-columns:1fr; }
+      #state-loading { flex-direction:column; padding:20px 16px; }
+      .bnav { display:block; }
+    }
+  </style>
 </head>
 <body>
 
@@ -156,24 +214,26 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
 <div class="cur-ring" id="curRing"></div>
 <div id="toast"></div>
 
+<!-- NAVBAR -->
 <header class="hd">
   <a href="panier.html" class="hd-back">
-    <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
     Panier
   </a>
-  <a href="/" class="logo">Wenna<b>Shop</b></a>
+  <a href="index.html" class="logo">Wenna<span>Shop</span></a>
   <div style="width:80px"></div>
 </header>
 
-<div class="steps-bar">
+<!-- STEPS -->
+<div class="steps-bar" id="steps-bar">
   <div class="step">
-    <div class="step-num done">1</div>
+    <div class="step-num done">✓</div>
     <span class="step-label">Panier</span>
   </div>
   <div class="step-line done"></div>
   <div class="step">
     <div class="step-num active">2</div>
-    <span class="step-label active">Livraison</span>
+    <span class="step-label active">Paiement</span>
   </div>
   <div class="step-line"></div>
   <div class="step">
@@ -188,44 +248,45 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
     <div class="skel" style="height:180px;width:100%;"></div>
     <div class="skel" style="height:220px;width:100%;"></div>
   </div>
-  <div style="width:340px;">
+  <div style="width:340px;flex-shrink:0;">
     <div class="skel" style="height:400px;width:100%;"></div>
   </div>
 </div>
 
-<!-- ERROR — aucune redirection vers compte.html -->
+<!-- ERREUR -->
 <div id="state-error" style="display:none;">
-  <span class="material-symbols-outlined" style="font-size:48px;color:#333;margin-bottom:20px;display:block;">error_outline</span>
-  <h2 style="font-family:'Cormorant Garamond',serif;font-size:32px;font-style:italic;font-weight:700;margin-bottom:8px;">Erreur</h2>
-  <p style="font-size:13px;color:var(--fog);margin-bottom:28px;" id="error-msg">Une erreur est survenue.</p>
-  <a href="panier.html" style="display:inline-flex;align-items:center;gap:8px;background:var(--fire);color:#fff;padding:14px 32px;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;text-decoration:none;">
-    Retour au panier
-  </a>
+  <div style="font-size:52px;margin-bottom:20px;opacity:.3;">⚠️</div>
+  <h2 style="font-size:28px;font-weight:800;margin-bottom:8px;">Erreur</h2>
+  <p style="font-size:14px;color:var(--text-muted);margin-bottom:28px;font-weight:500;" id="error-msg">Une erreur est survenue.</p>
+  <a href="panier.html" class="btn-primary" style="width:auto;padding:14px 32px;text-decoration:none;margin-top:0;">Retour au panier</a>
 </div>
 
-<!-- SUCCESS -->
-<div id="state-success">
+<!-- SUCCÈS -->
+<div id="state-success" style="display:none;">
   <div class="success-ring">
-    <span class="material-symbols-outlined">check_circle</span>
+    <span class="success-icon">✅</span>
   </div>
   <h1 class="success-title">Commande confirmée !</h1>
   <p class="success-sub">Merci pour ta commande.<br>Tu recevras une confirmation par email très bientôt.</p>
   <div class="success-order-id" id="success-order-ref">— — —</div>
   <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
-    <a href="tracking.html" class="btn-fire" style="width:auto;padding:14px 32px;text-decoration:none;">Suivre ma commande</a>
-    <a href="boutique.html" class="btn-ghost" style="width:auto;padding:13px 24px;">Continuer mes achats</a>
+    <a href="boutique.html" class="btn-primary" style="width:auto;padding:14px 28px;text-decoration:none;margin-top:0;">Continuer mes achats</a>
+    <a href="compte.html" class="btn-ghost" style="width:auto;padding:13px 24px;margin-top:0;">Voir mes commandes</a>
   </div>
 </div>
 
-<!-- FORM -->
+<!-- CONTENU -->
 <div id="state-content" style="display:none;">
   <div class="pay-layout">
-    <div class="pay-main">
-      <div class="eyebrow">Étape 2 sur 3</div>
-      <h1 class="section-title">Livraison &amp; Paiement</h1>
 
+    <!-- Colonne principale -->
+    <div class="pay-main">
+      <p class="page-label">Étape 2 sur 3</p>
+      <h1 class="section-title">Paiement</h1>
+
+      <!-- Adresse -->
       <div class="card">
-        <div class="card-title">Adresse de livraison</div>
+        <div class="card-title">Coordonnées de livraison</div>
         <div class="form-grid">
           <div class="field"><label>Prénom *</label><input type="text" id="ship-first" placeholder="Ahmed" required/></div>
           <div class="field"><label>Nom *</label><input type="text" id="ship-last" placeholder="Benali" required/></div>
@@ -239,222 +300,312 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);mi
             <label>Pays *</label>
             <select id="ship-country" required>
               <option value="">Sélectionner…</option>
-              <option value="Maroc">Maroc</option>
-              <option value="Gabon">Gabon</option>
+              <option value="Maroc">🇲🇦 Maroc</option>
+              <option value="Gabon">🇬🇦 Gabon</option>
             </select>
           </div>
         </div>
         <div class="form-grid full" style="margin-top:14px;">
-          <div class="field"><label>Notes (optionnel)</label><textarea id="ship-notes" placeholder="Instructions de livraison, étage, digicode…"></textarea></div>
+          <div class="field"><label>Notes (optionnel)</label><textarea id="ship-notes" placeholder="Instructions, quartier, point de repère…"></textarea></div>
         </div>
+        <p style="font-size:11px;color:var(--text-faint);margin-top:14px;font-weight:600;">
+          ℹ️ La livraison est organisée directement par le vendeur. WennaShop coordonne mais ne livre pas.
+        </p>
       </div>
 
+      <!-- Méthode de paiement -->
       <div class="card">
         <div class="card-title">Méthode de paiement</div>
         <div class="methods-grid" id="methods-grid">
-          <div class="method-card selected" data-method="card_maroc" onclick="selectMethod(this)">
+          <div class="method-card selected" data-method="card_maroc">
             <div style="display:flex;align-items:center;justify-content:space-between;">
               <span class="method-name">Carte bancaire</span>
               <span class="method-badge">Maroc</span>
             </div>
             <span class="method-sub">Visa · Mastercard · CMI</span>
           </div>
-          <div class="method-card" data-method="mobile_money_gabon" onclick="selectMethod(this)">
+          <div class="method-card" data-method="mobile_money_gabon">
             <div style="display:flex;align-items:center;justify-content:space-between;">
               <span class="method-name">Mobile Money</span>
               <span class="method-badge">Gabon</span>
             </div>
             <span class="method-sub">Airtel Money · Moov Money</span>
           </div>
-          <div class="method-card" data-method="virement" onclick="selectMethod(this)">
-            <div style="display:flex;align-items:center;justify-content:space-between;">
-              <span class="method-name">Virement bancaire</span>
-            </div>
+          <div class="method-card" data-method="virement">
+            <span class="method-name">Virement bancaire</span>
             <span class="method-sub">Attijari · CIH · BCP</span>
           </div>
-          <div class="method-card" data-method="cash_on_delivery" onclick="selectMethod(this)">
-            <div style="display:flex;align-items:center;justify-content:space-between;">
-              <span class="method-name">Paiement à la livraison</span>
-            </div>
+          <div class="method-card" data-method="cash_on_delivery">
+            <span class="method-name">Paiement à la livraison</span>
             <span class="method-sub">Espèces à la réception</span>
           </div>
         </div>
-        <div id="method-details" style="margin-top:16px;"></div>
+        <div id="method-details"></div>
       </div>
     </div>
 
+    <!-- Résumé -->
     <div class="pay-aside">
       <div class="summary-card">
         <h2 class="summary-title">Récapitulatif</h2>
         <div class="order-items" id="order-items-list"></div>
         <div class="sum-divider"></div>
         <div class="sum-line">
-          <span class="lbl">Sous-total</span>
-          <span id="r-subtotal">—</span>
+          <span class="sum-lbl">Sous-total</span>
+          <span class="sum-val" id="r-subtotal">—</span>
         </div>
         <div class="sum-line" id="discount-line" style="display:none;">
-          <span class="lbl">Remise</span>
-          <span id="r-discount" style="color:var(--success)">—</span>
+          <span class="sum-lbl">Remise</span>
+          <span class="sum-val" id="r-discount" style="color:var(--success);">—</span>
         </div>
         <div class="sum-line">
-          <span class="lbl">Livraison</span>
-          <span style="font-size:11px;color:var(--fire);">Calculée à l'expédition</span>
+          <span class="sum-lbl">Commission WennaShop</span>
+          <span style="font-size:11px;color:var(--text-muted);font-weight:700;">8% (côté vendeur)</span>
+        </div>
+        <div class="sum-line">
+          <span class="sum-lbl">Livraison</span>
+          <span style="font-size:11px;color:var(--accent);font-weight:700;">Via le vendeur</span>
         </div>
         <div class="sum-divider"></div>
         <div class="sum-line" style="align-items:flex-end;">
           <span class="sum-total-lbl">Total</span>
           <span class="sum-total-val" id="r-total">—</span>
         </div>
-        <button id="btn-pay" class="btn-fire" onclick="submitPayment()">
-          <span class="material-symbols-outlined" style="font-size:16px;">lock</span>
+
+        <button id="btn-pay" class="btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
           Confirmer la commande
         </button>
+
         <a href="panier.html" class="btn-ghost">Modifier le panier</a>
+
         <div class="sec-badges">
-          <span class="sec-badge"><span class="material-symbols-outlined" style="font-size:12px;">shield</span> SSL</span>
-          <span class="sec-badge"><span class="material-symbols-outlined" style="font-size:12px;">verified_user</span> Sécurisé</span>
-          <span class="sec-badge"><span class="material-symbols-outlined" style="font-size:12px;">autorenew</span> Remboursable</span>
+          <span class="sec-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            SSL
+          </span>
+          <span class="sec-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Sécurisé
+          </span>
+          <span class="sec-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            PCI-DSS
+          </span>
         </div>
       </div>
     </div>
+
   </div>
 </div>
 
+<!-- NAV MOBILE -->
 <nav class="bnav">
   <div class="bnav-inner">
-    <a href="index.html" class="bnav-item"><span class="material-symbols-outlined">home</span><span>Home</span></a>
-    <a href="boutique.html" class="bnav-item"><span class="material-symbols-outlined">storefront</span><span>Shop</span></a>
-    <a href="dashboard-vendeur.html" class="bnav-item"><span class="material-symbols-outlined">add_circle</span><span>Sell</span></a>
-    <a href="compte.html" class="bnav-item"><span class="material-symbols-outlined">person</span><span>Profil</span></a>
+    <a href="index.html" class="bnav-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Home</span>
+    </a>
+    <a href="boutique.html" class="bnav-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      <span>Shop</span>
+    </a>
+    <a href="dashboard-vendeur.html" class="bnav-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      <span>Vendre</span>
+    </a>
+    <a href="compte.html" class="bnav-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <span>Profil</span>
+    </a>
   </div>
 </nav>
 
 <script>
-// ── CURSEUR ───────────────────────────────────────────
-const cur = document.getElementById('cur'), crng = document.getElementById('curRing')
-let mx=0,my=0,rx=0,ry=0
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY})
-;(function anim(){
-  if(cur){cur.style.left=mx+'px';cur.style.top=my+'px'}
-  rx+=(mx-rx)*.12;ry+=(my-ry)*.12
-  if(crng){crng.style.left=rx+'px';crng.style.top=ry+'px'}
+// ══════════════════════════════════════════════════════════════
+// WENNA PAIEMENT — window.db via supabase.config.js
+// ══════════════════════════════════════════════════════════════
+
+function waitForDb(timeout = 6000) {
+  return new Promise((resolve, reject) => {
+    if (window.db) return resolve(window.db)
+    const start = Date.now()
+    const iv = setInterval(() => {
+      if (window.db) { clearInterval(iv); return resolve(window.db) }
+      if (Date.now() - start > timeout) { clearInterval(iv); reject(new Error('window.db timeout')) }
+    }, 50)
+  })
+}
+
+// CURSEUR
+const curEl = document.getElementById('cur'), curRng = document.getElementById('curRing')
+let mx = 0, my = 0, rx = 0, ry = 0
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY })
+;(function anim() {
+  if (curEl)  { curEl.style.left = mx + 'px'; curEl.style.top = my + 'px' }
+  rx += (mx - rx) * .12; ry += (my - ry) * .12
+  if (curRng) { curRng.style.left = rx + 'px'; curRng.style.top = ry + 'px' }
   requestAnimationFrame(anim)
 })()
 
-// ── TOAST ─────────────────────────────────────────────
-function toast(msg,type='',ms=2800){
-  const t=document.getElementById('toast')
-  t.textContent=msg
-  t.className='show'+(type?' '+type:'')
-  setTimeout(()=>t.className='',ms)
+// TOAST
+let toastTimer = null
+function toast(msg, type = 'default', ms = 3200) {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.className = 'show' + (type === 'error' ? ' toast-error' : type === 'success' ? ' toast-success' : '')
+  clearTimeout(toastTimer)
+  toastTimer = setTimeout(() => { t.className = '' }, ms)
 }
 
-// ── STATES ────────────────────────────────────────────
-function showState(id){
-  ['state-loading','state-content','state-success','state-error'].forEach(s=>{
-    const el=document.getElementById(s)
-    if(!el) return
-    el.style.display='none'
+// ÉTATS
+function showState(id) {
+  ;['state-loading', 'state-content', 'state-success', 'state-error'].forEach(s => {
+    const el = document.getElementById(s)
+    if (!el) return
+    el.style.display = 'none'
   })
-  const target=document.getElementById(id)
-  if(!target) return
-  if(id==='state-loading') target.style.display='flex'
-  else if(id==='state-success'||id==='state-error') target.style.display='flex'
-  else target.style.display='block'
+  const target = document.getElementById(id)
+  if (!target) return
+  if (id === 'state-loading') target.style.display = 'flex'
+  else if (id === 'state-success' || id === 'state-error') target.style.display = 'flex'
+  else target.style.display = 'block'
 
-  // Steps bar : cacher sur success/error
-  const stepsBar=document.querySelector('.steps-bar')
-  if(stepsBar) stepsBar.style.display=(id==='state-success'||id==='state-error')?'none':'flex'
+  const stepsBar = document.getElementById('steps-bar')
+  if (stepsBar) stepsBar.style.display = (id === 'state-success' || id === 'state-error') ? 'none' : 'flex'
 }
 
-// ── FORMAT ────────────────────────────────────────────
-function fmt(amount,currency='MAD'){
-  const c=['MAD','USD','EUR','XAF'].includes(currency)?currency:'MAD'
-  try{return new Intl.NumberFormat('fr-MA',{style:'currency',currency:c,maximumFractionDigits:2}).format(amount)}
-  catch{return `${Number(amount).toFixed(2)} ${c}`}
+function showError(msg) {
+  document.getElementById('error-msg').textContent = msg
+  showState('state-error')
 }
 
-// ── GLOBALS ───────────────────────────────────────────
-let currentOrder=null, currentItems=[], currentUserId=null, selectedMethod='card_maroc'
+// FORMAT
+function fmt(amount, currency = 'MAD') {
+  try {
+    return new Intl.NumberFormat('fr-MA', { style: 'currency', currency, maximumFractionDigits: 2 }).format(amount)
+  } catch {
+    return `${Number(amount).toFixed(2)} ${currency}`
+  }
+}
 
-// ── MÉTHODE ───────────────────────────────────────────
-function selectMethod(el){
-  document.querySelectorAll('.method-card').forEach(c=>c.classList.remove('selected'))
+// GLOBALS
+let sb = null, currentOrder = null, currentItems = [], currentUserId = null, selectedMethod = 'card_maroc'
+
+// MÉTHODE DE PAIEMENT
+function selectMethod(el) {
+  document.querySelectorAll('.method-card').forEach(c => c.classList.remove('selected'))
   el.classList.add('selected')
-  selectedMethod=el.dataset.method
+  selectedMethod = el.dataset.method
   renderMethodDetails()
 }
 
-function renderMethodDetails(){
-  const el=document.getElementById('method-details')
-  const details={
-    card_maroc:`<div style="background:var(--slate);border:1px solid rgba(255,255,255,.06);padding:14px 16px;">
-      <p style="font-size:11px;color:var(--fog);line-height:1.6;">Paiement sécurisé via CMI. Tu seras redirigé vers la page de paiement sécurisée après confirmation.</p></div>`,
-    mobile_money_gabon:`<div style="background:var(--slate);border:1px solid rgba(255,255,255,.06);padding:14px 16px;">
-      <div class="field" style="margin-bottom:12px;"><label>Numéro Mobile Money *</label><input type="tel" id="mm-number" placeholder="+241 06 00 00 00"/></div>
-      <p style="font-size:11px;color:var(--fog);">Tu recevras une demande de confirmation sur ce numéro.</p></div>`,
-    virement:`<div style="background:var(--slate);border:1px solid rgba(255,255,255,.06);padding:14px 16px;">
-      <p style="font-size:11px;color:var(--fog);line-height:1.7;margin-bottom:8px;">Effectue un virement à :</p>
-      <p style="font-size:11px;letter-spacing:1px;font-weight:500;">RIB : 0000 0000 0000 0000 0000 0000 000</p>
-      <p style="font-size:11px;color:var(--fog);margin-top:6px;">Banque : Attijari Maroc · SWIFT : BCMAMAMC</p></div>`,
-    cash_on_delivery:`<div style="background:var(--slate);border:1px solid rgba(255,255,255,.06);padding:14px 16px;">
-      <p style="font-size:11px;color:var(--fog);line-height:1.6;">Paiement en espèces à la réception. Le livreur accepte les billets, monnaie exacte appréciée.</p></div>`
+document.getElementById('methods-grid').addEventListener('click', e => {
+  const card = e.target.closest('.method-card')
+  if (card) selectMethod(card)
+})
+
+function renderMethodDetails() {
+  const el = document.getElementById('method-details')
+  const details = {
+    card_maroc: `<div class="method-details">
+      <p>Paiement sécurisé via CMI. Tu seras redirigé vers la page de paiement sécurisée après confirmation.</p>
+    </div>`,
+    mobile_money_gabon: `<div class="method-details">
+      <div class="field" style="margin-bottom:12px;">
+        <label>Numéro Mobile Money *</label>
+        <input type="tel" id="mm-number" placeholder="+241 06 00 00 00"/>
+      </div>
+      <p>Tu recevras une demande de confirmation sur ce numéro.</p>
+    </div>`,
+    virement: `<div class="method-details">
+      <p style="margin-bottom:8px;">Effectue un virement à :</p>
+      <p style="font-weight:700;letter-spacing:.5px;margin-bottom:4px;">RIB : 0000 0000 0000 0000 0000 0000 000</p>
+      <p>Banque : Attijari Maroc · SWIFT : BCMAMAMC</p>
+    </div>`,
+    cash_on_delivery: `<div class="method-details">
+      <p>Paiement en espèces à la réception. Le livreur accepte les billets, monnaie exacte appréciée.</p>
+    </div>`
   }
-  el.innerHTML=details[selectedMethod]||''
+  el.innerHTML = details[selectedMethod] || ''
 }
 
-// ── INIT — attend que window.db soit prêt ─────────────
-async function init(){
-  // ✅ Attendre que window.db soit initialisé (max 3s)
-  let attempts = 0
-  while(!window.db && attempts < 30){
-    await new Promise(r=>setTimeout(r,100))
-    attempts++
+// RÉSUMÉ
+function renderSummary() {
+  const list = document.getElementById('order-items-list')
+  const currency = currentOrder.currency || 'MAD'
+
+  list.innerHTML = currentItems.map(item => {
+    const p = item.products
+    let img = p?.image_url || ''
+    try { const arr = JSON.parse(img); if (Array.isArray(arr) && arr.length) img = arr[0] } catch {}
+    if (!img.startsWith('http') && img) img = 'https://aakxoydznmybstfozjte.supabase.co/storage/v1/object/public/products/' + img
+
+    return `<div class="order-item">
+      ${img
+        ? `<img src="${img}" alt="${p?.name || ''}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+           <div class="order-item-ph" style="display:none;">📦</div>`
+        : `<div class="order-item-ph">📦</div>`}
+      <div class="order-item-info">
+        <p class="order-item-name">${p?.name || 'Produit'}</p>
+        <p class="order-item-qty">Qté : ${item.quantity}</p>
+      </div>
+      <span class="order-item-price">${fmt(item.unit_price * item.quantity, currency)}</span>
+    </div>`
+  }).join('')
+
+  const subtotal = currentOrder.subtotal || currentOrder.total_amount
+  document.getElementById('r-subtotal').textContent = fmt(subtotal, currency)
+
+  if (currentOrder.discount_pct > 0) {
+    document.getElementById('discount-line').style.display = 'flex'
+    document.getElementById('r-discount').textContent = `−${fmt(subtotal * (currentOrder.discount_pct / 100), currency)}`
   }
 
-  const sb = window.db
-  if(!sb){
+  document.getElementById('r-total').textContent = fmt(currentOrder.total_amount, currency)
+}
+
+// INIT
+async function init() {
+  try { sb = await waitForDb() } catch (err) {
     showError('Impossible de se connecter à la base de données. Recharge la page.')
     return
   }
 
   showState('state-loading')
 
-  const params=new URLSearchParams(window.location.search)
-  const orderId=params.get('order_id')
+  const params  = new URLSearchParams(window.location.search)
+  const orderId = params.get('order_id')
 
-  // ✅ Pas d'order_id → retour panier, pas vers compte
-  if(!orderId){
+  if (!orderId) {
     showError('Aucune commande spécifiée. Retourne au panier.')
     return
   }
 
-  // Auth — si pas connecté → erreur simple, pas de redirection
-  const {data:{user},error:authErr}=await sb.auth.getUser()
-  if(authErr||!user){
+  // Auth
+  const { data: { user }, error: authErr } = await sb.auth.getUser()
+  if (authErr || !user) {
     showError('Session expirée. Recharge la page et réessaie depuis le panier.')
     return
   }
 
   // Profil
-  const {data:profile}=await sb.from('users').select('id,first_name,last_name,country').eq('auth_id',user.id).maybeSingle()
+  const { data: profile } = await sb.from('users').select('id,first_name,last_name,country').eq('auth_id', user.id).maybeSingle()
 
-  // ✅ Pas de profil → on continue quand même avec l'user_id auth
-  if(profile){
-    currentUserId=profile.id
-    if(profile.first_name) document.getElementById('ship-first').value=profile.first_name
-    if(profile.last_name) document.getElementById('ship-last').value=profile.last_name
-    if(profile.country){
-      const sel=document.getElementById('ship-country')
-      const opt=[...sel.options].find(o=>o.value===profile.country)
-      if(opt) sel.value=profile.country
+  if (profile) {
+    currentUserId = profile.id
+    if (profile.first_name) document.getElementById('ship-first').value = profile.first_name
+    if (profile.last_name)  document.getElementById('ship-last').value  = profile.last_name
+    if (profile.country) {
+      const sel = document.getElementById('ship-country')
+      const opt = [...sel.options].find(o => o.value === profile.country)
+      if (opt) sel.value = profile.country
     }
   } else {
-    // Fallback : chercher par email
-    const {data:byEmail}=await sb.from('users').select('id').ilike('email',user.email).maybeSingle()
-    if(byEmail){
-      currentUserId=byEmail.id
-      await sb.from('users').update({auth_id:user.id}).eq('id',currentUserId)
+    const { data: byEmail } = await sb.from('users').select('id').ilike('email', user.email).maybeSingle()
+    if (byEmail) {
+      currentUserId = byEmail.id
+      await sb.from('users').update({ auth_id: user.id }).eq('id', currentUserId)
     } else {
       showError('Profil introuvable. Contacte le support.')
       return
@@ -462,160 +613,130 @@ async function init(){
   }
 
   // Commande
-  const {data:order,error:oErr}=await sb
+  const { data: order, error: oErr } = await sb
     .from('orders')
     .select('id,total_amount,subtotal,currency,status,discount_pct,promo_code,user_id')
-    .eq('id',orderId)
+    .eq('id', orderId)
     .single()
 
-  if(oErr||!order){
-    showError('Commande introuvable : '+( oErr?.message||'accès refusé'))
+  if (oErr || !order) {
+    showError('Commande introuvable : ' + (oErr?.message || 'accès refusé'))
     return
   }
 
-  // ✅ Vérification ownership sans rediriger vers compte
-  if(order.user_id!==currentUserId){
+  if (order.user_id !== currentUserId) {
     showError('Cette commande ne t\'appartient pas.')
     return
   }
 
-  // Déjà traitée → succès directement
-  if(['processing','shipped','delivered'].includes(order.status)){
-    showSuccess(order.id)
-    return
+  if (['processing', 'shipped', 'delivered'].includes(order.status)) {
+    showSuccess(order.id); return
   }
 
-  currentOrder=order
+  currentOrder = order
 
   // Articles
-  const {data:items,error:iErr}=await sb
+  const { data: items, error: iErr } = await sb
     .from('order_items')
     .select('id,quantity,unit_price,product_id,products(id,name,image_url,origin_city,country,currency)')
-    .eq('order_id',orderId)
+    .eq('order_id', orderId)
 
-  if(iErr||!items?.length){
-    showError('Impossible de charger les articles : '+(iErr?.message||'liste vide'))
+  if (iErr || !items?.length) {
+    showError('Impossible de charger les articles : ' + (iErr?.message || 'liste vide'))
     return
   }
 
-  currentItems=items
+  currentItems = items
   renderSummary()
   renderMethodDetails()
   showState('state-content')
 }
 
-function showError(msg){
-  document.getElementById('error-msg').textContent=msg
-  showState('state-error')
-}
-
-// ── RÉCAP ─────────────────────────────────────────────
-function renderSummary(){
-  const list=document.getElementById('order-items-list')
-  const currency=currentOrder.currency||'MAD'
-  list.innerHTML=currentItems.map(item=>{
-    const p=item.products
-    let img=p?.image_url||''
-    try{const arr=JSON.parse(img);if(Array.isArray(arr)&&arr.length)img=arr[0]}catch{}
-    return `<div class="order-item">
-      ${img?`<img src="${img}" alt="${p?.name||''}" onerror="this.style.display='none'"/>`:`<div style="width:52px;height:64px;background:var(--slate);flex-shrink:0;"></div>`}
-      <div class="order-item-info">
-        <p class="order-item-name">${p?.name||'Produit'}</p>
-        <p class="order-item-qty">Qté : ${item.quantity}</p>
-      </div>
-      <span class="order-item-price">${fmt(item.unit_price*item.quantity,currency)}</span>
-    </div>`
-  }).join('')
-
-  const subtotal=currentOrder.subtotal||currentOrder.total_amount
-  document.getElementById('r-subtotal').textContent=fmt(subtotal,currency)
-  if(currentOrder.discount_pct>0){
-    document.getElementById('discount-line').style.display='flex'
-    document.getElementById('r-discount').textContent=`-${fmt(subtotal*(currentOrder.discount_pct/100),currency)}`
-  }
-  document.getElementById('r-total').textContent=fmt(currentOrder.total_amount,currency)
-}
-
-// ── VALIDATION ────────────────────────────────────────
-function validateForm(){
-  const fields=[
-    {id:'ship-first',label:'Prénom'},
-    {id:'ship-last',label:'Nom'},
-    {id:'ship-address',label:'Adresse'},
-    {id:'ship-city',label:'Ville'},
-    {id:'ship-country',label:'Pays'},
+// VALIDATION
+function validateForm() {
+  const fields = [
+    { id: 'ship-first',   label: 'Prénom' },
+    { id: 'ship-last',    label: 'Nom' },
+    { id: 'ship-address', label: 'Adresse' },
+    { id: 'ship-city',    label: 'Ville' },
+    { id: 'ship-country', label: 'Pays' },
   ]
-  for(const f of fields){
-    const el=document.getElementById(f.id)
-    if(!el.value.trim()){toast(`Champ requis : ${f.label}`);el.focus();return false}
+  for (const f of fields) {
+    const el = document.getElementById(f.id)
+    if (!el.value.trim()) {
+      toast(`Champ requis : ${f.label}`, 'error')
+      el.focus(); return false
+    }
   }
-  if(selectedMethod==='mobile_money_gabon'){
-    const mm=document.getElementById('mm-number')
-    if(!mm?.value.trim()){toast('Numéro Mobile Money requis');mm?.focus();return false}
+  if (selectedMethod === 'mobile_money_gabon') {
+    const mm = document.getElementById('mm-number')
+    if (!mm?.value.trim()) { toast('Numéro Mobile Money requis', 'error'); mm?.focus(); return false }
   }
   return true
 }
 
-// ── SOUMETTRE ─────────────────────────────────────────
-async function submitPayment(){
-  const sb=window.db
-  if(!sb){toast('Erreur de connexion.');return}
-  if(!validateForm()) return
+// SOUMETTRE
+async function submitPayment() {
+  if (!validateForm()) return
 
-  const btn=document.getElementById('btn-pay')
-  btn.disabled=true
-  btn.innerHTML='<div class="spinner"></div> Traitement…'
+  const btn = document.getElementById('btn-pay')
+  btn.disabled = true
+  btn.innerHTML = '<div class="spinner"></div> Traitement…'
 
-  const firstName=document.getElementById('ship-first').value.trim()
-  const lastName=document.getElementById('ship-last').value.trim()
-  const address=document.getElementById('ship-address').value.trim()
-  const city=document.getElementById('ship-city').value.trim()
-  const country=document.getElementById('ship-country').value
-  const notes=document.getElementById('ship-notes').value.trim()
+  const firstName = document.getElementById('ship-first').value.trim()
+  const lastName  = document.getElementById('ship-last').value.trim()
+  const address   = document.getElementById('ship-address').value.trim()
+  const city      = document.getElementById('ship-city').value.trim()
+  const country   = document.getElementById('ship-country').value
+  const notes     = document.getElementById('ship-notes').value.trim()
 
-  const {error:updateErr}=await sb.from('orders').update({
-    shipping_name:`${firstName} ${lastName}`,
-    shipping_address:address,
-    shipping_city:city,
-    shipping_country:country,
-    notes:notes||null,
-    delivery_address:{first_name:firstName,last_name:lastName,address,city,country,notes},
-    status:'processing',
-    updated_at:new Date().toISOString()
-  }).eq('id',currentOrder.id)
+  const { error: updateErr } = await sb.from('orders').update({
+    shipping_name:    `${firstName} ${lastName}`,
+    shipping_address: address,
+    shipping_city:    city,
+    shipping_country: country,
+    notes:            notes || null,
+    delivery_address: { first_name: firstName, last_name: lastName, address, city, country, notes },
+    status:           'processing',
+    updated_at:       new Date().toISOString()
+  }).eq('id', currentOrder.id)
 
-  if(updateErr){
-    toast('Erreur mise à jour : '+updateErr.message)
-    btn.disabled=false
-    btn.innerHTML='<span class="material-symbols-outlined" style="font-size:16px;">lock</span> Confirmer la commande'
+  if (updateErr) {
+    toast('Erreur : ' + updateErr.message, 'error')
+    btn.disabled = false
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> Confirmer la commande'
     return
   }
 
-  const mmNumber=selectedMethod==='mobile_money_gabon'?(document.getElementById('mm-number')?.value.trim()||null):null
+  const mmNumber = selectedMethod === 'mobile_money_gabon' ? (document.getElementById('mm-number')?.value.trim() || null) : null
+
   await sb.from('payments').insert({
-    order_id:currentOrder.id,
-    user_id:currentUserId,
-    amount:currentOrder.total_amount,
-    currency:currentOrder.currency||'MAD',
-    method:selectedMethod,
-    status:'pending',
-    provider:({card_maroc:'cmi',mobile_money_gabon:'cinetpay',virement:'manual',cash_on_delivery:'manual'})[selectedMethod]||'manual',
-    type:'order_payment',
-    metadata:{shipping_name:`${firstName} ${lastName}`,city,country,mobile_money_number:mmNumber}
+    order_id:  currentOrder.id,
+    user_id:   currentUserId,
+    amount:    currentOrder.total_amount,
+    currency:  currentOrder.currency || 'MAD',
+    method:    selectedMethod,
+    status:    'pending',
+    provider:  ({ card_maroc: 'cmi', mobile_money_gabon: 'cinetpay', virement: 'manual', cash_on_delivery: 'manual' })[selectedMethod] || 'manual',
+    type:      'order_payment',
+    metadata:  { shipping_name: `${firstName} ${lastName}`, city, country, mobile_money_number: mmNumber }
   })
 
   // Vider le panier
-  await sb.from('cart_items').delete().eq('user_id',currentUserId)
+  await sb.from('cart_items').delete().eq('user_id', currentUserId)
 
   showSuccess(currentOrder.id)
 }
 
-function showSuccess(orderId){
-  document.getElementById('success-order-ref').textContent=`Commande #${orderId.slice(0,8).toUpperCase()}`
+function showSuccess(orderId) {
+  document.getElementById('success-order-ref').textContent = `Commande #${orderId.slice(0, 8).toUpperCase()}`
   showState('state-success')
 }
 
-// ── DÉMARRAGE ─────────────────────────────────────────
+// Lier le bouton confirm
+document.getElementById('btn-pay').addEventListener('click', submitPayment)
+
+// INIT
 document.addEventListener('DOMContentLoaded', init)
 </script>
 </body>
