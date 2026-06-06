@@ -2169,31 +2169,50 @@ async function loadWalletBadge() {
   } catch(e) {}
 }
 
+async function loadWalletBadge() {
+  const db = getDb(); if(!currentSeller) return
+  try {
+    const { data } = await db.from('vendor_wallets')  // ← était 'wallets'
+      .select('balance')
+      .eq('user_id', currentSeller.id)
+      .maybeSingle()
+    const balance = data?.balance ?? 0
+    document.getElementById('sb-wallet-amount').textContent = balance.toLocaleString('fr-FR') + ' MAD'
+    document.getElementById('wallet-balance').textContent = balance.toLocaleString('fr-FR') + ' MAD'
+  } catch(e) {}
+}
+
 async function loadWallet() {
   const db = getDb(); if(!currentSeller) return
   await loadWalletBadge()
   const boostsList = document.getElementById('boosts-list')
   try {
-    const { data } = await db.from('boosted_shops').select('*').eq('is_active', true).gt('boost_expires_at', new Date().toISOString()).order('boost_expires_at', {ascending:true})
-    if(!data?.length) { boostsList.innerHTML = '<div class="boost-empty">Aucun boost actif. Rechargez votre wallet pour booster votre boutique.</div>'; return }
+    const { data } = await db
+      .from('boosts')                          // ← était 'boosted_shops'
+      .select('*, boost_packs(name, description, duration_days)')
+      .eq('user_id', currentSeller.id)
+      .eq('status', 'active')
+      .gt('expires_at', new Date().toISOString())
+      .order('expires_at', { ascending: true })
+
+    if(!data?.length) {
+      boostsList.innerHTML = '<div class="boost-empty">Aucun boost actif. Rechargez votre wallet pour booster votre boutique.</div>'
+      return
+    }
     boostsList.innerHTML = data.map(b => {
-      const expiresAt = new Date(b.boost_expires_at)
+      const expiresAt = new Date(b.expires_at)
       const daysLeft = Math.max(0, Math.ceil((expiresAt - new Date()) / 86400000))
       return `<div class="boost-item">
-        <div><div class="boost-item-name">${b.shop_name || 'Ma boutique'}</div><div class="boost-item-meta">${b.description || 'Boost visibilité actif'}</div></div>
+        <div>
+          <div class="boost-item-name">${b.boost_packs?.name || 'Boost actif'}</div>
+          <div class="boost-item-meta">${b.boost_packs?.description || b.type || ''}</div>
+        </div>
         <div class="boost-expires">Expire dans ${daysLeft}j</div>
       </div>`
     }).join('')
   } catch(e) {
     boostsList.innerHTML = '<div class="boost-empty">Impossible de charger les boosts.</div>'
   }
-}
-
-function openRechargeModal() { document.getElementById('recharge-modal-overlay').classList.remove('hidden') }
-function closeRechargeModal() { document.getElementById('recharge-modal-overlay').classList.add('hidden') }
-function selectBoostPack(amount) {
-  closeRechargeModal()
-  showToast(`Pack ${amount} MAD sélectionné · Paiement en cours d'intégration (CinetPay/PayDunia)`)
 }
 
 // ── REVIEWS ──
