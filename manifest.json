@@ -1,0 +1,40 @@
+{
+  "name": "WennaShop",
+  "short_name": "WennaShop",
+  "description": "Marketplace Gabon ↔ Maroc — Produits authentiques",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#FF6B2B",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["shopping", "lifestyle"],
+  "lang": "fr",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Boutique",
+      "url": "/boutique.html",
+      "description": "Parcourir les produits"
+    },
+    {
+      "name": "Mon panier",
+      "url": "/panier.html",
+      "description": "Voir mon panier"
+    }
+  ]
+}

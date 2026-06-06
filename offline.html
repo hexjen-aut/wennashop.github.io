@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WennaShop — Hors Connexion</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --border: #2a2a2a;
+      --orange: #FF6B2B;
+      --orange-dim: rgba(255, 107, 43, 0.15);
+      --text: #f0f0f0;
+      --text-dim: #888;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .icon-wrap {
+      width: 80px;
+      height: 80px;
+      background: var(--orange-dim);
+      border: 1px solid var(--orange);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 28px;
+      font-size: 36px;
+    }
+
+    .logo {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      color: var(--orange);
+      margin-bottom: 32px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+
+    p {
+      color: var(--text-dim);
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 40px;
+    }
+
+    .btn-primary {
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      padding: 14px 24px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 13px 24px;
+      border-radius: 10px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      text-decoration: none;
+      display: block;
+    }
+    .btn-secondary:hover { border-color: var(--orange); color: var(--orange); }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 32px 0;
+    }
+
+    .offline-cart {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: left;
+    }
+
+    .offline-cart h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--orange);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
+    #offline-cart-items { font-size: 14px; color: var(--text-dim); }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .cart-item:last-child { border-bottom: none; }
+    .cart-item-name { color: var(--text); font-weight: 500; }
+    .cart-item-price { color: var(--orange); }
+
+    .pending-notice {
+      margin-top: 16px;
+      padding: 10px 14px;
+      background: var(--orange-dim);
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--orange);
+      display: none;
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+      margin-right: 6px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .network-status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-top: 24px;
+    }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Cormorant+Garamond:wght@600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+  <div class="logo">WennaShop</div>
+
+  <div class="icon-wrap">📡</div>
+
+  <h1>Vous êtes hors connexion</h1>
+  <p>Pas d'inquiétude — votre panier est sauvegardé. Dès que votre connexion revient, vos commandes seront envoyées automatiquement.</p>
+
+  <div class="actions">
+    <button class="btn-primary" onclick="tryReconnect()">
+      🔄 Réessayer la connexion
+    </button>
+    <a href="/" class="btn-secondary">
+      📦 Voir les produits en cache
+    </a>
+  </div>
+
+  <div id="offline-cart-section" class="offline-cart" style="display:none">
+    <h3>🛒 Votre panier sauvegardé</h3>
+    <div id="offline-cart-items">Chargement...</div>
+    <div class="pending-notice" id="pending-notice">
+      ⏳ Commandes en attente d'envoi — seront traitées dès la reconnexion
+    </div>
+  </div>
+
+  <div class="network-status">
+    <span class="status-dot" id="status-dot"></span>
+    <span id="status-text">Hors connexion</span>
+  </div>
+</div>
+
+<script>
+  // Afficher le panier depuis IndexedDB
+  async function loadOfflineCart() {
+    if (!window.indexedDB) return;
+
+    try {
+      const dbReq = indexedDB.open('WennaShopOfflineDB', 1);
+      dbReq.onsuccess = (e) => {
+        const db = e.target.result;
+        const tx = db.transaction('cart', 'readonly');
+        const store = tx.objectStore('cart');
+        const getAllReq = store.getAll();
+
+        getAllReq.onsuccess = () => {
+          const items = getAllReq.result;
+          if (items.length === 0) return;
+
+          document.getElementById('offline-cart-section').style.display = 'block';
+          const container = document.getElementById('offline-cart-items');
+
+          if (items.length === 0) {
+            container.innerHTML = '<p style="color:#888;font-size:13px">Panier vide</p>';
+            return;
+          }
+
+          container.innerHTML = items.map(item => `
+            <div class="cart-item">
+              <span class="cart-item-name">${item.name} × ${item.quantity}</span>
+              <span class="cart-item-price">${(item.price * item.quantity).toLocaleString()} FCFA</span>
+            </div>
+          `).join('');
+
+          const total = items.reduce((s, i) => s + (i.price * i.quantity), 0);
+          container.innerHTML += `
+            <div class="cart-item" style="margin-top:8px;font-weight:600">
+              <span style="color:#f0f0f0">Total</span>
+              <span class="cart-item-price">${total.toLocaleString()} FCFA</span>
+            </div>
+          `;
+        };
+
+        // Vérifier commandes pending
+        const tx2 = db.transaction('pendingOrders', 'readonly');
+        const oStore = tx2.objectStore('pendingOrders');
+        const pendingReq = oStore.getAll();
+        pendingReq.onsuccess = () => {
+          const pending = pendingReq.result.filter(o => o.status === 'pending_sync');
+          if (pending.length > 0) {
+            document.getElementById('pending-notice').style.display = 'block';
+          }
+        };
+      };
+    } catch (err) {
+      console.log('IndexedDB non accessible');
+    }
+  }
+
+  function tryReconnect() {
+    if (navigator.onLine) {
+      window.location.href = '/';
+    } else {
+      const btn = event.target;
+      btn.textContent = '📡 Toujours hors ligne...';
+      setTimeout(() => { btn.textContent = '🔄 Réessayer la connexion'; }, 2000);
+    }
+  }
+
+  // Surveiller le retour de connexion
+  window.addEventListener('online', () => {
+    document.getElementById('status-dot').style.background = '#22c55e';
+    document.getElementById('status-text').textContent = 'Connexion rétablie ! Redirection...';
+    setTimeout(() => { window.location.href = '/'; }, 1500);
+  });
+
+  loadOfflineCart();
+</script>
+</body>
+</html>
