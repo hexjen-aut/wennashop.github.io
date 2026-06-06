@@ -1,0 +1,325 @@
+/**
+ * WennaShop — Offline DB (IndexedDB)
+ * Gère le stockage local pour fonctionner sans connexion
+ * 
+ * STORES :
+ * - cart         : panier local (items + quantités)
+ * - pendingOrders: commandes à envoyer quand connexion revient
+ * - products     : catalogue mis en cache
+ * - categories   : catégories mises en cache
+ * - syncQueue    : queue générique de mutations Supabase
+ */
+
+const WENNA_DB_NAME = 'WennaShopOfflineDB';
+const WENNA_DB_VERSION = 1;
+
+class WennaOfflineDB {
+  constructor() {
+    this.db = null;
+    this.ready = this._init();
+  }
+
+  async _init() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(WENNA_DB_NAME, WENNA_DB_VERSION);
+
+      request.onupgradeneeded = (event) => {
+        const db = event.target.result;
+
+        // Store : panier
+        if (!db.objectStoreNames.contains('cart')) {
+          const cartStore = db.createObjectStore('cart', { keyPath: 'product_id' });
+          cartStore.createIndex('added_at', 'added_at', { unique: false });
+        }
+
+        // Store : commandes en attente (hors ligne)
+        if (!db.objectStoreNames.contains('pendingOrders')) {
+          const ordersStore = db.createObjectStore('pendingOrders', { 
+            keyPath: 'local_id', 
+            autoIncrement: true 
+          });
+          ordersStore.createIndex('created_at', 'created_at', { unique: false });
+          ordersStore.createIndex('status', 'status', { unique: false });
+        }
+
+        // Store : catalogue produits (cache local)
+        if (!db.objectStoreNames.contains('products')) {
+          const prodStore = db.createObjectStore('products', { keyPath: 'id' });
+          prodStore.createIndex('category_id', 'category_id', { unique: false });
+          prodStore.createIndex('cached_at', 'cached_at', { unique: false });
+        }
+
+        // Store : catégories
+        if (!db.objectStoreNames.contains('categories')) {
+          db.createObjectStore('categories', { keyPath: 'id' });
+        }
+
+        // Store : queue de sync générique
+        if (!db.objectStoreNames.contains('syncQueue')) {
+          const syncStore = db.createObjectStore('syncQueue', { 
+            keyPath: 'id', 
+            autoIncrement: true 
+          });
+          syncStore.createIndex('table', 'table', { unique: false });
+          syncStore.createIndex('created_at', 'created_at', { unique: false });
+        }
+
+        // Store : meta / config offline
+        if (!db.objectStoreNames.contains('meta')) {
+          db.createObjectStore('meta', { keyPath: 'key' });
+        }
+
+        console.log('[OfflineDB] Stores créés');
+      };
+
+      request.onsuccess = (event) => {
+        this.db = event.target.result;
+        console.log('[OfflineDB] IndexedDB prête');
+        resolve(this.db);
+      };
+
+      request.onerror = (event) => {
+        console.error('[OfflineDB] Erreur init:', event.target.error);
+        reject(event.target.error);
+      };
+    });
+  }
+
+  async _getDB() {
+    if (!this.db) await this.ready;
+    return this.db;
+  }
+
+  // ─── HELPERS GÉNÉRIQUES ──────────────────────────────────────────────────
+
+  async _put(storeName, data) {
+    const db = await this._getDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readwrite');
+      const store = tx.objectStore(storeName);
+      const req = store.put(data);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async _get(storeName, key) {
+    const db = await this._getDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readonly');
+      const store = tx.objectStore(storeName);
+      const req = store.get(key);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async _getAll(storeName) {
+    const db = await this._getDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readonly');
+      const store = tx.objectStore(storeName);
+      const req = store.getAll();
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async _delete(storeName, key) {
+    const db = await this._getDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readwrite');
+      const store = tx.objectStore(storeName);
+      const req = store.delete(key);
+      req.onsuccess = () => resolve(true);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async _clear(storeName) {
+    const db = await this._getDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readwrite');
+      const store = tx.objectStore(storeName);
+      const req = store.clear();
+      req.onsuccess = () => resolve(true);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  // ─── PANIER ──────────────────────────────────────────────────────────────
+
+  async addToCart(product) {
+    const existing = await this._get('cart', product.id);
+    const item = {
+      product_id: product.id,
+      name: product.name,
+      price: product.price,
+      image_url: product.image_url,
+      seller_id: product.seller_id,
+      shop_name: product.shop_name || '',
+      quantity: existing ? existing.quantity + 1 : 1,
+      added_at: existing ? existing.added_at : new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    await this._put('cart', item);
+    window.dispatchEvent(new CustomEvent('cart:updated', { detail: await this.getCart() }));
+    return item;
+  }
+
+  async updateCartQuantity(productId, quantity) {
+    if (quantity <= 0) return this.removeFromCart(productId);
+    const item = await this._get('cart', productId);
+    if (!item) return null;
+    item.quantity = quantity;
+    item.updated_at = new Date().toISOString();
+    await this._put('cart', item);
+    window.dispatchEvent(new CustomEvent('cart:updated', { detail: await this.getCart() }));
+    return item;
+  }
+
+  async removeFromCart(productId) {
+    await this._delete('cart', productId);
+    window.dispatchEvent(new CustomEvent('cart:updated', { detail: await this.getCart() }));
+  }
+
+  async getCart() {
+    const items = await this._getAll('cart');
+    const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const count = items.reduce((sum, item) => sum + item.quantity, 0);
+    return { items, total, count };
+  }
+
+  async clearCart() {
+    await this._clear('cart');
+    window.dispatchEvent(new CustomEvent('cart:updated', { detail: { items: [], total: 0, count: 0 } }));
+  }
+
+  // ─── COMMANDES EN ATTENTE (OFFLINE) ──────────────────────────────────────
+
+  async savePendingOrder(orderData) {
+    const pendingOrder = {
+      ...orderData,
+      status: 'pending_sync',
+      created_at: new Date().toISOString(),
+      offline: true,
+    };
+    const id = await this._put('pendingOrders', pendingOrder);
+    console.log('[OfflineDB] Commande sauvegardée hors ligne, local_id:', id);
+
+    // Enregistrer un background sync si supporté
+    if ('serviceWorker' in navigator && 'sync' in window.registration) {
+      await window.registration.sync.register('sync-pending-orders');
+    }
+
+    // Notifier l'UI
+    window.dispatchEvent(new CustomEvent('order:saved-offline', { detail: pendingOrder }));
+    return id;
+  }
+
+  async getPendingOrders() {
+    const all = await this._getAll('pendingOrders');
+    return all.filter(o => o.status === 'pending_sync');
+  }
+
+  async markOrderSynced(localId) {
+    const order = await this._get('pendingOrders', localId);
+    if (order) {
+      order.status = 'synced';
+      order.synced_at = new Date().toISOString();
+      await this._put('pendingOrders', order);
+    }
+  }
+
+  async markOrderFailed(localId, error) {
+    const order = await this._get('pendingOrders', localId);
+    if (order) {
+      order.status = 'failed';
+      order.error = error;
+      order.failed_at = new Date().toISOString();
+      await this._put('pendingOrders', order);
+    }
+  }
+
+  // ─── CACHE PRODUITS ───────────────────────────────────────────────────────
+
+  async cacheProducts(products) {
+    const now = new Date().toISOString();
+    for (const product of products) {
+      await this._put('products', { ...product, cached_at: now });
+    }
+    await this._put('meta', { key: 'products_cached_at', value: now });
+    console.log(`[OfflineDB] ${products.length} produits mis en cache`);
+  }
+
+  async getCachedProducts(categoryId = null) {
+    const all = await this._getAll('products');
+    if (categoryId) return all.filter(p => p.category_id === categoryId);
+    return all;
+  }
+
+  async isCacheStale(maxAgeMinutes = 30) {
+    const meta = await this._get('meta', 'products_cached_at');
+    if (!meta) return true;
+    const cachedAt = new Date(meta.value);
+    const now = new Date();
+    const diffMinutes = (now - cachedAt) / 1000 / 60;
+    return diffMinutes > maxAgeMinutes;
+  }
+
+  // ─── CACHE CATÉGORIES ─────────────────────────────────────────────────────
+
+  async cacheCategories(categories) {
+    for (const cat of categories) {
+      await this._put('categories', cat);
+    }
+    console.log(`[OfflineDB] ${categories.length} catégories mises en cache`);
+  }
+
+  async getCachedCategories() {
+    return this._getAll('categories');
+  }
+
+  // ─── SYNC QUEUE GÉNÉRIQUE ─────────────────────────────────────────────────
+
+  async addToSyncQueue(operation) {
+    const item = {
+      ...operation,
+      created_at: new Date().toISOString(),
+      retries: 0,
+    };
+    return this._put('syncQueue', item);
+  }
+
+  async getSyncQueue() {
+    return this._getAll('syncQueue');
+  }
+
+  async removeFromSyncQueue(id) {
+    return this._delete('syncQueue', id);
+  }
+
+  // ─── STATS OFFLINE ────────────────────────────────────────────────────────
+
+  async getOfflineStats() {
+    const [cart, pendingOrders, products, categories, syncQueue] = await Promise.all([
+      this.getCart(),
+      this.getPendingOrders(),
+      this.getCachedProducts(),
+      this.getCachedCategories(),
+      this.getSyncQueue(),
+    ]);
+    return {
+      cartItems: cart.count,
+      pendingOrders: pendingOrders.length,
+      cachedProducts: products.length,
+      cachedCategories: categories.length,
+      syncQueue: syncQueue.length,
+    };
+  }
+}
+
+// ─── Instance globale ─────────────────────────────────────────────────────
+window.wennaDB = new WennaOfflineDB();
+
+console.log('[OfflineDB] WennaShop IndexedDB initialisée 🗄️');
