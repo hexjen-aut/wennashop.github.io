@@ -7,6 +7,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css"/>
 <style>.ph { font-size: 18px; line-height: 1; }</style>
+<!-- 1. PWA Manifest -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#FF6B2B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="WennaShop">
+ 
+<!-- 2. Scripts offline (AVANT supabase.config.js) -->
+<script src="/js/offline-db.js" defer></script>
+<script src="/js/sync-manager.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const SUPABASE_URL      = 'https://aakxoydznmybstfozjte.supabase.co'
@@ -589,6 +599,31 @@ button.forgot:hover { text-decoration: underline; }
 #toast.ok   { border-color: rgba(34,197,94,.4); background: #061210; }
 #toast.ko   { border-color: rgba(239,68,68,.4);  background: #130606; }
 </style>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', async () => {
+      try {
+        const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+        console.log('[SW] Enregistré:', reg.scope);
+        
+        // Stocker la registration pour le background sync
+        window.registration = reg;
+ 
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              console.log('[SW] Nouvelle version disponible');
+              // Optionnel: notifier l'utilisateur d'une mise à jour
+            }
+          });
+        });
+      } catch (err) {
+        console.warn('[SW] Enregistrement échoué:', err);
+      }
+    });
+  }
+</script>
 </head>
 <body>
 
