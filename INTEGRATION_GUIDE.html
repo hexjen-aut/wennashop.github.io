@@ -1,0 +1,141 @@
+<!-- ============================================================
+     WENNASHOP — INTÉGRATION RÉSILIENCE OFFLINE
+     À coller dans TOUTES les pages HTML, dans le <head>
+     ============================================================ -->
+
+<!-- 1. PWA Manifest -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#FF6B2B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="WennaShop">
+
+<!-- 2. Scripts offline (AVANT supabase.config.js) -->
+<script src="/js/offline-db.js" defer></script>
+<script src="/js/sync-manager.js" defer></script>
+
+<!-- 3. Enregistrement Service Worker (à coller avant </body>) -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', async () => {
+      try {
+        const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+        console.log('[SW] Enregistré:', reg.scope);
+        
+        // Stocker la registration pour le background sync
+        window.registration = reg;
+
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              console.log('[SW] Nouvelle version disponible');
+              // Optionnel: notifier l'utilisateur d'une mise à jour
+            }
+          });
+        });
+      } catch (err) {
+        console.warn('[SW] Enregistrement échoué:', err);
+      }
+    });
+  }
+</script>
+
+
+<!-- ============================================================
+     USAGE DANS LE CODE JS DE VOS PAGES
+     ============================================================
+
+// ── PANIER OFFLINE-FIRST ─────────────────────────────────────
+// Remplacer votre logique panier actuelle par :
+
+async function ajouterAuPanier(product) {
+  await window.wennaDB.addToCart(product);
+  updateCartUI();
+}
+
+async function updateCartUI() {
+  const cart = await window.wennaDB.getCart();
+  document.getElementById('cart-count').textContent = cart.count;
+  document.getElementById('cart-total').textContent = 
+    cart.total.toLocaleString() + ' FCFA';
+}
+
+// Écouter les mises à jour du panier (depuis n'importe quelle source)
+window.addEventListener('cart:updated', (e) => {
+  const { items, total, count } = e.detail;
+  document.getElementById('cart-count').textContent = count;
+});
+
+
+// ── COMMANDE OFFLINE-FIRST ────────────────────────────────────
+// Remplacer votre logique de commande par :
+
+async function passerCommande(orderData) {
+  const result = await window.wennaSyncManager.safeInsert('orders', orderData, { isOrder: true });
+  
+  if (result.offline) {
+    // Commande sauvegardée localement
+    showMessage('⏳ Commande enregistrée ! Elle sera envoyée dès la reconnexion.');
+  } else if (result.error) {
+    showMessage('❌ Erreur : ' + result.error.message);
+  } else {
+    showMessage('✅ Commande envoyée avec succès !');
+    await window.wennaDB.clearCart();
+  }
+}
+
+
+// ── PRODUITS OFFLINE-FIRST ────────────────────────────────────
+// Dans boutique.html, charger les produits ainsi :
+
+async function chargerProduits(categoryId = null) {
+  // Essayer le réseau d'abord
+  if (navigator.onLine) {
+    try {
+      await waitForDb();
+      const { data, error } = await window.db
+        .from('products')
+        .select('*')
+        .eq('status', 'active')
+        .order('created_at', { ascending: false });
+      
+      if (!error && data) {
+        await window.wennaDB.cacheProducts(data); // Mettre en cache
+        afficherProduits(data);
+        return;
+      }
+    } catch (err) {
+      console.warn('Réseau indisponible, chargement depuis cache');
+    }
+  }
+  
+  // Fallback : cache local
+  const cached = await window.wennaDB.getCachedProducts(categoryId);
+  if (cached.length > 0) {
+    afficherProduits(cached);
+    showOfflineBadge(); // Indiquer que ce sont des données en cache
+  } else {
+    showEmptyState('Aucun produit en cache. Reconnectez-vous pour voir le catalogue.');
+  }
+}
+
+function showOfflineBadge() {
+  const badge = document.createElement('div');
+  badge.style.cssText = 'position:fixed;bottom:70px;right:16px;background:#FF6B2B;color:#fff;padding:6px 12px;border-radius:20px;font-size:12px;z-index:1000;';
+  badge.textContent = '📦 Données en cache';
+  document.body.appendChild(badge);
+  setTimeout(() => badge.remove(), 5000);
+}
+
+
+// ── VÉRIFIER L'ÉTAT RÉSEAU ────────────────────────────────────
+
+if (window.wennaSyncManager.online) {
+  // Online → comportement normal
+} else {
+  // Offline → mode dégradé
+  document.getElementById('checkout-btn').textContent = 'Commander (hors ligne)';
+}
+
+============================================================ -->
