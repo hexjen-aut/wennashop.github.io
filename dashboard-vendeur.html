@@ -57,6 +57,118 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 #toast.success { border-color: rgba(34,197,94,.4); background: #061210; }
 #toast.error   { border-color: rgba(239,68,68,.4);  background: #130606; }
 
+/* ── NOTIFICATIONS PANEL ── */
+#notif-panel {
+  position: fixed; top: 0; right: 0; width: 360px; height: 100vh;
+  background: var(--surface); border-left: 1px solid var(--border);
+  z-index: 300; display: flex; flex-direction: column;
+  transform: translateX(100%); transition: transform .35s cubic-bezier(.22,1,.36,1);
+  box-shadow: -8px 0 40px rgba(0,0,0,.6);
+}
+#notif-panel.open { transform: translateX(0); }
+#notif-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.5);
+  backdrop-filter: blur(4px); z-index: 299;
+  opacity: 0; pointer-events: none; transition: opacity .3s;
+}
+#notif-overlay.show { opacity: 1; pointer-events: all; }
+.notif-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 20px; border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.notif-head-title { font-size: 16px; font-weight: 900; display: flex; align-items: center; gap: 8px; }
+.notif-head-actions { display: flex; align-items: center; gap: 8px; }
+.notif-mark-read {
+  font-size: 11px; font-weight: 700; color: var(--accent);
+  background: none; border: none; cursor: pointer; font-family: var(--font);
+  padding: 4px 8px; border-radius: var(--radius-sm);
+  transition: background .2s;
+}
+.notif-mark-read:hover { background: var(--accent-light); }
+.notif-close {
+  width: 30px; height: 30px; background: none; border: 1px solid var(--border);
+  border-radius: var(--radius-md); color: var(--text-faint); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
+  transition: all .2s;
+}
+.notif-close:hover { border-color: var(--accent); color: var(--accent); }
+.notif-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.notif-tab {
+  flex: 1; padding: 10px; text-align: center; font-size: 11px; font-weight: 700;
+  color: var(--text-faint); background: none; border: none; cursor: pointer;
+  border-bottom: 2px solid transparent; transition: all .2s; font-family: var(--font);
+  letter-spacing: .04em; text-transform: uppercase;
+}
+.notif-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.notif-list { flex: 1; overflow-y: auto; }
+.notif-empty { padding: 48px 24px; text-align: center; color: var(--text-faint); font-size: 13px; font-weight: 600; }
+.notif-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 20px; border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background .15s; position: relative;
+}
+.notif-item:hover { background: var(--surface-2); }
+.notif-item.unread { background: rgba(255,117,31,.04); }
+.notif-item.unread::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px; background: var(--accent); border-radius: 0 3px 3px 0;
+}
+.notif-icon {
+  width: 36px; height: 36px; border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.notif-icon.order  { background: var(--info-dim); color: var(--info); }
+.notif-icon.money  { background: var(--accent-light); color: var(--accent); }
+.notif-icon.review { background: var(--gold-dim); color: var(--gold); }
+.notif-icon.stock  { background: var(--error-dim); color: var(--error); }
+.notif-icon.system { background: var(--success-dim); color: var(--success); }
+.notif-content { flex: 1; min-width: 0; }
+.notif-title { font-size: 13px; font-weight: 700; line-height: 1.4; }
+.notif-body { font-size: 12px; font-weight: 500; color: var(--text-muted); margin-top: 2px; line-height: 1.5; }
+.notif-time { font-size: 10px; font-weight: 700; color: var(--text-faint); margin-top: 4px; }
+.notif-dot {
+  width: 8px; height: 8px; background: var(--accent); border-radius: 50%;
+  flex-shrink: 0; margin-top: 6px;
+}
+.notif-dot.hidden { visibility: hidden; }
+
+/* Badge notif dans topbar */
+.notif-badge-count {
+  position: absolute; top: -4px; right: -4px;
+  width: 18px; height: 18px; background: var(--accent);
+  border-radius: 50%; font-size: 10px; font-weight: 900;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--bg); line-height: 1;
+}
+.notif-badge-count.hidden { display: none; }
+
+/* Animation entrée notification */
+@keyframes notifSlideIn {
+  from { transform: translateX(20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+.notif-item { animation: notifSlideIn .3s ease-out; }
+
+/* Toast notification push */
+.push-toast {
+  position: fixed; top: 80px; right: 20px; z-index: 500;
+  background: var(--surface); border: 1.5px solid var(--border-accent);
+  border-radius: var(--radius-lg); padding: 14px 16px;
+  display: flex; align-items: flex-start; gap: 10px;
+  max-width: 300px; box-shadow: 0 8px 32px rgba(0,0,0,.6);
+  transform: translateX(320px); opacity: 0;
+  transition: transform .4s cubic-bezier(.22,1,.36,1), opacity .4s;
+  pointer-events: none;
+}
+.push-toast.show { transform: translateX(0); opacity: 1; pointer-events: all; }
+.push-toast-icon { width: 32px; height: 32px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+.push-toast-body { flex: 1; min-width: 0; }
+.push-toast-title { font-size: 12px; font-weight: 800; }
+.push-toast-msg { font-size: 11px; font-weight: 500; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
+.push-toast-close { width: 20px; height: 20px; background: none; border: none; color: var(--text-faint); cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; }
+
 /* ── LAYOUT ── */
 #sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); height: 100vh; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 100; transition: transform .3s cubic-bezier(.22,1,.36,1); }
 #sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.75); backdrop-filter: blur(6px); z-index: 99; opacity: 0; pointer-events: none; transition: opacity .3s; }
@@ -75,13 +187,10 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .sb-name { font-size: 13px; font-weight: 800; }
 .sb-country { font-size: 11px; font-weight: 600; color: var(--text-faint); display: flex; align-items: center; gap: 5px; margin-top: 2px; }
 .sb-dot { width: 6px; height: 6px; background: var(--success); border-radius: 50%; }
-
-/* Wallet badge dans sidebar */
 .sb-wallet { padding: 10px 18px; border-bottom: 1px solid var(--border); }
 .sb-wallet-inner { display: flex; align-items: center; justify-content: space-between; background: var(--gold-dim); border: 1px solid var(--gold-border); border-radius: var(--radius-md); padding: 8px 12px; }
 .sb-wallet-label { font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--gold); }
 .sb-wallet-amount { font-size: 14px; font-weight: 900; color: var(--gold); }
-
 .sb-nav { flex: 1; overflow-y: auto; padding: 10px 8px; display: flex; flex-direction: column; gap: 2px; }
 .sb-nav::-webkit-scrollbar { display: none; }
 .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; font-size: 12px; font-weight: 700; color: var(--text-faint); background: transparent; border: none; border-radius: var(--radius-md); cursor: pointer; text-decoration: none; transition: all .2s; width: 100%; text-align: left; font-family: var(--font); }
@@ -93,13 +202,30 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .nav-sep { height: 1px; background: var(--border); margin: 6px 8px; }
 .nav-danger { color: var(--error) !important; }
 .nav-danger:hover { background: var(--error-dim) !important; }
-
 .sb-footer { padding: 8px; border-top: 1px solid var(--border); }
 
 /* ── TOP BAR ── */
 .top-bar { background: rgba(10,10,10,.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 0 28px; height: 64px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 40; }
 .page-title { font-size: 20px; font-weight: 900; }
 .page-date { font-size: 11px; font-weight: 600; color: var(--text-faint); margin-top: 2px; }
+
+/* Bouton notifications */
+.btn-notif {
+  position: relative; width: 40px; height: 40px;
+  background: var(--surface-2); border: 1.5px solid var(--border);
+  border-radius: var(--radius-md); color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 18px; transition: all .2s; flex-shrink: 0;
+}
+.btn-notif:hover { border-color: var(--accent); color: var(--accent); }
+.btn-notif.has-unread { border-color: var(--border-accent); color: var(--accent); }
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(255,117,31,.4); }
+  70% { box-shadow: 0 0 0 8px rgba(255,117,31,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,117,31,0); }
+}
+.btn-notif.has-unread { animation: pulse-ring 2s ease-out infinite; }
+
 .btn-primary { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: #fff; padding: 9px 20px; font-size: 13px; font-weight: 700; font-family: var(--font); border: none; border-radius: var(--radius-pill); box-shadow: var(--shadow-orange); transition: background .2s, transform .15s; cursor: pointer; }
 .btn-primary:hover { background: var(--accent-dark); transform: translateY(-1px); }
 .btn-primary:disabled { opacity: .4; cursor: not-allowed; transform: none; }
@@ -111,6 +237,8 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .btn-danger { display: inline-flex; align-items: center; gap: 8px; background: var(--error); color: #fff; padding: 9px 18px; font-size: 12px; font-weight: 700; font-family: var(--font); border: none; border-radius: var(--radius-pill); transition: background .2s; cursor: pointer; flex: 1; justify-content: center; }
 .btn-cancel { display: inline-flex; align-items: center; gap: 8px; background: transparent; border: 1.5px solid var(--border); border-radius: var(--radius-pill); color: var(--text-muted); padding: 9px 18px; font-size: 12px; font-weight: 700; font-family: var(--font); transition: all .2s; cursor: pointer; flex: 1; justify-content: center; }
 .btn-cancel:hover { border-color: var(--border-accent); color: var(--text); }
+.btn-gold { display: inline-flex; align-items: center; gap: 6px; background: var(--gold-dim); border: 1.5px solid var(--gold-border); border-radius: var(--radius-pill); color: var(--gold); padding: 8px 16px; font-size: 12px; font-weight: 700; font-family: var(--font); text-decoration: none; transition: all .2s; white-space: nowrap; }
+.btn-gold:hover { background: rgba(245,158,11,.2); }
 
 /* ── MAIN ── */
 main { flex: 1; padding: 24px 28px; }
@@ -130,7 +258,7 @@ main { flex: 1; padding: 24px 28px; }
 .stat-label { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-faint); }
 .stat-trend { font-size: 12px; font-weight: 700; color: var(--accent); margin-top: 4px; }
 
-/* ── COMMISSION INFO ── */
+/* ── COMMISSION BANNER ── */
 .commission-banner { display: flex; align-items: center; gap: 14px; background: var(--accent-light); border: 1.5px solid var(--border-accent); border-radius: var(--radius-lg); padding: 14px 20px; margin-bottom: 20px; }
 .commission-banner i { font-size: 22px; color: var(--accent); flex-shrink: 0; }
 .commission-banner-text { font-size: 13px; font-weight: 600; color: var(--text-muted); }
@@ -154,8 +282,64 @@ main { flex: 1; padding: 24px 28px; }
 .quetes-banner-stats { display: flex; gap: 20px; }
 .quetes-banner-stat .val { font-size: 22px; font-weight: 900; color: var(--gold); }
 .quetes-banner-stat .lbl { font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-faint); }
-.btn-gold { display: inline-flex; align-items: center; gap: 6px; background: var(--gold-dim); border: 1.5px solid var(--gold-border); border-radius: var(--radius-pill); color: var(--gold); padding: 8px 16px; font-size: 12px; font-weight: 700; font-family: var(--font); text-decoration: none; transition: all .2s; white-space: nowrap; }
-.btn-gold:hover { background: rgba(245,158,11,.2); }
+
+/* ── CHART REVENUS ── */
+.chart-section {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.chart-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 20px; border-bottom: 1px solid var(--border);
+  flex-wrap: wrap; gap: 12px;
+}
+.chart-head-left { display: flex; flex-direction: column; gap: 2px; }
+.chart-title { font-size: 16px; font-weight: 800; }
+.chart-subtitle { font-size: 11px; font-weight: 600; color: var(--text-faint); }
+.chart-head-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.chart-period-btn {
+  padding: 6px 14px; font-size: 11px; font-weight: 700;
+  border-radius: var(--radius-pill); cursor: pointer;
+  background: transparent; border: 1.5px solid var(--border);
+  color: var(--text-faint); font-family: var(--font); transition: all .2s;
+}
+.chart-period-btn.active { background: var(--accent-light); border-color: var(--border-accent); color: var(--accent); }
+.chart-period-btn:hover:not(.active) { border-color: var(--border-accent); color: var(--text-muted); }
+.chart-metrics { display: flex; gap: 24px; padding: 14px 20px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.chart-metric { display: flex; flex-direction: column; gap: 2px; }
+.chart-metric-val { font-size: 22px; font-weight: 900; }
+.chart-metric-val.orange { color: var(--accent); }
+.chart-metric-val.green  { color: var(--success); }
+.chart-metric-val.gold   { color: var(--gold); }
+.chart-metric-label { font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-faint); }
+.chart-metric-trend { font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 3px; }
+.chart-metric-trend.up { color: var(--success); }
+.chart-metric-trend.down { color: var(--error); }
+.chart-wrap { padding: 20px; position: relative; height: 240px; }
+canvas#revenueChart { width: 100% !important; height: 100% !important; }
+
+/* Légende chart */
+.chart-legend { display: flex; align-items: center; gap: 16px; padding: 0 20px 16px; }
+.chart-legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: var(--text-faint); }
+.chart-legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* Tooltip chart */
+.chart-tooltip {
+  position: absolute; background: var(--surface-2);
+  border: 1.5px solid var(--border-accent);
+  border-radius: var(--radius-md); padding: 10px 14px;
+  pointer-events: none; opacity: 0; transition: opacity .15s;
+  z-index: 10; white-space: nowrap;
+  box-shadow: 0 8px 24px rgba(0,0,0,.5);
+}
+.chart-tooltip.show { opacity: 1; }
+.chart-tooltip-month { font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 6px; }
+.chart-tooltip-row { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; margin-bottom: 3px; }
+.chart-tooltip-row:last-child { margin-bottom: 0; }
+.chart-tooltip-dot { width: 8px; height: 8px; border-radius: 50%; }
 
 /* ── TABLE ── */
 .tbl { width: 100%; border-collapse: collapse; }
@@ -277,6 +461,9 @@ textarea.inp-full { resize: none; min-height: 80px; border-radius: var(--radius-
 .boost-item-meta { font-size: 11px; font-weight: 600; color: var(--text-faint); margin-top: 2px; }
 .boost-expires { font-size: 11px; font-weight: 700; color: var(--gold); }
 
+/* ── REVENUE SECTION ── */
+.revenue-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; margin-bottom: 8px; }
+
 /* ── PROFILE ── */
 .profile-wrap { max-width: 600px; display: flex; flex-direction: column; gap: 8px; }
 
@@ -295,9 +482,12 @@ textarea.inp-full { resize: none; min-height: 80px; border-radius: var(--radius-
   .two-col { grid-template-columns: 1fr; }
   .form-grid { grid-template-columns: 1fr; }
   .wallet-grid { grid-template-columns: 1fr; }
+  .revenue-grid { grid-template-columns: repeat(2,1fr); }
   #menu-btn { display: block !important; }
   .ship-inputs { flex-direction: column; }
   .ship-inputs input[type=date].inp-dark { width: 100%; }
+  #notif-panel { width: 100%; }
+  .chart-metrics { gap: 12px; }
 }
 </style>
 </head>
@@ -311,6 +501,42 @@ textarea.inp-full { resize: none; min-height: 80px; border-radius: var(--radius-
 </div>
 
 <div id="toast"></div>
+
+<!-- ── NOTIFICATION PUSH TOAST ── -->
+<div id="push-toast" class="push-toast">
+  <div id="push-toast-icon" class="push-toast-icon"></div>
+  <div class="push-toast-body">
+    <div id="push-toast-title" class="push-toast-title"></div>
+    <div id="push-toast-msg" class="push-toast-msg"></div>
+  </div>
+  <button class="push-toast-close" onclick="closePushToast()"><i class="ph ph-x"></i></button>
+</div>
+
+<!-- ── NOTIFICATION PANEL ── -->
+<div id="notif-overlay" onclick="closeNotifPanel()"></div>
+<aside id="notif-panel">
+  <div class="notif-head">
+    <div class="notif-head-title">
+      <i class="ph ph-bell" style="font-size:18px;color:var(--accent);"></i>
+      Notifications
+      <span id="notif-unread-badge" class="nav-badge hidden">0</span>
+    </div>
+    <div class="notif-head-actions">
+      <button onclick="markAllRead()" class="notif-mark-read">Tout lire</button>
+      <button onclick="closeNotifPanel()" class="notif-close"><i class="ph ph-x"></i></button>
+    </div>
+  </div>
+  <div class="notif-tabs">
+    <button class="notif-tab active" onclick="filterNotifs('all', this)">Toutes</button>
+    <button class="notif-tab" onclick="filterNotifs('order', this)">Commandes</button>
+    <button class="notif-tab" onclick="filterNotifs('review', this)">Avis</button>
+    <button class="notif-tab" onclick="filterNotifs('stock', this)">Stock</button>
+  </div>
+  <div id="notif-list" class="notif-list">
+    <div class="notif-empty">Chargement des notifications…</div>
+  </div>
+</aside>
+
 <div id="sidebar-overlay" onclick="closeSidebar()"></div>
 
 <!-- ── SIDEBAR ── -->
@@ -367,6 +593,11 @@ textarea.inp-full { resize: none; min-height: 80px; border-radius: var(--radius-
     </div>
     <div style="display:flex;gap:8px;align-items:center;">
       <a href="quetes.html" class="btn-gold"><i class="ph ph-shooting-star" style="font-size:15px;"></i>Quêtes</a>
+      <!-- BOUTON NOTIFICATIONS -->
+      <button id="notif-btn" class="btn-notif" onclick="openNotifPanel()" title="Notifications">
+        <i class="ph ph-bell"></i>
+        <span id="notif-count-badge" class="notif-badge-count hidden">0</span>
+      </button>
       <button id="topbar-new-product-btn" onclick="showSection('products');setTimeout(openProductModal,100)" class="btn-primary"><i class="ph ph-plus" style="font-size:16px;"></i>Nouveau produit</button>
     </div>
   </header>
@@ -399,7 +630,11 @@ textarea.inp-full { resize: none; min-height: 80px; border-radius: var(--radius-
         <div class="stat-card"><div class="stat-icon gold"><i class="ph ph-currency-circle-dollar"></i></div><div id="ov-revenue" class="stat-num">—</div><div class="stat-label">Revenus MAD</div></div>
         <div class="stat-card"><div class="stat-icon green"><i class="ph ph-star"></i></div><div id="ov-rating" class="stat-num">—</div><div class="stat-label">Note moyenne / 5</div></div>
       </div>
-      <div class="two-col">
+
+      <!-- CHART REVENUS dans OVERVIEW -->
+      <div id="overview-chart-wrap" style="margin-top:6px;"></div>
+
+      <div class="two-col" style="margin-top:6px;">
         <div class="card"><div class="card-head"><div class="card-title">Commandes récentes</div><button onclick="showSection('orders')" class="card-link">Voir tout</button></div><div id="recent-orders"><div class="card-empty">Chargement…</div></div></div>
         <div class="card"><div class="card-head"><div class="card-title">Stock faible</div><span style="font-size:11px;font-weight:700;color:var(--error);">Urgent</span></div><div id="low-stock"><div class="card-empty">Chargement…</div></div></div>
       </div>
@@ -460,12 +695,16 @@ textarea.inp-full { resize: none; min-height: 80px; border-radius: var(--radius-
 
     <!-- ── REVENUE ── -->
     <section id="section-revenue" class="section">
-      <div class="stat-grid" style="margin-bottom:8px;">
+      <div class="revenue-grid" style="margin-bottom:8px;">
         <div class="stat-card"><div class="stat-label" style="margin-bottom:8px;">Total encaissé</div><div id="rev-total" class="stat-num" style="font-size:26px;">— MAD</div></div>
         <div class="stat-card"><div class="stat-label" style="margin-bottom:8px;">Ce mois</div><div id="rev-month" class="stat-num" style="font-size:26px;">— MAD</div></div>
-        <div class="stat-card"><div class="stat-label" style="margin-bottom:8px;">Commissions versées (8%)</div><div id="rev-commission" class="stat-num" style="font-size:26px;">— MAD</div></div>
+        <div class="stat-card"><div class="stat-label" style="margin-bottom:8px;">Commissions (8%)</div><div id="rev-commission" class="stat-num" style="font-size:26px;">— MAD</div></div>
         <div class="stat-card"><div class="stat-label" style="margin-bottom:8px;">Panier moyen</div><div id="rev-avg" class="stat-num" style="font-size:26px;">— MAD</div></div>
       </div>
+
+      <!-- CHART REVENUS complet dans la section Revenus -->
+      <div id="revenue-chart-full" style="margin-bottom:8px;"></div>
+
       <div class="card">
         <div class="card-head"><div class="card-title">Historique des paiements</div></div>
         <div style="overflow-x:auto;">
@@ -682,7 +921,7 @@ textarea.inp-full { resize: none; min-height: 80px; border-radius: var(--radius-
 <div id="delete-modal-overlay" class="modal-ov hidden">
   <div class="modal-box modal-sm" onclick="event.stopPropagation()">
     <div style="padding:28px 22px 22px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px;">
-      <div style="width:52px;height:52px;background:var(--error-dim);border:1.5px solid rgba(239,68,68,.3);border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--error);"><i class="ph ph-trash"></i></div>
+      <div style="width:52px;height:52px;background:var(--error-dim);border:1.5px solid rgba(239,68,68,.3);border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:font-size:24px;color:var(--error);"><i class="ph ph-trash"></i></div>
       <h3 class="modal-title">Supprimer ce produit ?</h3>
       <p style="font-size:13px;font-weight:500;color:var(--text-muted);">Cette action est irréversible.</p>
       <div style="display:flex;gap:10px;width:100%;margin-top:8px;"><button onclick="closeDeleteModal()" class="btn-cancel">Annuler</button><button onclick="confirmDelete()" class="btn-danger"><i class="ph ph-trash" style="font-size:14px;"></i>Supprimer</button></div>
@@ -721,6 +960,11 @@ textarea.inp-full { resize: none; min-height: 80px; border-radius: var(--radius-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.config.js"></script>
 <script>
+/* ═══════════════════════════════════════════════════════════
+   WENNASHOP — DASHBOARD VENDEUR
+   Ajouts : Revenue Chart (Canvas natif) + Notifications Realtime
+   ═══════════════════════════════════════════════════════════ */
+
 function getDb() { return window.db }
 
 let currentSeller = null
@@ -728,6 +972,13 @@ let allProducts = [], prodPage = 1, currentOrderId = null, productToDelete = nul
 let categories = [], prodImages = ['','','',''], caracList = []
 let totalProductCount = 0
 const PROD_PER_PAGE = 10
+
+// ── NOTIFICATIONS STATE ──
+let allNotifications = []
+let unreadCount = 0
+let notifFilter = 'all'
+let realtimeChannel = null
+let pushToastTimer = null
 
 function setInitMsg(m) { const e = document.getElementById('init-msg'); if(e) e.textContent = m }
 function hideInitScreen() { document.getElementById('init-screen').classList.add('hidden') }
@@ -774,6 +1025,602 @@ function parseImages(imgData) {
   return [imgData,'','','']
 }
 
+function timeAgo(dateStr) {
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const m = Math.floor(diff / 60000)
+  if(m < 1) return 'À l\'instant'
+  if(m < 60) return `Il y a ${m} min`
+  const h = Math.floor(m / 60)
+  if(h < 24) return `Il y a ${h}h`
+  const d = Math.floor(h / 24)
+  if(d < 7) return `Il y a ${d}j`
+  return fmtDate(dateStr)
+}
+
+// ══════════════════════════════════════════════
+//  REVENUE CHART — Canvas natif (aucune lib)
+// ══════════════════════════════════════════════
+
+let chartData = { months: [], revenues: [], commissions: [], orders: [] }
+let chartPeriod = '6m'
+let chartCanvas = null, chartTooltip = null
+
+function buildChartHTML(containerId) {
+  const el = document.getElementById(containerId)
+  if(!el) return
+  el.innerHTML = `
+    <div class="chart-section">
+      <div class="chart-head">
+        <div class="chart-head-left">
+          <div class="chart-title">Revenus mensuels</div>
+          <div class="chart-subtitle">Brut · Net · Commissions WennaShop (8%)</div>
+        </div>
+        <div class="chart-head-right">
+          <button class="chart-period-btn ${chartPeriod==='3m'?'active':''}" onclick="setChartPeriod('3m')">3 mois</button>
+          <button class="chart-period-btn ${chartPeriod==='6m'?'active':''}" onclick="setChartPeriod('6m')">6 mois</button>
+          <button class="chart-period-btn ${chartPeriod==='12m'?'active':''}" onclick="setChartPeriod('12m')">12 mois</button>
+        </div>
+      </div>
+      <div class="chart-metrics" id="chart-metrics-${containerId}">
+        <div class="chart-metric">
+          <div class="chart-metric-val orange" id="cm-total-${containerId}">— MAD</div>
+          <div class="chart-metric-label">Total brut</div>
+        </div>
+        <div class="chart-metric">
+          <div class="chart-metric-val green" id="cm-net-${containerId}">— MAD</div>
+          <div class="chart-metric-label">Net vendeur</div>
+        </div>
+        <div class="chart-metric">
+          <div class="chart-metric-val gold" id="cm-commission-${containerId}">— MAD</div>
+          <div class="chart-metric-label">Commission (8%)</div>
+        </div>
+        <div class="chart-metric">
+          <div class="chart-metric-val" id="cm-orders-${containerId}" style="color:var(--info);">—</div>
+          <div class="chart-metric-label">Commandes</div>
+        </div>
+      </div>
+      <div class="chart-wrap" style="position:relative;">
+        <canvas id="revenueChart-${containerId}"></canvas>
+        <div class="chart-tooltip" id="chart-tooltip-${containerId}"></div>
+      </div>
+      <div class="chart-legend">
+        <div class="chart-legend-item"><div class="chart-legend-dot" style="background:var(--accent);"></div>Brut</div>
+        <div class="chart-legend-item"><div class="chart-legend-dot" style="background:var(--success);"></div>Net vendeur</div>
+        <div class="chart-legend-item"><div class="chart-legend-dot" style="background:var(--gold);"></div>Commission</div>
+      </div>
+    </div>`
+}
+
+async function loadChartData() {
+  const db = getDb(); if(!currentSeller) return
+  const productIds = await getMyProductIds()
+  if(!productIds.length) { chartData = { months:[], revenues:[], commissions:[], orders:[] }; renderCharts(); return }
+
+  const months = parseInt(chartPeriod) || 6
+  const now = new Date()
+  const startDate = new Date(now.getFullYear(), now.getMonth() - months + 1, 1)
+
+  const { data:items } = await db.from('order_items').select('order_id').in('product_id', productIds)
+  const orderIds = [...new Set((items||[]).map(i => i.order_id))]
+  if(!orderIds.length) { chartData = { months:[], revenues:[], commissions:[], orders:[] }; renderCharts(); return }
+
+  const { data:orders } = await db.from('orders')
+    .select('id,total_amount,status,created_at')
+    .in('id', orderIds)
+    .gte('created_at', startDate.toISOString())
+    .order('created_at', {ascending: true})
+
+  // Agréger par mois
+  const monthMap = {}
+  for(let i = 0; i < months; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - months + 1 + i, 1)
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`
+    const label = d.toLocaleDateString('fr-FR', {month:'short', year:'2-digit'})
+    monthMap[key] = { label, revenue: 0, commission: 0, net: 0, count: 0 }
+  }
+
+  ;(orders||[]).forEach(o => {
+    if(!['delivered','shipped','processing'].includes(o.status)) return
+    const d = new Date(o.created_at)
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`
+    if(!monthMap[key]) return
+    const amount = Number(o.total_amount) || 0
+    const commission = amount * 0.08
+    monthMap[key].revenue += amount
+    monthMap[key].commission += commission
+    monthMap[key].net += amount - commission
+    monthMap[key].count++
+  })
+
+  const sorted = Object.values(monthMap)
+  chartData = {
+    months:      sorted.map(m => m.label),
+    revenues:    sorted.map(m => m.revenue),
+    commissions: sorted.map(m => m.commission),
+    nets:        sorted.map(m => m.net),
+    orders:      sorted.map(m => m.count)
+  }
+
+  renderCharts()
+}
+
+function renderCharts() {
+  ;['overview-chart-wrap', 'revenue-chart-full'].forEach(id => {
+    const el = document.getElementById(id)
+    if(!el || !el.offsetParent && id !== 'overview-chart-wrap') return
+    renderChart(id)
+  })
+}
+
+function renderChart(containerId) {
+  buildChartHTML(containerId)
+  const canvas = document.getElementById(`revenueChart-${containerId}`)
+  const tooltip = document.getElementById(`chart-tooltip-${containerId}`)
+  if(!canvas) return
+
+  const totalRevenue = chartData.revenues.reduce((s,v)=>s+v,0)
+  const totalNet = (chartData.nets||[]).reduce((s,v)=>s+v,0)
+  const totalCommission = chartData.commissions.reduce((s,v)=>s+v,0)
+  const totalOrders = chartData.orders.reduce((s,v)=>s+v,0)
+
+  const cmEl = (id) => document.getElementById(`${id}-${containerId}`)
+  if(cmEl('cm-total')) cmEl('cm-total').textContent = totalRevenue.toLocaleString('fr-FR') + ' MAD'
+  if(cmEl('cm-net')) cmEl('cm-net').textContent = totalNet.toLocaleString('fr-FR') + ' MAD'
+  if(cmEl('cm-commission')) cmEl('cm-commission').textContent = totalCommission.toLocaleString('fr-FR') + ' MAD'
+  if(cmEl('cm-orders')) cmEl('cm-orders').textContent = totalOrders
+
+  drawChart(canvas, tooltip, chartData)
+}
+
+function drawChart(canvas, tooltipEl, data) {
+  const container = canvas.parentElement
+  const W = container.clientWidth || 600
+  const H = container.clientHeight || 200
+  canvas.width = W
+  canvas.height = H
+
+  const ctx = canvas.getContext('2d')
+  ctx.clearRect(0, 0, W, H)
+
+  const months = data.months || []
+  if(!months.length) {
+    ctx.fillStyle = '#555'
+    ctx.font = '700 13px Nunito, sans-serif'
+    ctx.textAlign = 'center'
+    ctx.fillText('Aucune donnée pour cette période', W/2, H/2)
+    return
+  }
+
+  const pad = { top: 20, right: 20, bottom: 36, left: 60 }
+  const chartW = W - pad.left - pad.right
+  const chartH = H - pad.top - pad.bottom
+  const n = months.length
+
+  const allVals = [...(data.revenues||[]), ...(data.nets||[]), ...(data.commissions||[])]
+  const maxVal = Math.max(...allVals, 1)
+  const step = chartW / (n - 1 || 1)
+
+  // Grille horizontale
+  const gridLines = 4
+  ctx.strokeStyle = 'rgba(255,255,255,0.05)'
+  ctx.lineWidth = 1
+  for(let i = 0; i <= gridLines; i++) {
+    const y = pad.top + chartH - (i / gridLines) * chartH
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke()
+    const val = (maxVal * i / gridLines).toFixed(0)
+    ctx.fillStyle = '#555'
+    ctx.font = '600 10px Nunito, sans-serif'
+    ctx.textAlign = 'right'
+    ctx.fillText(Number(val).toLocaleString('fr-FR'), pad.left - 8, y + 4)
+  }
+
+  // Labels mois
+  months.forEach((m, i) => {
+    const x = pad.left + i * step
+    ctx.fillStyle = '#555'
+    ctx.font = '600 10px Nunito, sans-serif'
+    ctx.textAlign = 'center'
+    ctx.fillText(m, x, H - 8)
+  })
+
+  // Fonction dessin ligne + fill
+  function drawLine(vals, color, alpha = 0.12) {
+    if(!vals || !vals.length) return
+    const pts = vals.map((v, i) => ({
+      x: pad.left + i * step,
+      y: pad.top + chartH - (v / maxVal) * chartH
+    }))
+
+    // Zone remplie
+    const grad = ctx.createLinearGradient(0, pad.top, 0, pad.top + chartH)
+    grad.addColorStop(0, color.replace(')', `, ${alpha})`).replace('rgb', 'rgba'))
+    grad.addColorStop(1, color.replace(')', ', 0)').replace('rgb', 'rgba'))
+    ctx.beginPath()
+    ctx.moveTo(pts[0].x, pad.top + chartH)
+    pts.forEach(p => ctx.lineTo(p.x, p.y))
+    ctx.lineTo(pts[pts.length-1].x, pad.top + chartH)
+    ctx.closePath()
+    ctx.fillStyle = grad
+    ctx.fill()
+
+    // Ligne
+    ctx.beginPath()
+    ctx.moveTo(pts[0].x, pts[0].y)
+    for(let i = 1; i < pts.length; i++) {
+      const cpx = (pts[i-1].x + pts[i].x) / 2
+      ctx.bezierCurveTo(cpx, pts[i-1].y, cpx, pts[i].y, pts[i].x, pts[i].y)
+    }
+    ctx.strokeStyle = color
+    ctx.lineWidth = 2.5
+    ctx.lineJoin = 'round'
+    ctx.stroke()
+
+    // Points
+    pts.forEach(p => {
+      ctx.beginPath()
+      ctx.arc(p.x, p.y, 4, 0, Math.PI*2)
+      ctx.fillStyle = color
+      ctx.fill()
+      ctx.beginPath()
+      ctx.arc(p.x, p.y, 2, 0, Math.PI*2)
+      ctx.fillStyle = '#0a0a0a'
+      ctx.fill()
+    })
+
+    return pts
+  }
+
+  const commPts = drawLine(data.commissions, 'rgb(245,158,11)', 0.1)
+  const netPts  = drawLine(data.nets, 'rgb(34,197,94)', 0.12)
+  const revPts  = drawLine(data.revenues, 'rgb(255,117,31)', 0.15)
+
+  // Tooltip interactif
+  canvas.onmousemove = (e) => {
+    const rect = canvas.getBoundingClientRect()
+    const mx = e.clientX - rect.left
+    let closest = -1, minDist = Infinity
+    months.forEach((_, i) => {
+      const px = pad.left + i * step
+      const d = Math.abs(mx - px)
+      if(d < minDist) { minDist = d; closest = i }
+    })
+    if(closest === -1 || minDist > 40) { tooltipEl.classList.remove('show'); return }
+    const i = closest
+    const px = pad.left + i * step
+    const rev = (data.revenues[i] || 0).toLocaleString('fr-FR')
+    const net = (data.nets?.[i] || 0).toLocaleString('fr-FR')
+    const com = (data.commissions[i] || 0).toLocaleString('fr-FR')
+    const ord = data.orders[i] || 0
+    tooltipEl.innerHTML = `
+      <div class="chart-tooltip-month">${months[i]}</div>
+      <div class="chart-tooltip-row"><div class="chart-tooltip-dot" style="background:rgb(255,117,31);"></div><span style="color:var(--text-muted);">Brut</span><span style="color:#fff;margin-left:auto;padding-left:16px;">${rev} MAD</span></div>
+      <div class="chart-tooltip-row"><div class="chart-tooltip-dot" style="background:rgb(34,197,94);"></div><span style="color:var(--text-muted);">Net</span><span style="color:#fff;margin-left:auto;padding-left:16px;">${net} MAD</span></div>
+      <div class="chart-tooltip-row"><div class="chart-tooltip-dot" style="background:rgb(245,158,11);"></div><span style="color:var(--text-muted);">Commission</span><span style="color:#fff;margin-left:auto;padding-left:16px;">${com} MAD</span></div>
+      <div style="border-top:1px solid var(--border);padding-top:6px;margin-top:4px;font-size:11px;color:var(--text-faint);">${ord} commande${ord>1?'s':''}</div>`
+    const ttW = 200, ttH = 130
+    let tx = px + 12, ty = revPts ? (revPts[i].y - ttH/2) : 40
+    if(tx + ttW > W - 10) tx = px - ttW - 12
+    ty = Math.max(pad.top, Math.min(ty, H - pad.bottom - ttH))
+    tooltipEl.style.left = tx + 'px'
+    tooltipEl.style.top = ty + 'px'
+    tooltipEl.classList.add('show')
+  }
+  canvas.onmouseleave = () => tooltipEl.classList.remove('show')
+}
+
+function setChartPeriod(p) {
+  chartPeriod = p
+  document.querySelectorAll('.chart-period-btn').forEach(b => b.classList.toggle('active', b.textContent.replace(' mois','').trim() + 'm' === p || (p === '12m' && b.textContent.includes('12'))))
+  loadChartData()
+}
+
+// ══════════════════════════════════════════════
+//  NOTIFICATIONS SYSTEM — Supabase Realtime
+// ══════════════════════════════════════════════
+
+const NOTIF_ICONS = {
+  order:  { icon: 'ph-shopping-bag', cls: 'order' },
+  money:  { icon: 'ph-currency-circle-dollar', cls: 'money' },
+  review: { icon: 'ph-star', cls: 'review' },
+  stock:  { icon: 'ph-warning', cls: 'stock' },
+  system: { icon: 'ph-bell', cls: 'system' },
+}
+
+function openNotifPanel() {
+  document.getElementById('notif-panel').classList.add('open')
+  document.getElementById('notif-overlay').classList.add('show')
+}
+function closeNotifPanel() {
+  document.getElementById('notif-panel').classList.remove('open')
+  document.getElementById('notif-overlay').classList.remove('show')
+}
+
+function filterNotifs(type, btn) {
+  notifFilter = type
+  document.querySelectorAll('.notif-tab').forEach(b => b.classList.remove('active'))
+  if(btn) btn.classList.add('active')
+  renderNotifList()
+}
+
+function updateNotifBadge() {
+  unreadCount = allNotifications.filter(n => !n.read).length
+  const badge = document.getElementById('notif-count-badge')
+  const panelBadge = document.getElementById('notif-unread-badge')
+  const btn = document.getElementById('notif-btn')
+  if(unreadCount > 0) {
+    badge.textContent = unreadCount > 99 ? '99+' : unreadCount
+    badge.classList.remove('hidden')
+    panelBadge.textContent = unreadCount
+    panelBadge.classList.remove('hidden')
+    btn.classList.add('has-unread')
+  } else {
+    badge.classList.add('hidden')
+    panelBadge.classList.add('hidden')
+    btn.classList.remove('has-unread')
+  }
+}
+
+function renderNotifList() {
+  const list = document.getElementById('notif-list')
+  const filtered = notifFilter === 'all'
+    ? allNotifications
+    : allNotifications.filter(n => n.type === notifFilter)
+
+  if(!filtered.length) {
+    list.innerHTML = `<div class="notif-empty">${notifFilter === 'all' ? 'Aucune notification' : 'Aucune notification dans cette catégorie'}</div>`
+    return
+  }
+
+  list.innerHTML = filtered.map(n => {
+    const ico = NOTIF_ICONS[n.type] || NOTIF_ICONS.system
+    return `<div class="notif-item ${n.read?'':'unread'}" onclick="clickNotif('${n.id}')">
+      <div class="notif-icon ${ico.cls}"><i class="ph ${ico.icon}"></i></div>
+      <div class="notif-content">
+        <div class="notif-title">${n.title}</div>
+        <div class="notif-body">${n.body}</div>
+        <div class="notif-time">${timeAgo(n.created_at)}</div>
+      </div>
+      <div class="notif-dot ${n.read?'hidden':''}"></div>
+    </div>`
+  }).join('')
+}
+
+function clickNotif(id) {
+  const n = allNotifications.find(x => x.id === id)
+  if(!n) return
+  n.read = true
+  updateNotifBadge()
+  renderNotifList()
+  // Naviguer si action définie
+  if(n.action === 'orders') { closeNotifPanel(); showSection('orders') }
+  else if(n.action === 'reviews') { closeNotifPanel(); showSection('reviews') }
+  else if(n.action === 'products') { closeNotifPanel(); showSection('products') }
+  // Persister en DB si table notifications existe
+  saveNotifRead(id)
+}
+
+async function saveNotifRead(id) {
+  const db = getDb(); if(!db || !currentSeller) return
+  try { await db.from('notifications').update({read: true}).eq('id', id).eq('user_id', currentSeller.id) } catch(e) {}
+}
+
+function markAllRead() {
+  allNotifications.forEach(n => n.read = true)
+  updateNotifBadge()
+  renderNotifList()
+  const db = getDb(); if(!db || !currentSeller) return
+  try { db.from('notifications').update({read: true}).eq('user_id', currentSeller.id).eq('read', false) } catch(e) {}
+}
+
+function showPushToast(notif) {
+  const ico = NOTIF_ICONS[notif.type] || NOTIF_ICONS.system
+  const colorMap = { order:'var(--info)', money:'var(--accent)', review:'var(--gold)', stock:'var(--error)', system:'var(--success)' }
+  const bgMap = { order:'var(--info-dim)', money:'var(--accent-light)', review:'var(--gold-dim)', stock:'var(--error-dim)', system:'var(--success-dim)' }
+  const color = colorMap[notif.type] || 'var(--accent)'
+  const bg = bgMap[notif.type] || 'var(--accent-light)'
+  const el = document.getElementById('push-toast')
+  document.getElementById('push-toast-icon').innerHTML = `<i class="ph ${ico.icon}" style="font-size:16px;color:${color};"></i>`
+  document.getElementById('push-toast-icon').style.background = bg
+  document.getElementById('push-toast-title').textContent = notif.title
+  document.getElementById('push-toast-msg').textContent = notif.body
+  el.classList.add('show')
+  clearTimeout(pushToastTimer)
+  pushToastTimer = setTimeout(() => el.classList.remove('show'), 5000)
+}
+
+function closePushToast() {
+  clearTimeout(pushToastTimer)
+  document.getElementById('push-toast').classList.remove('show')
+}
+
+function addNotification(notif) {
+  // Empêche les doublons
+  if(allNotifications.find(n => n.id === notif.id)) return
+  allNotifications.unshift(notif)
+  updateNotifBadge()
+  if(!notif.read) showPushToast(notif)
+  renderNotifList()
+}
+
+async function loadNotifications() {
+  const db = getDb(); if(!currentSeller) return
+  try {
+    const { data } = await db.from('notifications')
+      .select('*')
+      .eq('user_id', currentSeller.id)
+      .order('created_at', {ascending: false})
+      .limit(50)
+    allNotifications = data || []
+  } catch(e) {
+    // Table notifications n'existe peut-être pas encore — générer depuis les données
+    await generateNotificationsFromData()
+  }
+  updateNotifBadge()
+  renderNotifList()
+}
+
+async function generateNotificationsFromData() {
+  // Génère des notifications synthétiques depuis orders/reviews/stock
+  const db = getDb(); if(!currentSeller) return
+  const notifs = []
+  const productIds = await getMyProductIds()
+
+  // Commandes récentes en attente
+  if(productIds.length) {
+    const { data:items } = await db.from('order_items').select('order_id').in('product_id', productIds)
+    const orderIds = [...new Set((items||[]).map(i => i.order_id))]
+    if(orderIds.length) {
+      const { data:pendingOrders } = await db.from('orders')
+        .select('id,total_amount,created_at,status,users!orders_user_id_fkey(full_name,email)')
+        .in('id', orderIds).eq('status','pending').order('created_at',{ascending:false}).limit(5)
+      ;(pendingOrders||[]).forEach(o => {
+        notifs.push({
+          id: 'ord-' + o.id,
+          type: 'order',
+          title: 'Nouvelle commande en attente',
+          body: `${o.users?.full_name || o.users?.email || 'Un client'} — ${Number(o.total_amount).toLocaleString('fr-FR')} MAD`,
+          created_at: o.created_at,
+          read: false,
+          action: 'orders'
+        })
+      })
+    }
+  }
+
+  // Stock critique
+  if(currentSeller) {
+    const { data:lowStock } = await db.from('products')
+      .select('id,name,stock').eq('seller_id',currentSeller.id).lte('stock',3).gt('stock',0).limit(3)
+    ;(lowStock||[]).forEach(p => {
+      notifs.push({
+        id: 'stock-' + p.id,
+        type: 'stock',
+        title: 'Stock critique',
+        body: `"${p.name}" — Il ne reste que ${p.stock} unité${p.stock>1?'s':''}`,
+        created_at: new Date(Date.now() - Math.random()*86400000*3).toISOString(),
+        read: false,
+        action: 'products'
+      })
+    })
+    // Ruptures
+    const { data:outOfStock } = await db.from('products')
+      .select('id,name').eq('seller_id',currentSeller.id).eq('stock',0).limit(2)
+    ;(outOfStock||[]).forEach(p => {
+      notifs.push({
+        id: 'oos-' + p.id,
+        type: 'stock',
+        title: 'Rupture de stock',
+        body: `"${p.name}" est en rupture — Mettez à jour votre stock`,
+        created_at: new Date(Date.now() - Math.random()*86400000*2).toISOString(),
+        read: false,
+        action: 'products'
+      })
+    })
+  }
+
+  // Avis récents
+  if(productIds.length) {
+    const { data:reviews } = await db.from('reviews')
+      .select('id,rating,reviewer_name,created_at,products(name)')
+      .in('product_id', productIds).order('created_at',{ascending:false}).limit(3)
+    ;(reviews||[]).forEach(r => {
+      notifs.push({
+        id: 'rev-' + r.id,
+        type: 'review',
+        title: `Nouvel avis ${r.rating >= 4 ? '⭐' : ''}`,
+        body: `${r.reviewer_name||'Un client'} a laissé ${r.rating}/5 sur "${r.products?.name||'votre produit'}"`,
+        created_at: r.created_at,
+        read: r.rating >= 4,
+        action: 'reviews'
+      })
+    })
+  }
+
+  // Trier par date
+  allNotifications = notifs.sort((a,b) => new Date(b.created_at) - new Date(a.created_at))
+}
+
+function startRealtimeNotifications() {
+  const db = getDb(); if(!db || !currentSeller) return
+
+  // Écoute les nouvelles commandes en temps réel
+  realtimeChannel = db.channel(`seller-notifs-${currentSeller.id}`)
+
+  // Nouvelles commandes
+  realtimeChannel.on('postgres_changes', {
+    event: 'INSERT', schema: 'public', table: 'orders'
+  }, async (payload) => {
+    const order = payload.new
+    // Vérifier si cette commande concerne ce vendeur
+    const productIds = await getMyProductIds()
+    if(!productIds.length) return
+    const { data:items } = await db.from('order_items').select('order_id').in('product_id', productIds).eq('order_id', order.id)
+    if(!items?.length) return
+    // C'est une commande pour ce vendeur
+    addNotification({
+      id: 'rt-ord-' + order.id,
+      type: 'order',
+      title: 'Nouvelle commande !',
+      body: `Commande de ${Number(order.total_amount).toLocaleString('fr-FR')} MAD reçue`,
+      created_at: order.created_at || new Date().toISOString(),
+      read: false,
+      action: 'orders'
+    })
+    // Mettre à jour le badge de la nav
+    const badge = document.getElementById('badge-pending')
+    if(badge) {
+      const current = parseInt(badge.textContent) || 0
+      badge.textContent = current + 1
+      badge.classList.remove('hidden')
+    }
+    loadOverview()
+  })
+
+  // Nouveaux avis
+  realtimeChannel.on('postgres_changes', {
+    event: 'INSERT', schema: 'public', table: 'reviews'
+  }, async (payload) => {
+    const review = payload.new
+    const productIds = await getMyProductIds()
+    if(!productIds.includes(review.product_id)) return
+    const { data:product } = await db.from('products').select('name').eq('id', review.product_id).single()
+    addNotification({
+      id: 'rt-rev-' + review.id,
+      type: 'review',
+      title: `Nouvel avis ${review.rating >= 4 ? '⭐' : ''}`,
+      body: `${review.reviewer_name||'Un client'} a laissé ${review.rating}/5 sur "${product?.name||'votre produit'}"`,
+      created_at: review.created_at || new Date().toISOString(),
+      read: false,
+      action: 'reviews'
+    })
+  })
+
+  // Changement de statut de commande
+  realtimeChannel.on('postgres_changes', {
+    event: 'UPDATE', schema: 'public', table: 'orders'
+  }, async (payload) => {
+    const order = payload.new
+    if(order.status === 'delivered') {
+      const productIds = await getMyProductIds()
+      const { data:items } = await db.from('order_items').select('order_id').in('product_id', productIds).eq('order_id', order.id)
+      if(!items?.length) return
+      addNotification({
+        id: 'rt-del-' + order.id + '-' + Date.now(),
+        type: 'money',
+        title: 'Commande livrée — Paiement en cours',
+        body: `${Number(order.total_amount * 0.92).toLocaleString('fr-FR')} MAD net seront versés sur votre wallet`,
+        created_at: new Date().toISOString(),
+        read: false,
+        action: 'revenue'
+      })
+    }
+  })
+
+  realtimeChannel.subscribe((status) => {
+    if(status === 'SUBSCRIBED') console.log('[WennaShop] Realtime notifications actives')
+  })
+}
+
 // ── SECTIONS ──
 const pageTitles = { overview:"Vue d'ensemble", products:'Mes Produits', orders:'Commandes', revenue:'Revenus', wallet:'Wallet & Boosts', reviews:'Avis Clients', profile:'Ma Boutique' }
 function showSection(name) {
@@ -784,7 +1631,7 @@ function showSection(name) {
   closeSidebar()
   if(name === 'products') loadProducts()
   if(name === 'orders') loadOrders()
-  if(name === 'revenue') loadRevenue()
+  if(name === 'revenue') { loadRevenue(); setTimeout(() => renderChart('revenue-chart-full'), 50) }
   if(name === 'wallet') loadWallet()
   if(name === 'reviews') loadReviews()
   if(name === 'profile') loadProfileSection()
@@ -803,7 +1650,8 @@ function checkMobile() {
   const m = window.innerWidth < 1024
   const btn = document.getElementById('menu-btn'); if(btn) btn.style.display = m ? 'block' : 'none'
 }
-window.addEventListener('resize', checkMobile); checkMobile()
+window.addEventListener('resize', () => { checkMobile(); renderCharts() })
+checkMobile()
 
 // ── AUTH ──
 async function initAuth() {
@@ -843,10 +1691,16 @@ async function initAuth() {
     await loadCategories()
     await loadOverview()
     await loadWalletBadge()
+    await loadNotifications()
+    await loadChartData()
+    startRealtimeNotifications()
     hideInitScreen()
   } catch(e) { console.error('[WennaShop] initAuth:', e); hideInitScreen(); showToast('Erreur : '+e.message, 'error') }
 }
-async function logout() { const db = getDb(); if(db) await db.auth.signOut(); window.location.href = 'index.html' }
+async function logout() {
+  if(realtimeChannel) { const db = getDb(); if(db) db.removeChannel(realtimeChannel) }
+  const db = getDb(); if(db) await db.auth.signOut(); window.location.href = 'index.html'
+}
 
 async function loadCategories() {
   const db = getDb()
