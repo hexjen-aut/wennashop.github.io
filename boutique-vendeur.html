@@ -60,15 +60,8 @@ body {
   padding: 0 24px;
   gap: 16px;
 }
-.nav-logo {
-  font-family: var(--serif);
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--text);
-  text-decoration: none;
-  flex: 1;
-}
-.nav-logo span { color: var(--orange); }
+.logo { font-family:var(--font); font-size:22px; font-weight:900; color:var(--text); text-decoration:none; letter-spacing:-1px; }
+.logo span { color:var(--accent); }
 .nav-back {
   display: flex;
   align-items: center;
@@ -648,7 +641,7 @@ body {
     <span class="material-symbols-outlined" style="font-size:18px">arrow_back</span>
     <span>Catalogue</span>
   </a>
-  <a href="index.html" class="nav-logo">Wenna<span>Shop</span></a>
+  <a href="boutique.html" class="logo"><span>Wenna</span>Shop</a>
   <a href="panier.html" class="nav-cart">
     <span class="material-symbols-outlined" style="font-size:18px">shopping_bag</span>
     <span id="cart-count">Panier</span>
