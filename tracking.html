@@ -66,8 +66,8 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
 /* ── NAVBAR ── */
 nav { height: var(--nav-h); background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; position: sticky; top: 0; z-index: 50; }
-.nav-logo { display: flex; align-items: center; gap: 0; text-decoration: none; }
-.nav-logo img { height: 32px; }
+.logo { font-family:var(--font); font-size:22px; font-weight:900; color:var(--text); text-decoration:none; letter-spacing:-1px; }
+.logo span { color:var(--accent); }
 .nav-right { display: flex; align-items: center; gap: 12px; }
 .btn-sm { display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; font-size: 12px; font-weight: 700; font-family: var(--font); border-radius: var(--radius-pill); cursor: pointer; transition: all .2s; text-decoration: none; border: none; }
 .btn-primary { background: var(--accent); color: #fff; box-shadow: var(--shadow-orange); }
@@ -271,7 +271,6 @@ nav { height: var(--nav-h); background: var(--surface); border-bottom: 1px solid
 
 <div id="init-screen">
   <a href="boutique.html" class="logo">Wenna<span>Shop</span></a>
-  <img src="wenna_logo01.png" alt="WennaShop" style="height:44px;"/>
   <div class="spinner"></div>
   <p style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint);">Chargement…</p>
 </div>
@@ -286,8 +285,7 @@ nav { height: var(--nav-h); background: var(--surface); border-bottom: 1px solid
 
 <!-- NAVBAR -->
 <nav>
-  <a href="index.html" class="nav-logo">
-    <img src="wenna_logo01.png" alt="WennaShop"/>
+  <a href="boutique.html" class="logo">Wenna<span>Shop</span>>
   </a>
   <div class="nav-right">
     <button id="btn-refresh-nav" class="btn-sm btn-ghost" onclick="refreshTracking()" style="display:none;">
