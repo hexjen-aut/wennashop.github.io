@@ -24,8 +24,8 @@
 
     /* NAV */
     nav{position:sticky;top:0;z-index:100;background:rgba(8,8,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
-    .nav-logo{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;font-style:italic;color:var(--snow);text-decoration:none;}
-    .nav-logo b{color:var(--fire);}
+    .logo { font-family:var(--font); font-size:22px; font-weight:900; color:var(--text); text-decoration:none; letter-spacing:-1px; }
+    .logo span { color:var(--accent); }
     .nav-back{display:flex;align-items:center;gap:8px;color:var(--fog);text-decoration:none;font-size:10px;letter-spacing:2px;text-transform:uppercase;transition:color .2s;}
     .nav-back:hover{color:var(--fire);}
     @media(max-width:768px){nav{padding:14px 20px;}}
@@ -196,7 +196,7 @@
     <span class="material-symbols-outlined" style="font-size:16px;">arrow_back</span>
     Boutique
   </a>
-  <a href="hero.html" class="nav-logo">Wenna<b>Shop</b></a>
+  <a href="boutique.html" class="logo"><span>Wenna</span>Shop</a>
   <div style="width:80px;"></div>
 </nav>
 
