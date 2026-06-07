@@ -49,7 +49,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);overflow-x:h
 /* ── MAINTENANCE ── */
 #maintenance-screen{display:none;position:fixed;inset:0;background:var(--bg);z-index:9999;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:40px;}
 #maintenance-screen.show{display:flex;}
-.maint-logo img{height:48px;}
+.logo { font-family:var(--font); font-size:22px; font-weight:900; color:var(--text); text-decoration:none; letter-spacing:-1px; }
+.logo span { color:var(--accent); }
 .maint-title{font-size:24px;font-weight:800;color:var(--text-muted);}
 .maint-sub{font-size:13px;color:var(--text-faint);max-width:360px;line-height:1.8;}
 
@@ -62,7 +63,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);overflow-x:h
 /* ── HEADER ── */
 .hd{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nav-height);padding:0 40px;display:flex;align-items:center;justify-content:space-between;transition:background .3s,border-color .3s;}
 .hd.scr{background:rgba(10,10,10,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
-.hd-logo img{height:36px;}
 .hd-nav{display:flex;gap:28px;}
 .hd-nav a{font-size:13px;font-weight:600;color:var(--text-muted);text-decoration:none;transition:color .2s;}
 .hd-nav a:hover,.hd-nav a.active{color:var(--accent);}
@@ -343,7 +343,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);overflow-x:h
 <body>
 
 <div id="maintenance-screen">
-  <div class="maint-logo"><img src="wenna_logo01.png" alt="WennaShop"/></div>
+  <div class="logo"><span>Wenna</span>Shop></div>
   <div class="maint-title">Site en maintenance</div>
   <div class="maint-sub">Nous effectuons des mises à jour. La boutique sera de retour très bientôt.</div>
 </div>
@@ -357,7 +357,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);overflow-x:h
 
 <!-- ── HEADER ── -->
 <header class="hd" id="hd">
-  <a href="boutique.html" class="hd-logo"><img src="wenna_logo01.png" alt="WennaShop"/></a>
+  <a href="boutique.html" class="logo"><span>Wenna</span>Shop</a>
   <nav class="hd-nav">
     <a href="dashboard-vendeur.html">Vendre</a>
     <a href="quetes.html">Quêtes</a>
