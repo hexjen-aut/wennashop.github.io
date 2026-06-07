@@ -69,7 +69,8 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
 /* ── HEADER ── */
 .hd { position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: var(--nav-height); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; background: rgba(10,10,10,.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
-.hd-logo img { height: 32px; }
+.logo { font-family:var(--font); font-size:22px; font-weight:900; color:var(--text); text-decoration:none; letter-spacing:-1px; }
+.logo span { color:var(--accent); }
 .hd-acts { display: flex; align-items: center; gap: 14px; }
 .hd-acts a, .hd-acts button { background: none; border: none; color: var(--text-muted); text-decoration: none; display: flex; align-items: center; font-size: 20px; transition: color .2s; position: relative; }
 .hd-acts a:hover, .hd-acts button:hover { color: var(--accent); }
@@ -321,7 +322,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
 <!-- ── HEADER ── -->
 <header class="hd">
-  <a href="boutique.html" class="hd-logo"><img src="wenna_logo01.png" alt="WennaShop"/></a>
+  <a href="boutique.html" class="logo"><span>Wenna</span>Shop</a>
   <div class="hd-acts">
     <button title="Notifications"><i class="ph ph-bell"></i></button>
     <a href="panier.html" style="position:relative;">
