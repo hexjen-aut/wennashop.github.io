@@ -81,7 +81,8 @@ body {
   font-size: 20px;
 }
 .nav-btn:hover { color: var(--accent); background: var(--accent-light); }
-.nav-logo img { height: 32px; }
+.logo { font-family:var(--font); font-size:22px; font-weight:900; color:var(--text); text-decoration:none; letter-spacing:-1px; }
+.logo span { color:var(--accent); }}
 .cart-wrap { position: relative; }
 .cart-badge {
   position: absolute;
@@ -623,8 +624,7 @@ main { padding-top: var(--nav-height); }
     <button class="nav-btn" onclick="history.back()" aria-label="Retour">
       <i class="ph ph-arrow-left"></i>
     </button>
-    <a href="boutique.html" class="nav-logo">
-      <img src="wenna_logo01.png" alt="WennaShop"/>
+   <a href="boutique.html" class="logo"><span>Wenna</span>Shop</a>
     </a>
     <a href="panier.html" class="nav-btn cart-wrap" aria-label="Panier">
       <i class="ph ph-shopping-bag"></i>
