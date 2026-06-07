@@ -4,23 +4,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WennaShop — Hors Connexion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0a0a0a;
-      --surface: #141414;
-      --border: #2a2a2a;
-      --orange: #FF6B2B;
-      --orange-dim: rgba(255, 107, 43, 0.15);
-      --text: #f0f0f0;
-      --text-dim: #888;
+      --font: 'Nunito', sans-serif;
+      --accent: #ff751f;
+      --accent-dim: rgba(255,117,31,0.12);
+      --accent-border: rgba(255,117,31,0.28);
+      --bg: #0e0e0e;
+      --surface: #181818;
+      --surface2: #202020;
+      --border: rgba(255,255,255,0.07);
+      --text: #f0ece6;
+      --text-muted: #888;
+      --text-faint: #444;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'DM Sans', -apple-system, sans-serif;
+      font-family: var(--font);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -30,88 +35,122 @@
     }
 
     .container {
-      max-width: 480px;
+      max-width: 460px;
       width: 100%;
       text-align: center;
     }
 
+    /* LOGO */
+    .logo {
+      font-family: var(--font);
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -1px;
+      display: inline-block;
+      margin-bottom: 40px;
+    }
+    .logo span { color: var(--accent); }
+
+    /* ICON WRAP */
     .icon-wrap {
-      width: 80px;
-      height: 80px;
-      background: var(--orange-dim);
-      border: 1px solid var(--orange);
-      border-radius: 20px;
+      width: 72px;
+      height: 72px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-radius: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
       margin: 0 auto 28px;
-      font-size: 36px;
     }
-
-    .logo {
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: 22px;
-      font-weight: 600;
-      letter-spacing: 2px;
-      color: var(--orange);
-      margin-bottom: 32px;
-      text-transform: uppercase;
+    .icon-wrap svg {
+      width: 32px; height: 32px;
+      stroke: var(--accent); fill: none;
+      stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;
     }
 
     h1 {
-      font-size: 24px;
-      font-weight: 600;
-      margin-bottom: 12px;
-      line-height: 1.3;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      margin-bottom: 10px;
+      line-height: 1.25;
     }
 
     p {
-      color: var(--text-dim);
-      font-size: 15px;
-      line-height: 1.6;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.65;
       margin-bottom: 32px;
     }
 
+    /* ACTIONS */
     .actions {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      margin-bottom: 40px;
+      gap: 10px;
+      margin-bottom: 36px;
     }
 
     .btn-primary {
-      background: var(--orange);
+      background: var(--accent);
       color: #fff;
       border: none;
-      padding: 14px 24px;
+      padding: 13px 24px;
       border-radius: 10px;
-      font-size: 15px;
-      font-weight: 600;
+      font-size: 14px;
+      font-weight: 800;
+      font-family: var(--font);
       cursor: pointer;
-      transition: opacity 0.2s;
+      letter-spacing: 0.3px;
+      transition: opacity .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
-    .btn-primary:hover { opacity: 0.85; }
+    .btn-primary:hover { opacity: .85; }
+    .btn-primary svg {
+      width: 16px; height: 16px;
+      stroke: currentColor; fill: none;
+      stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+    }
 
     .btn-secondary {
       background: transparent;
-      color: var(--text);
+      color: var(--text-muted);
       border: 1px solid var(--border);
-      padding: 13px 24px;
+      padding: 12px 24px;
       border-radius: 10px;
-      font-size: 15px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: var(--font);
       cursor: pointer;
-      transition: border-color 0.2s;
       text-decoration: none;
-      display: block;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: border-color .2s, color .2s;
     }
-    .btn-secondary:hover { border-color: var(--orange); color: var(--orange); }
+    .btn-secondary:hover { border-color: var(--accent-border); color: var(--accent); }
+    .btn-secondary svg {
+      width: 16px; height: 16px;
+      stroke: currentColor; fill: none;
+      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+    }
 
+    /* DIVIDER */
     .divider {
       height: 1px;
       background: var(--border);
-      margin: 32px 0;
+      margin: 28px 0;
     }
 
+    /* OFFLINE CART */
     .offline-cart {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -120,90 +159,122 @@
       text-align: left;
     }
 
-    .offline-cart h3 {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--orange);
-      text-transform: uppercase;
-      letter-spacing: 1px;
+    .offline-cart-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       margin-bottom: 16px;
     }
+    .offline-cart-header svg {
+      width: 16px; height: 16px;
+      stroke: var(--accent); fill: none;
+      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+    }
+    .offline-cart h3 {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
 
-    #offline-cart-items { font-size: 14px; color: var(--text-dim); }
+    #offline-cart-items { font-size: 13px; color: var(--text-muted); }
 
     .cart-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 8px 0;
+      padding: 9px 0;
       border-bottom: 1px solid var(--border);
     }
     .cart-item:last-child { border-bottom: none; }
-    .cart-item-name { color: var(--text); font-weight: 500; }
-    .cart-item-price { color: var(--orange); }
+    .cart-item-name { color: var(--text); font-weight: 600; }
+    .cart-item-price { color: var(--accent); font-weight: 800; }
 
     .pending-notice {
-      margin-top: 16px;
+      margin-top: 14px;
       padding: 10px 14px;
-      background: var(--orange-dim);
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
       border-radius: 8px;
-      font-size: 13px;
-      color: var(--orange);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
       display: none;
+      align-items: center;
+      gap: 8px;
+    }
+    .pending-notice svg {
+      width: 14px; height: 14px; flex-shrink: 0;
+      stroke: currentColor; fill: none;
+      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
     }
 
-    .status-dot {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #ef4444;
-      margin-right: 6px;
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-
+    /* STATUS */
     .network-status {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      font-size: 13px;
-      color: var(--text-dim);
-      margin-top: 24px;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-faint);
+      margin-top: 28px;
+    }
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
     }
   </style>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Cormorant+Garamond:wght@600&display=swap" rel="stylesheet">
 </head>
 <body>
 
 <div class="container">
-  <div class="logo">WennaShop</div>
 
-  <div class="icon-wrap">📡</div>
+  <a href="/" class="logo"><span>Wenna</span>Shop</a>
+
+  <div class="icon-wrap">
+    <!-- signal / no wifi -->
+    <svg viewBox="0 0 24 24">
+      <line x1="1" y1="1" x2="23" y2="23"/>
+      <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/>
+      <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/>
+      <path d="M10.71 5.05A16 16 0 0 1 22.56 9"/>
+      <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/>
+      <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+      <circle cx="12" cy="20" r="1" fill="currentColor" stroke="none"/>
+    </svg>
+  </div>
 
   <h1>Vous êtes hors connexion</h1>
-  <p>Pas d'inquiétude — votre panier est sauvegardé. Dès que votre connexion revient, vos commandes seront envoyées automatiquement.</p>
+  <p>Pas d'inquiétude — votre panier est sauvegardé localement. Dès que la connexion revient, vos commandes seront envoyées automatiquement.</p>
 
   <div class="actions">
     <button class="btn-primary" onclick="tryReconnect()">
-      🔄 Réessayer la connexion
+      <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+      Réessayer la connexion
     </button>
     <a href="/" class="btn-secondary">
-      📦 Voir les produits en cache
+      <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      Voir les produits en cache
     </a>
   </div>
 
   <div id="offline-cart-section" class="offline-cart" style="display:none">
-    <h3>🛒 Votre panier sauvegardé</h3>
+    <div class="offline-cart-header">
+      <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <h3>Panier sauvegardé</h3>
+    </div>
     <div id="offline-cart-items">Chargement...</div>
     <div class="pending-notice" id="pending-notice">
-      ⏳ Commandes en attente d'envoi — seront traitées dès la reconnexion
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Commandes en attente — envoi automatique à la reconnexion
     </div>
   </div>
 
@@ -211,13 +282,12 @@
     <span class="status-dot" id="status-dot"></span>
     <span id="status-text">Hors connexion</span>
   </div>
+
 </div>
 
 <script>
-  // Afficher le panier depuis IndexedDB
   async function loadOfflineCart() {
     if (!window.indexedDB) return;
-
     try {
       const dbReq = indexedDB.open('WennaShopOfflineDB', 1);
       dbReq.onsuccess = (e) => {
@@ -225,65 +295,53 @@
         const tx = db.transaction('cart', 'readonly');
         const store = tx.objectStore('cart');
         const getAllReq = store.getAll();
-
         getAllReq.onsuccess = () => {
           const items = getAllReq.result;
-          if (items.length === 0) return;
-
+          if (!items.length) return;
           document.getElementById('offline-cart-section').style.display = 'block';
           const container = document.getElementById('offline-cart-items');
-
-          if (items.length === 0) {
-            container.innerHTML = '<p style="color:#888;font-size:13px">Panier vide</p>';
-            return;
-          }
-
           container.innerHTML = items.map(item => `
             <div class="cart-item">
               <span class="cart-item-name">${item.name} × ${item.quantity}</span>
               <span class="cart-item-price">${(item.price * item.quantity).toLocaleString()} FCFA</span>
             </div>
           `).join('');
-
           const total = items.reduce((s, i) => s + (i.price * i.quantity), 0);
           container.innerHTML += `
-            <div class="cart-item" style="margin-top:8px;font-weight:600">
-              <span style="color:#f0f0f0">Total</span>
+            <div class="cart-item" style="margin-top:4px;padding-top:12px;border-top:1px solid var(--border);border-bottom:none;">
+              <span style="font-weight:800;color:var(--text)">Total</span>
               <span class="cart-item-price">${total.toLocaleString()} FCFA</span>
             </div>
           `;
         };
-
-        // Vérifier commandes pending
         const tx2 = db.transaction('pendingOrders', 'readonly');
         const oStore = tx2.objectStore('pendingOrders');
         const pendingReq = oStore.getAll();
         pendingReq.onsuccess = () => {
           const pending = pendingReq.result.filter(o => o.status === 'pending_sync');
           if (pending.length > 0) {
-            document.getElementById('pending-notice').style.display = 'block';
+            document.getElementById('pending-notice').style.display = 'flex';
           }
         };
       };
-    } catch (err) {
-      console.log('IndexedDB non accessible');
-    }
+    } catch(err) {}
   }
 
   function tryReconnect() {
+    const btn = document.querySelector('.btn-primary');
     if (navigator.onLine) {
       window.location.href = '/';
     } else {
-      const btn = event.target;
-      btn.textContent = '📡 Toujours hors ligne...';
-      setTimeout(() => { btn.textContent = '🔄 Réessayer la connexion'; }, 2000);
+      const orig = btn.innerHTML;
+      btn.innerHTML = `<svg viewBox="0 0 24 24"><line x1="1" y1="1" x2="23" y2="23"/><circle cx="12" cy="20" r="1" fill="currentColor" stroke="none"/></svg> Toujours hors ligne`;
+      setTimeout(() => { btn.innerHTML = orig; }, 2000);
     }
   }
 
-  // Surveiller le retour de connexion
   window.addEventListener('online', () => {
     document.getElementById('status-dot').style.background = '#22c55e';
-    document.getElementById('status-text').textContent = 'Connexion rétablie ! Redirection...';
+    document.getElementById('status-dot').style.animation = 'none';
+    document.getElementById('status-text').textContent = 'Connexion rétablie — redirection…';
     setTimeout(() => { window.location.href = '/'; }, 1500);
   });
 
