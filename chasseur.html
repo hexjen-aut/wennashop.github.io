@@ -25,8 +25,8 @@
 
     /* NAV */
     nav{position:sticky;top:0;z-index:100;background:rgba(8,8,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
-    .nav-logo{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;font-style:italic;color:var(--snow);text-decoration:none;letter-spacing:-.5px;}
-    .nav-logo b{color:var(--fire);}
+    .logo { font-family:var(--font); font-size:22px; font-weight:900; color:var(--text); text-decoration:none; letter-spacing:-1px; }
+    .logo span { color:var(--accent); }
     .nav-links{display:flex;gap:28px;align-items:center;}
     .nav-links a{text-decoration:none;color:var(--fog);font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;transition:color .2s;}
     .nav-links a:hover,.nav-links a.active{color:var(--snow);}
@@ -296,7 +296,7 @@
 <div id="toast"></div>
 
 <nav>
-  <a href="hero.html" class="nav-logo">Wenna<b>Shop</b></a>
+  <a href="boutique.html" class="logo"><span>Wenna</span>Shop</a>
   <div class="nav-links">
     <a href="boutique.html">Boutique</a>
     <a href="quetes.html">Quêtes</a>
