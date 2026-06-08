@@ -787,9 +787,13 @@ const FLAGS = {
 function flag(c) { return FLAGS[c] || '🌍'; }
 
 // ── UTILS ──
-function getSlug() {
+function getParam() {
   const p = new URLSearchParams(window.location.search);
-  return p.get('slug') || p.get('id') || null;
+  return {
+    slug: p.get('slug'),
+    id: p.get('id'),
+    vendeur: p.get('vendeur')   // user_id du vendeur
+  };
 }
 function formatPrice(amount, currency) {
   const cur = currency === 'XOF' || currency === 'FCFA' ? 'XOF' : (currency || 'MAD');
@@ -826,16 +830,19 @@ let shopData = null;
 // ── LOAD SHOP ──
 async function loadShop() {
   const db = await waitForDb();
-  const slug = getSlug();
+  const { slug, id, vendeur } = getParam();
   const select = '*, users(id, full_name, email, specialty, avatar_url, city, country, created_at)';
 
   if (slug) {
-    const { data: bySlug } = await db.from('shops').select(select).eq('slug', slug).eq('status', 'active').single();
-    if (bySlug) shopData = bySlug;
-    else {
-      const { data: byId } = await db.from('shops').select(select).eq('id', slug).single();
-      shopData = byId;
-    }
+    const { data } = await db.from('shops').select(select).eq('slug', slug).eq('status', 'active').single();
+    shopData = data;
+  } else if (id) {
+    const { data } = await db.from('shops').select(select).eq('id', id).single();
+    shopData = data;
+  } else if (vendeur) {
+    // vendeur = user_id dans la table shops
+    const { data } = await db.from('shops').select(select).eq('user_id', vendeur).eq('status', 'active').single();
+    shopData = data;
   }
 
   if (!shopData) { renderShopError(); return; }
