@@ -599,39 +599,58 @@ function renderProduct(product, reviews = []) {
 }
 
 // ── RENDER SELLER ──
-function renderSeller(seller) {
-  if (!seller) {
+function renderSeller({ user, shop }) {
+  if (!user && !shop) {
     $('seller-card').innerHTML = '<span style="font-size:13px;color:var(--text-muted);">Vendeur non disponible</span>'
     return
   }
-  const initial = (seller.full_name || 'V').charAt(0).toUpperCase()
-  const avatar = seller.avatar_url ? `<img src="${seller.avatar_url}" alt="${seller.full_name}"/>` : initial
-  const since = seller.created_at ? new Date(seller.created_at).getFullYear() : null
+
+  const displayName = shop?.name || user?.full_name || 'Vendeur'
+  const since = user?.created_at ? new Date(user.created_at).getFullYear() : null
+  const verified = shop?.is_verified
+
+  // Avatar : logo boutique > avatar user > initiale
+  let avatar
+  if (shop?.logo_url) avatar = `<img src="${shop.logo_url}" alt="${displayName}"/>`
+  else if (user?.avatar_url) avatar = `<img src="${user.avatar_url}" alt="${displayName}"/>`
+  else avatar = displayName.charAt(0).toUpperCase()
+
+  // Lien boutique : slug si dispo, sinon id shop, sinon user_id
+  const shopHref = shop?.slug
+    ? `boutique-vendeur.html?slug=${shop.slug}`
+    : shop?.id
+      ? `boutique-vendeur.html?shop=${shop.id}`
+      : `boutique-vendeur.html?vendeur=${user?.id}`
+
+  // Stats boutique
+  const metaParts = []
+  if (verified) metaParts.push('Vendeur certifié ✓')
+  if (user?.country) metaParts.push(user.country)
+  if (since) metaParts.push(`Depuis ${since}`)
+  if (shop?.total_sales) metaParts.push(`${shop.total_sales} ventes`)
+
   $('seller-card').innerHTML = `
     <div style="display:flex;align-items:center;gap:12px;">
       <div class="seller-av">${avatar}</div>
       <div>
-        <div class="seller-name">${seller.full_name || 'Vendeur'}</div>
-        <div class="seller-meta">Vendeur certifié${seller.country ? ' · ' + seller.country : ''}${since ? ' · Depuis ' + since : ''}</div>
+        <div class="seller-name">${displayName}</div>
+        <div class="seller-meta">${metaParts.join(' · ')}</div>
       </div>
     </div>
-    <a href="boutique-vendeur.html?vendeur=${seller.id}" class="btn-seller">
+    <a href="${shopHref}" class="btn-seller">
       <i class="ph ph-storefront" style="font-size:15px;"></i>
       Voir la boutique
     </a>`
 
-  // Mise à jour SEO avec le nom vendeur (og:product:brand)
-  if (typeof WennaSEO !== 'undefined' && currentProduct) {
-    const params = new URLSearchParams(window.location.search)
-    const existingMeta = document.querySelector('meta[property="og:title"]')
-    // On met à jour uniquement le brand dans le JSON-LD existant sans tout recalculer
+  // Mise à jour JSON-LD brand
+  if (typeof WennaSEO !== 'undefined') {
     const ldEl = document.querySelector('script[type="application/ld+json"]#wenna-jsonld')
     if (ldEl) {
       try {
         const ld = JSON.parse(ldEl.textContent)
         if (ld['@type'] === 'Product') {
-          ld.brand = { '@type': 'Brand', name: seller.full_name }
-          ld.offers.seller = { '@type': 'Organization', name: seller.full_name }
+          ld.brand = { '@type': 'Brand', name: displayName }
+          ld.offers.seller = { '@type': 'Organization', name: displayName }
           ldEl.textContent = JSON.stringify(ld)
         }
       } catch(e) {}
@@ -690,8 +709,13 @@ async function loadProduct(id) {
 }
 
 async function loadSeller(sellerId) {
-  const { data } = await getDb().from('users').select('id,full_name,avatar_url,created_at,country').eq('id', sellerId).single()
-  return data
+  const db = getDb()
+  // Charge user + sa boutique en parallèle
+  const [{ data: user }, { data: shop }] = await Promise.all([
+    db.from('users').select('id,full_name,avatar_url,created_at,country').eq('id', sellerId).single(),
+    db.from('shops').select('id,slug,name,logo_url,rating_avg,rating_count,total_sales,is_verified').eq('user_id', sellerId).eq('status', 'active').single()
+  ])
+  return { user, shop }
 }
 
 async function loadReviews(productId) {
