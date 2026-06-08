@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard-vendeur.html
+Disallow: /compte.html
+Disallow: /panier.html
+Disallow: /paiement.html
+Disallow: /tracking.html
+Disallow: /admin_panel.html
+Disallow: /wallet.html
+Disallow: /js/
+Disallow: /css/
+
+User-agent: Googlebot
+Allow: /
+Disallow: /dashboard-vendeur.html
+Disallow: /compte.html
+Disallow: /panier.html
+Disallow: /paiement.html
+Disallow: /admin_panel.html
+
+Sitemap: https://wennashop.netlify.app/sitemap.xml
