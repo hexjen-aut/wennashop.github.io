@@ -3,11 +3,26 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#ff751f"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
   <title>Détail Quête — WennaShop</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="WennaShop"/>
+  <link rel="apple-touch-icon" href="/assets/icon-192.png"/>
+  <link rel="apple-touch-icon" sizes="192x192" href="/assets/icon-192.png"/>
+  <link rel="apple-touch-icon" sizes="512x512" href="/assets/icon-512.png"/>
+  <meta name="msapplication-TileImage" content="/assets/icon-192.png"/>
+  <meta name="msapplication-TileColor" content="#0a0a0a"/>
+ 
+  <!-- Favicon standard -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icon-192.png"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.config.js"></script>
   <script src="/wenna-seo.js.js"></script>
+  
   <style>
     :root {
       --fire:#FF6B2B; --ember:#E85A1A; --ink:#080808; --coal:#111111;
@@ -263,6 +278,7 @@
     .anim-up{animation:fadeUp .5s cubic-bezier(.22,1,.36,1) forwards;}
   </style>
 </head>
+  
 <body>
 
 <div id="toast"></div>
@@ -1088,3 +1104,14 @@ document.addEventListener('click', e => {
 setInterval(() => { if (internalUserId) loadNotifications() }, 30000)
 
 </script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js', { scope: '/' })
+      .then(reg => console.log('[PWA] SW enregistré'))
+      .catch(err => console.warn('[PWA] SW erreur :', err));
+  });
+}
+</script>
+</body>
+</html>
