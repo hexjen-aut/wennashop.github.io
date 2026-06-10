@@ -577,7 +577,7 @@ textarea.inp-full { resize: none; min-height: 80px; border-radius: var(--radius-
     <a href="quetes.html" class="nav-item" style="color:var(--gold);"><i class="ph ph-shooting-star"></i>Voir les Quêtes</a>
   </nav>
   <div class="sb-footer">
-    <a href="boutique.html" class="nav-item"><i class="ph ph-storefront"></i>Voir la boutique</a>
+    <a id="sb-view-shop-btn" href="boutique.html" class="nav-item" target="_blank"><i class="ph ph-storefront"></i>Voir ma boutique</a>
     <button onclick="logout()" class="nav-item nav-danger"><i class="ph ph-sign-out"></i>Déconnexion</button>
   </div>
 </aside>
@@ -790,11 +790,16 @@ textarea.inp-full { resize: none; min-height: 80px; border-radius: var(--radius-
   <div class="profile-wrap" style="max-width:700px;">
 
     <div class="card">
-      <div class="card-head">
+     <div class="card-head">
         <div class="card-title">Boutique publique</div>
-        <span id="shop-status-badge" class="badge badge-pending">—</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <a id="shop-preview-link" href="#" target="_blank" class="btn-ghost" style="font-size:11px;padding:6px 14px;display:none;">
+            <i class="ph ph-eye" style="font-size:13px;"></i>Voir la boutique
+          </a>
+          <span id="shop-status-badge" class="badge badge-pending">—</span>
+        </div>
       </div>
-      <form id="shop-form" onsubmit="saveShop(event)" style="padding:20px;display:flex;flex-direction:column;gap:16px;">
+            <form id="shop-form" onsubmit="saveShop(event)" style="padding:20px;display:flex;flex-direction:column;gap:16px;">
         <input type="hidden" id="shop-id"/>
 
         <div class="form-grid">
@@ -1801,6 +1806,9 @@ async function initAuth() {
     await loadNotifications()
     await loadChartData()
     startRealtimeNotifications()
+    // Fix 4 — charger le lien boutique dès le démarrage
+    const { data: shopInit } = await db.from('shops').select('id,slug').eq('user_id', currentSeller.id).maybeSingle()
+    updateShopLink(shopInit)
     hideInitScreen()
   } catch(e) { console.error('[WennaShop] initAuth:', e); hideInitScreen(); showToast('Erreur : '+e.message, 'error') }
 }
@@ -2269,16 +2277,6 @@ async function loadRevenue() {
 async function loadWalletBadge() {
   const db = getDb(); if(!currentSeller) return
   try {
-    const { data } = await db.from('wallets').select('balance').eq('user_id', currentSeller.id).maybeSingle()
-    const balance = data?.balance ?? 0
-    document.getElementById('sb-wallet-amount').textContent = balance.toLocaleString('fr-FR') + ' MAD'
-    document.getElementById('wallet-balance').textContent = balance.toLocaleString('fr-FR') + ' MAD'
-  } catch(e) {}
-}
-
-async function loadWalletBadge() {
-  const db = getDb(); if(!currentSeller) return
-  try {
     const { data } = await db.from('vendor_wallets')  // ← était 'wallets'
       .select('balance')
       .eq('user_id', currentSeller.id)
@@ -2449,6 +2447,7 @@ document.getElementById('recharge-modal-overlay').addEventListener('click', func
 async function loadShopSection() {
   const db = getDb(); if(!currentSeller) return
   const { data: shop } = await db.from('shops').select('*').eq('user_id', currentSeller.id).maybeSingle()
+  updateShopLink(shop)
   if(!shop) return
   document.getElementById('shop-id').value = shop.id || ''
   document.getElementById('shop-name').value = shop.name || ''
@@ -2469,6 +2468,20 @@ async function loadShopSection() {
   badge.className = 'badge '+cls; badge.textContent = label
   showShopImgPreview('logo', shop.logo_url)
   showShopImgPreview('banner', shop.banner_url)
+}
+
+function updateShopLink(shop) {
+  const btn = document.getElementById('sb-view-shop-btn')
+  const previewBtn = document.getElementById('shop-preview-link')
+  let href = 'boutique.html'
+  if(shop?.slug) href = `boutique-vendeur.html?slug=${shop.slug}`
+  else if(shop?.id) href = `boutique-vendeur.html?id=${shop.id}`
+  else if(currentSeller?.id) href = `boutique-vendeur.html?vendeur=${currentSeller.id}`
+  if(btn) btn.href = href
+  if(previewBtn && (shop?.slug || shop?.id)) {
+    previewBtn.href = href
+    previewBtn.style.display = 'inline-flex'
+  }
 }
 
 async function saveShop(e) {
@@ -2500,9 +2513,14 @@ async function saveShop(e) {
     payload.status = 'pending'
     ;({ error } = await db.from('shops').insert(payload))
   }
-  if(error) showToast('Erreur : ' + error.message, 'error')
-  else showToast('Boutique enregistrée !', 'success')
+ if(error) {
+  showToast('Erreur : ' + error.message, 'error')
+} else {
+  showToast('Boutique enregistrée !', 'success')
+  // Recharger pour avoir l'id si c'était une création
+  await loadShopSection()
 }
+} 
   
 document.addEventListener('DOMContentLoaded', initAuth)
 </script>
