@@ -9,8 +9,8 @@
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.config.js"></script>
-<script src="/CartCheck.js"></script>
-<script src="/js/wenna-seo.js"></script>
+<script src="/CartCheck.js" defer></script>
+<script src="/js/wenna-seo.js" defer></script>
 <style>
 :root {
   --accent:        #ff751f;
@@ -1008,7 +1008,7 @@ async function loadSeller(sellerId) {
   const db = getDb()
   const [{ data: user }, { data: shop }] = await Promise.all([
     db.from('users').select('id,full_name,avatar_url,created_at,country').eq('id', sellerId).single(),
-    db.from('shops').select('id,slug,name,logo_url,rating_avg,rating_count,total_sales,is_verified').eq('user_id', sellerId).eq('status', 'active').single()
+    db.from('shops').select('id,slug,name,logo_url,rating_avg,rating_count,total_sales,is_verified').eq('user_id', sellerId).maybeSingle()
   ])
   return { user, shop }
 }
