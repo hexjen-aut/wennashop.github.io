@@ -17,8 +17,8 @@ const WENNA_CONFIG = {
   supabaseKey:  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0',
 
   // Redirections après auth
-  redirectAfterLogin:   'hero.html',
-  redirectAfterLogout:  'index.html',
+  redirectAfterLogin:  'boutique.html',  // était 'hero.html'
+  defaultCurrency:     'MAD',            // était 'EUR',
   adminPage:            'admin.html',
 
   // Paramètres du site
