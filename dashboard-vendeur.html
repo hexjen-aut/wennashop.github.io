@@ -828,13 +828,31 @@ textarea.inp-full { resize: none; min-height: 80px; border-radius: var(--radius-
         </div>
 
         <div class="form-group">
-          <label class="form-label">Logo (URL)</label>
-          <input id="shop-logo" type="url" class="inp-full" placeholder="https://…"/>
+          <label class="form-label">Logo</label>
+          <div id="logo-preview" style="display:none;position:relative;width:80px;height:80px;margin-bottom:8px;">
+            <img id="logo-img" style="width:80px;height:80px;object-fit:cover;border-radius:var(--radius-md);border:1.5px solid var(--border);"/>
+            <button type="button" onclick="removeShopImg('logo')" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;background:var(--error);border:none;border-radius:50%;color:#fff;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;"><i class="ph ph-x"></i></button>
+          </div>
+          <input type="file" id="shop-logo-file" accept="image/*" style="display:none;" onchange="uploadShopImg(this,'logo')"/>
+          <input type="hidden" id="shop-logo"/>
+          <button type="button" onclick="document.getElementById('shop-logo-file').click()" class="btn-ghost" style="font-size:12px;padding:8px 16px;">
+            <i class="ph ph-upload-simple" style="font-size:14px;"></i>Télécharger un logo
+          </button>
+          <div id="logo-upload-status" style="font-size:11px;font-weight:700;color:var(--accent);margin-top:6px;display:none;"></div>
         </div>
 
         <div class="form-group">
-          <label class="form-label">Bannière (URL)</label>
-          <input id="shop-banner" type="url" class="inp-full" placeholder="https://…"/>
+          <label class="form-label">Bannière</label>
+          <div id="banner-preview" style="display:none;position:relative;margin-bottom:8px;">
+            <img id="banner-img" style="width:100%;height:120px;object-fit:cover;border-radius:var(--radius-md);border:1.5px solid var(--border);"/>
+            <button type="button" onclick="removeShopImg('banner')" style="position:absolute;top:6px;right:6px;width:24px;height:24px;background:rgba(10,10,10,.85);border:none;border-radius:var(--radius-sm);color:#fff;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;"><i class="ph ph-x"></i></button>
+          </div>
+          <input type="file" id="shop-banner-file" accept="image/*" style="display:none;" onchange="uploadShopImg(this,'banner')"/>
+          <input type="hidden" id="shop-banner"/>
+          <button type="button" onclick="document.getElementById('shop-banner-file').click()" class="btn-ghost" style="font-size:12px;padding:8px 16px;">
+            <i class="ph ph-image" style="font-size:14px;"></i>Télécharger une bannière
+          </button>
+          <div id="banner-upload-status" style="font-size:11px;font-weight:700;color:var(--accent);margin-top:6px;display:none;"></div>
         </div>
 
         <div style="border-top:1px solid var(--border);padding-top:16px;">
@@ -2380,6 +2398,49 @@ async function resetPassword() {
   else showToast('Email de réinitialisation envoyé !','success')
 }
 
+async function uploadShopImg(input, type) {
+  const db = getDb()
+  const file = input.files[0]
+  if (!file) return
+  if (!file.type.startsWith('image/')) return showToast('Format non supporté', 'error')
+  if (file.size > 5 * 1024 * 1024) return showToast('Image trop lourde (max 5Mo)', 'error')
+
+  const statusEl = document.getElementById(type + '-upload-status')
+  statusEl.style.display = 'block'
+  statusEl.textContent = 'Envoi en cours…'
+
+  try {
+    const ext = file.name.split('.').pop() || 'jpg'
+    const path = `shops/${currentSeller.id}/${type}_${Date.now()}.${ext}`
+    const { error } = await db.storage.from('products').upload(path, file, { cacheControl: '3600', upsert: true, contentType: file.type })
+    if (error) throw error
+    const { data: { publicUrl } } = db.storage.from('products').getPublicUrl(path)
+    document.getElementById('shop-' + type).value = publicUrl
+    const img = document.getElementById(type + '-img')
+    const preview = document.getElementById(type + '-preview')
+    img.src = publicUrl
+    preview.style.display = 'block'
+    statusEl.textContent = 'Image envoyée ✓'
+    setTimeout(() => { statusEl.style.display = 'none' }, 2000)
+  } catch (e) {
+    statusEl.textContent = 'Erreur : ' + e.message
+    showToast('Erreur upload : ' + e.message, 'error')
+  }
+}
+
+function removeShopImg(type) {
+  document.getElementById('shop-' + type).value = ''
+  document.getElementById(type + '-img').src = ''
+  document.getElementById(type + '-preview').style.display = 'none'
+}
+
+function showShopImgPreview(type, url) {
+  if (!url) return
+  const img = document.getElementById(type + '-img')
+  const preview = document.getElementById(type + '-preview')
+  img.src = url
+  preview.style.display = 'block'
+}
 // ── EVENTS ──
 document.getElementById('modal-overlay').addEventListener('click', function(e) { if(e.target === this) closeProductModal() })
 document.getElementById('order-modal-overlay').addEventListener('click', function(e) { if(e.target === this) closeOrderModal() })
@@ -2406,6 +2467,8 @@ async function loadShopSection() {
   const sm = { active:['badge-active','Active'], pending:['badge-pending','En attente'], inactive:['badge-inactive','Inactive'] }
   const [cls, label] = sm[shop.status] || ['badge-pending','—']
   badge.className = 'badge '+cls; badge.textContent = label
+  showShopImgPreview('logo', shop.logo_url)
+  showShopImgPreview('banner', shop.banner_url)
 }
 
 async function saveShop(e) {
