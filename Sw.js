@@ -1,127 +1,151 @@
 /**
- * WennaShop — Service Worker v1.0
- * Stratégie de résilience offline pour le Gabon
- * 
- * STRATÉGIE :
- * - Cache-first pour assets statiques (CSS, JS, images)
- * - Network-first avec fallback cache pour les pages HTML
- * - Stale-while-revalidate pour les données produits
- * - Queue offline pour les commandes (IndexedDB sync)
+ * WennaShop — Service Worker v2.0
+ * Mise à jour : toutes les pages cachées (dashboard vendeur + admin inclus)
+ *
+ * STRATÉGIE PAR TYPE :
+ * - Cache-first     → assets statiques (CSS, JS, fonts, images)
+ * - Network-first   → pages HTML (dashboard, admin, boutique…)
+ * - Network-first   → API Supabase avec fallback cache data
+ * - Stale-while-rev → données catalogue produits
  */
 
-const CACHE_VERSION = 'wenna-v1';
-const STATIC_CACHE = `${CACHE_VERSION}-static`;
-const DATA_CACHE = `${CACHE_VERSION}-data`;
-const IMAGE_CACHE = `${CACHE_VERSION}-images`;
+const CACHE_VERSION = 'wenna-v2';
+const STATIC_CACHE  = `${CACHE_VERSION}-static`;
+const DATA_CACHE    = `${CACHE_VERSION}-data`;
+const IMAGE_CACHE   = `${CACHE_VERSION}-images`;
 
-// ─── Assets critiques à précacher au install ───────────────────────────────
-const STATIC_ASSETS = [
+// ─── Pages HTML à précacher ────────────────────────────────────────────────
+const HTML_PAGES = [
   '/',
   '/index.html',
   '/boutique.html',
   '/panier.html',
   '/compte.html',
   '/offline.html',
-  '/css/main.css',
-  '/css/responsive.css',
-  '/js/config.js',
-  '/js/offline-db.js',
-  '/supabase.config.js',
-  '/assets/logo.png',
-  '/manifest.json',
-  // CDN critique (Supabase JS)
-  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js',
+  '/dashboard-vendeur.html',
+  '/admin_panel.html',
+  '/detail_produit.html',
+  '/recherche.html',
+  '/tracking.html',
+  '/quetes.html',
+  '/boutique-vendeur.html',
+  '/paiement.html',
 ];
 
-// ─── Pages avec fallback offline ──────────────────────────────────────────
+// ─── Assets statiques critiques ────────────────────────────────────────────
+const STATIC_ASSETS = [
+  '/supabase.config.js',
+  '/wenna-seo.js',
+  '/manifest.json',
+  '/assets/logo.png',
+  '/assets/icon-192.png',
+  '/assets/icon-512.png',
+  // CDN externe critique
+  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js',
+  'https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap',
+];
+
+const ALL_PRECACHE = [...HTML_PAGES, ...STATIC_ASSETS];
+
 const OFFLINE_FALLBACK = '/offline.html';
 
-// ─── Install : précache tous les assets statiques ─────────────────────────
+// ─── INSTALL : précacher tout ──────────────────────────────────────────────
 self.addEventListener('install', (event) => {
-  console.log('[SW] Install — précache assets statiques');
+  console.log('[SW v2] Install — précache assets + pages');
   event.waitUntil(
-    caches.open(STATIC_CACHE).then((cache) => {
-      return cache.addAll(STATIC_ASSETS.filter(url => {
-        // Ne pas planter si un asset est absent au premier install
-        return true;
-      })).catch(err => {
-        console.warn('[SW] Précache partiel — certains assets absents:', err);
-      });
-    }).then(() => self.skipWaiting())
+    caches.open(STATIC_CACHE)
+      .then((cache) => {
+        // addAll avec gestion d'erreur par item (évite de bloquer si un asset manque)
+        return Promise.allSettled(
+          ALL_PRECACHE.map(url =>
+            cache.add(url).catch(err =>
+              console.warn(`[SW v2] Précache ignoré : ${url} — ${err.message}`)
+            )
+          )
+        );
+      })
+      .then(() => {
+        console.log('[SW v2] Précache terminé — skipWaiting');
+        return self.skipWaiting();
+      })
   );
 });
 
-// ─── Activate : nettoyer les vieux caches ─────────────────────────────────
+// ─── ACTIVATE : supprimer anciens caches ───────────────────────────────────
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activate — nettoyage anciens caches');
+  console.log('[SW v2] Activate — nettoyage anciens caches');
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter(name => name.startsWith('wenna-') && 
-                         name !== STATIC_CACHE && 
-                         name !== DATA_CACHE && 
-                         name !== IMAGE_CACHE)
-          .map(name => {
-            console.log('[SW] Suppression vieux cache:', name);
-            return caches.delete(name);
-          })
-      );
-    }).then(() => self.clients.claim())
+    caches.keys()
+      .then((names) => Promise.all(
+        names
+          .filter(n => n.startsWith('wenna-') && ![STATIC_CACHE, DATA_CACHE, IMAGE_CACHE].includes(n))
+          .map(n => { console.log('[SW v2] Suppression :', n); return caches.delete(n); })
+      ))
+      .then(() => self.clients.claim())
   );
 });
 
-// ─── Fetch : stratégie intelligente par type de ressource ─────────────────
+// ─── FETCH : stratégie par type ────────────────────────────────────────────
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Ignorer les requêtes non-GET et les extensions navigateur
+  // Ignorer non-GET et extensions navigateur
   if (request.method !== 'GET') return;
   if (url.protocol === 'chrome-extension:') return;
+  if (url.protocol === 'moz-extension:') return;
 
-  // 1. Requêtes Supabase API → Network-first avec queue offline
+  // 1. API Supabase → network-first + cache data GET
   if (url.hostname.includes('supabase.co')) {
-    event.respondWith(networkFirstWithOfflineQueue(request));
+    event.respondWith(networkFirstSupabase(request));
     return;
   }
 
-  // 2. Images → Cache-first avec fallback placeholder
-  if (request.destination === 'image') {
+  // 2. Images (Supabase Storage inclus) → cache-first
+  if (
+    request.destination === 'image' ||
+    url.hostname.includes('storage.googleapis.com') ||
+    url.pathname.includes('/storage/v1/object/public/')
+  ) {
     event.respondWith(cacheFirstImages(request));
     return;
   }
 
-  // 3. Assets statiques (JS, CSS, fonts) → Cache-first
+  // 3. Fonts Google → cache-first permanent
+  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') {
+    event.respondWith(cacheFirst(request, STATIC_CACHE));
+    return;
+  }
+
+  // 4. Assets statiques JS/CSS → cache-first
   if (
     request.destination === 'script' ||
     request.destination === 'style' ||
-    request.destination === 'font' ||
     url.hostname === 'cdn.jsdelivr.net' ||
-    url.hostname === 'fonts.googleapis.com' ||
-    url.hostname === 'fonts.gstatic.com'
+    url.hostname === 'unpkg.com'
   ) {
     event.respondWith(cacheFirst(request, STATIC_CACHE));
     return;
   }
 
-  // 4. Pages HTML → Network-first avec fallback cache puis offline.html
+  // 5. Pages HTML → network-first + mise en cache + fallback offline
   if (request.destination === 'document') {
     event.respondWith(networkFirstHTML(request));
     return;
   }
 
-  // 5. Tout le reste → Network avec fallback cache
+  // 6. Tout le reste → network + fallback cache
   event.respondWith(networkWithCacheFallback(request));
 });
 
-// ─── Stratégies de cache ──────────────────────────────────────────────────
+// ══════════════════════════════════════════════
+//  STRATÉGIES
+// ══════════════════════════════════════════════
 
-/** Cache-first : sert le cache, sinon réseau + mise en cache */
+/** Cache-first générique */
 async function cacheFirst(request, cacheName = STATIC_CACHE) {
   const cached = await caches.match(request);
   if (cached) return cached;
-  
   try {
     const response = await fetch(request);
     if (response.ok) {
@@ -129,16 +153,15 @@ async function cacheFirst(request, cacheName = STATIC_CACHE) {
       cache.put(request, response.clone());
     }
     return response;
-  } catch (err) {
+  } catch {
     return new Response('Ressource non disponible hors connexion', { status: 503 });
   }
 }
 
-/** Cache-first pour images avec placeholder SVG si absent */
+/** Cache-first images avec placeholder SVG si absent */
 async function cacheFirstImages(request) {
   const cached = await caches.match(request);
   if (cached) return cached;
-
   try {
     const response = await fetch(request);
     if (response.ok) {
@@ -146,19 +169,16 @@ async function cacheFirstImages(request) {
       cache.put(request, response.clone());
     }
     return response;
-  } catch (err) {
-    // Retourner un placeholder SVG transparent
-    const placeholder = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
-      <rect width="300" height="300" fill="#1a1a1a"/>
-      <text x="150" y="150" text-anchor="middle" dy=".3em" fill="#FF6B2B" font-size="12" font-family="sans-serif">Image non disponible</text>
+  } catch {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+      <rect width="300" height="300" fill="#141414"/>
+      <text x="150" y="155" text-anchor="middle" fill="#ff751f" font-size="11" font-family="sans-serif">Image non disponible</text>
     </svg>`;
-    return new Response(placeholder, {
-      headers: { 'Content-Type': 'image/svg+xml' }
-    });
+    return new Response(svg, { headers: { 'Content-Type': 'image/svg+xml' } });
   }
 }
 
-/** Network-first pour pages HTML, fallback cache, puis offline.html */
+/** Network-first HTML → cache → offline.html */
 async function networkFirstHTML(request) {
   try {
     const response = await fetch(request);
@@ -167,43 +187,43 @@ async function networkFirstHTML(request) {
       cache.put(request, response.clone());
     }
     return response;
-  } catch (err) {
+  } catch {
     const cached = await caches.match(request);
     if (cached) return cached;
-
-    const offlinePage = await caches.match(OFFLINE_FALLBACK);
-    return offlinePage || new Response('<h1>Hors connexion</h1>', {
+    const offline = await caches.match(OFFLINE_FALLBACK);
+    return offline || new Response('<h1 style="font-family:sans-serif;text-align:center;padding:40px;color:#ff751f;">WennaShop — Hors connexion</h1>', {
       headers: { 'Content-Type': 'text/html' }
     });
   }
 }
 
-/** Network-first Supabase — si hors ligne, met en queue les mutations */
-async function networkFirstWithOfflineQueue(request) {
+/** Network-first Supabase — cache les GET catalogue */
+async function networkFirstSupabase(request) {
   try {
     const response = await fetch(request);
-    // Mettre en cache les réponses GET Supabase (catalogue produits, etc.)
     if (response.ok && request.method === 'GET') {
       const url = new URL(request.url);
-      // Ne cacher que les routes catalogue/produits/catégories
-      if (url.pathname.includes('/rest/v1/products') || 
-          url.pathname.includes('/rest/v1/categories') ||
-          url.pathname.includes('/rest/v1/shops')) {
+      const cacheable = [
+        '/rest/v1/products',
+        '/rest/v1/categories',
+        '/rest/v1/shops',
+        '/rest/v1/quests',
+      ].some(p => url.pathname.includes(p));
+      if (cacheable) {
         const cache = await caches.open(DATA_CACHE);
         cache.put(request, response.clone());
       }
     }
     return response;
-  } catch (err) {
-    // Hors ligne — chercher en cache data
+  } catch {
     const cached = await caches.match(request);
     if (cached) {
-      console.log('[SW] Supabase hors ligne — données depuis cache:', request.url);
+      console.log('[SW v2] Supabase hors ligne — données depuis cache');
       return cached;
     }
-    return new Response(JSON.stringify({ 
-      error: 'offline', 
-      message: 'Données non disponibles hors connexion' 
+    return new Response(JSON.stringify({
+      error: 'offline',
+      message: 'Données non disponibles hors connexion'
     }), {
       status: 503,
       headers: { 'Content-Type': 'application/json' }
@@ -215,57 +235,45 @@ async function networkFirstWithOfflineQueue(request) {
 async function networkWithCacheFallback(request) {
   try {
     return await fetch(request);
-  } catch (err) {
+  } catch {
     const cached = await caches.match(request);
     return cached || new Response('Non disponible hors connexion', { status: 503 });
   }
 }
 
-// ─── Background Sync — envoyer les commandes en attente quand connexion revient
+// ─── Background Sync ───────────────────────────────────────────────────────
 self.addEventListener('sync', (event) => {
   if (event.tag === 'sync-pending-orders') {
-    console.log('[SW] Background Sync — envoi commandes en attente');
-    event.waitUntil(syncPendingOrders());
+    event.waitUntil(broadcastSync('SYNC_PENDING_ORDERS'));
   }
   if (event.tag === 'sync-pending-cart') {
-    event.waitUntil(syncPendingCart());
+    event.waitUntil(broadcastSync('SYNC_PENDING_CART'));
   }
 });
 
-async function syncPendingOrders() {
-  // Communiquer avec le client pour déclencher la sync
+async function broadcastSync(type) {
   const clients = await self.clients.matchAll();
-  clients.forEach(client => {
-    client.postMessage({ type: 'SYNC_PENDING_ORDERS' });
-  });
+  clients.forEach(c => c.postMessage({ type }));
 }
 
-async function syncPendingCart() {
-  const clients = await self.clients.matchAll();
-  clients.forEach(client => {
-    client.postMessage({ type: 'SYNC_PENDING_CART' });
-  });
-}
-
-// ─── Push Notifications (optionnel futur) ─────────────────────────────────
+// ─── Push Notifications ────────────────────────────────────────────────────
 self.addEventListener('push', (event) => {
   if (!event.data) return;
   const data = event.data.json();
   event.waitUntil(
     self.registration.showNotification(data.title || 'WennaShop', {
       body: data.body,
-      icon: '/assets/logo.png',
-      badge: '/assets/badge.png',
-      data: { url: data.url || '/' }
+      icon: '/assets/icon-192.png',
+      badge: '/assets/icon-192.png',
+      data: { url: data.url || '/' },
+      vibrate: [200, 100, 200],
     })
   );
 });
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  event.waitUntil(
-    clients.openWindow(event.notification.data.url)
-  );
+  event.waitUntil(clients.openWindow(event.notification.data?.url || '/'));
 });
 
-console.log('[SW] WennaShop Service Worker chargé — Résilience Gabon activée 🇬🇦');
+console.log('[SW v2] WennaShop — Service Worker actif 🇬🇦🇲🇦');
