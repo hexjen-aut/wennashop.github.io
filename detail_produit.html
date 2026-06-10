@@ -709,7 +709,7 @@ function renderCartSidebar() {
   const countEl = $('cs-count')
 
   // Vider le body sauf #cs-empty
-  [...body.children].forEach(c => { if (c.id !== 'cs-empty') c.remove() })
+  Array.from(body.children).forEach(c => { if (c.id !== 'cs-empty') c.remove() })
 
   const totalQty = items.reduce((s, i) => s + (i.qty || 1), 0)
   countEl.textContent = totalQty
