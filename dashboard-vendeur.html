@@ -572,8 +572,8 @@ textarea.inp-full { resize: none; min-height: 80px; border-radius: var(--radius-
     <button onclick="showSection('revenue')"   data-nav="revenue"   class="nav-item"><i class="ph ph-currency-circle-dollar"></i>Revenus</button>
     <button onclick="showSection('wallet')"    data-nav="wallet"    class="nav-item"><i class="ph ph-wallet"></i>Wallet & Boosts</button>
     <button onclick="showSection('reviews')"   data-nav="reviews"   class="nav-item"><i class="ph ph-star"></i>Avis Clients</button>
-    <button onclick="showSection('profile')"   data-nav="profile"   class="nav-item"><i class="ph ph-storefront"></i>Ma Boutique</button>
-    <div class="nav-sep"></div>
+    <button onclick="showSection('shop')" data-nav="shop" class="nav-item"><i class="ph ph-storefront"></i>Ma Boutique</button>
+    <button onclick="showSection('profile')" data-nav="profile" class="nav-item"><i class="ph ph-user"></i>Mon Profil</button>    <div class="nav-sep"></div>
     <a href="quetes.html" class="nav-item" style="color:var(--gold);"><i class="ph ph-shooting-star"></i>Voir les Quêtes</a>
   </nav>
   <div class="sb-footer">
@@ -785,6 +785,93 @@ textarea.inp-full { resize: none; min-height: 80px; border-radius: var(--radius-
         </div>
       </div>
     </section>
+    <!-- ── SHOP ── -->
+<section id="section-shop" class="section">
+  <div class="profile-wrap" style="max-width:700px;">
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Boutique publique</div>
+        <span id="shop-status-badge" class="badge badge-pending">—</span>
+      </div>
+      <form id="shop-form" onsubmit="saveShop(event)" style="padding:20px;display:flex;flex-direction:column;gap:16px;">
+        <input type="hidden" id="shop-id"/>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Nom de la boutique *</label>
+            <input id="shop-name" type="text" class="inp-full" placeholder="ex: Artisan Kofi"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Slug (URL)</label>
+            <input id="shop-slug" type="text" class="inp-full" placeholder="ex: artisan-kofi"/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Description / Bio</label>
+          <textarea id="shop-bio" rows="3" class="inp-full" placeholder="Présentez votre boutique…"></textarea>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Ville</label>
+            <input id="shop-city" type="text" class="inp-full" placeholder="ex: Casablanca"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Pays</label>
+            <select id="shop-country" class="inp-full" style="appearance:none;">
+              <option value="Maroc">🇲🇦 Maroc</option>
+              <option value="Gabon">🇬🇦 Gabon</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Logo (URL)</label>
+          <input id="shop-logo" type="url" class="inp-full" placeholder="https://…"/>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Bannière (URL)</label>
+          <input id="shop-banner" type="url" class="inp-full" placeholder="https://…"/>
+        </div>
+
+        <div style="border-top:1px solid var(--border);padding-top:16px;">
+          <p class="form-label" style="margin-bottom:12px;">Réseaux sociaux & contact</p>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">WhatsApp</label>
+              <input id="shop-whatsapp" type="text" class="inp-full" placeholder="+241 …"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Instagram</label>
+              <input id="shop-instagram" type="text" class="inp-full" placeholder="@moncompte"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Facebook</label>
+              <input id="shop-facebook" type="text" class="inp-full" placeholder="facebook.com/…"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">TikTok</label>
+              <input id="shop-tiktok" type="text" class="inp-full" placeholder="@moncompte"/>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Politique de la boutique</label>
+          <textarea id="shop-policies" rows="3" class="inp-full" placeholder="Retours, délais, conditions…"></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary" style="align-self:flex-start;">
+          <i class="ph ph-floppy-disk" style="font-size:15px;"></i>Enregistrer la boutique
+        </button>
+      </form>
+    </div>
+
+  </div>
+</section>
 
   </main>
 </div>
@@ -1623,8 +1710,8 @@ function startRealtimeNotifications() {
 }
 
 // ── SECTIONS ──
-const pageTitles = { overview:"Vue d'ensemble", products:'Mes Produits', orders:'Commandes', revenue:'Revenus', wallet:'Wallet & Boosts', reviews:'Avis Clients', profile:'Ma Boutique' }
-function showSection(name) {
+const pageTitles = { overview:"Vue d'ensemble", products:'Mes Produits', orders:'Commandes', revenue:'Revenus', wallet:'Wallet & Boosts', reviews:'Avis Clients', profile:'Mon Profil', shop:'Ma Boutique' }
+  function showSection(name) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'))
   document.getElementById('section-'+name)?.classList.add('active')
   document.querySelectorAll('.nav-item[data-nav]').forEach(b => b.classList.toggle('active', b.dataset.nav === name))
@@ -1636,6 +1723,7 @@ function showSection(name) {
   if(name === 'wallet') loadWallet()
   if(name === 'reviews') loadReviews()
   if(name === 'profile') loadProfileSection()
+  if(name === 'shop') loadShopSection()
 }
 
 function openSidebar() {
@@ -2297,7 +2385,62 @@ document.getElementById('modal-overlay').addEventListener('click', function(e) {
 document.getElementById('order-modal-overlay').addEventListener('click', function(e) { if(e.target === this) closeOrderModal() })
 document.getElementById('delete-modal-overlay').addEventListener('click', function(e) { if(e.target === this) closeDeleteModal() })
 document.getElementById('recharge-modal-overlay').addEventListener('click', function(e) { if(e.target === this) closeRechargeModal() })
+async function loadShopSection() {
+  const db = getDb(); if(!currentSeller) return
+  const { data: shop } = await db.from('shops').select('*').eq('user_id', currentSeller.id).maybeSingle()
+  if(!shop) return
+  document.getElementById('shop-id').value = shop.id || ''
+  document.getElementById('shop-name').value = shop.name || ''
+  document.getElementById('shop-slug').value = shop.slug || ''
+  document.getElementById('shop-bio').value = shop.bio || ''
+  document.getElementById('shop-city').value = shop.city || ''
+  document.getElementById('shop-country').value = shop.country || 'Maroc'
+  document.getElementById('shop-logo').value = shop.logo_url || ''
+  document.getElementById('shop-banner').value = shop.banner_url || ''
+  document.getElementById('shop-whatsapp').value = shop.whatsapp || ''
+  document.getElementById('shop-instagram').value = shop.instagram || ''
+  document.getElementById('shop-facebook').value = shop.facebook || ''
+  document.getElementById('shop-tiktok').value = shop.tiktok || ''
+  document.getElementById('shop-policies').value = shop.shop_policies || ''
+  const badge = document.getElementById('shop-status-badge')
+  const sm = { active:['badge-active','Active'], pending:['badge-pending','En attente'], inactive:['badge-inactive','Inactive'] }
+  const [cls, label] = sm[shop.status] || ['badge-pending','—']
+  badge.className = 'badge '+cls; badge.textContent = label
+}
 
+async function saveShop(e) {
+  const db = getDb(); e.preventDefault()
+  const id = document.getElementById('shop-id').value
+  const name = document.getElementById('shop-name').value.trim()
+  if(!name) return showToast('Le nom est obligatoire.', 'error')
+  const payload = {
+    user_id:      currentSeller.id,
+    name,
+    slug:         document.getElementById('shop-slug').value.trim() || name.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,''),
+    bio:          document.getElementById('shop-bio').value.trim() || null,
+    city:         document.getElementById('shop-city').value.trim() || null,
+    country:      document.getElementById('shop-country').value,
+    logo_url:     document.getElementById('shop-logo').value.trim() || null,
+    banner_url:   document.getElementById('shop-banner').value.trim() || null,
+    whatsapp:     document.getElementById('shop-whatsapp').value.trim() || null,
+    instagram:    document.getElementById('shop-instagram').value.trim() || null,
+    facebook:     document.getElementById('shop-facebook').value.trim() || null,
+    tiktok:       document.getElementById('shop-tiktok').value.trim() || null,
+    shop_policies: document.getElementById('shop-policies').value.trim() || null,
+    updated_at:   new Date().toISOString()
+  }
+  let error
+  if(id) {
+    ({ error } = await db.from('shops').update(payload).eq('id', id))
+  } else {
+    payload.created_at = new Date().toISOString()
+    payload.status = 'pending'
+    ;({ error } = await db.from('shops').insert(payload))
+  }
+  if(error) showToast('Erreur : ' + error.message, 'error')
+  else showToast('Boutique enregistrée !', 'success')
+}
+  
 document.addEventListener('DOMContentLoaded', initAuth)
 </script>
 </body>
