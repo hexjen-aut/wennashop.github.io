@@ -3,38 +3,85 @@
   "short_name": "WennaShop",
   "description": "Marketplace Gabon ↔ Maroc — Produits authentiques",
   "start_url": "/",
+  "id": "/",
   "display": "standalone",
   "background_color": "#0a0a0a",
-  "theme_color": "#FF6B2B",
+  "theme_color": "#ff751f",
   "orientation": "portrait-primary",
+  "lang": "fr",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "categories": ["shopping", "lifestyle"],
   "icons": [
     {
       "src": "/assets/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icon-192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/assets/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
-  "categories": ["shopping", "lifestyle"],
-  "lang": "fr",
-  "dir": "ltr",
-  "prefer_related_applications": false,
+  "screenshots": [
+    {
+      "src": "/assets/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Boutique WennaShop"
+    },
+    {
+      "src": "/assets/screenshot-desktop.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "WennaShop sur desktop"
+    }
+  ],
   "shortcuts": [
     {
       "name": "Boutique",
+      "short_name": "Boutique",
       "url": "/boutique.html",
-      "description": "Parcourir les produits"
+      "description": "Parcourir les produits",
+      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Mon panier",
+      "short_name": "Panier",
       "url": "/panier.html",
-      "description": "Voir mon panier"
+      "description": "Voir mon panier",
+      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Espace Vendeur",
+      "short_name": "Vendeur",
+      "url": "/dashboard-vendeur.html",
+      "description": "Gérer ma boutique",
+      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Administration",
+      "short_name": "Admin",
+      "url": "/admin_panel.html",
+      "description": "Tableau de bord admin",
+      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }
