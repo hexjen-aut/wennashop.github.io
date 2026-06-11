@@ -207,6 +207,14 @@
     <button class="btn-ghost" onclick="document.getElementById('mainLayout').scrollIntoView({behavior:'smooth'})">
       Voir les quêtes ouvertes
     </button>
+    <button
+    id="pwa-topbar-btn"
+    onclick="installPWA()"
+    title="Installer l'application"
+    style="display:none;align-items:center;gap:6px;background:rgba(255,117,31,.1);border:1.5px solid rgba(255,117,31,.35);border-radius:9999px;color:#ff751f;padding:8px 16px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0;"
+    onmouseover="this.style.background='rgba(255,117,31,.2)'"
+    onmouseout="this.style.background='rgba(255,117,31,.1)'">
+    <i class="ph ph-download-simple" style="font-size:15px;"></i>Installer</button>
   </div>
 </section>
 
