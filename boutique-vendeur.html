@@ -792,7 +792,7 @@ function getParam() {
   return {
     slug: p.get('slug'),
     id: p.get('id'),
-    vendeur: p.get('vendeur')   // user_id du vendeur
+    vendeur: p.get('vendeur')
   };
 }
 function formatPrice(amount, currency) {
@@ -840,7 +840,6 @@ async function loadShop() {
     const { data } = await db.from('shops').select(select).eq('id', id).single();
     shopData = data;
   } else if (vendeur) {
-    // vendeur = user_id dans la table shops
     const { data } = await db.from('shops').select(select).eq('user_id', vendeur).eq('status', 'active').single();
     shopData = data;
   }
@@ -854,8 +853,6 @@ async function loadShop() {
 
 // ── RENDER HEADER ──
 function renderShopHeader(s) {
-  document.title = `${s.name} — WennaShop`;
-
   // Banner
   if (s.banner_url) {
     const bw = document.getElementById('banner-wrap');
@@ -947,6 +944,8 @@ async function loadProducts(userId) {
 
   if (error || !data) {
     document.getElementById('products-grid').innerHTML = `<div class="empty-state" style="grid-column:1/-1">${SVG.emptyBox}<p>Aucun produit disponible</p></div>`;
+    // SEO même sans produits
+    if (shopData) WennaSEO.vendeur(shopData, []);
     return;
   }
 
@@ -954,6 +953,9 @@ async function loadProducts(userId) {
   buildFilters(data);
   renderProducts();
   document.getElementById('products-count').textContent = `${data.length} produit${data.length > 1 ? 's' : ''}`;
+
+  // ── SEO DYNAMIQUE ── injecté ici après chargement complet boutique + produits
+  if (shopData) WennaSEO.vendeur(shopData, data);
 }
 
 function buildFilters(products) {
@@ -1096,6 +1098,8 @@ function renderShopError() {
       <p>Cette boutique n'existe pas ou n'est plus disponible.</p>
     </div>`;
   document.getElementById('products-count').textContent = '';
+  // noindex pour les boutiques introuvables
+  WennaSEO.page({ title: 'Boutique introuvable', noIndex: true });
 }
 
 // ── CART COUNT ──
