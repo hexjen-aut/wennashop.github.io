@@ -31,9 +31,9 @@ const WennaSEO = (() => {
     el.setAttribute('href', href);
   }
 
-  function setJsonLd(data) {
-    let el = document.querySelector('script[type="application/ld+json"]#wenna-jsonld');
-    if (!el) { el = document.createElement('script'); el.type = 'application/ld+json'; el.id = 'wenna-jsonld'; document.head.appendChild(el); }
+  function setJsonLd(data, id = 'wenna-jsonld') {
+    let el = document.querySelector(`script[type="application/ld+json"]#${id}`);
+    if (!el) { el = document.createElement('script'); el.type = 'application/ld+json'; el.id = id; document.head.appendChild(el); }
     el.textContent = JSON.stringify(data);
   }
 
@@ -106,6 +106,133 @@ const WennaSEO = (() => {
     setJsonLd({ '@context': 'https://schema.org', '@type': 'Product', name: nom, description: desc, image: images.length > 0 ? images.map(i => i.startsWith('http') ? i : BASE.baseUrl + i) : [BASE.defaultImg], url: pageUrl, brand: vendeur_nom ? { '@type': 'Brand', name: vendeur_nom } : undefined, offers: { '@type': 'Offer', priceCurrency: devise, price: prix, availability: stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock', seller: vendeur_nom ? { '@type': 'Organization', name: vendeur_nom } : undefined, url: pageUrl }, ...(note_moyenne && nombre_avis ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: note_moyenne, reviewCount: nombre_avis } } : {}) });
   }
 
+  // ─── NOUVEAU : PAGE VENDEUR ───────────────────────────────────────
+  /**
+   * @param {Object} shop         — données Supabase de la boutique
+   * @param {Array}  products     — tableau des produits chargés (optionnel)
+   */
+  function applyVendeur(shop = {}, products = []) {
+    if (!shop || !shop.name) return;
+
+    const {
+      id, name, slug, bio, country, city,
+      logo_url, banner_url,
+      total_sales = 0, rating_avg, rating_count = 0,
+      is_verified = false, ships_to = []
+    } = shop;
+
+    // ── URL canonique (préférence slug, sinon id) ──
+    const canonicalPath = slug
+      ? `/boutique-vendeur.html?slug=${slug}`
+      : `/boutique-vendeur.html?id=${id}`;
+    const pageUrl = BASE.baseUrl + canonicalPath;
+
+    // ── Titre ──
+    const locationPart = city ? `${city}, ${country || ''}` : (country || '');
+    const title = truncate(
+      `${name} — Boutique WennaShop${locationPart ? ' | ' + locationPart : ''}`,
+      70
+    );
+
+    // ── Description ──
+    const productCount = products.length;
+    let descParts = [`Découvrez la boutique ${name} sur WennaShop.`];
+    if (productCount > 0) descParts.push(`${productCount} produit${productCount > 1 ? 's' : ''} disponible${productCount > 1 ? 's' : ''}.`);
+    if (bio) descParts.push(bio);
+    else descParts.push('Marketplace Gabon ↔ Maroc — produits artisanaux et authentiques.');
+    const desc = truncate(descParts.join(' '));
+
+    // ── Keywords ──
+    const kwParts = [
+      name.toLowerCase(),
+      'boutique wennashop',
+      'marketplace gabon maroc',
+      country ? `vendeur ${country.toLowerCase()}` : '',
+      city ? city.toLowerCase() : '',
+      ships_to.map(c => `livraison ${c.toLowerCase()}`).join(', '),
+    ].filter(Boolean);
+    const keywords = kwParts.join(', ');
+
+    // ── Image OG (logo ou banner ou défaut) ──
+    const ogImage = banner_url || logo_url || BASE.defaultImg;
+
+    // ── Appliquer ──
+    document.title = title;
+    setMeta('description', desc);
+    setMeta('keywords', keywords);
+    setLink('canonical', pageUrl);
+    setMeta('robots', 'index, follow');
+
+    // Open Graph
+    setMeta('og:type', 'profile', 'property');
+    setMeta('og:title', title, 'property');
+    setMeta('og:description', desc, 'property');
+    setMeta('og:url', pageUrl, 'property');
+    setMeta('og:image', ogImage, 'property');
+
+    // Twitter Card
+    setMeta('twitter:card', 'summary_large_image');
+    setMeta('twitter:title', title);
+    setMeta('twitter:description', desc);
+    setMeta('twitter:image', ogImage);
+
+    // ── Breadcrumb JSON-LD ──
+    setJsonLd({
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Accueil', item: BASE.baseUrl },
+        { '@type': 'ListItem', position: 2, name: 'Boutique', item: `${BASE.baseUrl}/boutique.html` },
+        { '@type': 'ListItem', position: 3, name: name, item: pageUrl },
+      ]
+    }, 'wenna-jsonld-breadcrumb');
+
+    // ── ProfilePage + ItemList JSON-LD ──
+    const itemList = products.slice(0, 10).map((p, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: `${BASE.baseUrl}/detail_produit.html?id=${p.id}`,
+      name: p.name,
+    }));
+
+    setJsonLd({
+      '@context': 'https://schema.org',
+      '@type': 'ProfilePage',
+      name: title,
+      description: desc,
+      url: pageUrl,
+      mainEntity: {
+        '@type': 'Organization',
+        name: name,
+        url: pageUrl,
+        logo: logo_url || undefined,
+        image: banner_url || logo_url || undefined,
+        description: bio || undefined,
+        address: (city || country) ? {
+          '@type': 'PostalAddress',
+          addressLocality: city || undefined,
+          addressCountry: country || undefined,
+        } : undefined,
+        ...(rating_avg && rating_count > 0 ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: rating_avg,
+            reviewCount: rating_count,
+          }
+        } : {}),
+      },
+      ...(itemList.length > 0 ? {
+        hasPart: {
+          '@type': 'ItemList',
+          name: `Produits de ${name}`,
+          numberOfItems: products.length,
+          itemListElement: itemList,
+        }
+      } : {}),
+    }, 'wenna-jsonld');
+  }
+  // ─────────────────────────────────────────────────────────────────
+
   function applyPage({ title, description, path, noIndex = false } = {}) {
     const fullTitle = title ? `${title} | WennaShop` : 'WennaShop';
     const desc = truncate(description || BASE.defaultDesc);
@@ -121,6 +248,8 @@ const WennaSEO = (() => {
     const page = window.location.pathname.split('/').pop() || 'index.html';
     if (page === 'index.html' || page === '') applyIndex();
     else if (page === 'boutique.html') applyBoutique();
+    // boutique-vendeur.html : SEO dynamique injecté après chargement Supabase via WennaSEO.vendeur()
+    else if (page === 'boutique-vendeur.html') { /* handled dynamically */ }
     else if (page === 'dashboard-vendeur.html') applyPage({ title: 'Dashboard Vendeur', noIndex: true });
     else if (page === 'compte.html') applyPage({ title: 'Mon Compte', noIndex: true });
     else if (page === 'panier.html') applyPage({ title: 'Mon Panier', noIndex: true });
@@ -129,10 +258,17 @@ const WennaSEO = (() => {
     else if (page === 'recherche.html') applyPage({ title: 'Recherche', path: '/recherche.html' });
   }
 
-  return { init: autoInit, index: (d) => { applyBase(); applyIndex(d); }, boutique: (d) => { applyBase(); applyBoutique(d); }, produit: (d) => { applyBase(); applyProduit(d); }, page: (d) => { applyBase(); applyPage(d); } };
+  return {
+    init:     autoInit,
+    index:    (d) => { applyBase(); applyIndex(d); },
+    boutique: (d) => { applyBase(); applyBoutique(d); },
+    produit:  (d) => { applyBase(); applyProduit(d); },
+    vendeur:  (shop, products) => { applyBase(); applyVendeur(shop, products); },
+    page:     (d) => { applyBase(); applyPage(d); },
+  };
 })();
 
 document.addEventListener('DOMContentLoaded', () => {
   const page = window.location.pathname.split('/').pop() || 'index.html';
-  if (!['detail_produit.html', 'boutique.html', 'index.html'].includes(page)) WennaSEO.init();
+  if (!['detail_produit.html', 'boutique.html', 'index.html', 'boutique-vendeur.html'].includes(page)) WennaSEO.init();
 });
