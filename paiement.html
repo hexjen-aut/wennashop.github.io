@@ -301,7 +301,6 @@
             <select id="ship-country" required>
               <option value="">Sélectionner…</option>
               <option value="Maroc">🇲🇦 Maroc</option>
-              <option value="Gabon">🇬🇦 Gabon</option>
             </select>
           </div>
         </div>
@@ -317,27 +316,16 @@
       <div class="card">
         <div class="card-title">Méthode de paiement</div>
         <div class="methods-grid" id="methods-grid">
-          <div class="method-card selected" data-method="card_maroc">
+          <div class="method-card selected" data-method="cash_on_delivery">
             <div style="display:flex;align-items:center;justify-content:space-between;">
-              <span class="method-name">Carte bancaire</span>
-              <span class="method-badge">Maroc</span>
+              <span class="method-name">Paiement à la livraison</span>
+              <span class="method-badge">Recommandé</span>
             </div>
-            <span class="method-sub">Visa · Mastercard · CMI</span>
-          </div>
-          <div class="method-card" data-method="mobile_money_gabon">
-            <div style="display:flex;align-items:center;justify-content:space-between;">
-              <span class="method-name">Mobile Money</span>
-              <span class="method-badge">Gabon</span>
-            </div>
-            <span class="method-sub">Airtel Money · Moov Money</span>
+            <span class="method-sub">Espèces à la réception</span>
           </div>
           <div class="method-card" data-method="virement">
             <span class="method-name">Virement bancaire</span>
             <span class="method-sub">Attijari · CIH · BCP</span>
-          </div>
-          <div class="method-card" data-method="cash_on_delivery">
-            <span class="method-name">Paiement à la livraison</span>
-            <span class="method-sub">Espèces à la réception</span>
           </div>
         </div>
         <div id="method-details"></div>
@@ -387,10 +375,6 @@
           <span class="sec-badge">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             Sécurisé
-          </span>
-          <span class="sec-badge">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            PCI-DSS
           </span>
         </div>
       </div>
@@ -490,7 +474,7 @@ function fmt(amount, currency = 'MAD') {
 }
 
 // GLOBALS
-let sb = null, currentOrder = null, currentItems = [], currentUserId = null, selectedMethod = 'card_maroc'
+let sb = null, currentOrder = null, currentItems = [], currentUserId = null, selectedMethod = 'cash_on_delivery'
 
 // MÉTHODE DE PAIEMENT
 function selectMethod(el) {
@@ -508,23 +492,13 @@ document.getElementById('methods-grid').addEventListener('click', e => {
 function renderMethodDetails() {
   const el = document.getElementById('method-details')
   const details = {
-    card_maroc: `<div class="method-details">
-      <p>Paiement sécurisé via CMI. Tu seras redirigé vers la page de paiement sécurisée après confirmation.</p>
-    </div>`,
-    mobile_money_gabon: `<div class="method-details">
-      <div class="field" style="margin-bottom:12px;">
-        <label>Numéro Mobile Money *</label>
-        <input type="tel" id="mm-number" placeholder="+241 06 00 00 00"/>
-      </div>
-      <p>Tu recevras une demande de confirmation sur ce numéro.</p>
+    cash_on_delivery: `<div class="method-details">
+      <p>Paiement en espèces à la réception. Le livreur accepte les billets, monnaie exacte appréciée.</p>
     </div>`,
     virement: `<div class="method-details">
       <p style="margin-bottom:8px;">Effectue un virement à :</p>
       <p style="font-weight:700;letter-spacing:.5px;margin-bottom:4px;">RIB : 0000 0000 0000 0000 0000 0000 000</p>
       <p>Banque : Attijari Maroc · SWIFT : BCMAMAMC</p>
-    </div>`,
-    cash_on_delivery: `<div class="method-details">
-      <p>Paiement en espèces à la réception. Le livreur accepte les billets, monnaie exacte appréciée.</p>
     </div>`
   }
   el.innerHTML = details[selectedMethod] || ''
@@ -596,11 +570,8 @@ async function init() {
     currentUserId = profile.id
     if (profile.first_name) document.getElementById('ship-first').value = profile.first_name
     if (profile.last_name)  document.getElementById('ship-last').value  = profile.last_name
-    if (profile.country) {
-      const sel = document.getElementById('ship-country')
-      const opt = [...sel.options].find(o => o.value === profile.country)
-      if (opt) sel.value = profile.country
-    }
+    // Pays fixé à Maroc — phase 1
+    document.getElementById('ship-country').value = 'Maroc'
   } else {
     const { data: byEmail } = await sb.from('users').select('id').ilike('email', user.email).maybeSingle()
     if (byEmail) {
@@ -668,10 +639,6 @@ function validateForm() {
       el.focus(); return false
     }
   }
-  if (selectedMethod === 'mobile_money_gabon') {
-    const mm = document.getElementById('mm-number')
-    if (!mm?.value.trim()) { toast('Numéro Mobile Money requis', 'error'); mm?.focus(); return false }
-  }
   return true
 }
 
@@ -708,8 +675,6 @@ async function submitPayment() {
     return
   }
 
-  const mmNumber = selectedMethod === 'mobile_money_gabon' ? (document.getElementById('mm-number')?.value.trim() || null) : null
-
   await sb.from('payments').insert({
     order_id:  currentOrder.id,
     user_id:   currentUserId,
@@ -717,9 +682,9 @@ async function submitPayment() {
     currency:  currentOrder.currency || 'MAD',
     method:    selectedMethod,
     status:    'pending',
-    provider:  ({ card_maroc: 'cmi', mobile_money_gabon: 'cinetpay', virement: 'manual', cash_on_delivery: 'manual' })[selectedMethod] || 'manual',
+    provider:  ({ virement: 'manual', cash_on_delivery: 'manual' })[selectedMethod] || 'manual',
     type:      'order_payment',
-    metadata:  { shipping_name: `${firstName} ${lastName}`, city, country, mobile_money_number: mmNumber }
+    metadata:  { shipping_name: `${firstName} ${lastName}`, city, country }
   })
 
   // Vider le panier
