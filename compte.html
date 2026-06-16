@@ -8,7 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.cinetpay.com/seamless/main.js" type="text/javascript"></script>
 <script src="/wenna-seo.js"></script>
 <script>
   window.db = window.supabase.createClient(
@@ -194,25 +193,11 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .feature-text p:first-child { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
 .feature-text p:last-child { font-size: 12px; font-weight: 500; color: var(--text-muted); }
 
-/* ── PAYMENT MODAL ── */
-#payment-modal { position: fixed; inset: 0; z-index: 8000; display: flex; align-items: flex-end; justify-content: center; background: rgba(0,0,0,0); pointer-events: none; transition: background .3s; }
-#payment-modal.open { background: rgba(0,0,0,.75); pointer-events: all; }
-#payment-modal-sheet { background: var(--surface); border: 1.5px solid var(--border-accent); border-bottom: none; border-radius: var(--radius-lg) var(--radius-lg) 0 0; width: 100%; max-width: 500px; padding: 24px 24px 44px; transform: translateY(100%); transition: transform .4s cubic-bezier(.22,1,.36,1); }
-#payment-modal.open #payment-modal-sheet { transform: translateY(0); }
-.drag-bar { width: 40px; height: 3px; background: var(--border); border-radius: 99px; margin: 0 auto 20px; }
-
-.pm-method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 18px; }
-.pm-method-btn { padding: 12px 8px; border: 1.5px solid var(--border); border-radius: var(--radius-md); background: var(--surface-2); cursor: pointer; transition: all .2s; display: flex; flex-direction: column; align-items: center; gap: 5px; font-family: var(--font); }
-.pm-method-btn:hover, .pm-method-btn.selected { border-color: var(--accent); background: var(--accent-light); }
-.pm-method-btn .pm-icon { font-size: 20px; color: var(--accent); }
-.pm-method-btn .pm-label { font-size: 12px; font-weight: 700; color: var(--text); }
-.pm-method-btn .pm-sub { font-size: 10px; font-weight: 500; color: var(--text-muted); text-align: center; }
-
-.amount-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
-.amount-chip { padding: 7px 16px; border: 1.5px solid var(--border); border-radius: var(--radius-pill); background: transparent; color: var(--text-muted); font-size: 12px; font-weight: 700; font-family: var(--font); cursor: pointer; transition: all .2s; }
-.amount-chip:hover, .amount-chip.selected { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
-
-.pm-total-row { display: flex; justify-content: space-between; align-items: center; padding: 14px; background: var(--surface-2); border: 1.5px solid var(--border); border-radius: var(--radius-md); margin-bottom: 14px; }
+/* ── INFO PAIEMENT ── */
+.paiement-info-box { background: var(--surface-2); border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 16px; margin-bottom: 14px; display: flex; align-items: flex-start; gap: 12px; }
+.paiement-info-box i { font-size: 20px; color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+.paiement-info-box p { font-size: 12px; font-weight: 600; color: var(--text-muted); line-height: 1.6; }
+.paiement-info-box strong { color: var(--text); }
 
 /* ── DASH STATS ── */
 .dash-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 10px; }
@@ -228,7 +213,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .solde-card { position: relative; overflow: hidden; padding: 28px; background: linear-gradient(135deg,#061a0a 0%,#0d2612 60%,#061a0a 100%); border: 1.5px solid var(--success-border); border-radius: var(--radius-lg); margin-bottom: 10px; }
 .solde-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(34,197,94,.6); margin-bottom: 8px; }
 .solde-amount { font-size: 44px; font-weight: 900; color: var(--success); line-height: 1; margin-bottom: 18px; }
-.btn-green { display: inline-flex; align-items: center; gap: 6px; background: var(--success-dim); color: var(--success); padding: 9px 18px; font-size: 12px; font-weight: 700; letter-spacing: .03em; border: 1.5px solid var(--success-border); border-radius: var(--radius-pill); cursor: pointer; transition: all .2s; font-family: var(--font); }
+.btn-green { display: inline-flex; align-items: center; gap: 6px; background: var(--success-dim); color: var(--success); padding: 9px 18px; font-size: 12px; font-weight: 700; letter-spacing: .03em; border: 1.5px solid var(--success-border); border-radius: var(--radius-pill); cursor: pointer; transition: all .2s; font-family: var(--font); text-decoration: none; }
 .btn-green:hover { background: rgba(34,197,94,.2); }
 
 /* ── EMPTY STATE ── */
@@ -259,7 +244,6 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
   .mode-switcher { padding: 16px 16px 0; }
   .grid-2 { grid-template-columns: 1fr; }
   .bnav { display: block; }
-  .pm-method-grid { grid-template-columns: 1fr 1fr; }
 }
 </style>
 </head>
@@ -270,56 +254,6 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
   <div class="load-bar"></div>
 </div>
 <div id="toast"></div>
-
-<!-- ── PAYMENT MODAL ── -->
-<div id="payment-modal">
-  <div id="payment-modal-sheet">
-    <div class="drag-bar"></div>
-    <div style="margin-bottom:18px;">
-      <p style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:4px;" id="pm-subtitle">Paiement sécurisé</p>
-      <h3 style="font-size:20px;font-weight:900;" id="pm-title">Finaliser le paiement</h3>
-    </div>
-    <div id="pm-order-recap" style="display:none;padding:12px;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--radius-md);margin-bottom:14px;">
-      <div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:12px;font-weight:600;color:var(--text-muted);">Commande</span><span style="font-weight:800;color:var(--accent);" id="pm-order-amount">—</span></div>
-      <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;font-weight:600;color:var(--text-muted);">Référence</span><span style="font-size:11px;font-family:monospace;color:var(--text-faint);" id="pm-order-ref">—</span></div>
-    </div>
-    <div id="pm-topup-section" style="display:none;margin-bottom:14px;">
-      <p style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);margin-bottom:10px;">Montant à recharger</p>
-      <div class="amount-chips">
-        <button class="amount-chip" onclick="selectAmount(100)">100 MAD</button>
-        <button class="amount-chip" onclick="selectAmount(200)">200 MAD</button>
-        <button class="amount-chip" onclick="selectAmount(500)">500 MAD</button>
-        <button class="amount-chip" onclick="selectAmount(1000)">1 000 MAD</button>
-      </div>
-      <div style="position:relative;">
-        <input id="pm-custom-amount" class="field-input" type="number" placeholder="Montant personnalisé" min="50" oninput="customAmount(this.value)" style="padding-right:52px;"/>
-        <span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:700;color:var(--text-faint);">MAD</span>
-      </div>
-    </div>
-    <p style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);margin-bottom:10px;">Moyen de paiement</p>
-    <div class="pm-method-grid">
-      <button id="pm-btn-mobile" onclick="selectChannel('MOBILE_MONEY')" class="pm-method-btn">
-        <i class="ph ph-device-mobile pm-icon"></i>
-        <span class="pm-label">Mobile Money</span>
-        <span class="pm-sub">Airtel · Moov</span>
-      </button>
-      <button id="pm-btn-card" onclick="selectChannel('CREDIT_CARD')" class="pm-method-btn">
-        <i class="ph ph-credit-card pm-icon"></i>
-        <span class="pm-label">Carte bancaire</span>
-        <span class="pm-sub">Visa · Mastercard</span>
-      </button>
-    </div>
-    <div class="pm-total-row">
-      <span style="font-size:13px;font-weight:700;">Total à payer</span>
-      <span style="font-size:22px;font-weight:900;color:var(--accent);" id="pm-total-display">—</span>
-    </div>
-    <button id="pm-pay-btn" onclick="launchCinetPay()" class="btn-primary" style="width:100%;justify-content:center;padding:14px;margin-bottom:10px;">
-      <i class="ph ph-lock" style="font-size:16px;"></i>Payer maintenant
-    </button>
-    <button onclick="closePaymentModal()" class="btn-ghost" style="width:100%;justify-content:center;">Annuler</button>
-    <p style="text-align:center;font-size:11px;font-weight:600;color:var(--text-faint);margin-top:12px;">🔒 Certifié PCI-DSS · CinetPay · PayDunia</p>
-  </div>
-</div>
 
 <!-- ── HEADER ── -->
 <header class="hd">
@@ -467,7 +401,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
         <div class="card-title">Pourquoi vendre sur WennaShop ?</div>
         <div class="feature-list">
           <div class="feature-item"><div class="feature-icon"><i class="ph ph-storefront"></i></div><div class="feature-text"><p>Boutique personnalisée gratuite</p><p>Ta page avec tes produits, ton nom, ta description. Aucun frais d'ouverture.</p></div></div>
-          <div class="feature-icon-item feature-item"><div class="feature-icon"><i class="ph ph-percent"></i></div><div class="feature-text"><p>Commission unique 8%</p><p>Pas d'abonnement. WennaShop prend 8% uniquement sur chaque vente réalisée.</p></div></div>
+          <div class="feature-item"><div class="feature-icon"><i class="ph ph-percent"></i></div><div class="feature-text"><p>Commission unique 8%</p><p>Pas d'abonnement. WennaShop prend 8% uniquement sur chaque vente réalisée.</p></div></div>
           <div class="feature-item"><div class="feature-icon"><i class="ph ph-shooting-star"></i></div><div class="feature-text"><p>Système de Quêtes</p><p>Des acheteurs cherchent des produits spécifiques. Réponds et gagne des commissions supplémentaires.</p></div></div>
           <div class="feature-item"><div class="feature-icon"><i class="ph ph-globe"></i></div><div class="feature-text"><p>Marché inter-africain</p><p>Acheteurs au Maroc, au Gabon et partout en Afrique. Sans frontières.</p></div></div>
         </div>
@@ -550,8 +484,12 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
           <p class="solde-amount" id="solde-vendeur">—</p>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <a href="dashboard-vendeur.html?section=wallet" class="btn-green"><i class="ph ph-paper-plane-tilt" style="font-size:15px;"></i>Retirer</a>
-            <button onclick="openTopupModal()" class="btn-green"><i class="ph ph-plus-circle" style="font-size:15px;"></i>Recharger</button>
           </div>
+        </div>
+        <!-- Info paiement phase 1 -->
+        <div class="paiement-info-box">
+          <i class="ph ph-info"></i>
+          <p>Les revenus sont reversés <strong>manuellement</strong> par WennaShop. Pour toute demande de retrait, contacte-nous via le dashboard vendeur. La commission de <strong>8%</strong> est prélevée sur chaque vente côté vendeur.</p>
         </div>
         <div class="card">
           <div class="card-title">Historique des paiements</div>
@@ -590,17 +528,8 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 </nav>
 
 <script>
-const CINETPAY_CONFIG = {
-  apikey: 'VOTRE_APIKEY_CINETPAY',
-  site_id: 'VOTRE_SITE_ID_CINETPAY',
-  notify_url: 'https://aakxoydznmybstfozjte.supabase.co/functions/v1/cinetpay-webhook',
-  return_url: window.location.origin + '/compte.html',
-  mode: 'PRODUCTION'
-}
-
 function getSb() { return window.db || null }
 let currentUser = null, currentProfile = null, isVendeur = false
-let pmContext = { type: null, orderId: null, amount: 0, currency: 'MAD', channel: 'MOBILE_MONEY' }
 let currentWalletBalance = 0
 
 // ── UTILS ──
@@ -620,7 +549,6 @@ function countryFlag(c) {
   if(c.toLowerCase().includes('gabon')) return '🇬🇦'
   return '🌍'
 }
-function generateTxId() { return 'WS-' + Date.now() + '-' + Math.random().toString(36).substr(2,6).toUpperCase() }
 function hideOverlay() {
   document.getElementById('loading-overlay').classList.add('hidden')
   setTimeout(() => document.getElementById('loading-overlay').style.display = 'none', 400)
@@ -700,9 +628,6 @@ async function init() {
     window.history.replaceState({}, '', window.location.pathname)
     window.location.href = redirectTo; return
   }
-  const txStatus = urlParams.get('tx_status')
-  if(txStatus === 'success') showToast('Paiement reçu ✓', 'success')
-  else if(txStatus === 'failed') showToast('Paiement échoué', 'error')
   await loadProfile()
   hideOverlay()
   if(urlParams.get('mode') === 'vendeur') switchMode('vendeur')
@@ -775,7 +700,10 @@ async function loadOrders(userId) {
   container.innerHTML = orders.map(order => {
     const p = order.order_items?.[0]?.products
     const imgHtml = p?.image_url ? `<img src="${p.image_url}" alt="${p?.name||''}" class="order-thumb"/>` : `<div class="order-thumb-ph"><i class="ph ph-package"></i></div>`
-    const payBtn = order.status === 'pending' ? `<button onclick="openOrderPaymentModal('${order.id}',${order.total_amount},'${order.currency||'MAD'}')" class="btn-primary" style="padding:5px 12px;font-size:11px;box-shadow:none;margin-left:4px;"><i class="ph ph-credit-card" style="font-size:13px;"></i>Payer</button>` : ''
+    // Bouton "Finaliser" → redirige vers paiement.html au lieu d'un gateway
+    const payBtn = order.status === 'pending'
+      ? `<a href="paiement.html?order_id=${order.id}" class="btn-primary" style="padding:5px 12px;font-size:11px;box-shadow:none;margin-left:4px;text-decoration:none;" onclick="event.stopPropagation()"><i class="ph ph-arrow-right" style="font-size:13px;"></i>Finaliser</a>`
+      : ''
     return `<div class="order-row" onclick="location.href='tracking.html?order=${order.id}'">
       ${imgHtml}
       <div style="flex:1;">
@@ -860,7 +788,7 @@ async function loadPaymentsHistory() {
       <div>
         <p style="font-size:13px;font-weight:700;">${typeLabels[p.type]||'Paiement'} · ${fmtDate(p.created_at)}</p>
         <p style="font-size:11px;font-weight:600;color:var(--text-faint);font-family:monospace;margin-top:2px;">${p.transaction_id||p.id.slice(0,12)}</p>
-        <p style="font-size:11px;color:var(--text-faint);margin-top:2px;">${p.method||'En ligne'}</p>
+        <p style="font-size:11px;color:var(--text-faint);margin-top:2px;">${p.method||'Manuel'}</p>
       </div>
       <div style="text-align:right;">
         <p style="font-size:16px;font-weight:900;color:${p.type==='vendor_payout'?'var(--error)':'var(--success)'};">${p.type==='vendor_payout'?'-':'+'}${fmt(p.amount,p.currency||'MAD')}</p>
@@ -959,74 +887,6 @@ async function upgradeToVendeur() {
   }
 }
 
-// ── PAYMENT ──
-function openOrderPaymentModal(orderId, amount, currency = 'MAD') {
-  pmContext = { type:'order_payment', orderId, amount, currency, channel:'MOBILE_MONEY' }
-  document.getElementById('pm-title').textContent = 'Paiement de commande'
-  document.getElementById('pm-order-recap').style.display = 'block'
-  document.getElementById('pm-topup-section').style.display = 'none'
-  document.getElementById('pm-order-amount').textContent = fmt(amount, currency)
-  document.getElementById('pm-order-ref').textContent = 'WS-' + orderId.slice(0,8).toUpperCase()
-  document.getElementById('pm-total-display').textContent = fmt(amount, currency)
-  selectChannel('MOBILE_MONEY')
-  document.getElementById('payment-modal').classList.add('open')
-}
-function openTopupModal() {
-  pmContext = { type:'wallet_topup', orderId:null, amount:0, currency:'MAD', channel:'MOBILE_MONEY' }
-  document.getElementById('pm-title').textContent = 'Recharger mon solde'
-  document.getElementById('pm-order-recap').style.display = 'none'
-  document.getElementById('pm-topup-section').style.display = 'block'
-  document.getElementById('pm-total-display').textContent = '—'
-  document.querySelectorAll('.amount-chip').forEach(c => c.classList.remove('selected'))
-  if(document.getElementById('pm-custom-amount')) document.getElementById('pm-custom-amount').value = ''
-  selectChannel('MOBILE_MONEY')
-  document.getElementById('payment-modal').classList.add('open')
-}
-function closePaymentModal() { document.getElementById('payment-modal').classList.remove('open') }
-function selectChannel(ch) {
-  pmContext.channel = ch
-  document.querySelectorAll('.pm-method-btn').forEach(b => b.classList.remove('selected'))
-  if(ch === 'MOBILE_MONEY') document.getElementById('pm-btn-mobile').classList.add('selected')
-  else if(ch === 'CREDIT_CARD') document.getElementById('pm-btn-card').classList.add('selected')
-}
-function selectAmount(amount) {
-  pmContext.amount = amount
-  document.querySelectorAll('.amount-chip').forEach(c => c.classList.remove('selected'))
-  event.target.closest('.amount-chip').classList.add('selected')
-  if(document.getElementById('pm-custom-amount')) document.getElementById('pm-custom-amount').value = ''
-  document.getElementById('pm-total-display').textContent = fmt(amount, pmContext.currency)
-}
-function customAmount(val) {
-  pmContext.amount = parseFloat(val) || 0
-  document.querySelectorAll('.amount-chip').forEach(c => c.classList.remove('selected'))
-  document.getElementById('pm-total-display').textContent = pmContext.amount > 0 ? fmt(pmContext.amount, pmContext.currency) : '—'
-}
-async function launchCinetPay() {
-  const db = getSb()
-  if(!currentProfile) { showToast('Profil non chargé', 'error'); return }
-  if(pmContext.amount < 50) { showToast('Montant minimum : 50 MAD', 'error'); return }
-  const btn = document.getElementById('pm-pay-btn')
-  btn.disabled = true; btn.innerHTML = '<div class="spinner" style="border-top-color:#fff;"></div> Initialisation…'
-  const transactionId = generateTxId()
-  try {
-    const { error } = await db.from('payments').insert({ amount:pmContext.amount, currency:pmContext.currency, method:pmContext.channel==='MOBILE_MONEY'?'Mobile Money':'Carte', status:'pending', transaction_id:transactionId, provider:'cinetpay', type:pmContext.type, user_id:currentProfile.id, order_id:pmContext.orderId||null, created_at:new Date().toISOString() })
-    if(error) throw error
-    CinetPay.setConfig({ apikey:CINETPAY_CONFIG.apikey, site_id:CINETPAY_CONFIG.site_id, notify_url:CINETPAY_CONFIG.notify_url, return_url:CINETPAY_CONFIG.return_url+'?tx_status=success&tx_id='+transactionId, mode:CINETPAY_CONFIG.mode })
-    CinetPay.getCheckout({ transaction_id:transactionId, amount:pmContext.amount, currency:pmContext.currency, channels:pmContext.channel, description:pmContext.type==='wallet_topup'?'Recharge WennaShop':'Commande WennaShop', customer_name:currentProfile.last_name||'Client', customer_surname:currentProfile.first_name||'WennaShop', customer_email:currentProfile.email||currentUser.email, customer_phone_number:currentProfile.phone||'', customer_address:'', customer_city:currentProfile.country||'', customer_country:currentProfile.country?.toLowerCase().includes('maroc')?'MA':'GA', customer_state:'', customer_zip_code:'' })
-    CinetPay.waitResponse(data => {
-      closePaymentModal()
-      if(data.status==='ACCEPTED') { showToast('Paiement accepté ✓', 'success'); setTimeout(()=>pmContext.type==='wallet_topup'?loadWalletBalance():loadOrders(currentProfile.id),2000) }
-      else showToast('Paiement non abouti', 'error')
-      resetPayBtn()
-    })
-    CinetPay.onError(() => { closePaymentModal(); showToast('Erreur paiement', 'error'); resetPayBtn() })
-  } catch(err) { showToast('Erreur : '+(err.message||'réessaie'),'error'); resetPayBtn() }
-}
-function resetPayBtn() {
-  const btn = document.getElementById('pm-pay-btn')
-  btn.disabled = false; btn.innerHTML = '<i class="ph ph-lock" style="font-size:16px;"></i>Payer maintenant'
-}
-
 // ── SWITCH ──
 function switchMode(mode) {
   document.querySelectorAll('.mode-panel').forEach(p => p.classList.remove('active'))
@@ -1046,8 +906,6 @@ function switchVendeurTab(tab, btn) {
   document.getElementById('vendeur-'+tab).classList.add('active')
   if(btn) btn.classList.add('active')
 }
-
-document.getElementById('payment-modal').addEventListener('click', e => { if(e.target===e.currentTarget) closePaymentModal() })
 
 const rObs = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('vis') }), {threshold:.07})
 document.querySelectorAll('.reveal').forEach(el => rObs.observe(el))
