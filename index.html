@@ -6,15 +6,14 @@
 <title>WennaShop — Connexion / Inscription</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css"/>
-<style>.ph { font-size: 18px; line-height: 1; }</style>
-<!-- 1. PWA Manifest -->
+
+<!-- PWA -->
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#FF6B2B">
+<meta name="theme-color" content="#ff751f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="WennaShop">
- 
-<!-- 2. Scripts offline (AVANT supabase.config.js) -->
+
 <script src="/js/offline.js" defer></script>
 <script src="/js/syncmanager.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -23,27 +22,29 @@
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
   window.db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 </script>
+
 <style>
 :root {
-  --accent:       #ff751f;
-  --accent-dark:  #cc5e18;
-  --accent-light: rgba(255,117,31,0.12);
-  --bg:           #0a0a0a;
-  --surface:      #141414;
-  --surface-2:    #1e1e1e;
-  --border:       #2a2a2a;
-  --border-accent:rgba(255,117,31,0.3);
-  --text:         #ffffff;
-  --text-muted:   #a0a0a0;
-  --text-faint:   #555555;
-  --success:      #22c55e;
-  --error:        #ef4444;
-  --font:         'Nunito', 'Varela Round', system-ui, sans-serif;
-  --radius-sm:    6px;
-  --radius-md:    12px;
-  --radius-lg:    16px;
-  --radius-pill:  9999px;
-  --shadow-orange:0 4px 24px rgba(255,117,31,.2);
+  --accent:        #ff751f;
+  --accent-dark:   #cc5e18;
+  --accent-light:  rgba(255,117,31,0.12);
+  --bg:            #0a0a0a;
+  --surface:       #141414;
+  --surface-2:     #1c1c1c;
+  --surface-3:     #222222;
+  --border:        #2a2a2a;
+  --border-accent: rgba(255,117,31,0.3);
+  --text:          #f0f0f0;
+  --text-muted:    #888888;
+  --text-faint:    #444444;
+  --success:       #22c55e;
+  --error:         #ef4444;
+  --font:          'Nunito', system-ui, sans-serif;
+  --radius-sm:     6px;
+  --radius-md:     12px;
+  --radius-lg:     16px;
+  --radius-pill:   9999px;
+  --shadow-orange: 0 4px 24px rgba(255,117,31,.18);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -73,33 +74,29 @@ body {
   background: var(--surface);
 }
 @media (max-width: 768px) {
-  .left-panel { height: 200px; }
+  .left-panel { height: 180px; }
 }
 
 .left-panel-bg {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 30% 70%, rgba(255,117,31,.08) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 60% at 30% 70%, rgba(255,117,31,.07) 0%, transparent 70%),
     radial-gradient(ellipse 50% 40% at 80% 20%, rgba(255,117,31,.04) 0%, transparent 60%),
     var(--surface);
 }
-
-/* Motif géométrique SVG */
 .left-panel-bg svg {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  opacity: .12;
+  opacity: .1;
 }
-
 .left-panel-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(10,10,10,0) 0%, rgba(10,10,10,.65) 100%);
+  background: linear-gradient(180deg, rgba(10,10,10,0) 0%, rgba(10,10,10,.7) 100%);
 }
-
 .left-content {
   position: relative;
   z-index: 2;
@@ -108,7 +105,6 @@ body {
   flex-direction: column;
   justify-content: flex-end;
   padding: 48px;
-  gap: 0;
 }
 @media (max-width: 768px) {
   .left-content {
@@ -117,15 +113,10 @@ body {
     padding: 24px;
   }
 }
-
-.left-logo-img {
-  width: 180px;
-  margin-bottom: 20px;
-}
+.left-logo-img { width: 180px; margin-bottom: 20px; }
 @media (max-width: 768px) {
-  .left-logo-img { width: 140px; margin-bottom: 12px; }
+  .left-logo-img { width: 130px; margin-bottom: 0; }
 }
-
 .left-tagline {
   font-size: 14px;
   font-weight: 500;
@@ -134,18 +125,14 @@ body {
   max-width: 280px;
   margin-bottom: 28px;
 }
-@media (max-width: 768px) {
-  .left-tagline { display: none; }
-}
+@media (max-width: 768px) { .left-tagline { display: none; } }
 
 .left-flags {
   display: flex;
   gap: 16px;
   align-items: center;
 }
-@media (max-width: 768px) {
-  .left-flags { justify-content: center; }
-}
+@media (max-width: 768px) { .left-flags { display: none; } }
 
 .flag-item {
   display: flex;
@@ -155,12 +142,7 @@ body {
   font-weight: 600;
   color: var(--text-muted);
 }
-
-.flag-sep {
-  width: 1px;
-  height: 16px;
-  background: var(--border);
-}
+.flag-sep { width: 1px; height: 16px; background: var(--border); }
 
 /* ── RIGHT PANEL ── */
 .right-panel {
@@ -171,14 +153,9 @@ body {
   padding: 48px 32px;
   overflow-y: auto;
 }
-@media (max-width: 480px) {
-  .right-panel { padding: 32px 16px; }
-}
+@media (max-width: 480px) { .right-panel { padding: 32px 16px; } }
 
-.form-wrap {
-  width: 100%;
-  max-width: 420px;
-}
+.form-wrap { width: 100%; max-width: 420px; }
 
 /* ── TABS ── */
 .tabs {
@@ -190,7 +167,6 @@ body {
   margin-bottom: 36px;
   gap: 4px;
 }
-
 .tab {
   flex: 1;
   padding: 10px 16px;
@@ -202,17 +178,11 @@ body {
   border: none;
   border-radius: var(--radius-pill);
   transition: all .2s;
+  cursor: pointer;
   letter-spacing: .3px;
 }
-.tab.active {
-  background: var(--accent);
-  color: #fff;
-  box-shadow: var(--shadow-orange);
-}
-.tab:not(.active):hover {
-  color: var(--text-muted);
-  background: var(--surface-2);
-}
+.tab.active { background: var(--accent); color: #fff; box-shadow: var(--shadow-orange); }
+.tab:not(.active):hover { color: var(--text-muted); background: var(--surface-2); }
 
 /* ── PANEL ── */
 .panel { animation: fadeUp .3s ease both; }
@@ -224,7 +194,6 @@ body {
 
 /* ── HEADING ── */
 .form-heading { margin-bottom: 28px; }
-
 .form-eyebrow {
   font-size: 11px;
   font-weight: 700;
@@ -233,24 +202,17 @@ body {
   color: var(--accent);
   margin-bottom: 8px;
 }
-
 .form-title {
-  font-size: 30px;
+  font-size: 28px;
   font-weight: 800;
   color: var(--text);
   line-height: 1.15;
   margin-bottom: 6px;
 }
-
-.form-sub {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-muted);
-}
+.form-sub { font-size: 14px; font-weight: 500; color: var(--text-muted); }
 
 /* ── FIELDS ── */
 .field { margin-bottom: 18px; }
-
 .field-label {
   display: flex;
   justify-content: space-between;
@@ -262,9 +224,7 @@ body {
   color: var(--text-muted);
   margin-bottom: 8px;
 }
-
 .input-wrap { position: relative; }
-
 .inp {
   width: 100%;
   background: var(--surface-2);
@@ -280,11 +240,10 @@ body {
 }
 .inp:focus {
   border-color: var(--accent);
-  background: var(--surface);
-  box-shadow: 0 0 0 3px rgba(255,117,31,.1);
+  background: var(--surface-3);
+  box-shadow: 0 0 0 3px rgba(255,117,31,.08);
 }
 .inp::placeholder { color: var(--text-faint); }
-
 .inp-icon-left .inp { padding-left: 44px; }
 
 .field-icon {
@@ -294,18 +253,19 @@ body {
   font-size: 18px;
   color: var(--text-faint);
   pointer-events: none;
-  user-select: none;
 }
-.field-icon.left  { left: 14px; }
+.field-icon.left { left: 14px; }
 .field-icon.right {
   right: 12px;
   pointer-events: all;
   background: none;
   border: none;
-  font-family: var(--font);
   font-size: 18px;
   color: var(--text-faint);
   transition: color .2s;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
 }
 .field-icon.right:hover { color: var(--text); }
 
@@ -314,17 +274,10 @@ body {
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
-@media (max-width: 380px) {
-  .grid-2 { grid-template-columns: 1fr; }
-}
+@media (max-width: 380px) { .grid-2 { grid-template-columns: 1fr; } }
 
 /* ── CHOICE BUTTONS ── */
-.choice-group {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
+.choice-group { display: flex; gap: 8px; flex-wrap: wrap; }
 .choice-btn {
   flex: 1;
   padding: 11px 12px;
@@ -338,16 +291,10 @@ body {
   transition: all .2s;
   text-align: center;
   min-width: 0;
+  cursor: pointer;
 }
-.choice-btn:hover {
-  border-color: var(--accent);
-  color: var(--text);
-}
-.choice-btn.active {
-  border-color: var(--accent);
-  background: var(--accent-light);
-  color: var(--accent);
-}
+.choice-btn:hover { border-color: var(--accent); color: var(--text); }
+.choice-btn.active { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
 
 .role-btn {
   flex: 1;
@@ -365,17 +312,11 @@ body {
   letter-spacing: .04em;
   font-family: var(--font);
   transition: all .2s;
+  cursor: pointer;
 }
-.role-btn:hover {
-  border-color: var(--accent);
-  color: var(--text);
-}
-.role-btn.active {
-  border-color: var(--accent);
-  background: var(--accent-light);
-  color: var(--accent);
-}
-.role-icon { font-size: 24px; }
+.role-btn:hover { border-color: var(--accent); color: var(--text); }
+.role-btn.active { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
+.role-icon { font-size: 22px; line-height: 1; }
 
 /* ── GENRE ── */
 .genre-group {
@@ -383,7 +324,6 @@ body {
   grid-template-columns: repeat(4,1fr);
   gap: 6px;
 }
-
 .genre-btn {
   display: flex;
   flex-direction: column;
@@ -398,13 +338,10 @@ body {
   font-weight: 700;
   font-family: var(--font);
   transition: all .2s;
+  cursor: pointer;
 }
 .genre-btn:hover { border-color: var(--accent); color: var(--text); }
-.genre-btn.active {
-  border-color: var(--accent);
-  background: var(--accent-light);
-  color: var(--accent);
-}
+.genre-btn.active { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
 
 .genre-hint {
   font-size: 12px;
@@ -426,19 +363,8 @@ body {
   margin-top: 8px;
   overflow: hidden;
 }
-#pwd-bar {
-  height: 3px;
-  width: 0;
-  border-radius: 99px;
-  transition: width .3s, background .3s;
-}
-#pwd-hint {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--text-faint);
-  margin-top: 4px;
-  letter-spacing: .04em;
-}
+#pwd-bar { height: 3px; width: 0; border-radius: 99px; transition: width .3s, background .3s; }
+#pwd-hint { font-size: 11px; font-weight: 700; color: var(--text-faint); margin-top: 4px; letter-spacing: .04em; }
 
 /* ── CGU ── */
 .cgu-wrap {
@@ -447,37 +373,15 @@ body {
   gap: 10px;
   margin-bottom: 20px;
 }
-.cgu-check {
-  width: 16px;
-  height: 16px;
-  margin-top: 2px;
-  accent-color: var(--accent);
-  flex-shrink: 0;
-}
-.cgu-text {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-muted);
-  line-height: 1.6;
-}
-.cgu-text a { color: var(--accent); text-decoration: none; }
+.cgu-check { width: 16px; height: 16px; margin-top: 2px; accent-color: var(--accent); flex-shrink: 0; }
+.cgu-text { font-size: 12px; font-weight: 500; color: var(--text-muted); line-height: 1.6; }
+.cgu-text a { color: var(--accent); text-decoration: none; cursor: pointer; }
 .cgu-text a:hover { text-decoration: underline; }
 
 /* ── DIVIDER ── */
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 16px 0;
-}
+.divider { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
 .divider-line { flex: 1; height: 1px; background: var(--border); }
-.divider-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-}
+.divider-label { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-faint); }
 
 /* ── BUTTONS ── */
 .btn-primary {
@@ -498,15 +402,13 @@ body {
   transition: background .2s, transform .15s, box-shadow .2s;
   margin-bottom: 12px;
   letter-spacing: .02em;
+  cursor: pointer;
 }
-.btn-primary:hover {
-  background: var(--accent-dark);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 28px rgba(255,117,31,.3);
-}
+.btn-primary:hover { background: var(--accent-dark); transform: translateY(-1px); box-shadow: 0 6px 28px rgba(255,117,31,.28); }
 .btn-primary:active { transform: translateY(0); }
 .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
 
+/* Google button avec SVG inline */
 .btn-google {
   width: 100%;
   display: flex;
@@ -522,13 +424,13 @@ body {
   font-weight: 600;
   font-family: var(--font);
   transition: all .2s;
+  cursor: pointer;
 }
-.btn-google:hover {
-  border-color: rgba(255,255,255,.2);
-  color: var(--text);
-}
+.btn-google:hover { border-color: rgba(255,255,255,.2); color: var(--text); background: var(--surface-2); }
 
-/* ── FORGOT BUTTON ── */
+.google-svg { flex-shrink: 0; }
+
+/* ── FORGOT ── */
 button.forgot {
   background: none;
   border: none;
@@ -538,10 +440,11 @@ button.forgot {
   font-family: var(--font);
   letter-spacing: .05em;
   text-transform: uppercase;
+  cursor: pointer;
 }
 button.forgot:hover { text-decoration: underline; }
 
-/* ── SPINNER / LOADING ── */
+/* ── SPINNER ── */
 .spinner {
   display: none;
   width: 16px;
@@ -553,17 +456,11 @@ button.forgot:hover { text-decoration: underline; }
   flex-shrink: 0;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-.is-loading .spinner   { display: block; }
+.is-loading .spinner { display: block; }
 .is-loading .btn-label { display: none; }
 
 /* ── SWITCH LINK ── */
-.switch-link {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-muted);
-}
+.switch-link { text-align: center; margin-top: 20px; font-size: 13px; font-weight: 500; color: var(--text-muted); }
 .switch-link button {
   background: none;
   border: none;
@@ -571,6 +468,7 @@ button.forgot:hover { text-decoration: underline; }
   font-size: 13px;
   font-weight: 700;
   font-family: var(--font);
+  cursor: pointer;
 }
 .switch-link button:hover { text-decoration: underline; }
 
@@ -580,7 +478,7 @@ button.forgot:hover { text-decoration: underline; }
   bottom: 28px;
   left: 50%;
   transform: translateX(-50%) translateY(10px);
-  z-index: 400;
+  z-index: 500;
   background: var(--surface);
   border: 1.5px solid var(--border-accent);
   color: var(--text);
@@ -597,31 +495,173 @@ button.forgot:hover { text-decoration: underline; }
 }
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 #toast.ok   { border-color: rgba(34,197,94,.4); background: #061210; }
-#toast.ko   { border-color: rgba(239,68,68,.4);  background: #130606; }
+#toast.ko   { border-color: rgba(239,68,68,.4); background: #130606; }
+
+/* ══════════════════════════════════════
+   MODAL LÉGALE
+══════════════════════════════════════ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.75);
+  z-index: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+
+.modal-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 600px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 64px rgba(0,0,0,.5);
+  transform: translateY(12px);
+  transition: transform .25s;
+}
+.modal-overlay.open .modal-box { transform: translateY(0); }
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.modal-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text);
+}
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  transition: color .2s, background .2s;
+}
+.modal-close:hover { color: var(--text); background: var(--surface-2); }
+
+.modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text-muted);
+}
+.modal-body h2 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+  margin-top: 20px;
+}
+.modal-body h2:first-child { margin-top: 0; }
+.modal-body p { margin-bottom: 12px; }
+.modal-body ul { padding-left: 20px; margin-bottom: 12px; }
+.modal-body ul li { margin-bottom: 6px; }
+.modal-body .accent { color: var(--accent); font-weight: 600; }
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+.modal-footer button {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 10px 24px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: background .2s;
+}
+.modal-footer button:hover { background: var(--accent-dark); }
+
+/* ══════════════════════════════════════
+   MODAL GOOGLE RÔLE
+══════════════════════════════════════ */
+.role-modal-content {
+  padding: 28px 24px;
+  text-align: center;
+}
+.role-modal-content p {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+.role-modal-btns {
+  display: flex;
+  gap: 12px;
+}
+.role-modal-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all .2s;
+}
+.role-modal-btn:hover { border-color: var(--accent); color: var(--text); background: var(--surface-3); }
+.role-modal-btn.selected { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
+.role-modal-btn i { font-size: 28px; }
+.role-modal-confirm {
+  margin-top: 20px;
+  width: 100%;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 13px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: background .2s;
+}
+.role-modal-confirm:hover { background: var(--accent-dark); }
+.role-modal-confirm:disabled { opacity: .4; cursor: not-allowed; }
 </style>
+
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
       try {
-        const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
-        console.log('[SW] Enregistré:', reg.scope);
-        
-        // Stocker la registration pour le background sync
-        window.registration = reg;
- 
-        reg.addEventListener('updatefound', () => {
-          const newWorker = reg.installing;
-          newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              console.log('[SW] Nouvelle version disponible');
-              // Optionnel: notifier l'utilisateur d'une mise à jour
-            }
-          });
-        });
-      } catch (err) {
-        console.warn('[SW] Enregistrement échoué:', err);
-      }
-    });
+        const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' })
+        window.registration = reg
+      } catch (err) { console.warn('[SW] Enregistrement échoué:', err) }
+    })
   }
 </script>
 </head>
@@ -629,9 +669,142 @@ button.forgot:hover { text-decoration: underline; }
 
 <div id="toast"></div>
 
+<!-- ══ MODAL CGU ══ -->
+<div class="modal-overlay" id="modal-cgu">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">Conditions Générales d'Utilisation</span>
+      <button class="modal-close" onclick="closeModal('modal-cgu')"><i class="ph ph-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <p>Dernière mise à jour : juin 2025</p>
+
+      <h2>1. Objet</h2>
+      <p>WennaShop est une marketplace mettant en relation vendeurs et acheteurs entre le Gabon et le Maroc. Les présentes CGU régissent l'accès et l'utilisation de la plateforme accessible à l'adresse wennashop.com.</p>
+
+      <h2>2. Inscription et compte</h2>
+      <p>L'inscription est gratuite. L'utilisateur s'engage à fournir des informations exactes et à maintenir la confidentialité de ses identifiants. Tout compte peut être suspendu en cas d'utilisation frauduleuse ou contraire aux présentes CGU.</p>
+
+      <h2>3. Rôles utilisateurs</h2>
+      <ul>
+        <li><span class="accent">Acheteur</span> : peut parcourir les boutiques, passer commande et suivre ses livraisons.</li>
+        <li><span class="accent">Vendeur</span> : peut créer une boutique, lister des produits et gérer ses commandes après validation de son profil par WennaShop.</li>
+      </ul>
+
+      <h2>4. Commissions et paiements</h2>
+      <p>WennaShop prélève une commission de <span class="accent">8%</span> sur chaque vente réalisée via la plateforme. Les paiements sont traités via les partenaires CinetPay et PayDunia. WennaShop ne stocke aucune donnée bancaire.</p>
+
+      <h2>5. Responsabilités</h2>
+      <p>WennaShop agit en qualité d'intermédiaire technique et ne peut être tenu responsable des produits vendus par les vendeurs tiers. Les vendeurs assument l'entière responsabilité de la conformité de leurs articles aux législations gabonaise et marocaine.</p>
+
+      <h2>6. Propriété intellectuelle</h2>
+      <p>Le nom, le logo et les éléments graphiques de WennaShop sont la propriété exclusive de Hexjen Conceptions. Toute reproduction sans autorisation est interdite.</p>
+
+      <h2>7. Suspension et résiliation</h2>
+      <p>WennaShop se réserve le droit de suspendre ou supprimer tout compte en cas de violation des présentes CGU, de fraude ou de comportement préjudiciable à la communauté.</p>
+
+      <h2>8. Loi applicable</h2>
+      <p>Les présentes CGU sont soumises au droit marocain. Tout litige sera soumis aux tribunaux compétents de Casablanca, Maroc.</p>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeModal('modal-cgu')">Compris</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL POLITIQUE DE CONFIDENTIALITÉ ══ -->
+<div class="modal-overlay" id="modal-privacy">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">Politique de Confidentialité & Données</span>
+      <button class="modal-close" onclick="closeModal('modal-privacy')"><i class="ph ph-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <p>Dernière mise à jour : juin 2025</p>
+
+      <h2>1. Responsable du traitement</h2>
+      <p><span class="accent">Hexjen Conceptions</span>, société basée à Casablanca, Maroc, est responsable du traitement de vos données personnelles dans le cadre de la plateforme WennaShop.</p>
+
+      <h2>2. Données collectées</h2>
+      <ul>
+        <li><span class="accent">Données d'identité</span> : prénom, nom, email, genre (optionnel).</li>
+        <li><span class="accent">Données de localisation</span> : pays de résidence (Gabon ou Maroc).</li>
+        <li><span class="accent">Données de navigation</span> : pages consultées, interactions, préférences produits.</li>
+        <li><span class="accent">Données de transaction</span> : historique de commandes, montants, statuts de livraison.</li>
+      </ul>
+
+      <h2>3. Finalités du traitement</h2>
+      <ul>
+        <li>Création et gestion de votre compte utilisateur.</li>
+        <li>Personnalisation de l'expérience d'achat selon le genre et le pays.</li>
+        <li>Traitement et suivi des commandes.</li>
+        <li>Prévention de la fraude et sécurité de la plateforme.</li>
+        <li>Communication sur vos commandes et mises à jour importantes.</li>
+      </ul>
+
+      <h2>4. Partage des données</h2>
+      <p>Vos données ne sont <span class="accent">jamais vendues</span> à des tiers. Elles peuvent être partagées avec :</p>
+      <ul>
+        <li>Nos prestataires de paiement (CinetPay, PayDunia) pour le traitement des transactions.</li>
+        <li>Supabase (hébergement base de données, conforme aux standards de sécurité).</li>
+        <li>Le vendeur concerné, pour le traitement de votre commande uniquement.</li>
+      </ul>
+
+      <h2>5. Durée de conservation</h2>
+      <p>Vos données sont conservées pendant toute la durée de votre compte actif, puis archivées 3 ans après sa clôture conformément aux obligations légales.</p>
+
+      <h2>6. Vos droits</h2>
+      <p>Conformément aux législations en vigueur, vous disposez des droits suivants :</p>
+      <ul>
+        <li>Accès à vos données personnelles.</li>
+        <li>Rectification des données inexactes.</li>
+        <li>Suppression de votre compte et de vos données.</li>
+        <li>Opposition au traitement à des fins de personnalisation.</li>
+      </ul>
+      <p>Pour exercer ces droits : <span class="accent">privacy@wennashop.com</span></p>
+
+      <h2>7. Sécurité</h2>
+      <p>Les données sont chiffrées en transit (HTTPS) et au repos. L'authentification est gérée par Supabase Auth avec chiffrement bcrypt des mots de passe. Aucune donnée bancaire n'est stockée sur nos serveurs.</p>
+
+      <h2>8. Cookies</h2>
+      <p>WennaShop utilise uniquement des cookies fonctionnels essentiels au bon fonctionnement de la plateforme (session, préférences). Aucun cookie publicitaire ou de tracking tiers n'est utilisé.</p>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeModal('modal-privacy')">Compris</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL RÔLE GOOGLE ══ -->
+<div class="modal-overlay" id="modal-role-google">
+  <div class="modal-box" style="max-width:440px;">
+    <div class="modal-header">
+      <span class="modal-title">Vous êtes...</span>
+      <button class="modal-close" onclick="closeModal('modal-role-google')"><i class="ph ph-x"></i></button>
+    </div>
+    <div class="role-modal-content">
+      <p>Dernière étape avant d'accéder à WennaShop.<br>Sélectionnez votre profil pour continuer.</p>
+      <div class="role-modal-btns">
+        <button class="role-modal-btn" id="google-role-buyer" onclick="selectGoogleRole('buyer')">
+          <i class="ph ph-shopping-bag"></i>
+          Acheteur
+        </button>
+        <button class="role-modal-btn" id="google-role-artisan" onclick="selectGoogleRole('artisan')">
+          <i class="ph ph-storefront"></i>
+          Vendeur
+        </button>
+      </div>
+      <button class="role-modal-confirm" id="google-role-confirm" onclick="confirmGoogleRole()" disabled>
+        Continuer
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LAYOUT ══ -->
 <div class="layout">
 
-  <!-- ── LEFT PANEL ── -->
+  <!-- LEFT PANEL -->
   <div class="left-panel">
     <div class="left-panel-bg">
       <svg viewBox="0 0 600 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
@@ -662,7 +835,7 @@ button.forgot:hover { text-decoration: underline; }
     </div>
   </div>
 
-  <!-- ── RIGHT PANEL ── -->
+  <!-- RIGHT PANEL -->
   <div class="right-panel">
     <div class="form-wrap">
 
@@ -676,7 +849,7 @@ button.forgot:hover { text-decoration: underline; }
       <div id="panel-connexion" class="panel">
         <div class="form-heading">
           <div class="form-eyebrow">Accès sécurisé</div>
-          <div class="form-title">Bon retour 👋</div>
+          <div class="form-title">Bon retour</div>
           <div class="form-sub">Connectez-vous à votre espace WennaShop.</div>
         </div>
 
@@ -696,7 +869,9 @@ button.forgot:hover { text-decoration: underline; }
           <div class="input-wrap">
             <i class="ph ph-lock field-icon left"></i>
             <input id="cnx-pwd" type="password" placeholder="••••••••" class="inp" autocomplete="current-password"/>
-            <button class="field-icon right" onclick="togglePwd('cnx-pwd','eye-cnx')" id="eye-cnx"><i class="ph ph-eye"></i></button>
+            <button class="field-icon right" onclick="togglePwd('cnx-pwd','eye-cnx')" id="eye-cnx">
+              <i class="ph ph-eye"></i>
+            </button>
           </div>
         </div>
 
@@ -712,7 +887,12 @@ button.forgot:hover { text-decoration: underline; }
         </div>
 
         <button class="btn-google" onclick="handleGoogle()">
-          <img src="https://www.google.com/favicon.ico" width="16" height="16" alt="Google"/>
+          <svg class="google-svg" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
+            <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/>
+            <path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+            <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+          </svg>
           Continuer avec Google
         </button>
 
@@ -726,7 +906,7 @@ button.forgot:hover { text-decoration: underline; }
       <div id="panel-inscription" class="panel hidden-panel">
         <div class="form-heading">
           <div class="form-eyebrow">Nouveau compte</div>
-          <div class="form-title">Rejoignez-nous 🌍</div>
+          <div class="form-title">Rejoignez-nous</div>
           <div class="form-sub">Inscription gratuite — acheteur ou vendeur.</div>
         </div>
 
@@ -754,18 +934,23 @@ button.forgot:hover { text-decoration: underline; }
           <div class="input-wrap">
             <i class="ph ph-lock field-icon left"></i>
             <input id="ins-pwd" type="password" placeholder="Min. 8 caractères" class="inp" autocomplete="new-password" oninput="evalStrength(this.value)"/>
-            <button class="field-icon right" onclick="togglePwd('ins-pwd','eye-ins')" id="eye-ins">👁</button>
+            <button class="field-icon right" onclick="togglePwd('ins-pwd','eye-ins')" id="eye-ins">
+              <i class="ph ph-eye"></i>
+            </button>
           </div>
           <div class="pwd-bar-wrap"><div id="pwd-bar"></div></div>
           <div id="pwd-hint"></div>
         </div>
 
         <div class="field">
-          <div class="field-label">Genre <span style="font-size:10px;color:var(--text-faint);text-transform:none;letter-spacing:0;">Personnalise vos recommandations</span></div>
+          <div class="field-label">
+            Genre
+            <span style="font-size:10px;color:var(--text-faint);text-transform:none;letter-spacing:0;font-weight:500;">Personnalise vos recommandations</span>
+          </div>
           <div class="genre-group">
-            <button class="genre-btn" data-genre="homme" onclick="selectGenre('homme')">Homme</button>
-            <button class="genre-btn" data-genre="femme" onclick="selectGenre('femme')">Femme</button>
-            <button class="genre-btn" data-genre="autre" onclick="selectGenre('autre')">Autre</button>
+            <button class="genre-btn" data-genre="homme"       onclick="selectGenre('homme')">Homme</button>
+            <button class="genre-btn" data-genre="femme"       onclick="selectGenre('femme')">Femme</button>
+            <button class="genre-btn" data-genre="autre"       onclick="selectGenre('autre')">Autre</button>
             <button class="genre-btn" data-genre="non_precise" onclick="selectGenre('non_precise')">Discret</button>
           </div>
           <div class="genre-hint" id="genre-hint">Sélectionnez pour recevoir des suggestions adaptées.</div>
@@ -783,11 +968,11 @@ button.forgot:hover { text-decoration: underline; }
           <div class="field-label">Vous êtes</div>
           <div class="choice-group">
             <button class="role-btn" data-role="buyer" onclick="selectRole('buyer')">
-              <span class="role-icon">🛍️</span>
+              <i class="ph ph-shopping-bag role-icon"></i>
               Acheteur
             </button>
             <button class="role-btn" data-role="artisan" onclick="selectRole('artisan')">
-              <span class="role-icon">🏪</span>
+              <i class="ph ph-storefront role-icon"></i>
               Vendeur
             </button>
           </div>
@@ -796,7 +981,8 @@ button.forgot:hover { text-decoration: underline; }
         <div class="cgu-wrap">
           <input id="cgu" type="checkbox" class="cgu-check"/>
           <label for="cgu" class="cgu-text">
-            J'accepte les <a href="#">CGU</a> et la <a href="#">Politique de confidentialité</a>.
+            J'accepte les <a onclick="openModal('modal-cgu')">CGU</a>
+            et la <a onclick="openModal('modal-privacy')">Politique de confidentialité</a>.
           </label>
         </div>
 
@@ -812,7 +998,12 @@ button.forgot:hover { text-decoration: underline; }
         </div>
 
         <button class="btn-google" onclick="handleGoogle()">
-          <img src="https://www.google.com/favicon.ico" width="16" height="16" alt="Google"/>
+          <svg class="google-svg" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
+            <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/>
+            <path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+            <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+          </svg>
           S'inscrire avec Google
         </button>
 
@@ -843,10 +1034,11 @@ function getSb() { return window.db || null }
   } catch(e) { console.warn('[compte] getSession:', e.message) }
 })()
 
-// ── STATE ──
-let selectedCountry = null
-let selectedRole    = null
-let selectedGenre   = null
+// ── ÉTAT ──
+let selectedCountry    = null
+let selectedRole       = null
+let selectedGenre      = null
+let googleSelectedRole = null
 
 const GENRE_HINTS = {
   homme      : 'Vous verrez en priorité : bijoux hommes, accessoires, djellabas, art traditionnel masculin.',
@@ -854,6 +1046,20 @@ const GENRE_HINTS = {
   autre      : "Recommandations variées sur l'ensemble des catégories.",
   non_precise: 'Suggestions générales sur toutes les catégories.'
 }
+
+// ── MODALES ──
+function openModal(id) {
+  document.getElementById(id).classList.add('open')
+  document.body.style.overflow = 'hidden'
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open')
+  document.body.style.overflow = ''
+}
+// Fermer en cliquant overlay
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) closeModal(el.id) })
+})
 
 // ── MODE ──
 function switchMode(mode) {
@@ -883,8 +1089,7 @@ function selectRole(val) {
 function selectGenre(val) {
   selectedGenre = val
   document.querySelectorAll('[data-genre]').forEach(b => b.classList.toggle('active', b.dataset.genre === val))
-  const hint = document.getElementById('genre-hint')
-  hint.textContent = GENRE_HINTS[val] || ''
+  document.getElementById('genre-hint').textContent = GENRE_HINTS[val] || ''
 }
 function togglePwd(inputId, iconId) {
   const inp = document.getElementById(inputId)
@@ -894,16 +1099,16 @@ function togglePwd(inputId, iconId) {
 }
 function evalStrength(pwd) {
   let score = 0
-  if (pwd.length >= 8) score++
-  if (/[A-Z]/.test(pwd)) score++
-  if (/[0-9]/.test(pwd)) score++
+  if (pwd.length >= 8)      score++
+  if (/[A-Z]/.test(pwd))    score++
+  if (/[0-9]/.test(pwd))    score++
   if (/[^A-Za-z0-9]/.test(pwd)) score++
   const levels = [
-    { w:'0%',   bg:'transparent', msg:'' },
-    { w:'25%',  bg:'#ef4444',     msg:'Faible' },
-    { w:'50%',  bg:'#f59e0b',     msg:'Moyen' },
-    { w:'75%',  bg:'var(--accent)',msg:'Bon' },
-    { w:'100%', bg:'#22c55e',     msg:'Excellent' },
+    { w:'0%',   bg:'transparent',     msg:'' },
+    { w:'25%',  bg:'#ef4444',         msg:'Faible' },
+    { w:'50%',  bg:'#f59e0b',         msg:'Moyen' },
+    { w:'75%',  bg:'var(--accent)',   msg:'Bon' },
+    { w:'100%', bg:'#22c55e',         msg:'Excellent' },
   ]
   const l = levels[score] || levels[0]
   document.getElementById('pwd-bar').style.width      = l.w
@@ -942,15 +1147,15 @@ async function handleConnexion() {
   try {
     const { data, error } = await sb.auth.signInWithPassword({ email, password: pwd })
     if (error) throw error
-    toast('Connexion réussie ✓', 'ok')
+    toast('Connexion réussie', 'ok')
     setTimeout(() => {
       const role = data.user?.user_metadata?.role
       window.location.href = role === 'artisan' ? 'dashboard-vendeur.html' : 'boutique.html'
     }, 900)
   } catch(err) {
     let msg = 'Erreur de connexion.'
-    if (err.message === 'Invalid login credentials') msg = 'Email ou mot de passe incorrect.'
-    else if (err.message === 'Email not confirmed') msg = 'Vérifiez votre email avant de vous connecter.'
+    if (err.message === 'Invalid login credentials')  msg = 'Email ou mot de passe incorrect.'
+    else if (err.message === 'Email not confirmed')   msg = 'Vérifiez votre email avant de vous connecter.'
     else if (err.message) msg = err.message
     toast(msg, 'ko')
   } finally { setLoading('btn-cnx', false) }
@@ -965,9 +1170,9 @@ async function handleInscription() {
   const email  = need('ins-email', 'Email')
   if (!prenom || !nom || !email) return
   const pwd = document.getElementById('ins-pwd')?.value || ''
-  if (pwd.length < 8)      { toast('Mot de passe : 8 caractères minimum', 'ko'); return }
-  if (!selectedCountry)    { toast("Sélectionnez votre pays", 'ko'); return }
-  if (!selectedRole)       { toast('Sélectionnez votre rôle', 'ko'); return }
+  if (pwd.length < 8)   { toast('Mot de passe : 8 caractères minimum', 'ko'); return }
+  if (!selectedCountry) { toast('Sélectionnez votre pays', 'ko'); return }
+  if (!selectedRole)    { toast('Sélectionnez votre rôle', 'ko'); return }
   if (!document.getElementById('cgu')?.checked) { toast('Acceptez les CGU pour continuer', 'ko'); return }
   const genre = selectedGenre || 'non_precise'
   setLoading('btn-ins', true)
@@ -991,8 +1196,8 @@ async function handleInscription() {
       await sb.from('users').update({ gender: genre }).eq('auth_id', authData.user.id)
     }
     const msg = selectedRole === 'artisan'
-      ? 'Compte créé ! Vérifiez votre email puis attendez validation. ✓'
-      : 'Compte créé ! Vérifiez votre email ✓'
+      ? 'Compte créé ! Vérifiez votre email puis attendez validation.'
+      : 'Compte créé ! Vérifiez votre email.'
     toast(msg, 'ok')
     setTimeout(() => switchMode('connexion'), 2500)
   } catch(err) {
@@ -1004,16 +1209,55 @@ async function handleInscription() {
   } finally { setLoading('btn-ins', false) }
 }
 
-// ── GOOGLE ──
+// ── GOOGLE : SÉLECTION DE RÔLE ──
+function selectGoogleRole(role) {
+  googleSelectedRole = role
+  document.getElementById('google-role-buyer').classList.toggle('selected', role === 'buyer')
+  document.getElementById('google-role-artisan').classList.toggle('selected', role === 'artisan')
+  document.getElementById('google-role-confirm').disabled = false
+}
+
+async function confirmGoogleRole() {
+  if (!googleSelectedRole) return
+  closeModal('modal-role-google')
+  await launchGoogleOAuth(googleSelectedRole)
+}
+
 async function handleGoogle() {
+  // Ouvrir la modale de sélection de rôle avant OAuth
+  openModal('modal-role-google')
+}
+
+async function launchGoogleOAuth(role) {
   const sb = getSb()
   if (!sb) { toast('Erreur de connexion. Recharge la page.', 'ko'); return }
   const { error } = await sb.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: window.location.origin + '/boutique.html' }
+    options: {
+      redirectTo: window.location.origin + (role === 'artisan' ? '/dashboard-vendeur.html' : '/boutique.html'),
+      queryParams: { access_type: 'offline', prompt: 'select_account' },
+      scopes: 'email profile'
+    }
   })
   if (error) toast(error.message, 'ko')
 }
+
+// ── GESTION CALLBACK GOOGLE (retour OAuth) ──
+;(async () => {
+  const sb = getSb()
+  if (!sb) return
+  // Écouter le changement de session pour mettre à jour les métadonnées rôle
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session?.user) {
+      const meta = session.user.user_metadata
+      // Si l'utilisateur vient de Google et n'a pas encore de rôle défini
+      if (session.user.app_metadata?.provider === 'google' && !meta?.role) {
+        // Stocker temporairement et afficher la modale de rôle
+        openModal('modal-role-google')
+      }
+    }
+  })
+})()
 
 // ── RESET MOT DE PASSE ──
 async function sendReset() {
@@ -1025,7 +1269,7 @@ async function sendReset() {
     redirectTo: window.location.origin + '/index.html'
   })
   if (error) toast(error.message, 'ko')
-  else toast('Email de réinitialisation envoyé ✓', 'ok')
+  else toast('Email de réinitialisation envoyé', 'ok')
 }
 </script>
 </body>
