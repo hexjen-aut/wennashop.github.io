@@ -71,32 +71,49 @@ body {
 .left-panel {
   position: relative;
   overflow: hidden;
-  background: var(--surface);
 }
 @media (max-width: 768px) {
-  .left-panel { height: 180px; }
+  .left-panel { height: 220px; }
 }
 
+/* Image de fond Unsplash — marché africain, vie colorée, libre de droit */
 .left-panel-bg {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(ellipse 80% 60% at 30% 70%, rgba(255,117,31,.07) 0%, transparent 70%),
-    radial-gradient(ellipse 50% 40% at 80% 20%, rgba(255,117,31,.04) 0%, transparent 60%),
-    var(--surface);
+  background-image: url('https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=900&q=80&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  transition: transform 8s ease;
 }
-.left-panel-bg svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: .1;
+.left-panel:hover .left-panel-bg {
+  transform: scale(1.04);
 }
+
+/* Overlay dégradé — laisse voir la photo en haut, noir dense en bas */
 .left-panel-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(10,10,10,0) 0%, rgba(10,10,10,.7) 100%);
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(10,10,10,0.15) 0%,
+      rgba(10,10,10,0.45) 40%,
+      rgba(10,10,10,0.88) 75%,
+      rgba(10,10,10,0.97) 100%
+    );
 }
+
+/* Grain subtil pour coller à l'esthétique dark */
+.left-panel-grain {
+  position: absolute;
+  inset: 0;
+  opacity: .03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 128px;
+  pointer-events: none;
+}
+
 .left-content {
   position: relative;
   z-index: 2;
@@ -105,6 +122,7 @@ body {
   flex-direction: column;
   justify-content: flex-end;
   padding: 48px;
+  gap: 0;
 }
 @media (max-width: 768px) {
   .left-content {
@@ -113,36 +131,89 @@ body {
     padding: 24px;
   }
 }
-.left-logo-img { width: 180px; margin-bottom: 20px; }
-@media (max-width: 768px) {
-  .left-logo-img { width: 130px; margin-bottom: 0; }
+
+/* ── LOGO TEXTE ── */
+.logo-text {
+  font-family: var(--font);
+  font-size: 52px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -1px;
+  color: #fff;
+  margin-bottom: 20px;
+  text-shadow: 0 2px 24px rgba(0,0,0,.6);
+  user-select: none;
 }
+.logo-text span {
+  color: var(--accent);
+}
+@media (max-width: 768px) {
+  .logo-text {
+    font-size: 38px;
+    margin-bottom: 0;
+    text-align: center;
+  }
+}
+
+/* Tagline sous le logo */
 .left-tagline {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
-  color: var(--text-muted);
-  line-height: 1.7;
-  max-width: 280px;
-  margin-bottom: 28px;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.65;
+  max-width: 300px;
+  margin-bottom: 32px;
 }
 @media (max-width: 768px) { .left-tagline { display: none; } }
 
-.left-flags {
-  display: flex;
-  gap: 16px;
+/* Pill "corridor" — remplace les drapeaux, plus élégant */
+.left-corridor {
+  display: inline-flex;
   align-items: center;
+  gap: 10px;
+  background: rgba(255,117,31,0.12);
+  border: 1px solid rgba(255,117,31,0.25);
+  border-radius: var(--radius-pill);
+  padding: 8px 16px;
+  backdrop-filter: blur(8px);
+  width: fit-content;
 }
-@media (max-width: 768px) { .left-flags { display: none; } }
+@media (max-width: 768px) { .left-corridor { display: none; } }
 
-.flag-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-muted);
+.corridor-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  animation: pulse 2s ease-in-out infinite;
 }
-.flag-sep { width: 1px; height: 16px; background: var(--border); }
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: .5; transform: scale(.75); }
+}
+
+.corridor-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.7);
+}
+
+.corridor-sep {
+  width: 1px;
+  height: 14px;
+  background: rgba(255,117,31,0.3);
+}
+
+.corridor-countries {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
 
 /* ── RIGHT PANEL ── */
 .right-panel {
@@ -408,7 +479,6 @@ body {
 .btn-primary:active { transform: translateY(0); }
 .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
 
-/* Google button avec SVG inline */
 .btn-google {
   width: 100%;
   display: flex;
@@ -497,9 +567,7 @@ button.forgot:hover { text-decoration: underline; }
 #toast.ok   { border-color: rgba(34,197,94,.4); background: #061210; }
 #toast.ko   { border-color: rgba(239,68,68,.4); background: #130606; }
 
-/* ══════════════════════════════════════
-   MODAL LÉGALE
-══════════════════════════════════════ */
+/* ══ MODALES ══ */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -515,7 +583,6 @@ button.forgot:hover { text-decoration: underline; }
   backdrop-filter: blur(4px);
 }
 .modal-overlay.open { opacity: 1; pointer-events: all; }
-
 .modal-box {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -530,7 +597,6 @@ button.forgot:hover { text-decoration: underline; }
   transition: transform .25s;
 }
 .modal-overlay.open .modal-box { transform: translateY(0); }
-
 .modal-header {
   display: flex;
   align-items: center;
@@ -539,116 +605,54 @@ button.forgot:hover { text-decoration: underline; }
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
-.modal-title {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--text);
-}
+.modal-title { font-size: 16px; font-weight: 800; color: var(--text); }
 .modal-close {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  font-size: 20px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  padding: 4px;
-  border-radius: var(--radius-sm);
-  transition: color .2s, background .2s;
+  background: none; border: none; color: var(--text-muted); font-size: 20px;
+  cursor: pointer; display: flex; align-items: center; padding: 4px;
+  border-radius: var(--radius-sm); transition: color .2s, background .2s;
 }
 .modal-close:hover { color: var(--text); background: var(--surface-2); }
-
 .modal-body {
-  padding: 24px;
-  overflow-y: auto;
-  flex: 1;
-  font-size: 13px;
-  line-height: 1.8;
-  color: var(--text-muted);
+  padding: 24px; overflow-y: auto; flex: 1;
+  font-size: 13px; line-height: 1.8; color: var(--text-muted);
 }
-.modal-body h2 {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 8px;
-  margin-top: 20px;
-}
+.modal-body h2 { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 8px; margin-top: 20px; }
 .modal-body h2:first-child { margin-top: 0; }
 .modal-body p { margin-bottom: 12px; }
 .modal-body ul { padding-left: 20px; margin-bottom: 12px; }
 .modal-body ul li { margin-bottom: 6px; }
 .modal-body .accent { color: var(--accent); font-weight: 600; }
 .modal-footer {
-  padding: 16px 24px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  justify-content: flex-end;
-  flex-shrink: 0;
+  padding: 16px 24px; border-top: 1px solid var(--border);
+  display: flex; justify-content: flex-end; flex-shrink: 0;
 }
 .modal-footer button {
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-pill);
-  padding: 10px 24px;
-  font-size: 13px;
-  font-weight: 700;
-  font-family: var(--font);
-  cursor: pointer;
-  transition: background .2s;
+  background: var(--accent); color: #fff; border: none;
+  border-radius: var(--radius-pill); padding: 10px 24px;
+  font-size: 13px; font-weight: 700; font-family: var(--font);
+  cursor: pointer; transition: background .2s;
 }
 .modal-footer button:hover { background: var(--accent-dark); }
 
-/* ══════════════════════════════════════
-   MODAL GOOGLE RÔLE
-══════════════════════════════════════ */
-.role-modal-content {
-  padding: 28px 24px;
-  text-align: center;
-}
-.role-modal-content p {
-  font-size: 14px;
-  color: var(--text-muted);
-  margin-bottom: 24px;
-  line-height: 1.6;
-}
-.role-modal-btns {
-  display: flex;
-  gap: 12px;
-}
+/* Modal rôle Google */
+.role-modal-content { padding: 28px 24px; text-align: center; }
+.role-modal-content p { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.6; }
+.role-modal-btns { display: flex; gap: 12px; }
 .role-modal-btn {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  padding: 20px 12px;
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--surface-2);
-  color: var(--text-muted);
-  font-size: 13px;
-  font-weight: 700;
-  font-family: var(--font);
-  cursor: pointer;
-  transition: all .2s;
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  gap: 10px; padding: 20px 12px; border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg); background: var(--surface-2);
+  color: var(--text-muted); font-size: 13px; font-weight: 700;
+  font-family: var(--font); cursor: pointer; transition: all .2s;
 }
 .role-modal-btn:hover { border-color: var(--accent); color: var(--text); background: var(--surface-3); }
 .role-modal-btn.selected { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
 .role-modal-btn i { font-size: 28px; }
 .role-modal-confirm {
-  margin-top: 20px;
-  width: 100%;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-pill);
-  padding: 13px 24px;
-  font-size: 14px;
-  font-weight: 700;
-  font-family: var(--font);
-  cursor: pointer;
-  transition: background .2s;
+  margin-top: 20px; width: 100%; background: var(--accent); color: #fff;
+  border: none; border-radius: var(--radius-pill); padding: 13px 24px;
+  font-size: 14px; font-weight: 700; font-family: var(--font);
+  cursor: pointer; transition: background .2s;
 }
 .role-modal-confirm:hover { background: var(--accent-dark); }
 .role-modal-confirm:disabled { opacity: .4; cursor: not-allowed; }
@@ -678,41 +682,29 @@ button.forgot:hover { text-decoration: underline; }
     </div>
     <div class="modal-body">
       <p>Dernière mise à jour : juin 2025</p>
-
       <h2>1. Objet</h2>
       <p>WennaShop est une marketplace mettant en relation vendeurs et acheteurs entre le Gabon et le Maroc. Les présentes CGU régissent l'accès et l'utilisation de la plateforme accessible à l'adresse wennashop.com.</p>
-
       <h2>2. Inscription et compte</h2>
-      <p>L'inscription est gratuite. L'utilisateur s'engage à fournir des informations exactes et à maintenir la confidentialité de ses identifiants. Tout compte peut être suspendu en cas d'utilisation frauduleuse ou contraire aux présentes CGU.</p>
-
+      <p>L'inscription est gratuite. L'utilisateur s'engage à fournir des informations exactes et à maintenir la confidentialité de ses identifiants.</p>
       <h2>3. Rôles utilisateurs</h2>
       <ul>
         <li><span class="accent">Acheteur</span> : peut parcourir les boutiques, passer commande et suivre ses livraisons.</li>
-        <li><span class="accent">Vendeur</span> : peut créer une boutique, lister des produits et gérer ses commandes après validation de son profil par WennaShop.</li>
+        <li><span class="accent">Vendeur</span> : peut créer une boutique, lister des produits et gérer ses commandes après validation.</li>
       </ul>
-
       <h2>4. Commissions et paiements</h2>
-      <p>WennaShop prélève une commission de <span class="accent">8%</span> sur chaque vente réalisée via la plateforme. Les paiements sont traités via les partenaires CinetPay et PayDunia. WennaShop ne stocke aucune donnée bancaire.</p>
-
+      <p>WennaShop prélève une commission de <span class="accent">8%</span> sur chaque vente. Les paiements sont traités via CinetPay et PayDunia.</p>
       <h2>5. Responsabilités</h2>
-      <p>WennaShop agit en qualité d'intermédiaire technique et ne peut être tenu responsable des produits vendus par les vendeurs tiers. Les vendeurs assument l'entière responsabilité de la conformité de leurs articles aux législations gabonaise et marocaine.</p>
-
+      <p>WennaShop agit en qualité d'intermédiaire technique. Les vendeurs assument l'entière responsabilité de la conformité de leurs articles.</p>
       <h2>6. Propriété intellectuelle</h2>
-      <p>Le nom, le logo et les éléments graphiques de WennaShop sont la propriété exclusive de Hexjen Conceptions. Toute reproduction sans autorisation est interdite.</p>
-
-      <h2>7. Suspension et résiliation</h2>
-      <p>WennaShop se réserve le droit de suspendre ou supprimer tout compte en cas de violation des présentes CGU, de fraude ou de comportement préjudiciable à la communauté.</p>
-
-      <h2>8. Loi applicable</h2>
-      <p>Les présentes CGU sont soumises au droit marocain. Tout litige sera soumis aux tribunaux compétents de Casablanca, Maroc.</p>
+      <p>Le nom, le logo et les éléments graphiques de WennaShop sont la propriété exclusive de Hexjen Conceptions.</p>
+      <h2>7. Loi applicable</h2>
+      <p>Les présentes CGU sont soumises au droit marocain. Tout litige sera soumis aux tribunaux de Casablanca, Maroc.</p>
     </div>
-    <div class="modal-footer">
-      <button onclick="closeModal('modal-cgu')">Compris</button>
-    </div>
+    <div class="modal-footer"><button onclick="closeModal('modal-cgu')">Compris</button></div>
   </div>
 </div>
 
-<!-- ══ MODAL POLITIQUE DE CONFIDENTIALITÉ ══ -->
+<!-- ══ MODAL CONFIDENTIALITÉ ══ -->
 <div class="modal-overlay" id="modal-privacy">
   <div class="modal-box">
     <div class="modal-header">
@@ -721,57 +713,22 @@ button.forgot:hover { text-decoration: underline; }
     </div>
     <div class="modal-body">
       <p>Dernière mise à jour : juin 2025</p>
-
       <h2>1. Responsable du traitement</h2>
-      <p><span class="accent">Hexjen Conceptions</span>, société basée à Casablanca, Maroc, est responsable du traitement de vos données personnelles dans le cadre de la plateforme WennaShop.</p>
-
+      <p><span class="accent">Hexjen Conceptions</span>, société basée à Casablanca, Maroc.</p>
       <h2>2. Données collectées</h2>
       <ul>
         <li><span class="accent">Données d'identité</span> : prénom, nom, email, genre (optionnel).</li>
-        <li><span class="accent">Données de localisation</span> : pays de résidence (Gabon ou Maroc).</li>
-        <li><span class="accent">Données de navigation</span> : pages consultées, interactions, préférences produits.</li>
-        <li><span class="accent">Données de transaction</span> : historique de commandes, montants, statuts de livraison.</li>
+        <li><span class="accent">Données de localisation</span> : pays de résidence.</li>
+        <li><span class="accent">Données de transaction</span> : historique de commandes, montants, statuts.</li>
       </ul>
-
-      <h2>3. Finalités du traitement</h2>
-      <ul>
-        <li>Création et gestion de votre compte utilisateur.</li>
-        <li>Personnalisation de l'expérience d'achat selon le genre et le pays.</li>
-        <li>Traitement et suivi des commandes.</li>
-        <li>Prévention de la fraude et sécurité de la plateforme.</li>
-        <li>Communication sur vos commandes et mises à jour importantes.</li>
-      </ul>
-
-      <h2>4. Partage des données</h2>
-      <p>Vos données ne sont <span class="accent">jamais vendues</span> à des tiers. Elles peuvent être partagées avec :</p>
-      <ul>
-        <li>Nos prestataires de paiement (CinetPay, PayDunia) pour le traitement des transactions.</li>
-        <li>Supabase (hébergement base de données, conforme aux standards de sécurité).</li>
-        <li>Le vendeur concerné, pour le traitement de votre commande uniquement.</li>
-      </ul>
-
-      <h2>5. Durée de conservation</h2>
-      <p>Vos données sont conservées pendant toute la durée de votre compte actif, puis archivées 3 ans après sa clôture conformément aux obligations légales.</p>
-
-      <h2>6. Vos droits</h2>
-      <p>Conformément aux législations en vigueur, vous disposez des droits suivants :</p>
-      <ul>
-        <li>Accès à vos données personnelles.</li>
-        <li>Rectification des données inexactes.</li>
-        <li>Suppression de votre compte et de vos données.</li>
-        <li>Opposition au traitement à des fins de personnalisation.</li>
-      </ul>
-      <p>Pour exercer ces droits : <span class="accent">privacy@wennashop.com</span></p>
-
-      <h2>7. Sécurité</h2>
-      <p>Les données sont chiffrées en transit (HTTPS) et au repos. L'authentification est gérée par Supabase Auth avec chiffrement bcrypt des mots de passe. Aucune donnée bancaire n'est stockée sur nos serveurs.</p>
-
-      <h2>8. Cookies</h2>
-      <p>WennaShop utilise uniquement des cookies fonctionnels essentiels au bon fonctionnement de la plateforme (session, préférences). Aucun cookie publicitaire ou de tracking tiers n'est utilisé.</p>
+      <h2>3. Partage des données</h2>
+      <p>Vos données ne sont <span class="accent">jamais vendues</span> à des tiers. Elles peuvent être partagées avec nos prestataires de paiement et Supabase.</p>
+      <h2>4. Vos droits</h2>
+      <p>Accès, rectification, suppression : <span class="accent">privacy@wennashop.com</span></p>
+      <h2>5. Sécurité</h2>
+      <p>Données chiffrées en transit (HTTPS) et au repos. Aucune donnée bancaire stockée sur nos serveurs.</p>
     </div>
-    <div class="modal-footer">
-      <button onclick="closeModal('modal-privacy')">Compris</button>
-    </div>
+    <div class="modal-footer"><button onclick="closeModal('modal-privacy')">Compris</button></div>
   </div>
 </div>
 
@@ -786,17 +743,13 @@ button.forgot:hover { text-decoration: underline; }
       <p>Dernière étape avant d'accéder à WennaShop.<br>Sélectionnez votre profil pour continuer.</p>
       <div class="role-modal-btns">
         <button class="role-modal-btn" id="google-role-buyer" onclick="selectGoogleRole('buyer')">
-          <i class="ph ph-shopping-bag"></i>
-          Acheteur
+          <i class="ph ph-shopping-bag"></i>Acheteur
         </button>
         <button class="role-modal-btn" id="google-role-artisan" onclick="selectGoogleRole('artisan')">
-          <i class="ph ph-storefront"></i>
-          Vendeur
+          <i class="ph ph-storefront"></i>Vendeur
         </button>
       </div>
-      <button class="role-modal-confirm" id="google-role-confirm" onclick="confirmGoogleRole()" disabled>
-        Continuer
-      </button>
+      <button class="role-modal-confirm" id="google-role-confirm" onclick="confirmGoogleRole()" disabled>Continuer</button>
     </div>
   </div>
 </div>
@@ -806,31 +759,25 @@ button.forgot:hover { text-decoration: underline; }
 
   <!-- LEFT PANEL -->
   <div class="left-panel">
-    <div class="left-panel-bg">
-      <svg viewBox="0 0 600 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-        <defs>
-          <pattern id="geo" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
-            <circle cx="40" cy="40" r="28" fill="none" stroke="#ff751f" stroke-width="0.5"/>
-            <circle cx="40" cy="40" r="14" fill="none" stroke="#ff751f" stroke-width="0.4"/>
-            <line x1="40" y1="0"  x2="40" y2="80" stroke="#ff751f" stroke-width="0.3" opacity=".6"/>
-            <line x1="0"  y1="40" x2="80" y2="40" stroke="#ff751f" stroke-width="0.3" opacity=".6"/>
-            <circle cx="40" cy="0"  r="1.5" fill="#ff751f"/>
-            <circle cx="40" cy="80" r="1.5" fill="#ff751f"/>
-            <circle cx="0"  cy="40" r="1.5" fill="#ff751f"/>
-            <circle cx="80" cy="40" r="1.5" fill="#ff751f"/>
-          </pattern>
-        </defs>
-        <rect width="600" height="800" fill="url(#geo)"/>
-      </svg>
-    </div>
+    <div class="left-panel-bg"></div>
     <div class="left-panel-overlay"></div>
+    <div class="left-panel-grain"></div>
+
     <div class="left-content">
-      <img src="wenna_logo01.png" alt="WennaShop" class="left-logo-img"/>
-      <p class="left-tagline">La marketplace qui connecte vendeurs et acheteurs à travers toute l'Afrique.</p>
-      <div class="left-flags">
-        <div class="flag-item">🇬🇦 Gabon</div>
-        <div class="flag-sep"></div>
-        <div class="flag-item">🇲🇦 Maroc</div>
+      <!-- Logo texte -->
+      <div class="logo-text"><span>Wenna</span>Shop</div>
+
+      <p class="left-tagline">
+        La marketplace qui connecte vendeurs et acheteurs<br>
+        à travers toute l'Afrique francophone.
+      </p>
+
+      <!-- Pill corridor — remplace drapeaux -->
+      <div class="left-corridor">
+        <div class="corridor-dot"></div>
+        <span class="corridor-label">Corridor</span>
+        <div class="corridor-sep"></div>
+        <span class="corridor-countries">Gabon · Maroc</span>
       </div>
     </div>
   </div>
@@ -887,7 +834,7 @@ button.forgot:hover { text-decoration: underline; }
         </div>
 
         <button class="btn-google" onclick="handleGoogle()">
-          <svg class="google-svg" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg class="google-svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
             <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
             <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/>
             <path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
@@ -968,12 +915,10 @@ button.forgot:hover { text-decoration: underline; }
           <div class="field-label">Vous êtes</div>
           <div class="choice-group">
             <button class="role-btn" data-role="buyer" onclick="selectRole('buyer')">
-              <i class="ph ph-shopping-bag role-icon"></i>
-              Acheteur
+              <i class="ph ph-shopping-bag role-icon"></i>Acheteur
             </button>
             <button class="role-btn" data-role="artisan" onclick="selectRole('artisan')">
-              <i class="ph ph-storefront role-icon"></i>
-              Vendeur
+              <i class="ph ph-storefront role-icon"></i>Vendeur
             </button>
           </div>
         </div>
@@ -998,7 +943,7 @@ button.forgot:hover { text-decoration: underline; }
         </div>
 
         <button class="btn-google" onclick="handleGoogle()">
-          <svg class="google-svg" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg class="google-svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
             <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
             <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/>
             <path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
@@ -1018,10 +963,8 @@ button.forgot:hover { text-decoration: underline; }
 </div>
 
 <script>
-// ── SUPABASE ──
 function getSb() { return window.db || null }
 
-// Rediriger si déjà connecté
 ;(async () => {
   const sb = getSb()
   if (!sb) return
@@ -1034,7 +977,6 @@ function getSb() { return window.db || null }
   } catch(e) { console.warn('[compte] getSession:', e.message) }
 })()
 
-// ── ÉTAT ──
 let selectedCountry    = null
 let selectedRole       = null
 let selectedGenre      = null
@@ -1047,7 +989,6 @@ const GENRE_HINTS = {
   non_precise: 'Suggestions générales sur toutes les catégories.'
 }
 
-// ── MODALES ──
 function openModal(id) {
   document.getElementById(id).classList.add('open')
   document.body.style.overflow = 'hidden'
@@ -1056,14 +997,12 @@ function closeModal(id) {
   document.getElementById(id).classList.remove('open')
   document.body.style.overflow = ''
 }
-// Fermer en cliquant overlay
 document.querySelectorAll('.modal-overlay').forEach(el => {
   el.addEventListener('click', e => { if (e.target === el) closeModal(el.id) })
 })
 
-// ── MODE ──
 function switchMode(mode) {
-  const cnx  = document.getElementById('panel-connexion')
+  const cnx = document.getElementById('panel-connexion')
   const ins  = document.getElementById('panel-inscription')
   const tCnx = document.getElementById('tab-cnx')
   const tIns = document.getElementById('tab-ins')
@@ -1099,16 +1038,16 @@ function togglePwd(inputId, iconId) {
 }
 function evalStrength(pwd) {
   let score = 0
-  if (pwd.length >= 8)      score++
-  if (/[A-Z]/.test(pwd))    score++
-  if (/[0-9]/.test(pwd))    score++
+  if (pwd.length >= 8) score++
+  if (/[A-Z]/.test(pwd)) score++
+  if (/[0-9]/.test(pwd)) score++
   if (/[^A-Za-z0-9]/.test(pwd)) score++
   const levels = [
-    { w:'0%',   bg:'transparent',     msg:'' },
-    { w:'25%',  bg:'#ef4444',         msg:'Faible' },
-    { w:'50%',  bg:'#f59e0b',         msg:'Moyen' },
-    { w:'75%',  bg:'var(--accent)',   msg:'Bon' },
-    { w:'100%', bg:'#22c55e',         msg:'Excellent' },
+    { w:'0%',   bg:'transparent',   msg:'' },
+    { w:'25%',  bg:'#ef4444',       msg:'Faible' },
+    { w:'50%',  bg:'#f59e0b',       msg:'Moyen' },
+    { w:'75%',  bg:'var(--accent)', msg:'Bon' },
+    { w:'100%', bg:'#22c55e',       msg:'Excellent' },
   ]
   const l = levels[score] || levels[0]
   document.getElementById('pwd-bar').style.width      = l.w
@@ -1117,7 +1056,6 @@ function evalStrength(pwd) {
   document.getElementById('pwd-hint').style.color     = l.bg === 'transparent' ? 'var(--text-faint)' : l.bg
 }
 
-// ── TOAST ──
 function toast(msg, type = 'ok') {
   const el = document.getElementById('toast')
   el.textContent = msg
@@ -1136,7 +1074,6 @@ function need(id, label) {
   return v
 }
 
-// ── CONNEXION ──
 async function handleConnexion() {
   const sb = getSb()
   if (!sb) { toast('Erreur de connexion. Recharge la page.', 'ko'); return }
@@ -1154,14 +1091,13 @@ async function handleConnexion() {
     }, 900)
   } catch(err) {
     let msg = 'Erreur de connexion.'
-    if (err.message === 'Invalid login credentials')  msg = 'Email ou mot de passe incorrect.'
-    else if (err.message === 'Email not confirmed')   msg = 'Vérifiez votre email avant de vous connecter.'
+    if (err.message === 'Invalid login credentials') msg = 'Email ou mot de passe incorrect.'
+    else if (err.message === 'Email not confirmed')  msg = 'Vérifiez votre email avant de vous connecter.'
     else if (err.message) msg = err.message
     toast(msg, 'ko')
   } finally { setLoading('btn-cnx', false) }
 }
 
-// ── INSCRIPTION ──
 async function handleInscription() {
   const sb = getSb()
   if (!sb) { toast('Erreur de connexion. Recharge la page.', 'ko'); return }
@@ -1180,14 +1116,7 @@ async function handleInscription() {
     const { data: authData, error: authErr } = await sb.auth.signUp({
       email, password: pwd,
       options: {
-        data: {
-          full_name:  `${prenom} ${nom}`,
-          first_name: prenom,
-          last_name:  nom,
-          country:    selectedCountry,
-          role:       selectedRole,
-          gender:     genre
-        }
+        data: { full_name: `${prenom} ${nom}`, first_name: prenom, last_name: nom, country: selectedCountry, role: selectedRole, gender: genre }
       }
     })
     if (authErr) throw authErr
@@ -1209,25 +1138,20 @@ async function handleInscription() {
   } finally { setLoading('btn-ins', false) }
 }
 
-// ── GOOGLE : SÉLECTION DE RÔLE ──
 function selectGoogleRole(role) {
   googleSelectedRole = role
   document.getElementById('google-role-buyer').classList.toggle('selected', role === 'buyer')
   document.getElementById('google-role-artisan').classList.toggle('selected', role === 'artisan')
   document.getElementById('google-role-confirm').disabled = false
 }
-
 async function confirmGoogleRole() {
   if (!googleSelectedRole) return
   closeModal('modal-role-google')
   await launchGoogleOAuth(googleSelectedRole)
 }
-
 async function handleGoogle() {
-  // Ouvrir la modale de sélection de rôle avant OAuth
   openModal('modal-role-google')
 }
-
 async function launchGoogleOAuth(role) {
   const sb = getSb()
   if (!sb) { toast('Erreur de connexion. Recharge la page.', 'ko'); return }
@@ -1242,24 +1166,19 @@ async function launchGoogleOAuth(role) {
   if (error) toast(error.message, 'ko')
 }
 
-// ── GESTION CALLBACK GOOGLE (retour OAuth) ──
 ;(async () => {
   const sb = getSb()
   if (!sb) return
-  // Écouter le changement de session pour mettre à jour les métadonnées rôle
   sb.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' && session?.user) {
       const meta = session.user.user_metadata
-      // Si l'utilisateur vient de Google et n'a pas encore de rôle défini
       if (session.user.app_metadata?.provider === 'google' && !meta?.role) {
-        // Stocker temporairement et afficher la modale de rôle
         openModal('modal-role-google')
       }
     }
   })
 })()
 
-// ── RESET MOT DE PASSE ──
 async function sendReset() {
   const sb = getSb()
   if (!sb) { toast('Erreur de connexion. Recharge la page.', 'ko'); return }
