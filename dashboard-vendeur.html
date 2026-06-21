@@ -1676,23 +1676,26 @@ async function generateNotificationsFromData() {
   allNotifications = notifs.sort((a,b) => new Date(b.created_at) - new Date(a.created_at))
 }
 
-function startRealtimeNotifications() {
+async function startRealtimeNotifications() {
   const db = getDb(); if(!db || !currentSeller) return
 
-  // Écoute les nouvelles commandes en temps réel
+  const productIds = await getMyProductIds()
+  if(!productIds.length) return
+
   realtimeChannel = db.channel(`seller-notifs-${currentSeller.id}`)
 
-  // Nouvelles commandes
+  // ── Nouvelle commande → écouter order_items (plus fiable que orders)
   realtimeChannel.on('postgres_changes', {
-    event: 'INSERT', schema: 'public', table: 'orders'
+    event: 'INSERT', schema: 'public', table: 'order_items'
   }, async (payload) => {
-    const order = payload.new
-    // Vérifier si cette commande concerne ce vendeur
-    const productIds = await getMyProductIds()
-    if(!productIds.length) return
-    const { data:items } = await db.from('order_items').select('order_id').in('product_id', productIds).eq('order_id', order.id)
-    if(!items?.length) return
-    // C'est une commande pour ce vendeur
+    const item = payload.new
+    if(!productIds.includes(item.product_id)) return
+    // Charger la commande associée
+    const { data: order } = await db.from('orders')
+      .select('id,total_amount,created_at')
+      .eq('id', item.order_id)
+      .single()
+    if(!order) return
     addNotification({
       id: 'rt-ord-' + order.id,
       type: 'order',
@@ -1702,7 +1705,6 @@ function startRealtimeNotifications() {
       read: false,
       action: 'orders'
     })
-    // Mettre à jour le badge de la nav
     const badge = document.getElementById('badge-pending')
     if(badge) {
       const current = parseInt(badge.textContent) || 0
@@ -1712,51 +1714,52 @@ function startRealtimeNotifications() {
     loadOverview()
   })
 
-  // Nouveaux avis
+  // ── Nouvel avis
   realtimeChannel.on('postgres_changes', {
     event: 'INSERT', schema: 'public', table: 'reviews'
   }, async (payload) => {
     const review = payload.new
-    const productIds = await getMyProductIds()
     if(!productIds.includes(review.product_id)) return
-    const { data:product } = await db.from('products').select('name').eq('id', review.product_id).single()
+    const { data: product } = await db.from('products').select('name').eq('id', review.product_id).single()
     addNotification({
       id: 'rt-rev-' + review.id,
       type: 'review',
       title: `Nouvel avis ${review.rating >= 4 ? '⭐' : ''}`,
-      body: `${review.reviewer_name||'Un client'} a laissé ${review.rating}/5 sur "${product?.name||'votre produit'}"`,
+      body: `${review.reviewer_name || 'Un client'} a laissé ${review.rating}/5 sur "${product?.name || 'votre produit'}"`,
       created_at: review.created_at || new Date().toISOString(),
       read: false,
       action: 'reviews'
     })
   })
 
-  // Changement de statut de commande
+  // ── Commande livrée
   realtimeChannel.on('postgres_changes', {
     event: 'UPDATE', schema: 'public', table: 'orders'
   }, async (payload) => {
     const order = payload.new
-    if(order.status === 'delivered') {
-      const productIds = await getMyProductIds()
-      const { data:items } = await db.from('order_items').select('order_id').in('product_id', productIds).eq('order_id', order.id)
-      if(!items?.length) return
-      addNotification({
-        id: 'rt-del-' + order.id + '-' + Date.now(),
-        type: 'money',
-        title: 'Commande livrée — Paiement en cours',
-        body: `${Number(order.total_amount * 0.92).toLocaleString('fr-FR')} MAD net seront versés sur votre wallet`,
-        created_at: new Date().toISOString(),
-        read: false,
-        action: 'revenue'
-      })
-    }
+    if(order.status !== 'delivered') return
+    const { data: items } = await db.from('order_items')
+      .select('order_id')
+      .in('product_id', productIds)
+      .eq('order_id', order.id)
+    if(!items?.length) return
+    addNotification({
+      id: 'rt-del-' + order.id,
+      type: 'money',
+      title: 'Commande livrée — Paiement en cours',
+      body: `${Number(order.total_amount * 0.92).toLocaleString('fr-FR')} MAD net seront versés sur votre wallet`,
+      created_at: new Date().toISOString(),
+      read: false,
+      action: 'revenue'
+    })
   })
 
   realtimeChannel.subscribe((status) => {
     if(status === 'SUBSCRIBED') console.log('[WennaShop] Realtime notifications actives')
+    if(status === 'CHANNEL_ERROR') console.error('[WennaShop] Realtime erreur channel')
+    if(status === 'TIMED_OUT') console.warn('[WennaShop] Realtime timeout')
   })
 }
-
 // ── SECTIONS ──
 const pageTitles = { overview:"Vue d'ensemble", products:'Mes Produits', orders:'Commandes', revenue:'Revenus', wallet:'Wallet & Boosts', reviews:'Avis Clients', profile:'Mon Profil', shop:'Ma Boutique' }
   function showSection(name) {
