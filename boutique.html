@@ -384,7 +384,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);overflow-x:h
 <div class="page-hero reveal">
   <div class="page-eyebrow">Marketplace inter-africaine</div>
   <h1 class="page-title">La <span>Boutique</span></h1>
-  <p class="page-sub">Produits du Gabon et du Maroc — vendeurs vérifiés, livraison gérée par le vendeur. <span id="total-label" style="color:var(--accent);font-weight:800;"></span></p>
+  <p class="page-sub">Produits et vendeurs vérifiés, livraison gérée par le vendeur. <span id="total-label" style="color:var(--accent);font-weight:800;"></span></p>
 </div>
 
 <div class="quetes-strip reveal">
@@ -453,11 +453,16 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);overflow-x:h
       <div class="filter-title">Recherche</div>
       <input class="filter-search" type="search" id="search-inp" placeholder="Nom, produit…" oninput="onSearchInput(this.value)"/>
     </div>
-    <div class="filter-section">
-      <div class="filter-title">Origine</div>
-      <div class="check-row"><input type="checkbox" id="f-gabon" onchange="applyFilters()"/><label for="f-gabon">Gabon</label></div>
-      <div class="check-row"><input type="checkbox" id="f-maroc" onchange="applyFilters()"/><label for="f-maroc">Maroc</label></div>
-    </div>
+   <div class="filter-section">
+    <div class="filter-title">Origine</div>
+    <div class="check-row"><input type="checkbox" id="f-gabon" onchange="applyFilters()"/><label for="f-gabon">Gabon</label></div>
+    <div class="check-row"><input type="checkbox" id="f-maroc" onchange="applyFilters()"/><label for="f-maroc">Maroc</label></div>
+    <div class="check-row"><input type="checkbox" id="f-benin" onchange="applyFilters()"/><label for="f-benin">Bénin</label></div>
+    <div class="check-row"><input type="checkbox" id="f-senegal" onchange="applyFilters()"/><label for="f-senegal">Sénégal</label></div>
+    <div class="check-row"><input type="checkbox" id="f-cote-ivoire" onchange="applyFilters()"/><label for="f-cote-ivoire">Côte d'Ivoire</label></div>
+    <div class="check-row"><input type="checkbox" id="f-cameroun" onchange="applyFilters()"/><label for="f-cameroun">Cameroun</label></div>
+    <div class="check-row"><input type="checkbox" id="f-mali" onchange="applyFilters()"/><label for="f-mali">Mali</label></div>
+  </div>
     <div class="filter-section">
       <div class="filter-title">Prix — <span class="price-display" id="price-display">0 – 100 000 MAD</span></div>
       <div class="price-range">
@@ -991,8 +996,20 @@ function updatePriceDisplay() {
 }
 
 function applyFilters() {
-  const g=document.getElementById('f-gabon')?.checked, m=document.getElementById('f-maroc')?.checked
-  state.pays = (g&&m)||(!g&&!m) ? null : g ? 'Gabon' : 'Maroc'
+  const paysMap = {
+    'gabon': 'Gabon',
+    'maroc': 'Maroc',
+    'benin': 'Bénin',
+    'senegal': 'Sénégal',
+    'cote-ivoire': "Côte d'Ivoire",
+    'cameroun': 'Cameroun',
+    'mali': 'Mali'
+  }
+  const checked = Object.keys(paysMap).filter(p => document.getElementById('f-'+p)?.checked)
+  state.pays = checked.length === 0 || checked.length === Object.keys(paysMap).length
+    ? null
+    : checked.map(p => paysMap[p])
+
   state.priceMin = parseInt(document.getElementById('price-min').value||0)
   state.priceMax = parseInt(document.getElementById('price-max').value||100000)
   state.stockOnly = document.getElementById('f-stock')?.checked||false
@@ -1045,7 +1062,7 @@ async function loadProducts() {
   const offset = (state.page-1)*PAGE_SIZE
   try {
     let q = db.from('products').select('id,name,price,currency,country,origin_city,stock,images,image_url,category_id,categories(name)',{count:'exact'}).eq('status','active').gte('price',state.priceMin).lte('price',state.priceMax).range(offset,offset+PAGE_SIZE-1).order(col,{ascending:dir==='asc'})
-    if(state.pays) q = q.ilike('country',state.pays)
+    if(state.pays) {q = Array.isArray(state.pays) ? q.in('country', state.pays) : q.ilike('country', state.pays)}
     if(state.catId) q = q.eq('category_id',state.catId)
     if(state.stockOnly) q = q.gt('stock',0)
     if(state.search) q = q.ilike('name',`%${state.search}%`)
