@@ -320,7 +320,6 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
       <button class="tab-btn" onclick="switchClientTab('parametres',this)">Paramètres</button>
     </div>
 
-    <!-- COMMANDES -->
     <div id="client-commandes" class="tab-panel active reveal">
       <div class="card">
         <div class="card-title">Mes Commandes</div>
@@ -328,7 +327,6 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
       </div>
     </div>
 
-    <!-- QUÊTES -->
     <div id="client-quetes" class="tab-panel reveal">
       <div class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
@@ -339,7 +337,6 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
       </div>
     </div>
 
-    <!-- ADRESSES -->
     <div id="client-adresses" class="tab-panel reveal">
       <div class="card">
         <div class="card-title">Mes Adresses</div>
@@ -351,7 +348,6 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
       </div>
     </div>
 
-    <!-- PARAMÈTRES -->
     <div id="client-parametres" class="tab-panel reveal">
       <div class="card">
         <div class="card-title">Informations personnelles</div>
@@ -390,7 +386,6 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
   <!-- ── VENDEUR ── -->
   <div id="mode-vendeur" class="mode-panel">
 
-    <!-- Pas encore vendeur -->
     <div id="vendeur-upgrade-section" style="margin-top:20px;">
       <div class="vendeur-promo reveal">
         <div class="profile-eyebrow" style="margin-bottom:8px;">Rejoins les vendeurs</div>
@@ -432,7 +427,6 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
       </div>
     </div>
 
-    <!-- Déjà vendeur -->
     <div id="vendeur-dashboard-section" style="display:none;margin-top:20px;">
       <div class="card reveal" style="background:var(--accent-light);border-color:var(--border-accent);">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;">
@@ -488,7 +482,6 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
             <a href="dashboard-vendeur.html?section=wallet" class="btn-green"><i class="ph ph-paper-plane-tilt" style="font-size:15px;"></i>Retirer</a>
           </div>
         </div>
-        <!-- Info paiement phase 1 -->
         <div class="paiement-info-box">
           <i class="ph ph-info"></i>
           <p>Les revenus sont reversés <strong>manuellement</strong> par WennaShop. Pour toute demande de retrait, contacte-nous via le dashboard vendeur. La commission de <strong>8%</strong> est prélevée sur chaque vente côté vendeur.</p>
@@ -517,7 +510,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
     </div>
   </div>
 
-</div><!-- /content -->
+</div>
 
 <!-- ── BOTTOM NAV ── -->
 <nav class="bnav">
@@ -586,31 +579,57 @@ async function updateCartBadge() {
   } catch {}
 }
 
-// ── AVATAR ──
+// ── AVATAR UPLOAD ──
+// FIX: filePath simplifié + fallback signed URL si bucket privé
 document.getElementById('avatar-input').addEventListener('change', async e => {
   const db = getSb(); if(!db) return
   const file = e.target.files[0]
   if(!file || !currentProfile) return
   if(file.size > 2*1024*1024) { showToast('Image trop lourde — max 2 Mo', 'error'); return }
   const ext = file.name.split('.').pop().toLowerCase()
-  const filePath = `${currentProfile.id}/${currentProfile.id}.${ext}`
+  const filePath = `${currentProfile.id}/avatar.${ext}`
   const prog = document.getElementById('avatar-progress')
   const fill = document.getElementById('avatar-progress-fill')
   prog.style.display = 'block'; fill.style.width = '20%'
   try {
-    const { error:uploadErr } = await db.storage.from('avatars').upload(filePath, file, {upsert:true, contentType:file.type})
+    const { error:uploadErr } = await db.storage.from('avatars').upload(filePath, file, {
+      upsert: true,
+      contentType: file.type,
+      cacheControl: '3600'
+    })
     if(uploadErr) throw uploadErr
     fill.style.width = '65%'
-    const { data:{publicUrl} } = db.storage.from('avatars').getPublicUrl(filePath)
-    const { error:dbErr } = await db.from('users').update({avatar_url:publicUrl, updated_at:new Date().toISOString()}).eq('id', currentProfile.id)
+
+    // URL publique (bucket public) ou signed URL (bucket privé)
+    let avatarUrl
+    const { data: pubData } = db.storage.from('avatars').getPublicUrl(filePath)
+    avatarUrl = pubData?.publicUrl
+    if(!avatarUrl || avatarUrl.includes('undefined')) {
+      const { data: signed } = await db.storage.from('avatars').createSignedUrl(filePath, 31536000)
+      avatarUrl = signed?.signedUrl
+    }
+    if(!avatarUrl) throw new Error('URL avatar invalide')
+
+    const { error:dbErr } = await db.from('users').update({
+      avatar_url: avatarUrl,
+      updated_at: new Date().toISOString()
+    }).eq('id', currentProfile.id)
     if(dbErr) throw dbErr
+
     fill.style.width = '100%'
     const img = document.getElementById('profile-avatar')
-    img.src = publicUrl + '?t=' + Date.now(); img.style.display = 'block'
+    img.src = avatarUrl + '?t=' + Date.now()
+    img.style.display = 'block'
     document.getElementById('avatar-placeholder').style.display = 'none'
+    currentProfile.avatar_url = avatarUrl
     showToast('Photo mise à jour ✓', 'success')
-  } catch(err) { showToast('Erreur upload : ' + (err.message||'réessaie'), 'error') }
-  finally { setTimeout(() => { prog.style.display='none'; fill.style.width='0%' }, 1200); e.target.value = '' }
+  } catch(err) {
+    showToast('Erreur upload : ' + (err.message||'réessaie'), 'error')
+    console.error('[avatar upload]', err)
+  } finally {
+    setTimeout(() => { prog.style.display='none'; fill.style.width='0%' }, 1200)
+    e.target.value = ''
+  }
 })
 
 // ── INIT ──
@@ -658,20 +677,33 @@ async function loadProfile() {
   if(data.avatar_url) {
     const img = document.getElementById('profile-avatar')
     img.onload = () => { img.style.display='block'; document.getElementById('avatar-placeholder').style.display='none' }
+    img.onerror = () => { img.style.display='none'; document.getElementById('avatar-placeholder').style.display='flex' }
     img.src = data.avatar_url + '?t=' + Date.now()
   }
   document.getElementById('input-firstname').value = data.first_name || ''
   document.getElementById('input-lastname').value = data.last_name || ''
   document.getElementById('input-email').value = data.email || currentUser.email
+
   if(isVendeur) {
     document.getElementById('vendeur-upgrade-section').style.display = 'none'
     document.getElementById('vendeur-dashboard-section').style.display = 'block'
-    if(data.specialty) document.getElementById('shop-specialty').value = data.specialty
-    if(data.country) document.getElementById('shop-country').value = data.country
-    if(fullName) document.getElementById('shop-name').value = fullName
+    // Charge les données de la boutique depuis la table shops
+    await loadShopData()
     loadVendeurData()
   }
   loadClientStats(data.id); loadOrders(data.id); loadQuetes(data.id)
+}
+
+// ── LOAD SHOP DATA ── (depuis la table shops)
+async function loadShopData() {
+  const db = getSb(); if(!currentProfile) return
+  const { data:shop, error } = await db.from('shops').select('*').eq('user_id', currentProfile.id).maybeSingle()
+  if(error) { console.error('[loadShopData]', error); return }
+  if(shop) {
+    document.getElementById('shop-name').value = shop.name || ''
+    document.getElementById('shop-specialty').value = shop.specialty || ''
+    if(shop.country) document.getElementById('shop-country').value = shop.country
+  }
 }
 
 // ── CLIENT STATS ──
@@ -702,7 +734,6 @@ async function loadOrders(userId) {
   container.innerHTML = orders.map(order => {
     const p = order.order_items?.[0]?.products
     const imgHtml = p?.image_url ? `<img src="${p.image_url}" alt="${p?.name||''}" class="order-thumb"/>` : `<div class="order-thumb-ph"><i class="ph ph-package"></i></div>`
-    // Bouton "Finaliser" → redirige vers paiement.html au lieu d'un gateway
     const payBtn = order.status === 'pending'
       ? `<a href="paiement.html?order_id=${order.id}" class="btn-primary" style="padding:5px 12px;font-size:11px;box-shadow:none;margin-left:4px;text-decoration:none;" onclick="event.stopPropagation()"><i class="ph ph-arrow-right" style="font-size:13px;"></i>Finaliser</a>`
       : ''
@@ -721,13 +752,29 @@ async function loadOrders(userId) {
   }).join('')
 }
 
-// ── QUÊTES ──
+// ── QUÊTES ── FIX: buyer_id au lieu de user_id
 async function loadQuetes(userId) {
   const db = getSb()
   const container = document.getElementById('quetes-list')
   if(!userId) { container.innerHTML = '<div class="empty-state"><i class="ph ph-shooting-star"></i><p>Connecte-toi pour voir tes quêtes.</p></div>'; return }
-  const { data:quetes } = await db.from('quests').select('id,title,status,reward_amount,currency,created_at').eq('user_id', userId).order('created_at',{ascending:false}).limit(10)
-  if(!quetes || !quetes.length) {
+  const { data:quetes, error } = await db
+    .from('quests')
+    .select('id,title,status,reward_amount,currency,created_at')
+    .eq('buyer_id', userId)
+    .order('created_at',{ascending:false})
+    .limit(10)
+  if(error) {
+    console.error('[quetes]', error.message)
+    // Fallback : essai avec user_id si buyer_id échoue aussi
+    const { data:quetes2 } = await db.from('quests').select('id,title,status,reward_amount,currency,created_at').eq('user_id', userId).order('created_at',{ascending:false}).limit(10)
+    renderQuetes(container, quetes2 || [])
+    return
+  }
+  renderQuetes(container, quetes || [])
+}
+
+function renderQuetes(container, quetes) {
+  if(!quetes.length) {
     container.innerHTML = '<div class="empty-state"><i class="ph ph-shooting-star"></i><p>Aucune quête postée.<br><a href="quetes.html">Poster une quête</a></p></div>'
     return
   }
@@ -848,11 +895,17 @@ async function saveProfile() {
   else showToast('Erreur de sauvegarde', 'error')
 }
 
+// FIX: saveShop écrit dans la table shops (pas users)
 async function saveShop() {
   const db = getSb(); if(!currentProfile) return
-  const { error } = await db.from('users').update({ specialty:document.getElementById('shop-specialty').value.trim(), country:document.getElementById('shop-country').value, updated_at:new Date().toISOString() }).eq('id', currentProfile.id)
+  const { error } = await db.from('shops').update({
+    name:       document.getElementById('shop-name').value.trim(),
+    specialty:  document.getElementById('shop-specialty').value.trim(),
+    country:    document.getElementById('shop-country').value,
+    updated_at: new Date().toISOString()
+  }).eq('user_id', currentProfile.id)
   if(!error) showToast('Boutique mise à jour ✓', 'success')
-  else showToast('Erreur de mise à jour', 'error')
+  else { console.error('[saveShop]', error); showToast('Erreur : ' + error.message, 'error') }
 }
 
 async function resetPassword() {
@@ -869,23 +922,46 @@ async function handleLogout() {
   window.location.href = 'index.html'
 }
 
-// ── UPGRADE TO VENDEUR ──
+// FIX: upgradeToVendeur crée aussi un record dans la table shops
 async function upgradeToVendeur() {
   const db = getSb()
   const shopName  = document.getElementById('upgrade-shop-name').value.trim()
   const specialty = document.getElementById('upgrade-specialty').value.trim()
   const country   = document.getElementById('upgrade-country').value
+  const bio       = document.getElementById('upgrade-bio').value.trim()
   if(!shopName || !specialty || !country) { showToast('Remplis tous les champs obligatoires (*)', 'error'); return }
   const btn = document.getElementById('upgrade-btn')
   btn.disabled = true; btn.innerHTML = '<div class="spinner" style="border-top-color:#fff;"></div> Création en cours…'
   try {
-    const { error } = await db.from('users').update({ role:'artisan', specialty, country, updated_at:new Date().toISOString() }).eq('auth_id', currentUser.id)
-    if(error) throw error
+    // 1. Met à jour le rôle du user
+    const { error: userErr } = await db.from('users').update({
+      role: 'artisan',
+      specialty,
+      country,
+      updated_at: new Date().toISOString()
+    }).eq('auth_id', currentUser.id)
+    if(userErr) throw userErr
+
+    // 2. Crée ou met à jour la boutique dans shops
+    const { error: shopErr } = await db.from('shops').upsert({
+      user_id:     currentProfile.id,
+      name:        shopName,
+      specialty,
+      country,
+      description: bio,
+      status:      'active',
+      commission:  8,
+      updated_at:  new Date().toISOString()
+    }, { onConflict: 'user_id' })
+    if(shopErr) throw shopErr
+
     showToast('🎉 Bienvenue parmi les vendeurs !', 'success')
     setTimeout(() => window.location.href = 'dashboard-vendeur.html', 1500)
   } catch(err) {
-    showToast('Erreur lors de la création', 'error')
-    btn.disabled = false; btn.innerHTML = '<i class="ph ph-storefront" style="font-size:16px;"></i> Devenir vendeur — c\'est gratuit'
+    console.error('[upgradeToVendeur]', err)
+    showToast('Erreur : ' + (err.message || 'réessaie'), 'error')
+    btn.disabled = false
+    btn.innerHTML = '<i class="ph ph-storefront" style="font-size:16px;"></i> Devenir vendeur — c\'est gratuit'
   }
 }
 
