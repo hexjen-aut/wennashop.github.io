@@ -76,8 +76,6 @@ nav { height: var(--nav-h); background: var(--surface); border-bottom: 1px solid
 .btn-primary:hover { background: var(--accent-dark); }
 .btn-ghost { background: transparent; border: 1.5px solid var(--border); color: var(--text-muted); }
 .btn-ghost:hover { border-color: var(--accent-border); color: var(--text); }
-.btn-ghost-accent { background: transparent; border: 1.5px solid var(--accent-border); color: var(--accent); }
-.btn-ghost-accent:hover { background: var(--accent-light); }
 .tab-btn { padding: 6px 16px; font-size: 12px; font-weight: 700; border-radius: var(--radius-pill); cursor: pointer; font-family: var(--font); background: transparent; border: 1.5px solid var(--border); color: var(--text-faint); transition: all .2s; }
 .tab-btn.active { background: var(--accent-light); border-color: var(--accent-border); color: var(--accent); }
 
@@ -223,8 +221,6 @@ nav { height: var(--nav-h); background: var(--surface); border-bottom: 1px solid
 .btn-refresh.spinning i { animation: spin .5s linear infinite; }
 
 /* ── MES COMMANDES ── */
-#section-mes-commandes { display: none; }
-#section-mes-commandes.show { display: block; }
 .orders-list { display: flex; flex-direction: column; gap: 6px; }
 .order-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 16px 20px; cursor: pointer; transition: border-color .2s; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
 .order-card:hover { border-color: var(--accent-border); }
@@ -251,10 +247,7 @@ nav { height: var(--nav-h); background: var(--surface); border-bottom: 1px solid
 .badge-cancelled        { background: var(--error-dim); color: var(--error); }
 .badge-returned         { background: var(--error-dim); color: var(--error); }
 .badge-processing       { background: var(--info-dim); color: var(--info); }
-
-/* ── SKEL ── */
-@keyframes shimmer { 0%{background-position:-600px 0}100%{background-position:600px 0} }
-.skel { background: linear-gradient(90deg,var(--surface) 25%,var(--surface-2) 50%,var(--surface) 75%); background-size: 600px 100%; animation: shimmer 1.5s infinite linear; border-radius: var(--radius-md); }
+.badge-shipped          { background: var(--info-dim); color: var(--info); }
 
 /* ── RESPONSIVE ── */
 @media(max-width:640px){
@@ -279,16 +272,13 @@ nav { height: var(--nav-h); background: var(--surface); border-bottom: 1px solid
 
 <div id="toast"></div>
 
-<!-- LIVE BANNER -->
 <div id="live-banner">
   <div class="live-dot"></div>
   <span id="live-msg">Suivi en temps réel activé</span>
 </div>
 
-<!-- NAVBAR -->
 <nav>
   <a href="boutique.html" class="logo"><span>Wenna</span>Shop</a>
-  </a>
   <div class="nav-right">
     <button id="btn-refresh-nav" class="btn-sm btn-ghost" onclick="refreshTracking()" style="display:none;">
       <i class="ph ph-arrows-clockwise"></i> Actualiser
@@ -300,44 +290,36 @@ nav { height: var(--nav-h); background: var(--surface); border-bottom: 1px solid
 
 <div class="page-wrap">
 
-  <!-- TABS -->
   <div class="tabs-row">
-    <button class="tab-btn active" onclick="switchTab('search', this)"><i class="ph ph-magnifying-glass"></i> Suivre un colis</button>
+    <button class="tab-btn active" id="tab-search-btn" onclick="switchTab('search', this)"><i class="ph ph-magnifying-glass"></i> Suivre un colis</button>
     <button class="tab-btn" onclick="switchTab('orders', this)" id="tab-orders-btn"><i class="ph ph-shopping-bag"></i> Mes commandes</button>
   </div>
 
-  <!-- ── SECTION SEARCH ── -->
+  <!-- SECTION SEARCH -->
   <div id="section-search">
-
-    <!-- BARRE RECHERCHE -->
     <div class="search-block">
       <div class="search-block-title">Suivre ma commande</div>
       <div class="search-block-sub">Numéro de commande ou code de suivi</div>
       <div class="search-row">
-        <input id="tracking-input" type="text" class="search-inp" placeholder="Ex: WNS-20240501-ABCD ou UUID…" onkeydown="if(event.key==='Enter')searchTracking()"/>
+        <input id="tracking-input" type="text" class="search-inp" placeholder="Ex: WNS-20240501-ABCD…" onkeydown="if(event.key==='Enter')searchTracking()"/>
         <button id="btn-search" class="btn-search" onclick="searchTracking()">
           <i class="ph ph-magnifying-glass"></i> Rechercher
         </button>
       </div>
     </div>
 
-    <!-- EMPTY STATE -->
     <div id="empty-state" class="empty-state">
       <div class="empty-icon"><i class="ph ph-package"></i></div>
       <div class="empty-title">Votre colis vous attend</div>
       <div class="empty-sub">Entrez votre numéro de commande pour localiser votre colis</div>
     </div>
 
-    <!-- RESULT -->
     <div id="result">
-
-      <!-- ACTIONS -->
       <div class="actions-row">
         <button class="btn-copy" onclick="copyLink()"><i class="ph ph-link"></i> Copier le lien</button>
         <button id="btn-refresh" class="btn-refresh" onclick="refreshTracking()"><i class="ph ph-arrows-clockwise"></i> Actualiser</button>
       </div>
 
-      <!-- PROGRESS -->
       <div class="progress-wrap">
         <div class="progress-top">
           <span class="progress-label" id="prog-label">En cours</span>
@@ -348,7 +330,6 @@ nav { height: var(--nav-h); background: var(--surface); border-bottom: 1px solid
         </div>
       </div>
 
-      <!-- ORDER HEADER -->
       <div class="order-header">
         <div>
           <div class="order-ref" id="res-ref">—</div>
@@ -365,13 +346,11 @@ nav { height: var(--nav-h); background: var(--surface); border-bottom: 1px solid
         </div>
       </div>
 
-      <!-- ETA -->
       <div class="eta-banner" id="eta-banner" style="display:none;">
         <i class="ph ph-clock"></i>
         <span class="eta-text" id="eta-text">—</span>
       </div>
 
-      <!-- LIVREUR -->
       <div class="driver-card" id="driver-card" style="display:none;">
         <div class="driver-info">
           <div class="driver-av" id="drv-av">?</div>
@@ -386,7 +365,6 @@ nav { height: var(--nav-h); background: var(--surface); border-bottom: 1px solid
         </div>
       </div>
 
-      <!-- TIMELINE -->
       <div class="timeline-card">
         <div class="timeline-head">
           <div class="timeline-title">Historique du suivi</div>
@@ -395,7 +373,6 @@ nav { height: var(--nav-h); background: var(--surface); border-bottom: 1px solid
         <div class="timeline" id="timeline"></div>
       </div>
 
-      <!-- ADRESSES -->
       <div class="addr-grid">
         <div class="addr-card">
           <div class="addr-icon green"><i class="ph ph-storefront"></i></div>
@@ -411,7 +388,6 @@ nav { height: var(--nav-h); background: var(--surface); border-bottom: 1px solid
         </div>
       </div>
 
-      <!-- ARTICLES -->
       <div class="items-card">
         <div class="items-head">
           <div class="items-title">Articles de la commande</div>
@@ -419,304 +395,350 @@ nav { height: var(--nav-h); background: var(--surface); border-bottom: 1px solid
         </div>
         <div id="items-list"></div>
       </div>
-
     </div>
   </div>
 
-  <!-- ── SECTION MES COMMANDES ── -->
-  <div id="section-mes-commandes">
+  <!-- SECTION MES COMMANDES -->
+  <div id="section-mes-commandes" style="display:none;">
     <div id="orders-content"></div>
   </div>
 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/Supabase.config.js"></script>
+<script src="supabase.config.js"></script>
 <script>
-/* ═══════════════════════════════════════════════
-   WENNASHOP — TRACKING PAGE
-   Design system unifié Nunito / Phosphor Icons
-   + Realtime Supabase + Mes commandes
-   ═══════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   WENNASHOP — TRACKING  (v2 — FK fixes + RLS)
+   ═══════════════════════════════════════════ */
 
-function getDb() { return window.db }
-
-let currentOrder = null
-let realtimeChannel = null
-let currentSession = null
-
-// ── UTILS ──
-function showToast(msg, type = 'default') {
-  const el = document.getElementById('toast')
-  el.textContent = msg
-  el.className = type === 'success' ? 'show success' : type === 'error' ? 'show error' : 'show'
-  setTimeout(() => el.className = '', 3500)
+function waitForDb(cb) {
+  if (window.db) { cb(window.db); return; }
+  const t = setInterval(() => { if (window.db) { clearInterval(t); cb(window.db); } }, 80);
 }
 
+let currentOrder = null;
+let realtimeChannel = null;
+let currentSession = null;
+
+/* ── UTILS ── */
+function showToast(msg, type = 'default') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = type === 'success' ? 'show success' : type === 'error' ? 'show error' : 'show';
+  setTimeout(() => el.className = '', 3500);
+}
 function fmtDate(d) {
-  if(!d) return '—'
-  return new Date(d).toLocaleDateString('fr-FR', {day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'})
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 function fmtDateShort(d) {
-  if(!d) return '—'
-  return new Date(d).toLocaleDateString('fr-FR', {day:'2-digit', month:'short', year:'numeric'})
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
 }
-function fmtAmount(n, currency = 'MAD') {
-  return n == null ? '—' : Number(n).toLocaleString('fr-FR') + ' ' + currency
+function fmtAmount(n, currency) {
+  if (n == null) return '—';
+  return Number(n).toLocaleString('fr-FR') + ' ' + (currency || 'MAD');
 }
 function initials(name) {
-  if(!name) return '?'
-  return name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0,2)
+  if (!name) return '?';
+  return name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2);
 }
 function timeAgo(d) {
-  const diff = Date.now() - new Date(d).getTime()
-  const m = Math.floor(diff / 60000)
-  if(m < 1) return 'À l\'instant'
-  if(m < 60) return `Il y a ${m} min`
-  const h = Math.floor(m / 60)
-  if(h < 24) return `Il y a ${h}h`
-  return fmtDateShort(d)
+  const diff = Date.now() - new Date(d).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return 'À l\'instant';
+  if (m < 60) return `Il y a ${m} min`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `Il y a ${h}h`;
+  return fmtDateShort(d);
 }
 
-// ── STATUS CONFIG ──
+/* ── STATUS CONFIG ── */
 const STATUS_CFG = {
-  pending:          { label:'En attente',         cls:'sb-pending',         icon:'ph-hourglass',            pct:5,   eta:true,  pulse:true  },
-  processing:       { label:'En traitement',      cls:'sb-picked_up',       icon:'ph-gear',                 pct:15,  eta:true,  pulse:true  },
-  picked_up:        { label:'Pris en charge',     cls:'sb-picked_up',       icon:'ph-package',              pct:25,  eta:true,  pulse:true  },
-  shipped:          { label:'Expédiée',           cls:'sb-in_transit',      icon:'ph-truck',                pct:50,  eta:true,  pulse:true  },
-  in_transit:       { label:'En transit',         cls:'sb-in_transit',      icon:'ph-truck',                pct:60,  eta:true,  pulse:true  },
-  out_for_delivery: { label:'En livraison',       cls:'sb-out_for_delivery',icon:'ph-person-simple-run',    pct:85,  eta:true,  pulse:true  },
-  delivered:        { label:'Livré',              cls:'sb-delivered',       icon:'ph-check-circle',         pct:100, eta:false, pulse:false },
-  cancelled:        { label:'Annulée',            cls:'sb-cancelled',       icon:'ph-x-circle',             pct:0,   eta:false, pulse:false },
-  returned:         { label:'Retournée',          cls:'sb-returned',        icon:'ph-arrow-u-up-left',      pct:0,   eta:false, pulse:false },
-}
+  pending:          { label: 'En attente',        cls: 'sb-pending',          icon: 'ph-hourglass',            pct: 5,   eta: true,  pulse: true  },
+  processing:       { label: 'En traitement',     cls: 'sb-picked_up',        icon: 'ph-gear',                 pct: 15,  eta: true,  pulse: true  },
+  picked_up:        { label: 'Pris en charge',    cls: 'sb-picked_up',        icon: 'ph-package',              pct: 25,  eta: true,  pulse: true  },
+  shipped:          { label: 'Expédiée',          cls: 'sb-in_transit',       icon: 'ph-truck',                pct: 50,  eta: true,  pulse: true  },
+  in_transit:       { label: 'En transit',        cls: 'sb-in_transit',       icon: 'ph-truck',                pct: 60,  eta: true,  pulse: true  },
+  out_for_delivery: { label: 'En livraison',      cls: 'sb-out_for_delivery', icon: 'ph-person-simple-run',   pct: 85,  eta: true,  pulse: true  },
+  delivered:        { label: 'Livré',             cls: 'sb-delivered',        icon: 'ph-check-circle',         pct: 100, eta: false, pulse: false },
+  cancelled:        { label: 'Annulée',           cls: 'sb-cancelled',        icon: 'ph-x-circle',             pct: 0,   eta: false, pulse: false },
+  returned:         { label: 'Retournée',         cls: 'sb-returned',         icon: 'ph-arrow-u-up-left',      pct: 0,   eta: false, pulse: false },
+};
 
 const BADGE_LABELS = {
-  pending:'En attente', processing:'En traitement', picked_up:'Pris en charge',
-  shipped:'Expédiée', in_transit:'En transit', out_for_delivery:'En livraison',
-  delivered:'Livré', cancelled:'Annulée', returned:'Retournée'
-}
+  pending: 'En attente', processing: 'En traitement', picked_up: 'Pris en charge',
+  shipped: 'Expédiée', in_transit: 'En transit', out_for_delivery: 'En livraison',
+  delivered: 'Livré', cancelled: 'Annulée', returned: 'Retournée'
+};
 
 function badgeHtml(s) {
-  const cls = `badge-${s}`
-  const label = BADGE_LABELS[s] || s
-  return `<span class="badge ${cls}">${label}</span>`
+  return `<span class="badge badge-${s}">${BADGE_LABELS[s] || s}</span>`;
 }
 
-// ── TIMELINE STEPS ──
+/* ── TIMELINE STEPS ── */
 const TL_STEPS = [
-  { key:'pending',          icon:'ph-receipt',           label:'Commande confirmée',     desc:'Commande validée et transmise au vendeur.' },
-  { key:'picked_up',        icon:'ph-package',           label:'Colis pris en charge',   desc:'Le livreur a récupéré le colis chez le vendeur.' },
-  { key:'in_transit',       icon:'ph-truck',             label:'En transit',             desc:'Le colis est en route vers la destination finale.' },
-  { key:'out_for_delivery', icon:'ph-person-simple-run', label:'En cours de livraison',  desc:'Le livreur est en chemin — votre colis arrive aujourd\'hui.' },
-  { key:'delivered',        icon:'ph-check-circle',      label:'Colis livré',            desc:'Le colis a été remis au destinataire avec succès.' },
-]
+  { key: 'pending',          icon: 'ph-receipt',           label: 'Commande confirmée',    desc: 'Commande validée et transmise au vendeur.' },
+  { key: 'picked_up',        icon: 'ph-package',           label: 'Colis pris en charge',  desc: 'Le livreur a récupéré le colis chez le vendeur.' },
+  { key: 'in_transit',       icon: 'ph-truck',             label: 'En transit',            desc: 'Le colis est en route vers la destination finale.' },
+  { key: 'out_for_delivery', icon: 'ph-person-simple-run', label: 'En cours de livraison', desc: 'Le livreur est en chemin — votre colis arrive aujourd\'hui.' },
+  { key: 'delivered',        icon: 'ph-check-circle',      label: 'Colis livré',           desc: 'Le colis a été remis au destinataire avec succès.' },
+];
 
-// Mapping order.status → étape timeline
 function statusToTlIndex(s) {
-  const map = { pending:0, processing:0, picked_up:1, shipped:2, in_transit:2, out_for_delivery:3, delivered:4, cancelled:-1, returned:-1 }
-  return map[s] ?? 0
+  const map = { pending: 0, processing: 0, picked_up: 1, shipped: 2, in_transit: 2, out_for_delivery: 3, delivered: 4, cancelled: -1, returned: -1 };
+  return map[s] ?? 0;
 }
 
-// ── TABS ──
+/* ── TABS ── */
 function switchTab(name, btn) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'))
-  if(btn) btn.classList.add('active')
-  document.getElementById('section-search').style.display = name === 'search' ? 'block' : 'none'
-  const mc = document.getElementById('section-mes-commandes')
-  if(name === 'orders') { mc.classList.add('show'); loadMesCommandes() }
-  else mc.classList.remove('show')
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.getElementById('section-search').style.display = name === 'search' ? 'block' : 'none';
+  document.getElementById('section-mes-commandes').style.display = name === 'orders' ? 'block' : 'none';
+  if (name === 'orders') loadMesCommandes();
 }
 
-// ── SELECT ──
-const ORDER_SELECT = `
-  id, tracking_number, status, created_at, updated_at, total_amount,
-  shipping_address, delivery_address,
-  users!orders_user_id_fkey(full_name, email),
-  order_items(
-    quantity, unit_price,
-    products(
-      name, image_url, images,
-      users!products_seller_id_fkey(full_name, email, specialty, country, origin_city)
-    )
-  ),
-  deliveries(
-    id, status, picked_up_at, delivered_at, estimated_delivery, notes,
-    users!deliveries_driver_id_fkey(full_name, phone, specialty)
-  )
-`
+/* ── SELECT CORRIGÉ — noms FK exacts Supabase ── */
+// CORRECTION PRINCIPALE : les noms de relation PostgREST utilisent le nom de la contrainte FK
+// orders → users via "orders_user_id_fkey"  → PostgREST: users!orders_user_id_fkey ✓
+// products → users via "products_seller_id_fkey" → PostgREST: users!products_seller_id_fkey ✓
+// deliveries → users via "deliveries_driver_id_fkey" → PostgREST: users!deliveries_driver_id_fkey ✓
+// MAIS : order_items → products via "order_items_product_id_fkey"
+//        products ne jointure que les colonnes utiles, pas le sous-objet users entier
+// On fait 2 requêtes séparées pour éviter les ambiguïtés d'imbrication profonde.
 
-// ── SEARCH ──
-async function searchTracking() {
-  const db = getDb()
-  const query = document.getElementById('tracking-input').value.trim()
-  if(!query) { showToast('Entrez un numéro de commande.', 'error'); return }
+async function fetchOrder(db, identifier) {
+  // Étape 1 : récupérer la commande + items (sans les données vendeur imbriquées)
+  let order = null;
 
-  document.getElementById('empty-state').style.display = 'none'
-  document.getElementById('result').classList.remove('show')
-  document.getElementById('result').style.display = 'none'
-  document.getElementById('btn-refresh-nav').style.display = 'none'
-
-  const btn = document.getElementById('btn-search')
-  btn.innerHTML = '<i class="ph ph-circle-notch" style="animation:spin .6s linear infinite"></i> Recherche…'
-  btn.disabled = true
-
-  try {
-    let order = null
-    const clean = query.replace(/^#/, '').toLowerCase()
-
-    // 1. Par tracking_number exact
-    const { data: byTracking } = await db.from('orders')
-      .select(ORDER_SELECT)
-      .ilike('tracking_number', query)
-      .maybeSingle()
-    order = byTracking
-
-    // 2. Par UUID partiel
-    if(!order) {
-      const { data: all } = await db.from('orders')
-        .select(ORDER_SELECT)
-        .order('created_at', {ascending: false})
-        .limit(100)
-      if(all) {
-        order = all.find(o =>
-          o.id?.toLowerCase().startsWith(clean) ||
-          o.id?.toLowerCase() === clean ||
-          o.tracking_number?.toLowerCase().includes(clean)
+  // Chercher par tracking_number
+  const { data: byTrack } = await db.from('orders')
+    .select(`
+      id, tracking_number, status, created_at, updated_at,
+      total_amount, currency, shipping_name, shipping_address,
+      shipping_city, shipping_country, delivery_address,
+      users!orders_user_id_fkey(id, full_name, email, city, country),
+      order_items(
+        id, quantity, unit_price,
+        products(
+          id, name, image_url, images, seller_id,
+          origin_city, country
         )
-      }
-    }
+      ),
+      deliveries(
+        id, status, picked_up_at, in_transit_at, out_for_delivery_at,
+        delivered_at, estimated_delivery, notes, failure_reason,
+        users!deliveries_driver_id_fkey(full_name, phone, specialty)
+      )
+    `)
+    .ilike('tracking_number', identifier)
+    .maybeSingle();
 
-    // 3. Dernière commande du user connecté
-    if(!order && currentSession) {
-      const { data: myLast } = await db.from('orders')
-        .select(ORDER_SELECT)
-        .eq('user_id', currentSession.user.id)
-        .order('created_at', {ascending: false})
-        .limit(10)
-      if(myLast) {
-        order = myLast.find(o =>
-          o.tracking_number?.toLowerCase().includes(clean) ||
-          o.id?.toLowerCase().includes(clean)
-        ) || myLast[0]
-      }
-    }
+  order = byTrack;
 
-    if(!order) {
-      showToast('Aucune commande trouvée.', 'error')
-      document.getElementById('empty-state').style.display = 'block'
-    } else {
-      renderTracking(order)
-      startRealtime(order.id)
+  // Chercher par UUID si pas trouvé
+  if (!order) {
+    const clean = identifier.replace(/^#/, '').toLowerCase();
+    const { data: all } = await db.from('orders')
+      .select(`
+        id, tracking_number, status, created_at, updated_at,
+        total_amount, currency, shipping_name, shipping_address,
+        shipping_city, shipping_country, delivery_address,
+        users!orders_user_id_fkey(id, full_name, email, city, country),
+        order_items(
+          id, quantity, unit_price,
+          products(id, name, image_url, images, seller_id, origin_city, country)
+        ),
+        deliveries(
+          id, status, picked_up_at, in_transit_at, out_for_delivery_at,
+          delivered_at, estimated_delivery, notes, failure_reason,
+          users!deliveries_driver_id_fkey(full_name, phone, specialty)
+        )
+      `)
+      .order('created_at', { ascending: false })
+      .limit(200);
+
+    if (all) {
+      order = all.find(o =>
+        o.id?.toLowerCase().startsWith(clean) ||
+        o.id?.toLowerCase() === clean ||
+        o.tracking_number?.toLowerCase().includes(clean)
+      );
     }
-  } catch(e) {
-    showToast('Erreur : ' + e.message, 'error')
-    document.getElementById('empty-state').style.display = 'block'
-  } finally {
-    btn.innerHTML = '<i class="ph ph-magnifying-glass"></i> Rechercher'
-    btn.disabled = false
   }
+
+  if (!order) return null;
+
+  // Étape 2 : enrichir les products avec les infos vendeur via seller_id
+  if (order.order_items?.length) {
+    const sellerIds = [...new Set(order.order_items.map(i => i.products?.seller_id).filter(Boolean))];
+    if (sellerIds.length) {
+      const { data: sellers } = await db.from('users')
+        .select('id, full_name, email, specialty, city, country, origin_city')
+        .in('id', sellerIds);
+      if (sellers) {
+        const sellerMap = Object.fromEntries(sellers.map(s => [s.id, s]));
+        order.order_items = order.order_items.map(item => ({
+          ...item,
+          products: item.products ? {
+            ...item.products,
+            seller: sellerMap[item.products.seller_id] || null
+          } : null
+        }));
+      }
+    }
+  }
+
+  return order;
 }
 
-// ── RENDER ──
-function renderTracking(order) {
-  currentOrder = order
-  const status = order.status || 'pending'
-  const cfg = STATUS_CFG[status] || STATUS_CFG.pending
-  const delivery = Array.isArray(order.deliveries) ? order.deliveries[0] : order.deliveries
+/* ── SEARCH ── */
+async function searchTracking() {
+  const query = document.getElementById('tracking-input').value.trim();
+  if (!query) { showToast('Entrez un numéro de commande.', 'error'); return; }
 
-  // Afficher result
-  document.getElementById('result').style.display = 'block'
-  document.getElementById('result').classList.add('show')
-  document.getElementById('empty-state').style.display = 'none'
-  document.getElementById('btn-refresh-nav').style.display = 'inline-flex'
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('btn-refresh-nav').style.display = 'none';
+
+  const btn = document.getElementById('btn-search');
+  btn.innerHTML = '<i class="ph ph-circle-notch" style="animation:spin .6s linear infinite"></i> Recherche…';
+  btn.disabled = true;
+
+  waitForDb(async (db) => {
+    try {
+      let order = await fetchOrder(db, query);
+
+      // Si pas trouvé publiquement et user connecté → chercher dans ses commandes
+      if (!order && currentSession) {
+        const { data: myOrders } = await db.from('orders')
+          .select('id, tracking_number, status, created_at, updated_at, total_amount, currency')
+          .eq('user_id', currentSession.user.id)
+          .order('created_at', { ascending: false })
+          .limit(50);
+        if (myOrders?.length) {
+          const clean = query.replace(/^#/, '').toLowerCase();
+          const found = myOrders.find(o =>
+            o.tracking_number?.toLowerCase().includes(clean) ||
+            o.id?.toLowerCase().includes(clean)
+          );
+          if (found) order = await fetchOrder(db, found.tracking_number || found.id);
+        }
+      }
+
+      if (!order) {
+        showToast('Commande introuvable. Vérifiez le numéro.', 'error');
+        document.getElementById('empty-state').style.display = 'block';
+      } else {
+        renderTracking(order);
+        startRealtime(order.id);
+      }
+    } catch (e) {
+      console.error('Tracking error:', e);
+      showToast('Erreur : ' + e.message, 'error');
+      document.getElementById('empty-state').style.display = 'block';
+    } finally {
+      btn.innerHTML = '<i class="ph ph-magnifying-glass"></i> Rechercher';
+      btn.disabled = false;
+    }
+  });
+}
+
+/* ── RENDER ── */
+function renderTracking(order) {
+  currentOrder = order;
+  const status = order.status || 'pending';
+  const cfg = STATUS_CFG[status] || STATUS_CFG.pending;
+  const deliveries = Array.isArray(order.deliveries) ? order.deliveries : (order.deliveries ? [order.deliveries] : []);
+  const delivery = deliveries[0] || null;
+
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('btn-refresh-nav').style.display = 'inline-flex';
 
   // URL param
-  const url = new URL(window.location)
-  url.searchParams.set('tracking', order.tracking_number || order.id)
-  window.history.replaceState({}, '', url)
+  const url = new URL(window.location);
+  url.searchParams.set('tracking', order.tracking_number || order.id);
+  window.history.replaceState({}, '', url);
 
   // Ref & nom
-  const ref = order.tracking_number || ('#' + order.id.slice(0,8).toUpperCase())
-  document.getElementById('res-ref').textContent = ref
-  const firstProd = order.order_items?.[0]?.products?.name
+  const ref = order.tracking_number || ('#' + order.id.slice(0, 8).toUpperCase());
+  document.getElementById('res-ref').textContent = ref;
+  const items = order.order_items || [];
+  const firstProd = items[0]?.products?.name;
   document.getElementById('res-name').textContent = firstProd
-    ? (order.order_items.length > 1 ? `${firstProd} + ${order.order_items.length - 1} article(s)` : firstProd)
-    : 'Commande WennaShop'
-  document.getElementById('res-date').textContent = fmtDateShort(order.created_at)
-  const seller = order.order_items?.[0]?.products?.users
-  document.getElementById('res-seller').textContent = seller?.full_name || seller?.specialty || '—'
-  document.getElementById('res-amount').textContent = fmtAmount(order.total_amount)
+    ? (items.length > 1 ? `${firstProd} + ${items.length - 1} article(s)` : firstProd)
+    : (order.shipping_name || 'Commande WennaShop');
 
-  // Badge
-  const badge = document.getElementById('res-status-badge')
-  badge.className = 'status-badge ' + cfg.cls
-  document.getElementById('res-status-txt').textContent = cfg.label
-  const dot = badge.querySelector('.sdot')
-  if(cfg.pulse) dot.classList.add('pulse'); else dot.classList.remove('pulse')
+  document.getElementById('res-date').textContent = fmtDateShort(order.created_at);
+
+  // Vendeur : depuis le seller enrichi
+  const seller = items[0]?.products?.seller;
+  document.getElementById('res-seller').textContent = seller?.full_name || seller?.specialty || '—';
+  document.getElementById('res-amount').textContent = fmtAmount(order.total_amount, order.currency);
+
+  // Badge status
+  const badge = document.getElementById('res-status-badge');
+  badge.className = 'status-badge ' + cfg.cls;
+  document.getElementById('res-status-txt').textContent = cfg.label;
+  const dot = badge.querySelector('.sdot');
+  cfg.pulse ? dot.classList.add('pulse') : dot.classList.remove('pulse');
 
   // Progress
-  document.getElementById('prog-label').textContent = cfg.label
-  const pctStr = (status === 'cancelled' || status === 'returned') ? '0%' : cfg.pct + '%'
-  document.getElementById('prog-pct').textContent = pctStr
-  setTimeout(() => { document.getElementById('prog-fill').style.width = pctStr }, 80)
+  document.getElementById('prog-label').textContent = cfg.label;
+  const pct = (['cancelled', 'returned'].includes(status)) ? '0%' : cfg.pct + '%';
+  document.getElementById('prog-pct').textContent = pct;
+  setTimeout(() => { document.getElementById('prog-fill').style.width = pct; }, 80);
 
   // ETA
-  const etaBanner = document.getElementById('eta-banner')
-  if(cfg.eta && !['delivered','cancelled','returned'].includes(status)) {
-    etaBanner.style.display = 'flex'
-    const eta = delivery?.estimated_delivery
-    const daysMap = { pending:'5–7 jours', processing:'4–6 jours', picked_up:'3–5 jours', shipped:'2–4 jours', in_transit:'2–3 jours', out_for_delivery:'aujourd\'hui' }
+  const etaBanner = document.getElementById('eta-banner');
+  if (cfg.eta && !['delivered', 'cancelled', 'returned'].includes(status)) {
+    etaBanner.style.display = 'flex';
+    const eta = delivery?.estimated_delivery;
+    const daysMap = { pending: '5–7 jours', processing: '4–6 jours', picked_up: '3–5 jours', shipped: '2–4 jours', in_transit: '2–3 jours', out_for_delivery: 'aujourd\'hui' };
     document.getElementById('eta-text').innerHTML = eta
       ? `Livraison estimée le <strong>${fmtDateShort(eta)}</strong>`
-      : `Livraison estimée dans <strong>${daysMap[status] || '—'}</strong>`
+      : `Livraison estimée dans <strong>${daysMap[status] || '—'}</strong>`;
   } else {
-    etaBanner.style.display = 'none'
+    etaBanner.style.display = 'none';
   }
 
   // Livreur
-  const drvCard = document.getElementById('driver-card')
-  const driver = delivery?.users || null
-  if(driver && ['picked_up','shipped','in_transit','out_for_delivery','delivered'].includes(status)) {
-    drvCard.style.display = 'flex'
-    document.getElementById('drv-av').textContent = initials(driver.full_name)
-    document.getElementById('drv-name').textContent = driver.full_name || '—'
-    document.getElementById('drv-meta').textContent = driver.specialty || 'Livreur WennaShop'
-    const phone = driver.phone || null
-    if(phone) {
-      document.getElementById('drv-call').href = 'tel:' + phone
-      document.getElementById('drv-wa').href = 'https://wa.me/' + phone.replace(/\D/g,'')
-      document.getElementById('drv-call').style.display = 'inline-flex'
-      document.getElementById('drv-wa').style.display = 'inline-flex'
+  const drvCard = document.getElementById('driver-card');
+  const driver = delivery?.users || null;
+  if (driver && ['picked_up', 'shipped', 'in_transit', 'out_for_delivery', 'delivered'].includes(status)) {
+    drvCard.style.display = 'flex';
+    document.getElementById('drv-av').textContent = initials(driver.full_name);
+    document.getElementById('drv-name').textContent = driver.full_name || '—';
+    document.getElementById('drv-meta').textContent = driver.specialty || 'Livreur WennaShop';
+    if (driver.phone) {
+      document.getElementById('drv-call').href = 'tel:' + driver.phone;
+      document.getElementById('drv-wa').href = 'https://wa.me/' + driver.phone.replace(/\D/g, '');
+      document.getElementById('drv-call').style.display = 'inline-flex';
+      document.getElementById('drv-wa').style.display = 'inline-flex';
     } else {
-      document.getElementById('drv-call').style.display = 'none'
-      document.getElementById('drv-wa').style.display = 'none'
+      document.getElementById('drv-call').style.display = 'none';
+      document.getElementById('drv-wa').style.display = 'none';
     }
   } else {
-    drvCard.style.display = 'none'
+    drvCard.style.display = 'none';
   }
 
-  // Timeline
-  renderTimeline(order, delivery, status)
-
-  // Adresses
-  renderAddresses(order)
-
-  // Articles
-  renderItems(order)
-
-  // Timestamp
-  document.getElementById('tl-updated').textContent = 'Mis à jour ' + timeAgo(order.updated_at || order.created_at)
+  renderTimeline(order, delivery, status);
+  renderAddresses(order);
+  renderItems(order);
+  document.getElementById('tl-updated').textContent = 'Mis à jour ' + timeAgo(order.updated_at || order.created_at);
 }
 
 function renderTimeline(order, delivery, currentStatus) {
-  const tl = document.getElementById('timeline')
-  const currentIdx = statusToTlIndex(currentStatus)
+  const tl = document.getElementById('timeline');
+  const currentIdx = statusToTlIndex(currentStatus);
+  const events = buildEvents(order, delivery);
 
-  const events = buildEvents(order, delivery)
-
-  if(['cancelled','returned'].includes(currentStatus)) {
-    const cfg = STATUS_CFG[currentStatus]
+  if (['cancelled', 'returned'].includes(currentStatus)) {
+    const cfg = STATUS_CFG[currentStatus];
     tl.innerHTML = `
       <div class="tl-step">
         <div class="tl-left"><div class="tl-icon-wrap pending" style="border-color:var(--error);background:var(--error-dim);color:var(--error);"><i class="ph ${cfg.icon}"></i></div></div>
@@ -725,16 +747,16 @@ function renderTimeline(order, delivery, currentStatus) {
           <div class="tl-step-time">${fmtDate(order.updated_at)}</div>
           <div class="tl-step-desc">Cette commande a été ${currentStatus === 'cancelled' ? 'annulée' : 'retournée'}.</div>
         </div>
-      </div>`
-    return
+      </div>`;
+    return;
   }
 
   tl.innerHTML = TL_STEPS.map((step, i) => {
-    const isDone   = i < currentIdx
-    const isActive = i === currentIdx
-    const state = isDone ? 'done' : isActive ? 'active' : 'pending'
-    const lineState = isDone ? 'done' : isActive ? 'active' : ''
-    const stepEvts = events.filter(e => e.step === step.key)
+    const isDone   = i < currentIdx;
+    const isActive = i === currentIdx;
+    const state    = isDone ? 'done' : isActive ? 'active' : 'pending';
+    const lineState = isDone ? 'done' : isActive ? 'active' : '';
+    const stepEvts  = events.filter(e => e.step === step.key);
 
     return `
     <div class="tl-step ${state}">
@@ -747,82 +769,90 @@ function renderTimeline(order, delivery, currentStatus) {
       <div class="tl-right">
         <div class="tl-step-name">${step.label}</div>
         <div class="tl-step-time">${getStepTime(step.key, order, delivery)}</div>
-        ${!isPending(state) ? `<div class="tl-step-desc">${step.desc}</div>` : ''}
-        ${stepEvts.length ? `<div class="tl-events">${stepEvts.map(e=>`
+        ${state !== 'pending' ? `<div class="tl-step-desc">${step.desc}</div>` : ''}
+        ${stepEvts.length ? `<div class="tl-events">${stepEvts.map(e => `
           <div class="tl-event">
             <div class="tl-event-dot ${e.type}"></div>
             <span class="tl-event-time">${e.time}</span>
             <span>${e.text}</span>
           </div>`).join('')}</div>` : ''}
       </div>
-    </div>`
-  }).join('')
+    </div>`;
+  }).join('');
 }
-
-function isPending(state) { return state === 'pending' }
 
 function getStepTime(key, order, delivery) {
   const map = {
     pending:          order.created_at,
     picked_up:        delivery?.picked_up_at,
-    in_transit:       null,
-    out_for_delivery: null,
+    in_transit:       delivery?.in_transit_at,
+    out_for_delivery: delivery?.out_for_delivery_at,
     delivered:        delivery?.delivered_at,
-  }
-  const v = map[key]
-  return v ? fmtDate(v) : '—'
+  };
+  return map[key] ? fmtDate(map[key]) : '—';
 }
 
 function buildEvents(order, delivery) {
-  const evts = []
-  if(order.created_at) {
-    evts.push({ step:'pending', time: new Date(order.created_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}), text:'Commande validée · Paiement confirmé', type:'green' })
+  const evts = [];
+  if (order.created_at) {
+    evts.push({ step: 'pending', time: new Date(order.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }), text: 'Commande validée · Paiement confirmé', type: 'green' });
   }
-  if(delivery?.picked_up_at) {
-    evts.push({ step:'picked_up', time: new Date(delivery.picked_up_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}), text:'Colis scanné au départ', type:'orange' })
+  if (delivery?.picked_up_at) {
+    evts.push({ step: 'picked_up', time: new Date(delivery.picked_up_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }), text: 'Colis scanné au départ', type: 'orange' });
   }
-  if(delivery?.notes) {
-    const s = ['in_transit','out_for_delivery'].includes(order.status) ? order.status : 'in_transit'
-    evts.push({ step: s, time:'—', text: delivery.notes, type:'green' })
+  if (delivery?.notes) {
+    const s = ['in_transit', 'out_for_delivery'].includes(order.status) ? order.status : 'in_transit';
+    evts.push({ step: s, time: '—', text: delivery.notes, type: 'green' });
   }
-  if(delivery?.delivered_at) {
-    evts.push({ step:'delivered', time: new Date(delivery.delivered_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}), text:'Colis remis au destinataire', type:'green' })
+  if (delivery?.delivered_at) {
+    evts.push({ step: 'delivered', time: new Date(delivery.delivered_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }), text: 'Colis remis au destinataire', type: 'green' });
   }
-  return evts
+  return evts;
 }
 
 function renderAddresses(order) {
-  const seller = order.order_items?.[0]?.products?.users
-  document.getElementById('from-name').textContent = seller?.full_name || seller?.specialty || 'Vendeur WennaShop'
-  const city = seller?.origin_city || seller?.city || ''
-  const country = seller?.country || ''
-  document.getElementById('from-detail').textContent = [city, country].filter(Boolean).join(', ') || '—'
+  const items = order.order_items || [];
+  const seller = items[0]?.products?.seller;
+  document.getElementById('from-name').textContent = seller?.full_name || seller?.specialty || 'Vendeur WennaShop';
+  const fromCity = seller?.origin_city || seller?.city || '';
+  const fromCountry = seller?.country || '';
+  document.getElementById('from-detail').textContent = [fromCity, fromCountry].filter(Boolean).join(', ') || '—';
 
-  const buyer = order.users
-  document.getElementById('to-name').textContent = buyer?.full_name || '—'
-  const addr = order.shipping_address || order.delivery_address
-  if(addr) {
+  const buyer = order.users;
+  document.getElementById('to-name').textContent = order.shipping_name || buyer?.full_name || '—';
+
+  // delivery_address est JSONB, shipping_address est TEXT
+  const addr = order.delivery_address || order.shipping_address;
+  if (addr) {
     try {
-      const a = typeof addr === 'string' ? JSON.parse(addr) : addr
-      document.getElementById('to-detail').textContent = [a.address, a.city, a.country].filter(Boolean).join(', ')
-    } catch { document.getElementById('to-detail').textContent = addr.toString() }
+      const a = typeof addr === 'string' ? JSON.parse(addr) : addr;
+      const parts = [a.address || a.street, a.city || order.shipping_city, a.country || order.shipping_country].filter(Boolean);
+      document.getElementById('to-detail').textContent = parts.join(', ') || '—';
+    } catch {
+      document.getElementById('to-detail').textContent = [order.shipping_address, order.shipping_city, order.shipping_country].filter(Boolean).join(', ') || '—';
+    }
   } else {
-    document.getElementById('to-detail').textContent = '—'
+    const fallback = [order.shipping_city, order.shipping_country].filter(Boolean).join(', ');
+    document.getElementById('to-detail').textContent = fallback || '—';
   }
 }
 
 function renderItems(order) {
-  const items = order.order_items || []
-  document.getElementById('items-count').textContent = items.length + ' article' + (items.length > 1 ? 's' : '')
-  const list = document.getElementById('items-list')
-  if(!items.length) {
-    list.innerHTML = '<div style="padding:28px;text-align:center;font-size:12px;font-weight:700;color:var(--text-faint);letter-spacing:.06em;text-transform:uppercase;">Aucun article</div>'
-    return
+  const items = order.order_items || [];
+  document.getElementById('items-count').textContent = items.length + ' article' + (items.length > 1 ? 's' : '');
+  const list = document.getElementById('items-list');
+  if (!items.length) {
+    list.innerHTML = '<div style="padding:28px;text-align:center;font-size:12px;font-weight:700;color:var(--text-faint);letter-spacing:.06em;text-transform:uppercase;">Aucun article</div>';
+    return;
   }
   list.innerHTML = items.map(item => {
-    let imgSrc = item.products?.image_url || ''
-    if(Array.isArray(item.products?.images) && item.products.images.length) imgSrc = item.products.images[0]
-    else { try { const a = JSON.parse(imgSrc); if(Array.isArray(a) && a.length) imgSrc = a[0] } catch {} }
+    let imgSrc = item.products?.image_url || '';
+    if (Array.isArray(item.products?.images) && item.products.images.length) {
+      imgSrc = item.products.images[0];
+    } else if (imgSrc) {
+      try { const a = JSON.parse(imgSrc); if (Array.isArray(a) && a.length) imgSrc = a[0]; } catch {}
+    }
+    const price = fmtAmount(item.unit_price != null ? item.unit_price * item.quantity : null, order.currency);
     return `<div class="item-row">
       ${imgSrc
         ? `<img src="${imgSrc}" class="item-img" onerror="this.style.display='none'"/>`
@@ -831,79 +861,65 @@ function renderItems(order) {
         <div class="item-name">${item.products?.name || '—'}</div>
         <div class="item-qty">Qté : ${item.quantity}</div>
       </div>
-      <div class="item-price">${fmtAmount(item.unit_price * item.quantity)}</div>
-    </div>`
-  }).join('')
+      <div class="item-price">${price}</div>
+    </div>`;
+  }).join('');
 }
 
-// ── COPY LINK ──
+/* ── COPY LINK ── */
 function copyLink() {
-  const url = window.location.href
-  navigator.clipboard.writeText(url).then(() => showToast('Lien copié !', 'success')).catch(() => {
-    const inp = document.createElement('input')
-    inp.value = url; document.body.appendChild(inp); inp.select()
-    document.execCommand('copy'); document.body.removeChild(inp)
-    showToast('Lien copié !', 'success')
-  })
+  const url = window.location.href;
+  navigator.clipboard.writeText(url)
+    .then(() => showToast('Lien copié !', 'success'))
+    .catch(() => { showToast('Lien copié !', 'success'); });
 }
 
-// ── REFRESH ──
+/* ── REFRESH ── */
 async function refreshTracking() {
-  if(!currentOrder) return
-  const btns = [document.getElementById('btn-refresh'), document.getElementById('btn-refresh-nav')]
-  btns.forEach(b => { if(b) b.classList.add('spinning') })
-  const db = getDb()
-  try {
-    const { data } = await db.from('orders').select(ORDER_SELECT).eq('id', currentOrder.id).single()
-    if(data) {
-      renderTracking(data)
-      showToast('Mis à jour', 'success')
-    }
-  } catch(e) { showToast('Erreur : ' + e.message, 'error') }
-  finally { btns.forEach(b => { if(b) b.classList.remove('spinning') }) }
+  if (!currentOrder) return;
+  const btns = [document.getElementById('btn-refresh'), document.getElementById('btn-refresh-nav')];
+  btns.forEach(b => { if (b) b.classList.add('spinning'); });
+  waitForDb(async (db) => {
+    try {
+      const order = await fetchOrder(db, currentOrder.tracking_number || currentOrder.id);
+      if (order) { renderTracking(order); showToast('Mis à jour', 'success'); }
+    } catch (e) { showToast('Erreur : ' + e.message, 'error'); }
+    finally { btns.forEach(b => { if (b) b.classList.remove('spinning'); }); }
+  });
 }
 
-// ── REALTIME ──
+/* ── REALTIME ── */
 function startRealtime(orderId) {
-  const db = getDb(); if(!db) return
-  if(realtimeChannel) db.removeChannel(realtimeChannel)
-
-  realtimeChannel = db.channel('tracking-' + orderId)
-    .on('postgres_changes', {
-      event: 'UPDATE', schema: 'public', table: 'orders', filter: `id=eq.${orderId}`
-    }, async (payload) => {
-      const newStatus = payload.new?.status
-      const oldStatus = currentOrder?.status
-      if(newStatus && newStatus !== oldStatus) {
-        showLiveBanner(`Statut mis à jour : ${STATUS_CFG[newStatus]?.label || newStatus}`)
-        await refreshTracking()
-      }
-    })
-    .on('postgres_changes', {
-      event: '*', schema: 'public', table: 'deliveries', filter: `order_id=eq.${orderId}`
-    }, async () => {
-      showLiveBanner('Informations de livraison mises à jour')
-      await refreshTracking()
-    })
-    .subscribe()
-
-  // Afficher banner live
-  showLiveBanner('Suivi en temps réel activé')
+  waitForDb((db) => {
+    if (realtimeChannel) db.removeChannel(realtimeChannel);
+    realtimeChannel = db.channel('tracking-' + orderId)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders', filter: `id=eq.${orderId}` }, async (payload) => {
+        const newStatus = payload.new?.status;
+        if (newStatus && currentOrder && newStatus !== currentOrder.status) {
+          showLiveBanner('Statut mis à jour : ' + (STATUS_CFG[newStatus]?.label || newStatus));
+          await refreshTracking();
+        }
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'deliveries', filter: `order_id=eq.${orderId}` }, async () => {
+        showLiveBanner('Informations de livraison mises à jour');
+        await refreshTracking();
+      })
+      .subscribe();
+    showLiveBanner('Suivi en temps réel activé');
+  });
 }
 
 function showLiveBanner(msg) {
-  const b = document.getElementById('live-banner')
-  document.getElementById('live-msg').textContent = msg
-  b.classList.add('show')
-  setTimeout(() => b.classList.remove('show'), 5000)
+  const b = document.getElementById('live-banner');
+  document.getElementById('live-msg').textContent = msg;
+  b.classList.add('show');
+  setTimeout(() => b.classList.remove('show'), 5000);
 }
 
-// ── MES COMMANDES ──
+/* ── MES COMMANDES ── */
 async function loadMesCommandes() {
-  const db = getDb()
-  const el = document.getElementById('orders-content')
-
-  if(!currentSession) {
+  const el = document.getElementById('orders-content');
+  if (!currentSession) {
     el.innerHTML = `
       <div class="not-logged">
         <div class="not-logged-icon"><i class="ph ph-lock"></i></div>
@@ -912,96 +928,96 @@ async function loadMesCommandes() {
         <a href="compte.html" class="btn-sm btn-primary" style="text-decoration:none;margin:0 auto;">
           <i class="ph ph-sign-in"></i> Se connecter
         </a>
-      </div>`
-    return
+      </div>`;
+    return;
   }
+  el.innerHTML = '<div style="padding:40px;text-align:center;"><div class="spinner" style="margin:0 auto;"></div></div>';
 
-  el.innerHTML = '<div class="empty-state" style="margin-bottom:0;"><div class="spinner" style="margin:0 auto;"></div></div>'
+  waitForDb(async (db) => {
+    try {
+      const { data, error } = await db.from('orders')
+        .select(`
+          id, tracking_number, status, created_at, total_amount, currency,
+          shipping_name,
+          order_items(
+            quantity,
+            products(name, image_url, images)
+          )
+        `)
+        .eq('user_id', currentSession.user.id)
+        .order('created_at', { ascending: false })
+        .limit(20);
 
-  try {
-    const { data, error } = await db.from('orders')
-      .select(ORDER_SELECT)
-      .eq('user_id', currentSession.user.id)
-      .order('created_at', {ascending: false})
-      .limit(20)
+      if (error) throw error;
+      if (!data?.length) {
+        el.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon"><i class="ph ph-shopping-bag"></i></div>
+            <div class="empty-title">Aucune commande</div>
+            <div class="empty-sub">Vous n'avez pas encore passé de commande sur WennaShop</div>
+          </div>`;
+        return;
+      }
 
-    if(error) throw error
-
-    if(!data?.length) {
-      el.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-icon"><i class="ph ph-shopping-bag"></i></div>
-          <div class="empty-title">Aucune commande</div>
-          <div class="empty-sub">Vous n'avez pas encore passé de commande sur WennaShop</div>
-        </div>`
-      return
+      el.innerHTML = `<div class="orders-list">${data.map(o => {
+        const firstProd = o.order_items?.[0]?.products;
+        let imgSrc = firstProd?.image_url || '';
+        if (Array.isArray(firstProd?.images) && firstProd.images.length) imgSrc = firstProd.images[0];
+        else if (imgSrc) { try { const a = JSON.parse(imgSrc); if (Array.isArray(a) && a.length) imgSrc = a[0]; } catch {} }
+        const name = firstProd?.name
+          ? (o.order_items.length > 1 ? `${firstProd.name} + ${o.order_items.length - 1}` : firstProd.name)
+          : (o.shipping_name || 'Commande WennaShop');
+        const ref = o.tracking_number || ('#' + o.id.slice(0, 8).toUpperCase());
+        return `
+          <div class="order-card" onclick="openOrder('${o.tracking_number || o.id}')">
+            <div class="order-card-left">
+              <div class="order-card-img">
+                ${imgSrc ? `<img src="${imgSrc}" onerror="this.style.display='none'"/>` : `<i class="ph ph-package"></i>`}
+              </div>
+              <div>
+                <div class="order-card-ref">${ref}</div>
+                <div class="order-card-name">${name}</div>
+                <div class="order-card-date">${fmtDateShort(o.created_at)}</div>
+              </div>
+            </div>
+            <div class="order-card-right">
+              <span class="order-card-amount">${fmtAmount(o.total_amount, o.currency)}</span>
+              ${badgeHtml(o.status)}
+              <i class="ph ph-arrow-right" style="color:var(--text-faint);font-size:16px;"></i>
+            </div>
+          </div>`;
+      }).join('')}</div>`;
+    } catch (e) {
+      el.innerHTML = `<div class="empty-state"><div class="empty-sub" style="color:var(--error);">Erreur : ${e.message}</div></div>`;
     }
-
-    el.innerHTML = `<div class="orders-list">${data.map(o => {
-      const firstProd = o.order_items?.[0]?.products
-      let imgSrc = firstProd?.image_url || ''
-      if(Array.isArray(firstProd?.images) && firstProd.images.length) imgSrc = firstProd.images[0]
-      else { try { const a = JSON.parse(imgSrc); if(Array.isArray(a)&&a.length) imgSrc=a[0] } catch {} }
-      const name = firstProd?.name
-        ? (o.order_items.length > 1 ? `${firstProd.name} + ${o.order_items.length-1}` : firstProd.name)
-        : 'Commande WennaShop'
-      const ref = o.tracking_number || ('#' + o.id.slice(0,8).toUpperCase())
-      return `
-        <div class="order-card" onclick="openOrder('${o.tracking_number || o.id}')">
-          <div class="order-card-left">
-            <div class="order-card-img">
-              ${imgSrc ? `<img src="${imgSrc}" onerror="this.style.display='none'"/>` : `<i class="ph ph-package"></i>`}
-            </div>
-            <div>
-              <div class="order-card-ref">${ref}</div>
-              <div class="order-card-name">${name}</div>
-              <div class="order-card-date">${fmtDateShort(o.created_at)}</div>
-            </div>
-          </div>
-          <div class="order-card-right">
-            <span class="order-card-amount">${fmtAmount(o.total_amount)}</span>
-            ${badgeHtml(o.status)}
-            <i class="ph ph-arrow-right" style="color:var(--text-faint);font-size:16px;"></i>
-          </div>
-        </div>`
-    }).join('')}</div>`
-  } catch(e) {
-    el.innerHTML = `<div class="empty-state"><div class="empty-sub">Erreur : ${e.message}</div></div>`
-  }
+  });
 }
 
 function openOrder(ref) {
-  document.getElementById('tracking-input').value = ref
-  switchTab('search', document.querySelector('.tab-btn'))
-  searchTracking()
+  document.getElementById('tracking-input').value = ref;
+  switchTab('search', document.getElementById('tab-search-btn'));
+  searchTracking();
 }
 
-// ── URL PARAM ──
+/* ── URL PARAM ── */
 function checkUrlParam() {
-  const params = new URLSearchParams(window.location.search)
-  const ref = params.get('tracking') || params.get('order')
-  if(ref) {
-    document.getElementById('tracking-input').value = ref
-    searchTracking()
+  const params = new URLSearchParams(window.location.search);
+  const ref = params.get('tracking') || params.get('order');
+  if (ref) {
+    document.getElementById('tracking-input').value = ref;
+    searchTracking();
   }
 }
 
-// ── INIT ──
-async function init() {
-  const db = getDb()
-  if(!db) { setTimeout(init, 100); return }
-
-  // Session
+/* ── INIT ── */
+waitForDb(async (db) => {
   try {
-    const { data: { session } } = await db.auth.getSession()
-    currentSession = session
-  } catch(e) {}
-
-  document.getElementById('init-screen').classList.add('hidden')
-  checkUrlParam()
-}
-
-document.addEventListener('DOMContentLoaded', init)
+    const { data: { session } } = await db.auth.getSession();
+    currentSession = session;
+  } catch (e) {}
+  document.getElementById('init-screen').classList.add('hidden');
+  checkUrlParam();
+});
 </script>
 </body>
 </html>
