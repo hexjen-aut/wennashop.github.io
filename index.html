@@ -78,7 +78,6 @@ body {
   .left-panel { height: 220px; }
 }
 
-/* Image de fond Unsplash — marché africain, vie colorée, libre de droit */
 .left-panel-bg {
   position: absolute;
   inset: 0;
@@ -91,7 +90,6 @@ body {
   transform: scale(1.04);
 }
 
-/* Overlay dégradé — laisse voir la photo en haut, noir dense en bas */
 .left-panel-overlay {
   position: absolute;
   inset: 0;
@@ -105,7 +103,6 @@ body {
     );
 }
 
-/* Grain subtil pour coller à l'esthétique dark */
 .left-panel-grain {
   position: absolute;
   inset: 0;
@@ -134,7 +131,6 @@ body {
   }
 }
 
-/* ── LOGO TEXTE ── */
 .logo-text {
   font-family: var(--font);
   font-size: 52px;
@@ -146,18 +142,11 @@ body {
   text-shadow: 0 2px 24px rgba(0,0,0,.6);
   user-select: none;
 }
-.logo-text span {
-  color: var(--accent);
-}
+.logo-text span { color: var(--accent); }
 @media (max-width: 768px) {
-  .logo-text {
-    font-size: 38px;
-    margin-bottom: 0;
-    text-align: center;
-  }
+  .logo-text { font-size: 38px; margin-bottom: 0; text-align: center; }
 }
 
-/* Tagline sous le logo */
 .left-tagline {
   font-size: 15px;
   font-weight: 500;
@@ -168,7 +157,6 @@ body {
 }
 @media (max-width: 768px) { .left-tagline { display: none; } }
 
-/* Pill "corridor" — remplace les drapeaux, plus élégant */
 .left-corridor {
   display: inline-flex;
   align-items: center;
@@ -202,13 +190,7 @@ body {
   text-transform: uppercase;
   color: rgba(255,255,255,0.7);
 }
-
-.corridor-sep {
-  width: 1px;
-  height: 14px;
-  background: rgba(255,117,31,0.3);
-}
-
+.corridor-sep { width: 1px; height: 14px; background: rgba(255,117,31,0.3); }
 .corridor-countries {
   font-size: 12px;
   font-weight: 700;
@@ -348,6 +330,38 @@ body {
   gap: 12px;
 }
 @media (max-width: 380px) { .grid-2 { grid-template-columns: 1fr; } }
+
+/* ── SELECT PAYS ── */
+.select-pays {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  padding: 13px 40px 13px 44px;
+  font-size: 14px;
+  font-family: var(--font);
+  font-weight: 500;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+}
+.select-pays:focus {
+  border-color: var(--accent);
+  background-color: var(--surface-3);
+  box-shadow: 0 0 0 3px rgba(255,117,31,.08);
+}
+.select-pays option {
+  background: var(--surface-2);
+  color: var(--text);
+  font-family: var(--font);
+}
+.select-pays option:first-child { color: var(--text-faint); }
 
 /* ── CHOICE BUTTONS ── */
 .choice-group { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -499,7 +513,6 @@ body {
   cursor: pointer;
 }
 .btn-google:hover { border-color: rgba(255,255,255,.2); color: var(--text); background: var(--surface-2); }
-
 .google-svg { flex-shrink: 0; }
 
 /* ── FORGOT ── */
@@ -766,20 +779,16 @@ button.forgot:hover { text-decoration: underline; }
     <div class="left-panel-grain"></div>
 
     <div class="left-content">
-      <!-- Logo texte -->
       <div class="logo-text"><span>Wenna</span>Shop</div>
-
       <p class="left-tagline">
         La marketplace qui connecte vendeurs et acheteurs<br>
         à travers toute l'Afrique francophone.
       </p>
-
-      <!-- Pill corridor — remplace drapeaux -->
       <div class="left-corridor">
         <div class="corridor-dot"></div>
-        <span class="corridor-label">Corridor</span>
+        <span class="corridor-label">Afrique</span>
         <div class="corridor-sep"></div>
-        <span class="corridor-countries">Gabon · Maroc</span>
+        <span class="corridor-countries">Francophone</span>
       </div>
     </div>
   </div>
@@ -905,11 +914,51 @@ button.forgot:hover { text-decoration: underline; }
           <div class="genre-hint" id="genre-hint">Sélectionnez pour recevoir des suggestions adaptées.</div>
         </div>
 
+        <!-- ── PAYS — Dropdown Afrique francophone ── -->
         <div class="field">
           <div class="field-label">Pays</div>
-          <div class="choice-group">
-            <button class="choice-btn" data-country="gabon" onclick="selectCountry('gabon')">🇬🇦 Gabon</button>
-            <button class="choice-btn" data-country="maroc" onclick="selectCountry('maroc')">🇲🇦 Maroc</button>
+          <div class="input-wrap">
+            <i class="ph ph-globe-hemisphere-west field-icon left" style="pointer-events:none;"></i>
+            <select id="ins-pays" class="select-pays" onchange="selectedCountry = this.value">
+              <option value="" disabled selected>Sélectionnez votre pays</option>
+              <!-- Maghreb -->
+              <optgroup label="Maghreb">
+                <option value="maroc">🇲🇦 Maroc</option>
+                <option value="algerie">🇩🇿 Algérie</option>
+                <option value="tunisie">🇹🇳 Tunisie</option>
+              </optgroup>
+              <!-- Afrique Centrale -->
+              <optgroup label="Afrique Centrale">
+                <option value="gabon">🇬🇦 Gabon</option>
+                <option value="cameroun">🇨🇲 Cameroun</option>
+                <option value="congo_brazza">🇨🇬 Congo-Brazzaville</option>
+                <option value="rdc">🇨🇩 RD Congo</option>
+                <option value="centrafrique">🇨🇫 Centrafrique</option>
+                <option value="tchad">🇹🇩 Tchad</option>
+              </optgroup>
+              <!-- Afrique de l'Ouest -->
+              <optgroup label="Afrique de l'Ouest">
+                <option value="senegal">🇸🇳 Sénégal</option>
+                <option value="cote_ivoire">🇨🇮 Côte d'Ivoire</option>
+                <option value="mali">🇲🇱 Mali</option>
+                <option value="burkina">🇧🇫 Burkina Faso</option>
+                <option value="guinee">🇬🇳 Guinée</option>
+                <option value="benin">🇧🇯 Bénin</option>
+                <option value="togo">🇹🇬 Togo</option>
+                <option value="niger">🇳🇪 Niger</option>
+                <option value="mauritanie">🇲🇷 Mauritanie</option>
+              </optgroup>
+              <!-- Afrique de l'Est / Océan Indien -->
+              <optgroup label="Afrique de l'Est &amp; Océan Indien">
+                <option value="madagascar">🇲🇬 Madagascar</option>
+                <option value="djibouti">🇩🇯 Djibouti</option>
+                <option value="comores">🇰🇲 Comores</option>
+              </optgroup>
+              <!-- Autre -->
+              <optgroup label="Autre">
+                <option value="autre">🌍 Autre pays</option>
+              </optgroup>
+            </select>
           </div>
         </div>
 
@@ -1019,10 +1068,6 @@ function switchMode(mode) {
   }
 }
 
-function selectCountry(val) {
-  selectedCountry = val
-  document.querySelectorAll('[data-country]').forEach(b => b.classList.toggle('active', b.dataset.country === val))
-}
 function selectRole(val) {
   selectedRole = val
   document.querySelectorAll('[data-role]').forEach(b => b.classList.toggle('active', b.dataset.role === val))
@@ -1108,9 +1153,13 @@ async function handleInscription() {
   const email  = need('ins-email', 'Email')
   if (!prenom || !nom || !email) return
   const pwd = document.getElementById('ins-pwd')?.value || ''
-  if (pwd.length < 8)   { toast('Mot de passe : 8 caractères minimum', 'ko'); return }
+  if (pwd.length < 8) { toast('Mot de passe : 8 caractères minimum', 'ko'); return }
+
+  // Récupère la valeur du select pays
+  selectedCountry = document.getElementById('ins-pays')?.value || null
   if (!selectedCountry) { toast('Sélectionnez votre pays', 'ko'); return }
-  if (!selectedRole)    { toast('Sélectionnez votre rôle', 'ko'); return }
+
+  if (!selectedRole) { toast('Sélectionnez votre rôle', 'ko'); return }
   if (!document.getElementById('cgu')?.checked) { toast('Acceptez les CGU pour continuer', 'ko'); return }
   const genre = selectedGenre || 'non_precise'
   setLoading('btn-ins', true)
