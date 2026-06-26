@@ -112,9 +112,7 @@ main { padding-top: var(--nav-height); }
 
 /* ── GALLERY ── */
 .gallery { display: grid; grid-template-columns: 1fr 180px; gap: 3px; height: 420px; }
-@media (max-width: 768px) { .gallery { grid-template-columns: 1fr; height: 280px; } .thumbs-col { display: none; } }
 .main-img-wrap { position: relative; overflow: hidden; background: var(--surface); border-radius: var(--radius-lg) 0 0 var(--radius-lg); }
-@media (max-width: 768px) { .main-img-wrap { border-radius: 0; } }
 .main-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
 .main-img-wrap:hover img { transform: scale(1.03); }
 .origin-badge {
@@ -134,20 +132,28 @@ main { padding-top: var(--nav-height); }
   font-size: 13px; font-weight: 800; color: var(--text);
 }
 
+/* ── MOBILE GALLERY — taille réduite ── */
+@media (max-width: 768px) {
+  .gallery { grid-template-columns: 1fr; height: 240px; }
+  .main-img-wrap { border-radius: 0; }
+  .thumbs-col { display: none; }
+}
+
 /* ── CONTENT ── */
 .content { padding: 28px 24px 0; }
-@media (max-width: 768px) { .content { padding: 20px 16px 0; } }
+@media (max-width: 768px) { .content { padding: 16px 16px 0; } }
 .eyebrow {
   font-size: 11px; font-weight: 700; letter-spacing: .12em;
   text-transform: uppercase; color: var(--accent);
   display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
 }
 .eyebrow::before { content: ''; display: block; width: 16px; height: 2px; background: var(--accent); border-radius: 99px; }
-.product-title { font-size: clamp(24px, 4vw, 40px); font-weight: 900; line-height: 1.1; letter-spacing: -.5px; margin-bottom: 16px; }
+.product-title { font-size: clamp(20px, 4vw, 40px); font-weight: 900; line-height: 1.1; letter-spacing: -.5px; margin-bottom: 16px; }
 .price-row { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; }
-.price { font-size: 30px; font-weight: 900; color: var(--accent); }
-.compare-price { font-size: 18px; font-weight: 600; color: var(--text-faint); text-decoration: line-through; }
-.rating { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 20px; }
+.price { font-size: 28px; font-weight: 900; color: var(--accent); }
+.compare-price { font-size: 16px; font-weight: 600; color: var(--text-faint); text-decoration: line-through; }
+.rating { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 20px; cursor: pointer; }
+.rating:hover { color: var(--gold); }
 
 /* ── CHIPS ── */
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; }
@@ -219,6 +225,43 @@ main { padding-top: var(--nav-height); }
 
 /* ── REVIEWS ── */
 .reviews-section { margin-bottom: 36px; }
+.review-form-card {
+  background: var(--surface-2); border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg); padding: 20px;
+  margin-bottom: 16px; transition: border-color .2s;
+}
+.review-form-card:hover { border-color: var(--border-accent); }
+.review-form-title { font-size: 14px; font-weight: 800; margin-bottom: 14px; }
+.star-select { display: flex; gap: 6px; margin-bottom: 14px; }
+.star-btn {
+  font-size: 24px; color: var(--border); cursor: pointer;
+  transition: color .15s, transform .15s; background: none; border: none; padding: 0;
+}
+.star-btn:hover, .star-btn.active { color: var(--gold); transform: scale(1.15); }
+.review-input {
+  width: 100%; background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--radius-md); color: var(--text); font-family: var(--font);
+  font-size: 13px; font-weight: 500; padding: 10px 14px;
+  resize: none; min-height: 80px; transition: border-color .2s;
+  margin-bottom: 10px;
+}
+.review-input:focus { outline: none; border-color: var(--border-accent); }
+.review-name-input {
+  width: 100%; background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--radius-md); color: var(--text); font-family: var(--font);
+  font-size: 13px; font-weight: 500; padding: 10px 14px;
+  transition: border-color .2s; margin-bottom: 10px;
+}
+.review-name-input:focus { outline: none; border-color: var(--border-accent); }
+.btn-submit-review {
+  width: 100%; height: 42px; background: var(--accent); color: #fff;
+  border: none; border-radius: var(--radius-pill); font-family: var(--font);
+  font-size: 13px; font-weight: 800; cursor: pointer;
+  transition: background .2s; display: flex; align-items: center;
+  justify-content: center; gap: 8px;
+}
+.btn-submit-review:hover { background: var(--accent-dark); }
+.btn-submit-review:disabled { opacity: .5; cursor: not-allowed; }
 .review-card {
   background: var(--surface-2); border: 1.5px solid var(--border);
   border-radius: var(--radius-lg); padding: 16px 18px;
@@ -230,6 +273,7 @@ main { padding-top: var(--nav-height); }
 .review-date { font-size: 11px; font-weight: 600; color: var(--text-faint); }
 .stars { color: var(--gold); font-size: 13px; margin-bottom: 6px; }
 .review-text { font-size: 13px; font-weight: 500; color: var(--text-muted); line-height: 1.7; }
+.no-reviews { font-size: 13px; font-weight: 600; color: var(--text-faint); text-align: center; padding: 20px; }
 
 /* ── RELATED ── */
 .related-section { margin-bottom: 36px; }
@@ -272,7 +316,7 @@ main { padding-top: var(--nav-height); }
 
 /* ── SKELETON LAYOUT ── */
 .sk-gallery { display: grid; grid-template-columns: 1fr 180px; gap: 3px; height: 420px; }
-@media (max-width: 768px) { .sk-gallery { grid-template-columns: 1fr; height: 280px; } .sk-thumbs { display: none; } }
+@media (max-width: 768px) { .sk-gallery { grid-template-columns: 1fr; height: 240px; } .sk-thumbs { display: none; } }
 .sk-thumbs { display: flex; flex-direction: column; gap: 3px; }
 .sk-thumb { flex: 1; border-radius: var(--radius-sm); }
 .sk-info { padding: 28px 24px 0; display: flex; flex-direction: column; gap: 10px; }
@@ -304,24 +348,16 @@ main { padding-top: var(--nav-height); }
 .btn-cart:hover { background: var(--accent-dark); transform: translateY(-1px); }
 .btn-cart:active { transform: translateY(0); }
 
-/* ═══════════════════════════════════════════════
-   CART SIDEBAR
-═══════════════════════════════════════════════ */
-
-/* Overlay de fond */
+/* ══ CART SIDEBAR ══ */
 .cart-overlay {
   position: fixed; inset: 0; z-index: 200;
   background: rgba(0,0,0,.6); backdrop-filter: blur(4px);
-  opacity: 0; pointer-events: none;
-  transition: opacity .3s ease;
+  opacity: 0; pointer-events: none; transition: opacity .3s ease;
 }
 .cart-overlay.open { opacity: 1; pointer-events: all; }
-
-/* Panneau latéral */
 .cart-sidebar {
   position: fixed; top: 0; right: 0; bottom: 0; z-index: 201;
-  width: min(420px, 100vw);
-  background: var(--surface);
+  width: min(420px, 100vw); background: var(--surface);
   border-left: 1px solid var(--border);
   display: flex; flex-direction: column;
   transform: translateX(100%);
@@ -329,22 +365,16 @@ main { padding-top: var(--nav-height); }
   box-shadow: -8px 0 40px rgba(0,0,0,.5);
 }
 .cart-sidebar.open { transform: translateX(0); }
-
-/* Header sidebar */
 .cs-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 18px 20px; border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
+  padding: 18px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0;
 }
-.cs-title {
-  font-size: 17px; font-weight: 800; display: flex; align-items: center; gap: 8px;
-}
+.cs-title { font-size: 17px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
 .cs-title i { color: var(--accent); font-size: 20px; }
 .cs-count {
   background: var(--accent); color: #fff;
   font-size: 10px; font-weight: 800; min-width: 18px; height: 18px;
-  border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center;
-  padding: 0 4px;
+  border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; padding: 0 4px;
 }
 .cs-close {
   background: var(--surface-2); border: 1px solid var(--border);
@@ -354,31 +384,23 @@ main { padding-top: var(--nav-height); }
   transition: color .2s, border-color .2s;
 }
 .cs-close:hover { color: var(--text); border-color: var(--border-accent); }
-
-/* Corps — liste items */
 .cs-body {
   flex: 1; overflow-y: auto; padding: 16px;
   display: flex; flex-direction: column; gap: 10px;
 }
 .cs-body::-webkit-scrollbar { width: 3px; }
 .cs-body::-webkit-scrollbar-thumb { background: var(--border-accent); border-radius: 99px; }
-
-/* État vide */
 .cs-empty {
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: center; flex: 1; gap: 10px; padding: 40px 20px;
-  text-align: center;
+  display: none; flex-direction: column; align-items: center;
+  justify-content: center; flex: 1; gap: 10px; padding: 40px 20px; text-align: center;
 }
 .cs-empty i { font-size: 40px; color: var(--text-faint); }
 .cs-empty-title { font-size: 15px; font-weight: 800; }
 .cs-empty-sub { font-size: 12px; font-weight: 500; color: var(--text-muted); }
-
-/* Item panier */
 .cs-item {
   display: flex; gap: 12px; align-items: flex-start;
   background: var(--surface-2); border: 1.5px solid var(--border);
-  border-radius: var(--radius-lg); padding: 12px;
-  transition: border-color .2s;
+  border-radius: var(--radius-lg); padding: 12px; transition: border-color .2s;
 }
 .cs-item:hover { border-color: var(--border-accent); }
 .cs-item-img {
@@ -413,27 +435,15 @@ main { padding-top: var(--nav-height); }
   border-radius: 6px; transition: color .15s, background .15s;
 }
 .cs-remove:hover { color: var(--error); background: rgba(239,68,68,.08); }
-
-/* Skeleton item */
-.cs-item-sk {
-  background: var(--surface-2); border: 1.5px solid var(--border);
-  border-radius: var(--radius-lg); padding: 12px;
-  display: flex; gap: 12px; align-items: flex-start;
-}
-
-/* Footer sidebar */
 .cs-footer {
   padding: 16px 20px; border-top: 1px solid var(--border);
-  flex-shrink: 0; display: flex; flex-direction: column; gap: 10px;
+  flex-shrink: 0; display: none; flex-direction: column; gap: 10px;
 }
 .cs-summary-row {
   display: flex; justify-content: space-between; align-items: center;
   font-size: 13px; font-weight: 600; color: var(--text-muted);
 }
-.cs-total-row {
-  display: flex; justify-content: space-between; align-items: center;
-  font-size: 16px; font-weight: 900;
-}
+.cs-total-row { display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: 900; }
 .cs-total-amount { color: var(--accent); font-size: 20px; }
 .cs-checkout {
   width: 100%; height: 50px; background: var(--accent); color: #fff;
@@ -449,17 +459,22 @@ main { padding-top: var(--nav-height); }
   border: 1.5px solid var(--border); border-radius: var(--radius-pill);
   color: var(--text-muted); font-family: var(--font); font-size: 13px; font-weight: 700;
   cursor: pointer; transition: border-color .2s, color .2s;
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-  text-decoration: none;
+  display: flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none;
 }
 .cs-view-cart:hover { border-color: var(--border-accent); color: var(--text); }
+.cs-loading {
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px; color: var(--text-muted); font-size: 13px; font-weight: 600; gap: 10px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.cs-spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
 </style>
 </head>
 <body>
 
 <div id="toast"></div>
 
-<!-- ══════════════════ CART SIDEBAR ══════════════════ -->
+<!-- ══ CART SIDEBAR ══ -->
 <div class="cart-overlay" id="cart-overlay" onclick="closeCart()"></div>
 <aside class="cart-sidebar" id="cart-sidebar" aria-label="Panier">
   <div class="cs-header">
@@ -468,21 +483,21 @@ main { padding-top: var(--nav-height); }
       Mon panier
       <span class="cs-count" id="cs-count">0</span>
     </div>
-    <button class="cs-close" onclick="closeCart()" aria-label="Fermer le panier">
+    <button class="cs-close" onclick="closeCart()" aria-label="Fermer">
       <i class="ph ph-x"></i>
     </button>
   </div>
-
   <div class="cs-body" id="cs-body">
-    <!-- Contenu injecté par JS -->
-    <div class="cs-empty" id="cs-empty" style="display:none;">
+    <div class="cs-loading" id="cs-loading" style="display:none;">
+      <div class="cs-spinner"></div> Chargement...
+    </div>
+    <div class="cs-empty" id="cs-empty">
       <i class="ph ph-shopping-bag-open"></i>
       <div class="cs-empty-title">Panier vide</div>
       <div class="cs-empty-sub">Ajoute des produits pour commencer.</div>
     </div>
   </div>
-
-  <div class="cs-footer" id="cs-footer" style="display:none;">
+  <div class="cs-footer" id="cs-footer">
     <div class="cs-summary-row">
       <span>Sous-total</span>
       <span id="cs-subtotal">—</span>
@@ -503,7 +518,6 @@ main { padding-top: var(--nav-height); }
     </a>
   </div>
 </aside>
-<!-- ══════════════════════════════════════════════════ -->
 
 <!-- ── NAV ── -->
 <nav class="nav">
@@ -512,7 +526,6 @@ main { padding-top: var(--nav-height); }
       <i class="ph ph-arrow-left"></i>
     </button>
     <a href="boutique.html" class="logo"><span>Wenna</span>Shop</a>
-    <!-- Bouton panier ouvre le sidebar au lieu de naviguer -->
     <button class="nav-btn cart-wrap" onclick="openCart()" aria-label="Panier">
       <i class="ph ph-shopping-bag"></i>
       <span id="cart-badge" class="cart-badge">0</span>
@@ -561,7 +574,7 @@ main { padding-top: var(--nav-height); }
             <div class="price" id="product-price"></div>
             <div class="compare-price" id="compare-price" style="display:none;"></div>
           </div>
-          <div class="rating" id="rating-row" style="display:none;">
+          <div class="rating" id="rating-row" style="display:none;" onclick="document.getElementById('reviews-section').scrollIntoView({behavior:'smooth'})">
             <i class="ph ph-star" style="color:var(--gold);font-size:14px;"></i>
             <span id="avg-rating"></span>
             <span id="review-count-inline" style="color:var(--text-faint);"></span>
@@ -578,6 +591,8 @@ main { padding-top: var(--nav-height); }
 
       <div class="divider"></div>
 
+      <!-- SELLER -->
+      <div class="section-title">Vendeur</div>
       <div class="seller-card" id="seller-card">
         <div style="display:flex;align-items:center;gap:12px;">
           <div class="skeleton" style="width:46px;height:46px;border-radius:50%;flex-shrink:0;"></div>
@@ -589,19 +604,40 @@ main { padding-top: var(--nav-height); }
       </div>
 
       <div class="delivery-info">
-        <i class="ph ph-package"></i>
+        <i class="ph ph-truck"></i>
         <span>La livraison est gérée directement par le vendeur. Contactez-le pour les délais et tarifs.</span>
       </div>
 
-      <div class="reviews-section" id="reviews-section" style="display:none;">
+      <!-- REVIEWS -->
+      <div class="reviews-section" id="reviews-section">
         <div class="divider"></div>
         <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;">
           <div class="section-title" style="margin-bottom:0;">Avis clients</div>
           <span id="reviews-count" style="font-size:12px;font-weight:700;color:var(--text-muted);"></span>
         </div>
+
+        <!-- FORMULAIRE AVIS -->
+        <div class="review-form-card">
+          <div class="review-form-title">Laisser un avis</div>
+          <div class="star-select" id="star-select">
+            <button class="star-btn" data-val="1" onclick="setRating(1)">★</button>
+            <button class="star-btn" data-val="2" onclick="setRating(2)">★</button>
+            <button class="star-btn" data-val="3" onclick="setRating(3)">★</button>
+            <button class="star-btn" data-val="4" onclick="setRating(4)">★</button>
+            <button class="star-btn" data-val="5" onclick="setRating(5)">★</button>
+          </div>
+          <input id="review-name" class="review-name-input" type="text" placeholder="Votre prénom (ou pseudo)" maxlength="50"/>
+          <textarea id="review-text-input" class="review-input" placeholder="Partagez votre expérience avec ce produit…" maxlength="500"></textarea>
+          <button class="btn-submit-review" id="btn-submit-review" onclick="submitReview()">
+            <i class="ph ph-paper-plane-tilt" style="font-size:15px;"></i>
+            Soumettre l'avis
+          </button>
+        </div>
+
         <div id="reviews-list"></div>
       </div>
 
+      <!-- RELATED -->
       <div class="related-section" id="related-section" style="display:none;">
         <div class="divider"></div>
         <div class="related-header">
@@ -632,24 +668,23 @@ main { padding-top: var(--nav-height); }
 <!-- BOTTOM BAR -->
 <div class="bottom-bar">
   <div class="bottom-bar-inner">
-    <button class="btn-wish" id="btn-wish" onclick="toggleWish()" aria-label="Ajouter aux favoris">
+    <button class="btn-wish" id="btn-wish" onclick="toggleWish()" aria-label="Favoris">
       <i class="ph ph-heart" id="wish-icon"></i>
     </button>
     <button class="btn-cart" onclick="addToCart()">
-      <i class="ph ph-shopping-bag" style="font-size:18px;"></i>
+      <i class="ph ph-shopping-bag-open" style="font-size:18px;"></i>
       Ajouter au panier
     </button>
   </div>
 </div>
 
 <script>
-// ── SUPABASE ──
-function getDb() { return window.db }
-
-let currentProduct = null
-const $ = id => document.getElementById(id)
-
 // ── UTILS ──
+function getDb() { return window.db }
+const $ = id => document.getElementById(id)
+let currentProduct = null
+let selectedRating = 0
+
 function getProductId() { return new URLSearchParams(window.location.search).get('id') }
 
 function formatPrice(amount, currency = 'MAD') {
@@ -671,8 +706,39 @@ function getImages(product) {
 }
 
 // ─────────────────────────────────────────────
-// CART SIDEBAR
+// PANIER — localStorage unifié
+// Clé compatible avec CartCheck.js : 'wenna_cart'
+// Structure attendue : [{id, name, price, image, currency, qty}]
 // ─────────────────────────────────────────────
+const CART_KEY = 'wenna_cart'
+
+function getCartItems() {
+  try {
+    const raw = localStorage.getItem(CART_KEY)
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    // Supporte tableau direct OU objet {items:[...]}
+    return Array.isArray(parsed) ? parsed : (parsed.items || [])
+  } catch { return [] }
+}
+
+function saveCartItems(items) {
+  try { localStorage.setItem(CART_KEY, JSON.stringify(items)) } catch {}
+}
+
+function getCartCount() {
+  return getCartItems().reduce((s, i) => s + (i.qty || 1), 0)
+}
+
+function syncBadge() {
+  const n = getCartCount()
+  const badge = $('cart-badge')
+  const countEl = $('cs-count')
+  if (badge) { badge.textContent = n; badge.classList.toggle('show', n > 0) }
+  if (countEl) countEl.textContent = n
+}
+
+// ── CART SIDEBAR ──
 function openCart() {
   $('cart-overlay').classList.add('open')
   $('cart-sidebar').classList.add('open')
@@ -686,37 +752,22 @@ function closeCart() {
   document.body.style.overflow = ''
 }
 
-// Touche Escape pour fermer
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCart() })
-
-// Lit le panier depuis localStorage (format CartCheck.js) ou Cart API
-function getCartItems() {
-  try {
-    // CartCheck.js stocke généralement dans 'wenna_cart'
-    const raw = localStorage.getItem('wenna_cart')
-    if (raw) return JSON.parse(raw)
-  } catch(e) {}
-  return []
-}
-
-function saveCartItems(items) {
-  try { localStorage.setItem('wenna_cart', JSON.stringify(items)) } catch(e) {}
-}
 
 function renderCartSidebar() {
   const items = getCartItems()
   const body = $('cs-body')
   const footer = $('cs-footer')
   const emptyEl = $('cs-empty')
-  const countEl = $('cs-count')
+  const loadingEl = $('cs-loading')
 
-  // Vider le body sauf #cs-empty
-  Array.from(body.children).forEach(c => { if (c.id !== 'cs-empty') c.remove() })
+  // Nettoyer les items dynamiques (garder #cs-empty et #cs-loading)
+  Array.from(body.children).forEach(c => {
+    if (c.id !== 'cs-empty' && c.id !== 'cs-loading') c.remove()
+  })
 
-  const totalQty = items.reduce((s, i) => s + (i.qty || 1), 0)
-  countEl.textContent = totalQty
-  $('cart-badge').textContent = totalQty
-  $('cart-badge').classList.toggle('show', totalQty > 0)
+  loadingEl.style.display = 'none'
+  syncBadge()
 
   if (!items.length) {
     emptyEl.style.display = 'flex'
@@ -732,17 +783,19 @@ function renderCartSidebar() {
     div.className = 'cs-item'
     div.innerHTML = `
       <div class="cs-item-img">
-        ${item.image ? `<img src="${item.image}" alt="${item.name}" loading="lazy"/>` : `<div class="no-img"><i class="ph ph-image"></i></div>`}
+        ${item.image
+          ? `<img src="${item.image}" alt="${item.name || ''}" loading="lazy"/>`
+          : `<div class="no-img"><i class="ph ph-image"></i></div>`}
       </div>
       <div class="cs-item-info">
-        <div class="cs-item-name" title="${item.name}">${item.name}</div>
-        <div class="cs-item-price">${formatPrice(item.price * (item.qty || 1), item.currency || 'MAD')}</div>
+        <div class="cs-item-name" title="${item.name || ''}">${item.name || 'Produit'}</div>
+        <div class="cs-item-price">${formatPrice((item.price || 0) * (item.qty || 1), item.currency || 'MAD')}</div>
         <div class="cs-item-actions">
-          <button class="cs-qty-btn" onclick="changeQty(${idx}, -1)" aria-label="Diminuer">
+          <button class="cs-qty-btn" onclick="changeQty(${idx},-1)" aria-label="Diminuer">
             <i class="ph ph-minus"></i>
           </button>
           <span class="cs-qty">${item.qty || 1}</span>
-          <button class="cs-qty-btn" onclick="changeQty(${idx}, +1)" aria-label="Augmenter">
+          <button class="cs-qty-btn" onclick="changeQty(${idx},+1)" aria-label="Augmenter">
             <i class="ph ph-plus"></i>
           </button>
           <button class="cs-remove" onclick="removeItem(${idx})" aria-label="Retirer">
@@ -753,8 +806,7 @@ function renderCartSidebar() {
     body.insertBefore(div, emptyEl)
   })
 
-  // Calcul totaux
-  const subtotal = items.reduce((s, i) => s + i.price * (i.qty || 1), 0)
+  const subtotal = items.reduce((s, i) => s + (i.price || 0) * (i.qty || 1), 0)
   const currency = items[0]?.currency || 'MAD'
   $('cs-subtotal').textContent = formatPrice(subtotal, currency)
   $('cs-total').textContent = formatPrice(subtotal, currency)
@@ -775,55 +827,52 @@ function removeItem(idx) {
   renderCartSidebar()
 }
 
-// ── BADGE ──
-async function updateBadge() {
-  if (typeof Cart !== 'undefined') {
-    await Cart.updateBadge('cart-badge')
-    const n = parseInt($('cart-badge').textContent) || 0
-    $('cart-badge').classList.toggle('show', n > 0)
-    $('cs-count').textContent = n
-  } else {
-    const items = getCartItems()
-    const n = items.reduce((s, i) => s + (i.qty || 1), 0)
-    $('cart-badge').textContent = n
-    $('cart-badge').classList.toggle('show', n > 0)
-    $('cs-count').textContent = n
-  }
-}
-
-// ── CART ADD ──
+// ── AJOUTER AU PANIER ──
 async function addToCart() {
   if (!currentProduct) return
-  if (typeof Cart === 'undefined') {
-    // Fallback localStorage
-    const items = getCartItems()
-    const existing = items.find(i => i.id === currentProduct.id)
-    if (existing) existing.qty = (existing.qty || 1) + 1
-    else items.push({
+
+  // Si CartCheck.js est chargé → on l'utilise
+  if (typeof Cart !== 'undefined') {
+    const r = await Cart.add(
+      currentProduct.id, currentProduct.name, currentProduct.price,
+      currentProduct.image_url || (getImages(currentProduct)[0] || ''),
+      currentProduct.currency || 'MAD'
+    )
+    if (!r.success && r.error === 'not_logged_in') {
+      showToast('Connecte-toi pour ajouter au panier', 'ko')
+      setTimeout(() => window.location.href = 'index.html', 1500)
+      return
+    }
+    if (r.success) {
+      // Resync le localStorage depuis Cart si possible
+      syncBadge()
+      showToast(`«\u00a0${currentProduct.name}\u00a0» ajouté au panier`, 'ok')
+      setTimeout(() => openCart(), 400)
+    } else {
+      showToast(r.message || 'Erreur lors de l\'ajout', 'ko')
+    }
+    return
+  }
+
+  // Fallback localStorage pur
+  const items = getCartItems()
+  const existing = items.find(i => i.id === currentProduct.id)
+  if (existing) {
+    existing.qty = (existing.qty || 1) + 1
+  } else {
+    items.push({
       id: currentProduct.id,
       name: currentProduct.name,
       price: currentProduct.price,
-      image: currentProduct.image_url || '',
+      image: currentProduct.image_url || (getImages(currentProduct)[0] || ''),
       currency: currentProduct.currency || 'MAD',
       qty: 1
     })
-    saveCartItems(items)
-    updateBadge()
-    showToast(`« ${currentProduct.name} » ajouté au panier`, 'ok')
-    setTimeout(() => openCart(), 400)
-    return
   }
-  const r = await Cart.add(
-    currentProduct.id, currentProduct.name, currentProduct.price,
-    currentProduct.image_url || '', currentProduct.currency || 'MAD'
-  )
-  if (!r.success && r.error === 'not_logged_in') {
-    showToast('Connecte-toi pour ajouter au panier', 'ko')
-    setTimeout(() => window.location.href = 'index.html', 1500)
-    return
-  }
-  showToast(r.success ? `« ${currentProduct.name} » ajouté au panier` : r.message, r.success ? 'ok' : 'ko')
-  if (r.success) { updateBadge(); setTimeout(() => openCart(), 400) }
+  saveCartItems(items)
+  syncBadge()
+  showToast(`«\u00a0${currentProduct.name}\u00a0» ajouté au panier`, 'ok')
+  setTimeout(() => openCart(), 400)
 }
 
 // ── WISHLIST ──
@@ -846,7 +895,7 @@ function renderGallery(product) {
     const isLast = i === 2 && imgs.length > 3
     const div = document.createElement('div')
     div.className = 'thumb'
-    div.innerHTML = `<img src="${imgs[i]}" alt="Photo ${i + 1}"/>${isLast ? `<div class="thumb-more">+${imgs.length - 3}</div>` : ''}`
+    div.innerHTML = `<img src="${imgs[i]}" alt="Photo ${i+1}"/>${isLast ? `<div class="thumb-more">+${imgs.length - 3}</div>` : ''}`
     div.addEventListener('click', () => { mainImg.src = imgs[i] })
     col.appendChild(div)
   }
@@ -879,7 +928,7 @@ function renderProduct(product, reviews = []) {
   const chips = []
   if (product.country) chips.push({ icon: 'ph-map-pin', label: `Origine : ${product.origin_city ? product.origin_city + ', ' : ''}${product.country}` })
   if (product.warranty) chips.push({ icon: 'ph-shield-check', label: `Garantie : ${product.warranty}` })
-  if (product.stock !== undefined) chips.push({ icon: 'ph-package', label: product.stock > 0 ? `${product.stock} en stock` : 'Rupture de stock' })
+  if (product.stock !== undefined) chips.push({ icon: 'ph-cube', label: product.stock > 0 ? `${product.stock} en stock` : 'Rupture de stock' })
   if (!chips.length) chips.push({ icon: 'ph-seal-check', label: 'Vendeur vérifié' })
   $('chips-container').innerHTML = chips.map(c => `<div class="chip"><i class="ph ${c.icon}"></i><span>${c.label}</span></div>`).join('')
 
@@ -919,64 +968,123 @@ function renderProduct(product, reviews = []) {
 
 // ── RENDER SELLER ──
 function renderSeller({ user, shop }) {
+  const card = $('seller-card')
   if (!user && !shop) {
-    $('seller-card').innerHTML = '<span style="font-size:13px;color:var(--text-muted);">Vendeur non disponible</span>'
+    card.innerHTML = '<span style="font-size:13px;color:var(--text-muted);">Vendeur non disponible</span>'
     return
   }
+
   const displayName = shop?.name || user?.full_name || 'Vendeur'
   const since = user?.created_at ? new Date(user.created_at).getFullYear() : null
   const verified = shop?.is_verified
-  let avatar
-  if (shop?.logo_url) avatar = `<img src="${shop.logo_url}" alt="${displayName}"/>`
-  else if (user?.avatar_url) avatar = `<img src="${user.avatar_url}" alt="${displayName}"/>`
-  else avatar = displayName.charAt(0).toUpperCase()
-  const shopHref = shop?.slug ? `boutique-vendeur.html?slug=${shop.slug}` : shop?.id ? `boutique-vendeur.html?shop=${shop.id}` : `boutique-vendeur.html?vendeur=${user?.id}`
+
+  let avatarHtml
+  if (shop?.logo_url) avatarHtml = `<img src="${shop.logo_url}" alt="${displayName}"/>`
+  else if (user?.avatar_url) avatarHtml = `<img src="${user.avatar_url}" alt="${displayName}"/>`
+  else avatarHtml = `<span>${displayName.charAt(0).toUpperCase()}</span>`
+
+  let shopHref = 'boutique.html'
+  if (shop?.slug) shopHref = `boutique-vendeur.html?slug=${shop.slug}`
+  else if (shop?.id) shopHref = `boutique-vendeur.html?shop=${shop.id}`
+  else if (user?.id) shopHref = `boutique-vendeur.html?vendeur=${user.id}`
+
   const metaParts = []
-  if (verified) metaParts.push('Vendeur certifié ✓')
+  if (verified) metaParts.push('✓ Certifié')
   if (user?.country) metaParts.push(user.country)
   if (since) metaParts.push(`Depuis ${since}`)
-  if (shop?.total_sales) metaParts.push(`${shop.total_sales} ventes`)
-  $('seller-card').innerHTML = `
+  if (shop?.total_sales) metaParts.push(`${shop.total_sales} vente${shop.total_sales > 1 ? 's' : ''}`)
+  if (shop?.rating_avg && shop?.rating_count) metaParts.push(`${parseFloat(shop.rating_avg).toFixed(1)} ★ (${shop.rating_count})`)
+
+  card.innerHTML = `
     <div style="display:flex;align-items:center;gap:12px;">
-      <div class="seller-av">${avatar}</div>
-      <div><div class="seller-name">${displayName}</div><div class="seller-meta">${metaParts.join(' · ')}</div></div>
+      <div class="seller-av">${avatarHtml}</div>
+      <div>
+        <div class="seller-name">${displayName}</div>
+        <div class="seller-meta">${metaParts.join(' · ')}</div>
+      </div>
     </div>
-    <a href="${shopHref}" class="btn-seller"><i class="ph ph-storefront" style="font-size:15px;"></i>Voir la boutique</a>`
-  if (typeof WennaSEO !== 'undefined') {
-    const ldEl = document.querySelector('script[type="application/ld+json"]#wenna-jsonld')
-    if (ldEl) {
-      try {
-        const ld = JSON.parse(ldEl.textContent)
-        if (ld['@type'] === 'Product') {
-          ld.brand = { '@type': 'Brand', name: displayName }
-          ld.offers.seller = { '@type': 'Organization', name: displayName }
-          ldEl.textContent = JSON.stringify(ld)
-        }
-      } catch(e) {}
-    }
-  }
+    <a href="${shopHref}" class="btn-seller">
+      <i class="ph ph-storefront" style="font-size:15px;"></i>
+      Voir la boutique
+    </a>`
 }
 
 // ── RENDER REVIEWS ──
 function renderReviews(reviews) {
-  if (!reviews.length) return
-  const avg = reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviews.length
-  $('rating-row').style.display = 'flex'
-  $('avg-rating').textContent = avg.toFixed(1)
-  $('review-count-inline').textContent = `(${reviews.length})`
-  $('reviews-count').textContent = `${reviews.length} avis`
-  $('reviews-section').style.display = 'block'
-  $('reviews-list').innerHTML = reviews.map(r => {
-    const date = r.created_at ? new Date(r.created_at).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long' }) : ''
-    const stars = '★'.repeat(Math.round(r.rating || 0)) + '☆'.repeat(5 - Math.round(r.rating || 0))
-    return `<div class="review-card">
-      <div class="review-header">
-        <div><div class="reviewer">${r.reviewer_name || 'Acheteur anonyme'}</div><div class="stars">${stars}</div></div>
-        <div class="review-date">${date}</div>
-      </div>
-      <div class="review-text">${r.comment || ''}</div>
-    </div>`
-  }).join('')
+  const countEl = $('reviews-count')
+  const listEl = $('reviews-list')
+
+  if (reviews.length) {
+    const avg = reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviews.length
+    $('rating-row').style.display = 'flex'
+    $('avg-rating').textContent = avg.toFixed(1)
+    $('review-count-inline').textContent = `(${reviews.length} avis)`
+    countEl.textContent = `${reviews.length} avis`
+
+    listEl.innerHTML = reviews.map(r => {
+      const date = r.created_at
+        ? new Date(r.created_at).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long' })
+        : ''
+      const stars = '★'.repeat(Math.round(r.rating || 0)) + '☆'.repeat(5 - Math.round(r.rating || 0))
+      return `<div class="review-card">
+        <div class="review-header">
+          <div>
+            <div class="reviewer">${r.reviewer_name || 'Acheteur anonyme'}</div>
+            <div class="stars">${stars}</div>
+          </div>
+          <div class="review-date">${date}</div>
+        </div>
+        <div class="review-text">${r.comment || ''}</div>
+      </div>`
+    }).join('')
+  } else {
+    countEl.textContent = 'Aucun avis pour l\'instant'
+    listEl.innerHTML = '<div class="no-reviews">Sois le premier à donner ton avis !</div>'
+  }
+}
+
+// ── STAR RATING ──
+function setRating(val) {
+  selectedRating = val
+  document.querySelectorAll('.star-btn').forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.dataset.val) <= val)
+  })
+}
+
+// ── SOUMETTRE AVIS ──
+async function submitReview() {
+  if (!currentProduct) return
+  const productId = currentProduct.id
+  const name = $('review-name').value.trim()
+  const comment = $('review-text-input').value.trim()
+  const btn = $('btn-submit-review')
+
+  if (!selectedRating) { showToast('Sélectionne une note', 'ko'); return }
+  if (!comment) { showToast('Écris ton avis', 'ko'); return }
+
+  btn.disabled = true
+  btn.innerHTML = '<div class="cs-spinner" style="border-color:rgba(255,255,255,.3);border-top-color:#fff;"></div>'
+
+  try {
+    const { error } = await getDb().from('reviews').insert({
+      product_id: productId,
+      reviewer_name: name || 'Anonyme',
+      rating: selectedRating,
+      comment: comment,
+      status: 'pending'
+    })
+    if (error) throw error
+    showToast('Avis envoyé — en attente de validation', 'ok')
+    $('review-name').value = ''
+    $('review-text-input').value = ''
+    setRating(0)
+  } catch (e) {
+    console.error(e)
+    showToast('Erreur lors de l\'envoi', 'ko')
+  } finally {
+    btn.disabled = false
+    btn.innerHTML = '<i class="ph ph-paper-plane-tilt" style="font-size:15px;"></i> Soumettre l\'avis'
+  }
 }
 
 // ── RENDER RELATED ──
@@ -1012,11 +1120,15 @@ async function loadSeller(sellerId) {
     db.from('users').select('id,full_name,avatar_url,created_at,country').eq('id', sellerId).single(),
     db.from('shops').select('id,slug,name,logo_url,rating_avg,rating_count,total_sales,is_verified').eq('user_id', sellerId).maybeSingle()
   ])
-  return { user, shop }
+  return { user: user || null, shop: shop || null }
 }
 
 async function loadReviews(productId) {
-  const { data } = await getDb().from('reviews').select('*').eq('product_id', productId).eq('status', 'approved').order('created_at', { ascending: false })
+  const { data } = await getDb()
+    .from('reviews').select('*')
+    .eq('product_id', productId)
+    .eq('status', 'approved')
+    .order('created_at', { ascending: false })
   return data || []
 }
 
@@ -1030,26 +1142,52 @@ async function loadRelated(categoryId, excludeId) {
 
 // ── INIT ──
 async function init() {
-  updateBadge()
+  syncBadge()
+
+  // Attendre que Supabase soit prêt
   let tries = 0
-  while (!getDb() && tries++ < 20) await new Promise(r => setTimeout(r, 100))
+  while (!getDb() && tries++ < 30) await new Promise(r => setTimeout(r, 100))
+
   const id = getProductId()
   if (!id) {
     $('skeleton-section').style.display = 'none'
     $('error-state').style.display = 'flex'
     return
   }
-  const [product, reviews] = await Promise.all([loadProduct(id), loadReviews(id)])
-  if (!product) {
+
+  try {
+    const [product, reviews] = await Promise.all([loadProduct(id), loadReviews(id)])
+
+    if (!product) {
+      $('skeleton-section').style.display = 'none'
+      $('error-state').style.display = 'flex'
+      if (typeof WennaSEO !== 'undefined') WennaSEO.page({ title: 'Produit introuvable', noIndex: true })
+      return
+    }
+
+    renderProduct(product, reviews)
+    renderReviews(reviews)
+
+    // Vendeur — chargement parallèle
+    if (product.seller_id) {
+      loadSeller(product.seller_id).then(renderSeller).catch(e => {
+        console.error('Vendeur:', e)
+        $('seller-card').innerHTML = '<span style="font-size:13px;color:var(--text-muted);">Vendeur non disponible</span>'
+      })
+    } else {
+      $('seller-card').innerHTML = '<span style="font-size:13px;color:var(--text-muted);">Vendeur non disponible</span>'
+    }
+
+    // Produits similaires
+    if (product.category_id) {
+      loadRelated(product.category_id, id).then(renderRelated).catch(() => {})
+    }
+
+  } catch (e) {
+    console.error('Init error:', e)
     $('skeleton-section').style.display = 'none'
     $('error-state').style.display = 'flex'
-    if (typeof WennaSEO !== 'undefined') WennaSEO.page({ title: 'Produit introuvable', noIndex: true })
-    return
   }
-  renderProduct(product, reviews)
-  renderReviews(reviews)
-  if (product.seller_id) loadSeller(product.seller_id).then(renderSeller)
-  if (product.category_id) loadRelated(product.category_id, id).then(renderRelated)
 }
 
 document.addEventListener('DOMContentLoaded', init)
