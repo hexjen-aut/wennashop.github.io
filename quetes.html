@@ -1,220 +1,248 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Quêtes — WennaShop</title>
-  <meta name="description" content="Trouvez le produit que vous cherchez ou gagnez une récompense en chassant pour les autres."/>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    window.db = window.supabase.createClient(
-      'https://aakxoydznmybstfozjte.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
-    )
-  </script>
-  <script src="/js/wenna-seo.js"></script>
-  <style>
-    :root{
-      --fire:#FF6B2B;--ember:#E85A1A;--ink:#080808;--coal:#111111;--slate:#1A1A1A;
-      --smoke:#242424;--fog:#888;--snow:#f0ece6;--border:rgba(255,255,255,.07);
-      --border-fire:rgba(255,107,43,.25);--gold:#d0a600;
-    }
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    html{scroll-behavior:smooth;}
-    body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);min-height:100dvh;overflow-x:hidden;padding-bottom:80px;}
-    .mi{font-family:'Material Icons Outlined';font-size:20px;line-height:1;user-select:none;display:inline-block;vertical-align:middle;}
-    .mi.sm{font-size:16px;} .mi.xs{font-size:13px;}
-    ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--coal);}::-webkit-scrollbar-thumb{background:rgba(255,107,43,.3);}
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Quêtes — WennaShop</title>
+<meta name="description" content="Trouvez le produit que vous cherchez ou gagnez une récompense en chassant pour les autres."/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css"/>
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/icon-192.png">
 
-    nav{position:sticky;top:0;z-index:100;background:rgba(8,8,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
-    .nav-logo{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;font-style:italic;color:var(--snow);text-decoration:none;letter-spacing:-.5px;}
-    .nav-logo b{color:var(--fire);}
-    .nav-links{display:flex;gap:28px;align-items:center;}
-    .nav-links a{text-decoration:none;color:var(--fog);font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;transition:color .2s;}
-    .nav-links a:hover,.nav-links a.active{color:var(--snow);}
-    .nav-links a.active{color:var(--fire);}
-    .btn-nav{background:var(--fire)!important;color:#fff!important;padding:8px 18px;font-size:9px!important;clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));}
-    .btn-nav:hover{background:var(--ember)!important;}
-    @media(max-width:768px){nav{padding:14px 20px;}.nav-links a:not(.btn-nav):not(.active){display:none;}}
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  window.db = window.supabase.createClient(
+    'https://aakxoydznmybstfozjte.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0'
+  )
+</script>
+<script src="/js/wenna-seo.js"></script>
 
-    .hero{background:var(--coal);border-bottom:1px solid var(--border);padding:64px 40px 48px;text-align:center;position:relative;overflow:hidden;}
-    .hero::before{content:'';position:absolute;top:-80px;right:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(255,107,43,.07) 0%,transparent 70%);pointer-events:none;}
-    .hero::after{content:'';position:absolute;bottom:-60px;left:-60px;width:240px;height:240px;background:radial-gradient(circle,rgba(208,166,0,.05) 0%,transparent 70%);pointer-events:none;}
-    .hero-deco{position:absolute;top:-20px;right:40px;font-family:'Cormorant Garamond',serif;font-size:240px;font-style:italic;font-weight:700;color:rgba(255,107,43,.03);line-height:1;pointer-events:none;user-select:none;}
-    .hero-eyebrow{display:inline-flex;align-items:center;gap:10px;background:rgba(208,166,0,.1);border:1px solid rgba(208,166,0,.25);color:var(--gold);padding:6px 16px;font-size:9px;font-weight:500;letter-spacing:3px;text-transform:uppercase;margin-bottom:20px;}
-    .hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,5vw,64px);font-weight:700;font-style:italic;line-height:1.05;letter-spacing:-1px;margin-bottom:16px;}
-    .hero h1 span{color:var(--fire);}
-    .hero p{color:var(--fog);max-width:520px;margin:0 auto 32px;font-size:14px;line-height:1.7;}
-    .hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
-    .btn-fire{display:inline-flex;align-items:center;gap:8px;background:var(--fire);color:#fff;padding:13px 28px;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;transition:background .2s,transform .15s;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));font-family:'DM Sans',sans-serif;text-decoration:none;}
-    .btn-fire:hover{background:var(--ember);transform:translateY(-1px);}
-    .btn-ghost{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border-fire);color:var(--fire);background:transparent;padding:12px 24px;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
-    .btn-ghost:hover{background:rgba(255,107,43,.08);}
+<style>
+:root {
+  --accent:        #ff751f;
+  --accent-dark:   #cc5e18;
+  --accent-light:  rgba(255,117,31,.12);
+  --bg:            #0a0a0a;
+  --surface:       #141414;
+  --surface-2:     #1e1e1e;
+  --border:        #2a2a2a;
+  --border-accent: rgba(255,117,31,.3);
+  --text:          #ffffff;
+  --text-muted:    #a0a0a0;
+  --text-faint:    #555555;
+  --success:       #22c55e;
+  --success-dim:   rgba(34,197,94,.12);
+  --error:         #ef4444;
+  --error-dim:     rgba(239,68,68,.12);
+  --gold:          #f59e0b;
+  --gold-dim:      rgba(245,158,11,.12);
+  --gold-border:   rgba(245,158,11,.3);
+  --info:          #3b82f6;
+  --info-dim:      rgba(59,130,246,.12);
+  --font:          'Nunito','Varela Round',system-ui,sans-serif;
+  --radius-sm:     6px;
+  --radius-md:     12px;
+  --radius-lg:     16px;
+  --radius-pill:   9999px;
+  --shadow-orange: 0 4px 24px rgba(255,117,31,.2);
+  --bottom-nav-h:  64px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100dvh;overflow-x:hidden;padding-bottom:80px}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:rgba(255,117,31,.3);border-radius:99px}
 
-    .stats-bar{background:var(--slate);border-bottom:1px solid var(--border);padding:20px 40px;display:flex;gap:0;justify-content:center;flex-wrap:wrap;}
-    .stat-item{text-align:center;padding:12px 32px;border-right:1px solid var(--border);}
-    .stat-item:last-child{border-right:none;}
-    .stat-val{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;font-style:italic;color:var(--fire);line-height:1;}
-    .stat-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#444;margin-top:4px;}
-    @media(max-width:600px){.stat-item{border-right:none;width:50%;}.stat-item:nth-child(odd){border-right:1px solid var(--border);}}
+/* ── TOAST ── */
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(8px);z-index:9000;background:var(--surface);border:1.5px solid var(--border-accent);border-radius:var(--radius-pill);color:var(--text);padding:12px 22px;font-size:13px;font-weight:700;font-family:var(--font);opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;white-space:nowrap;box-shadow:var(--shadow-orange);max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.success{border-color:rgba(34,197,94,.4);background:#061210}
+#toast.error{border-color:rgba(239,68,68,.4);background:#130606}
 
-    .main-layout{max-width:1200px;margin:0 auto;padding:32px 24px;display:grid;grid-template-columns:220px 1fr;gap:24px;align-items:start;}
-    @media(max-width:900px){.main-layout{grid-template-columns:1fr;}}
+/* ── NAV ── */
+nav.top{position:sticky;top:0;z-index:200;background:rgba(10,10,10,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--font);font-size:22px;font-weight:900;color:var(--text);text-decoration:none;letter-spacing:-1px}
+.logo span{color:var(--accent)}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{text-decoration:none;color:var(--text-faint);font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;transition:color .2s}
+.nav-links a:hover,.nav-links a.active{color:var(--text)}
+.nav-links a.active{color:var(--accent)}
+.btn-nav{display:inline-flex;align-items:center;gap:6px;background:var(--accent)!important;color:#fff!important;padding:8px 18px;font-size:11px!important;border-radius:var(--radius-pill);box-shadow:var(--shadow-orange)}
+.btn-nav:hover{background:var(--accent-dark)!important}
+#pwa-topbar-btn{display:none;align-items:center;gap:6px;background:var(--accent-light);border:1.5px solid var(--border-accent);border-radius:var(--radius-pill);color:var(--accent);padding:8px 16px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0}
+#pwa-topbar-btn:hover{background:rgba(255,117,31,.2)}
+@media(max-width:768px){
+  nav.top{padding:0 16px;height:52px}
+  .nav-links a:not(.btn-nav):not(.active){display:none}
+}
 
-    .sidebar{background:var(--coal);border:1px solid var(--border);padding:20px;position:sticky;top:72px;}
-    .sidebar-title{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--fire);display:flex;align-items:center;gap:10px;margin-bottom:20px;}
-    .sidebar-title::before{content:'';display:block;width:16px;height:1px;background:var(--fire);}
-    .filter-group{margin-bottom:20px;}
-    .filter-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:8px;display:block;}
-    .filter-input{width:100%;background:rgba(255,255,255,.04);border:none;border-bottom:1px solid var(--border);color:var(--snow);padding:10px 12px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
-    .filter-input:focus{border-bottom-color:var(--fire);}
-    .filter-input::placeholder{color:#333;}
-    .chip-group{display:flex;flex-wrap:wrap;gap:6px;}
-    .chip{padding:5px 12px;border:1px solid var(--border);color:#555;font-size:10px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .18s;background:transparent;letter-spacing:1px;}
-    .chip:hover{border-color:var(--border-fire);color:var(--fire);}
-    .chip.active{border-color:var(--fire);background:rgba(255,107,43,.08);color:var(--fire);}
-    .btn-reset{width:100%;padding:9px;border:1px solid var(--border);background:transparent;color:#555;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;margin-top:8px;}
-    .btn-reset:hover{border-color:var(--border-fire);color:var(--fire);}
+/* ── HERO ── */
+.hero{background:var(--surface);border-bottom:1px solid var(--border);padding:56px 40px 40px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-80px;right:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(255,117,31,.08) 0%,transparent 70%);pointer-events:none}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--gold-dim);border:1px solid var(--gold-border);color:var(--gold);padding:6px 16px;border-radius:var(--radius-pill);font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:20px}
+.hero h1{font-size:clamp(28px,5vw,46px);font-weight:900;line-height:1.1;letter-spacing:-1px;margin-bottom:14px}
+.hero h1 span{color:var(--accent)}
+.hero p{color:var(--text-muted);max-width:520px;margin:0 auto 28px;font-size:14px;line-height:1.7;font-weight:500}
+.hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;padding:13px 26px;font-size:12px;font-weight:700;font-family:var(--font);border:none;border-radius:var(--radius-pill);box-shadow:var(--shadow-orange);transition:background .2s,transform .15s;cursor:pointer}
+.btn-primary:hover{background:var(--accent-dark);transform:translateY(-1px)}
+.btn-ghost{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--border-accent);border-radius:var(--radius-pill);color:var(--accent);background:transparent;padding:12px 22px;font-size:12px;font-weight:700;font-family:var(--font);transition:all .2s;cursor:pointer}
+.btn-ghost:hover{background:var(--accent-light)}
 
-    .content-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
-    .content-count{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;font-style:italic;}
-    .sort-select{background:rgba(255,255,255,.04);border:none;border-bottom:1px solid var(--border);color:var(--snow);padding:8px 12px;font-size:11px;font-family:'DM Sans',sans-serif;outline:none;appearance:none;cursor:pointer;transition:border-color .2s;}
-    .sort-select:focus{border-bottom-color:var(--fire);}
-    .sort-select option{background:var(--slate);}
+/* ── STATS ── */
+.stats-bar{background:var(--surface-2);border-bottom:1px solid var(--border);padding:18px 40px;display:flex;justify-content:center;flex-wrap:wrap}
+.stat-item{text-align:center;padding:10px 30px;border-right:1px solid var(--border)}
+.stat-item:last-child{border-right:none}
+.stat-val{font-size:26px;font-weight:900;color:var(--accent);line-height:1}
+.stat-lbl{font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint);margin-top:4px}
+@media(max-width:600px){.stat-item{border-right:none;width:50%}.stat-item:nth-child(odd){border-right:1px solid var(--border)}}
 
-    .quests-grid{display:flex;flex-direction:column;gap:2px;}
-    .quest-card{background:var(--slate);border-left:2px solid transparent;padding:22px 24px;cursor:pointer;transition:all .2s;text-decoration:none;display:block;color:inherit;}
-    .quest-card:hover{border-left-color:var(--fire);background:var(--smoke);}
-    .quest-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:10px;}
-    .quest-card-top{display:flex;gap:16px;align-items:flex-start;flex:1;}
-    .quest-ref-img{width:64px;height:64px;object-fit:cover;flex-shrink:0;border:1px solid var(--border);}
-    .quest-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;font-style:italic;line-height:1.2;flex:1;}
-    .quest-badges{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;}
-    .badge{padding:3px 10px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
-    .badge-hot{background:rgba(255,107,43,.1);color:var(--fire);}
-    .badge-category{background:rgba(255,255,255,.04);color:#555;border:1px solid var(--border);}
-    .badge-country{background:rgba(78,98,255,.08);color:#818cf8;border:1px solid rgba(78,98,255,.15);}
-    .quest-desc{font-size:13px;color:#666;line-height:1.6;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-    .quest-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
-    .quest-meta{display:flex;gap:20px;align-items:center;flex-wrap:wrap;}
-    .meta-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#555;}
-    .meta-urgent{color:var(--fire)!important;}
-    .reward-box{background:rgba(208,166,0,.07);border:1px solid rgba(208,166,0,.2);padding:8px 16px;text-align:right;flex-shrink:0;}
-    .reward-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:2px;}
-    .reward-amount{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;font-style:italic;color:var(--gold);}
+/* ── LAYOUT ── */
+.main-layout{max-width:1200px;margin:0 auto;padding:32px 24px;display:grid;grid-template-columns:240px 1fr;gap:20px;align-items:start}
+@media(max-width:900px){.main-layout{grid-template-columns:1fr}}
 
-    @keyframes shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}
-    .skeleton{background:linear-gradient(90deg,var(--slate) 25%,var(--smoke) 50%,var(--slate) 75%);background-size:600px 100%;animation:shimmer 1.4s infinite linear;}
-    .sk-card{background:var(--slate);padding:22px 24px;margin-bottom:2px;}
-    .sk-line{border-radius:2px;margin-bottom:10px;}
+.sidebar{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:18px;position:sticky;top:72px}
+.sidebar-title{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px;margin-bottom:18px}
+.filter-group{margin-bottom:18px}
+.filter-label{font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);margin-bottom:8px;display:block}
+.filter-input{width:100%;background:var(--surface-2);border:none;border-bottom:2px solid var(--border);border-radius:var(--radius-sm) var(--radius-sm) 0 0;color:var(--text);padding:9px 12px;font-size:13px;font-weight:600;font-family:var(--font);outline:none;transition:border-color .2s}
+.filter-input:focus{border-bottom-color:var(--accent)}
+.filter-input::placeholder{color:var(--text-faint)}
+.chip-group{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:6px 12px;border:1.5px solid var(--border);color:var(--text-faint);font-size:11px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .18s;background:transparent;border-radius:var(--radius-pill)}
+.chip:hover{border-color:var(--border-accent);color:var(--accent)}
+.chip.active{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
+.btn-reset{width:100%;padding:9px;border:1.5px solid var(--border);background:transparent;color:var(--text-faint);font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:var(--radius-pill);cursor:pointer;transition:all .2s;font-family:var(--font);margin-top:6px}
+.btn-reset:hover{border-color:var(--border-accent);color:var(--accent)}
 
-    .empty-state{background:var(--slate);padding:64px 32px;text-align:center;}
-    .empty-state .mi{font-size:48px;color:#333;display:block;margin-bottom:16px;}
-    .empty-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;font-style:italic;margin-bottom:8px;}
-    .empty-sub{font-size:13px;color:var(--fog);}
+.content-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+.content-count{font-size:18px;font-weight:900}
+.sort-select{background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--radius-pill);color:var(--text);padding:8px 30px 8px 14px;font-size:12px;font-weight:600;font-family:var(--font);outline:none;appearance:none;cursor:pointer;transition:border-color .2s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23a0a0a0' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+.sort-select:focus{border-color:var(--accent)}
+.sort-select option{background:var(--surface)}
 
-    /* MODAL */
-    .modal-overlay{position:fixed;inset:0;background:rgba(8,8,8,.88);backdrop-filter:blur(14px);z-index:999;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .25s;}
-    .modal-overlay.open{opacity:1;pointer-events:all;}
-    .modal-box{background:var(--coal);border:1px solid var(--border);width:100%;max-width:580px;max-height:90vh;overflow-y:auto;transform:translateY(16px);transition:transform .25s;position:relative;}
-    .modal-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--fire),transparent);}
-    .modal-overlay.open .modal-box{transform:translateY(0);}
-    .modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--coal);z-index:10;}
-    .modal-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;font-style:italic;}
-    .modal-close{background:none;border:1px solid var(--border);color:#555;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;}
-    .modal-close:hover{border-color:var(--border-fire);color:var(--fire);}
-    .modal-body{padding:24px;display:flex;flex-direction:column;gap:16px;}
-    .form-group{display:flex;flex-direction:column;gap:6px;}
-    .form-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#555;}
-    .form-label span{color:#333;letter-spacing:0;text-transform:none;font-size:10px;}
-    .inp-full{width:100%;background:rgba(255,255,255,.04);border:none;border-bottom:1px solid var(--border);color:var(--snow);padding:12px 14px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
-    .inp-full:focus{border-bottom-color:var(--fire);}
-    .inp-full::placeholder{color:#333;}
-    textarea.inp-full{resize:vertical;min-height:80px;}
-    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+/* ── QUEST CARDS ── */
+.quests-grid{display:flex;flex-direction:column;gap:8px}
+.quest-card{background:var(--surface);border:1.5px solid var(--border);border-left:3px solid transparent;border-radius:var(--radius-lg);padding:18px 20px;cursor:pointer;transition:all .2s;text-decoration:none;display:block;color:inherit}
+.quest-card:hover{border-left-color:var(--accent);border-color:var(--border-accent);background:var(--surface-2)}
+.quest-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:10px}
+.quest-card-top{display:flex;gap:14px;align-items:flex-start;flex:1;min-width:0}
+.quest-ref-img{width:56px;height:56px;object-fit:cover;flex-shrink:0;border-radius:var(--radius-md);border:1.5px solid var(--border)}
+.quest-title{font-size:16px;font-weight:800;line-height:1.3;flex:1}
+.quest-badges{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end}
+.badge{display:inline-block;padding:3px 10px;border-radius:var(--radius-pill);font-size:9px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.badge-hot{background:var(--accent-light);color:var(--accent)}
+.badge-category{background:var(--surface-2);color:var(--text-faint);border:1px solid var(--border)}
+.badge-country{background:var(--info-dim);color:var(--info);border:1px solid rgba(59,130,246,.2)}
+.quest-desc{font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-weight:500}
+.quest-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.quest-meta{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.meta-item{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--text-faint)}
+.meta-urgent{color:var(--accent)!important}
+.reward-box{background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:var(--radius-md);padding:8px 16px;text-align:right;flex-shrink:0}
+.reward-label{font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);margin-bottom:2px}
+.reward-amount{font-size:18px;font-weight:900;color:var(--gold)}
 
-    /* Image upload zone */
-    .img-upload-zone{border:1px dashed var(--border);padding:20px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
-    .img-upload-zone:hover{border-color:var(--border-fire);}
-    .img-upload-zone.has-img{border-style:solid;border-color:var(--border-fire);padding:0;overflow:hidden;}
-    .img-upload-zone img{width:100%;max-height:200px;object-fit:cover;display:block;}
-    .img-upload-overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;gap:12px;opacity:0;transition:opacity .2s;}
-    .img-upload-zone.has-img:hover .img-upload-overlay{opacity:1;}
-    .img-upload-text{font-size:10px;color:#555;letter-spacing:1px;text-transform:uppercase;margin-top:8px;}
-    .img-url-row{display:flex;gap:8px;margin-top:8px;}
-    .img-url-input{flex:1;background:rgba(255,255,255,.04);border:none;border-bottom:1px solid var(--border);color:var(--snow);padding:9px 12px;font-size:12px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
-    .img-url-input:focus{border-bottom-color:var(--fire);}
-    .img-url-input::placeholder{color:#333;}
-    .btn-url-add{background:var(--slate);border:1px solid var(--border);color:var(--fog);padding:9px 14px;font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .2s;}
-    .btn-url-add:hover{border-color:var(--border-fire);color:var(--fire);}
+/* ── SKELETON ── */
+@keyframes shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}
+.skeleton{background:linear-gradient(90deg,var(--surface) 25%,var(--surface-2) 50%,var(--surface) 75%);background-size:600px 100%;animation:shimmer 1.4s infinite linear}
+.sk-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px}
+.sk-line{border-radius:4px;margin-bottom:10px}
 
-    .budget-preview{background:rgba(208,166,0,.06);border:1px solid rgba(208,166,0,.2);padding:16px;display:none;}
-    .budget-preview-title{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
-    .budget-line{display:flex;justify-content:space-between;font-size:13px;color:var(--fog);margin-bottom:6px;}
-    .budget-line.total{border-top:1px solid rgba(208,166,0,.2);padding-top:10px;margin-top:6px;font-weight:600;color:var(--gold);}
+.empty-state{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:56px 32px;text-align:center}
+.empty-state i{font-size:44px;color:var(--text-faint);display:block;margin-bottom:16px}
+.empty-title{font-size:20px;font-weight:900;margin-bottom:6px}
+.empty-sub{font-size:13px;color:var(--text-muted);font-weight:500}
 
-    .modal-footer{padding:0 24px 24px;}
-    .btn-submit{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--fire);color:#fff;padding:14px;font-size:10px;font-weight:500;letter-spacing:3px;text-transform:uppercase;border:none;cursor:pointer;transition:background .2s;font-family:'DM Sans',sans-serif;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));}
-    .btn-submit:hover{background:var(--ember);}
-    .btn-submit:disabled{opacity:.5;cursor:not-allowed;}
-    .modal-hint{text-align:center;font-size:10px;color:#444;margin-top:10px;letter-spacing:.5px;}
+/* ── MODAL ── */
+.modal-ov{position:fixed;inset:0;z-index:6000;background:rgba(0,0,0,.88);backdrop-filter:blur(14px);display:flex;align-items:flex-end;justify-content:center;padding:0;opacity:0;pointer-events:none;transition:opacity .25s}
+.modal-ov.open{opacity:1;pointer-events:all}
+@media(min-width:768px){.modal-ov{align-items:center;padding:24px}}
+.modal-box{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg) var(--radius-lg) 0 0;width:100%;max-width:580px;max-height:92vh;overflow-y:auto;margin:0 auto;transform:translateY(16px);transition:transform .25s}
+.modal-ov.open .modal-box{transform:translateY(0)}
+@media(min-width:768px){.modal-box{border-radius:var(--radius-lg)}}
+.modal-handle{width:40px;height:4px;background:var(--border);border-radius:4px;margin:10px auto 0}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:10}
+.modal-title{font-size:18px;font-weight:900}
+.modal-close{background:none;border:1.5px solid var(--border);border-radius:var(--radius-md);color:var(--text-faint);width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .2s}
+.modal-close:hover{border-color:var(--border-accent);color:var(--accent)}
+.modal-body{padding:18px;display:flex;flex-direction:column;gap:14px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-label{font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)}
+.form-label span{color:var(--text-faint);letter-spacing:0;text-transform:none;font-size:10px;font-weight:600;opacity:.6}
+.inp-full{width:100%;background:var(--surface-2);border:none;border-bottom:2px solid var(--border);border-radius:var(--radius-sm) var(--radius-sm) 0 0;color:var(--text);padding:9px 12px;font-size:13px;font-weight:600;font-family:var(--font);outline:none;transition:border-color .2s}
+.inp-full:focus{border-bottom-color:var(--accent)}
+.inp-full::placeholder{color:var(--text-faint)}
+textarea.inp-full{resize:vertical;min-height:72px;border-radius:var(--radius-sm)}
+select.inp-full{appearance:none;cursor:pointer}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:480px){.form-row{grid-template-columns:1fr}}
 
-    #toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(10px);z-index:1200;background:var(--slate);border:1px solid var(--border-fire);color:var(--snow);padding:12px 24px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
-    #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-    #toast.success{border-color:rgba(115,220,132,.4);background:#0a1f0e;}
-    #toast.error{border-color:rgba(186,26,26,.4);background:#1f0a0a;}
+.img-upload-zone{border:1.5px dashed var(--border);border-radius:var(--radius-md);padding:20px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.img-upload-zone:hover{border-color:var(--border-accent)}
+.img-upload-zone.has-img{border-style:solid;border-color:var(--border);padding:0;overflow:hidden}
+.img-upload-zone img{width:100%;max-height:200px;object-fit:cover;display:block;border-radius:var(--radius-md)}
+.img-upload-overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;gap:10px;opacity:0;transition:opacity .2s}
+.img-upload-zone.has-img:hover .img-upload-overlay{opacity:1}
+.img-upload-text{font-size:11px;font-weight:700;color:var(--text-faint);margin-top:8px}
+.img-url-row{display:flex;gap:8px;margin-top:8px}
+.img-url-input{flex:1;background:var(--surface-2);border:none;border-bottom:2px solid var(--border);color:var(--text);padding:9px 12px;font-size:12px;font-weight:600;font-family:var(--font);outline:none;transition:border-color .2s}
+.img-url-input:focus{border-bottom-color:var(--accent)}
+.img-url-input::placeholder{color:var(--text-faint)}
+.btn-url-add{background:var(--surface-2);border:1.5px solid var(--border);color:var(--text-muted);padding:9px 14px;font-size:11px;font-weight:700;border-radius:var(--radius-pill);cursor:pointer;font-family:var(--font);white-space:nowrap;transition:all .2s}
+.btn-url-add:hover{border-color:var(--border-accent);color:var(--accent)}
 
-    .bnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:40;background:rgba(8,8,8,.95);backdrop-filter:blur(20px);border-top:1px solid var(--border-fire);padding:10px 0 22px;}
-    .bnav-inner{display:flex;justify-content:space-around;}
-    .bnav-item{display:flex;flex-direction:column;align-items:center;gap:4px;color:#555;text-decoration:none;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;transition:color .2s;}
-    .bnav-item.active,.bnav-item:hover{color:var(--fire);}
-    @media(max-width:768px){.bnav{display:block;}}
+.budget-preview{background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:var(--radius-md);padding:14px 16px;display:none}
+.budget-preview-title{font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.budget-line{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:6px}
+.budget-line.total{border-top:1px solid var(--gold-border);padding-top:8px;margin-top:4px;font-weight:800;color:var(--gold)}
 
-    @keyframes spin{to{transform:rotate(360deg);}}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-    .anim-up{animation:fadeUp .6s cubic-bezier(.22,1,.36,1) forwards;}
-  </style>
+.modal-footer{padding:0 18px 18px}
+.btn-submit{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--accent);color:#fff;padding:13px;font-size:12px;font-weight:700;border:none;border-radius:var(--radius-pill);box-shadow:var(--shadow-orange);cursor:pointer;transition:background .2s;font-family:var(--font)}
+.btn-submit:hover{background:var(--accent-dark)}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed}
+.modal-hint{text-align:center;font-size:10px;color:var(--text-faint);margin-top:10px;font-weight:600}
+
+/* ── BOTTOM NAV ── */
+.bnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:400;background:var(--surface);border-top:1px solid var(--border);padding:6px 0 calc(env(safe-area-inset-bottom) + 6px)}
+.bnav-inner{display:flex;justify-content:space-around}
+.bnav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text-faint);text-decoration:none;font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;transition:color .2s}
+.bnav-item i{font-size:20px}
+.bnav-item.active,.bnav-item:hover{color:var(--accent)}
+@media(max-width:768px){.bnav{display:block}}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin 1s linear infinite;display:inline-flex}
+</style>
 </head>
 <body>
 
 <div id="toast"></div>
 
-<nav>
-  <a href="index.html" class="nav-logo">Wenna<b>Shop</b></a>
+<nav class="top">
+  <a href="index.html" class="logo"><span>Wenna</span>Shop</a>
   <div class="nav-links">
     <a href="boutique.html">Boutique</a>
     <a href="quetes.html" class="active">Quêtes</a>
     <a href="dashboard-vendeur.html">Vendre</a>
-    <a href="compte.html" class="btn-nav">Mon compte</a>
+    <button id="pwa-topbar-btn" onclick="installPWA()" title="Installer l'application">
+      <i class="ph ph-download-simple"></i>Installer
+    </button>
+    <a href="compte.html" class="btn-nav nav-links"><i class="ph ph-user-circle"></i>Mon compte</a>
   </div>
 </nav>
 
-<section class="hero anim-up">
-  <div class="hero-deco">Q</div>
-  <div class="hero-eyebrow">
-    <span class="mi xs">search</span>
-    Système de chasse · Nouveau
-  </div>
+<section class="hero">
+  <div class="hero-eyebrow"><i class="ph ph-magnifying-glass" style="font-size:13px"></i>Système de chasse · Nouveau</div>
   <h1>Vous cherchez,<br/><span>on trouve.</span></h1>
   <p>Publiez une quête pour un produit introuvable. Des chasseurs du Gabon et du Maroc le dénichent pour vous. Le meilleur gagne la récompense.</p>
   <div class="hero-actions">
-    <button class="btn-fire" onclick="openModal()">
-      <span class="mi sm"></span>
-      Poster une quête
-    </button>
-    <button class="btn-ghost" onclick="document.getElementById('mainLayout').scrollIntoView({behavior:'smooth'})">
-      Voir les quêtes ouvertes
-    </button>
-    <button
-    id="pwa-topbar-btn"
-    onclick="installPWA()"
-    title="Installer l'application"
-    style="display:none;align-items:center;gap:6px;background:rgba(255,117,31,.1);border:1.5px solid rgba(255,117,31,.35);border-radius:9999px;color:#ff751f;padding:8px 16px;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0;"
-    onmouseover="this.style.background='rgba(255,117,31,.2)'"
-    onmouseout="this.style.background='rgba(255,117,31,.1)'">
-    <i class="ph ph-download-simple" style="font-size:15px;"></i>Installer</button>
+    <button class="btn-primary" onclick="openModal()"><i class="ph ph-shooting-star" style="font-size:15px"></i>Poster une quête</button>
+    <button class="btn-ghost" onclick="document.getElementById('mainLayout').scrollIntoView({behavior:'smooth'})"><i class="ph ph-list-magnifying-glass" style="font-size:15px"></i>Voir les quêtes ouvertes</button>
   </div>
 </section>
 
@@ -227,7 +255,7 @@
 
 <div class="main-layout" id="mainLayout">
   <aside class="sidebar">
-    <div class="sidebar-title">Filtres</div>
+    <div class="sidebar-title"><i class="ph ph-funnel"></i>Filtres</div>
     <div class="filter-group">
       <span class="filter-label">Recherche</span>
       <input type="text" id="searchInput" placeholder="tissu wax, bijoux…" class="filter-input" oninput="applyFilters()"/>
@@ -264,73 +292,64 @@
       </select>
     </div>
     <div class="quests-grid" id="questsGrid">
-      <div class="sk-card"><div class="skeleton sk-line" style="height:20px;width:55%;"></div><div class="skeleton sk-line" style="height:13px;width:85%;"></div><div class="skeleton sk-line" style="height:13px;width:70%;"></div><div class="skeleton sk-line" style="height:32px;width:120px;margin-top:8px;"></div></div>
-      <div class="sk-card"><div class="skeleton sk-line" style="height:20px;width:45%;"></div><div class="skeleton sk-line" style="height:13px;width:90%;"></div><div class="skeleton sk-line" style="height:13px;width:65%;"></div><div class="skeleton sk-line" style="height:32px;width:120px;margin-top:8px;"></div></div>
-      <div class="sk-card"><div class="skeleton sk-line" style="height:20px;width:60%;"></div><div class="skeleton sk-line" style="height:13px;width:80%;"></div><div class="skeleton sk-line" style="height:13px;width:75%;"></div><div class="skeleton sk-line" style="height:32px;width:120px;margin-top:8px;"></div></div>
+      <div class="sk-card"><div class="skeleton sk-line" style="height:18px;width:55%"></div><div class="skeleton sk-line" style="height:12px;width:85%"></div><div class="skeleton sk-line" style="height:12px;width:70%"></div><div class="skeleton sk-line" style="height:30px;width:120px;margin-top:6px"></div></div>
+      <div class="sk-card"><div class="skeleton sk-line" style="height:18px;width:45%"></div><div class="skeleton sk-line" style="height:12px;width:90%"></div><div class="skeleton sk-line" style="height:12px;width:65%"></div><div class="skeleton sk-line" style="height:30px;width:120px;margin-top:6px"></div></div>
+      <div class="sk-card"><div class="skeleton sk-line" style="height:18px;width:60%"></div><div class="skeleton sk-line" style="height:12px;width:80%"></div><div class="skeleton sk-line" style="height:12px;width:75%"></div><div class="skeleton sk-line" style="height:30px;width:120px;margin-top:6px"></div></div>
     </div>
   </div>
 </div>
 
-<!-- ══ MODAL ══ -->
-<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+<!-- MODAL POSTER UNE QUÊTE -->
+<div class="modal-ov" id="modalOverlay" onclick="closeModalOutside(event)">
   <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
     <div class="modal-head">
-      <div class="modal-title">Poster une quête</div>
-      <button class="modal-close" onclick="closeModal()">
-        <span class="mi sm">close</span>
-      </button>
+      <h3 class="modal-title">Poster une quête</h3>
+      <button class="modal-close" onclick="closeModal()"><i class="ph ph-x"></i></button>
     </div>
     <div class="modal-body">
 
-      <!-- Titre -->
       <div class="form-group">
         <label class="form-label">Titre de la quête <span>*</span></label>
         <input type="text" id="questTitle" class="inp-full" placeholder="ex: Cherche tissu wax rouge 6 yards" maxlength="120"/>
       </div>
 
-      <!-- Description -->
       <div class="form-group">
         <label class="form-label">Description <span>(facultatif)</span></label>
         <textarea id="questDesc" class="inp-full" placeholder="Précisez : couleur, taille, matière, usage..."></textarea>
       </div>
 
-      <!-- IMAGE DE RÉFÉRENCE -->
       <div class="form-group">
         <label class="form-label">Image de référence <span>(facultatif)</span></label>
-
-        <!-- Zone drag/click -->
         <div class="img-upload-zone" id="imgUploadZone" onclick="document.getElementById('questImageFile').click()">
-          <img id="questImgTag" src="" alt="" style="display:none;width:100%;max-height:200px;object-fit:cover;"/>
+          <img id="questImgTag" src="" alt="" style="display:none"/>
           <div class="img-upload-overlay" id="imgOverlay">
-            <button onclick="event.stopPropagation();clearQuestImage()" style="background:rgba(244,63,94,.2);border:1px solid rgba(244,63,94,.4);color:#f87171;padding:6px 12px;font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;">Supprimer</button>
-            <button onclick="event.stopPropagation();document.getElementById('questImageFile').click()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 12px;font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;">Changer</button>
+            <button onclick="event.stopPropagation();clearQuestImage()" style="background:var(--error-dim);border:1.5px solid rgba(239,68,68,.3);color:var(--error);padding:7px 14px;font-size:11px;font-weight:700;border-radius:var(--radius-pill);cursor:pointer;font-family:var(--font)">Supprimer</button>
+            <button onclick="event.stopPropagation();document.getElementById('questImageFile').click()" style="background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);color:#fff;padding:7px 14px;font-size:11px;font-weight:700;border-radius:var(--radius-pill);cursor:pointer;font-family:var(--font)">Changer</button>
           </div>
           <div id="imgUploadPlaceholder">
-            <span class="mi" style="font-size:32px;color:#333;display:block;margin-bottom:8px;">add_photo_alternate</span>
+            <i class="ph ph-image-square" style="font-size:32px;color:var(--text-faint);display:block;margin-bottom:8px"></i>
             <div class="img-upload-text">Cliquer pour choisir une photo</div>
-            <div style="font-size:10px;color:#333;margin-top:4px;">JPG · PNG · WebP · max 2 MB</div>
+            <div style="font-size:10px;color:var(--text-faint);margin-top:4px;font-weight:500">JPG · PNG · WebP · max 2 MB</div>
           </div>
         </div>
         <input type="file" id="questImageFile" accept="image/*" style="display:none" onchange="handleQuestImageFile(this)"/>
-
-        <!-- OU URL -->
         <div class="img-url-row">
           <input type="url" id="questImageUrl" class="img-url-input" placeholder="Ou coller une URL d'image…"/>
           <button class="btn-url-add" onclick="applyImageUrl()">Utiliser</button>
         </div>
       </div>
 
-      <!-- Catégorie / Pays -->
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Catégorie</label>
-          <select id="questCategory" class="inp-full" style="appearance:none;cursor:pointer;">
+          <select id="questCategory" class="inp-full">
             <option value="">Sélectionner…</option>
           </select>
         </div>
         <div class="form-group">
           <label class="form-label">Pays cible</label>
-          <select id="questCountry" class="inp-full" style="appearance:none;cursor:pointer;">
+          <select id="questCountry" class="inp-full">
             <option value="Les deux">Les deux</option>
             <option value="Gabon">Gabon</option>
             <option value="Maroc">Maroc</option>
@@ -338,7 +357,6 @@
         </div>
       </div>
 
-      <!-- Budget / Récompense -->
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Budget produit (FCFA) <span>*</span></label>
@@ -350,17 +368,15 @@
         </div>
       </div>
 
-      <!-- Durée -->
       <div class="form-group">
         <label class="form-label">Durée</label>
-        <select id="questDuration" class="inp-full" style="appearance:none;cursor:pointer;">
+        <select id="questDuration" class="inp-full">
           <option value="3">3 jours — urgent</option>
           <option value="7" selected>7 jours — standard</option>
           <option value="14">14 jours — flexible</option>
         </select>
       </div>
 
-      <!-- Budget preview -->
       <div class="budget-preview" id="budgetPreview">
         <div class="budget-preview-title">Récapitulatif escrow</div>
         <div class="budget-line"><span>Budget produit</span><span id="prevBudget">0 FCFA</span></div>
@@ -371,22 +387,17 @@
 
     </div>
     <div class="modal-footer">
-      <button class="btn-submit" id="submitBtn" onclick="submitQuest()">
-        <span class="mi sm"></span>
-        Publier et bloquer les fonds
-      </button>
+      <button class="btn-submit" id="submitBtn" onclick="submitQuest()"><i class="ph ph-lock-simple"></i>Publier et bloquer les fonds</button>
       <p class="modal-hint">Fonds remboursés si aucune réponse dans le délai imparti.</p>
     </div>
   </div>
 </div>
 
-<!-- BOTTOM NAV -->
 <nav class="bnav">
   <div class="bnav-inner">
-    <a href="index.html" class="bnav-item"><span class="mi">home</span><span>Accueil</span></a>
-    <a href="boutique.html" class="bnav-item"><span class="mi">storefront</span><span>Boutique</span></a>
-    <a href="quetes.html" class="bnav-item active"><span class="mi">search</span><span>Quêtes</span></a>
-    <a href="compte.html" class="bnav-item"><span class="mi">person</span><span>Profil</span></a>
+    <a href="boutique.html" class="bnav-item"><i class="ph ph-storefront"></i><span>Boutique</span></a>
+    <a href="quetes.html" class="bnav-item active"><i class="ph ph-magnifying-glass"></i><span>Quêtes</span></a>
+    <a href="compte.html" class="bnav-item"><i class="ph ph-user"></i><span>Profil</span></a>
   </div>
 </nav>
 
@@ -394,10 +405,8 @@
 const sb = window.db
 let allQuests = [], categories = [], currentUser = null
 let activeCategory = 'all', activeCountry = 'all'
-let questImageDataUrl = null   // image locale base64
-let questImageFile = null      // fichier File object
+let questImageFile = null
 
-// ── INIT ──────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     await checkAuth()
@@ -413,7 +422,6 @@ async function checkAuth() {
   currentUser = session?.user || null
 }
 
-// ── CATÉGORIES ────────────────────────────────────────────────
 async function loadCategories() {
   const { data } = await sb.from('categories').select('id, name').order('name')
   categories = data || []
@@ -433,7 +441,6 @@ async function loadCategories() {
   })
 }
 
-// ── QUÊTES ────────────────────────────────────────────────────
 async function loadQuests() {
   const { data, error } = await sb
     .from('quests')
@@ -451,7 +458,6 @@ async function loadQuests() {
 
   const quests = (data || []).map(q => ({ ...q, category_id: String(q.category_id ?? ''), proposals_count: 0 }))
 
-  // Count proposals séparé (non bloquant)
   try {
     if (quests.length) {
       const { data: pd } = await sb.from('quest_proposals').select('quest_id').in('quest_id', quests.map(q => q.id))
@@ -476,7 +482,7 @@ function renderQuests(quests) {
 
   if (!quests.length) {
     grid.innerHTML = `<div class="empty-state">
-      <span class="mi">search_off</span>
+      <i class="ph ph-magnifying-glass-minus"></i>
       <div class="empty-title">Aucune quête pour le moment</div>
       <div class="empty-sub">Soyez le premier à poster une quête !</div>
     </div>`
@@ -506,29 +512,19 @@ function renderQuests(quests) {
         ${q.description ? `<p class="quest-desc">${esc(q.description)}</p>` : ''}
         <div class="quest-footer">
           <div class="quest-meta">
-            <span class="meta-item">
-              <span class="mi" style="font-size:15px;">group</span>
-              ${proposals} proposition${proposals !== 1 ? 's' : ''}
-            </span>
-            <span class="meta-item${exp <= 1 ? ' meta-urgent' : ''}">
-              <span class="mi" style="font-size:15px;">schedule</span>
-              ${exp <= 1 ? '<strong>Expire demain</strong>' : `${exp}j restants`}
-            </span>
-            <span class="meta-item">
-              <span class="mi" style="font-size:15px;">payments</span>
-              Budget ${fmt(q.product_budget)} ${q.currency}
-            </span>
+            <span class="meta-item"><i class="ph ph-users-three"></i>${proposals} proposition${proposals !== 1 ? 's' : ''}</span>
+            <span class="meta-item${exp <= 1 ? ' meta-urgent' : ''}"><i class="ph ph-clock"></i>${exp <= 1 ? '<strong>Expire demain</strong>' : `${exp}j restants`}</span>
+            <span class="meta-item"><i class="ph ph-money"></i>Budget ${fmt(q.product_budget)} ${q.currency}</span>
           </div>
           <div class="reward-box">
             <div class="reward-label">Récompense</div>
-            <div class="reward-amount">${fmt(q.reward_amount)} <span style="font-size:.7em;font-style:normal;">${q.currency}</span></div>
+            <div class="reward-amount">${fmt(q.reward_amount)} <span style="font-size:.7em">${q.currency}</span></div>
           </div>
         </div>
       </a>`
   }).join('')
 }
 
-// ── STATS ─────────────────────────────────────────────────────
 async function loadStats() {
   try {
     const [open, resolved, props] = await Promise.all([
@@ -545,7 +541,6 @@ async function loadStats() {
   } catch(e) { console.error('[Wenna] loadStats:', e) }
 }
 
-// ── FILTRES ───────────────────────────────────────────────────
 function selectCat(el) {
   document.querySelectorAll('#categoryChips .chip').forEach(c => c.classList.remove('active'))
   el.classList.add('active')
@@ -591,14 +586,12 @@ function resetFilters() {
   renderQuests(allQuests)
 }
 
-// ── MODAL ─────────────────────────────────────────────────────
 function openModal() {
   if (!currentUser) {
     showToast('Connectez-vous pour poster une quête.', 'error')
     setTimeout(() => location.href = 'compte.html', 1500)
     return
   }
-  // Reset form
   ;['questTitle','questDesc','questBudget','questReward','questImageUrl'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = ''
   })
@@ -617,7 +610,6 @@ function closeModalOutside(e) {
   if (e.target === document.getElementById('modalOverlay')) closeModal()
 }
 
-// ── IMAGE HANDLING ────────────────────────────────────────────
 function handleQuestImageFile(input) {
   const file = input.files[0]
   if (!file) return
@@ -634,12 +626,10 @@ function applyImageUrl() {
   const url = document.getElementById('questImageUrl').value.trim()
   if (!url) return
   questImageFile = null
-  questImageDataUrl = null
   showImagePreview(url)
 }
 
 function showImagePreview(src) {
-  questImageDataUrl = src
   const zone = document.getElementById('imgUploadZone')
   const img = document.getElementById('questImgTag')
   const placeholder = document.getElementById('imgUploadPlaceholder')
@@ -651,7 +641,6 @@ function showImagePreview(src) {
 
 function clearQuestImage() {
   questImageFile = null
-  questImageDataUrl = null
   const zone = document.getElementById('imgUploadZone')
   const img = document.getElementById('questImgTag')
   const placeholder = document.getElementById('imgUploadPlaceholder')
@@ -662,7 +651,6 @@ function clearQuestImage() {
   document.getElementById('questImageUrl').value = ''
 }
 
-// ── BUDGET PREVIEW ────────────────────────────────────────────
 function updateBudgetPreview() {
   const budget = parseFloat(document.getElementById('questBudget').value) || 0
   const reward = parseFloat(document.getElementById('questReward').value) || 0
@@ -677,7 +665,6 @@ function updateBudgetPreview() {
   }
 }
 
-// ── SUBMIT ────────────────────────────────────────────────────
 async function submitQuest() {
   const title = document.getElementById('questTitle').value.trim()
   const desc = document.getElementById('questDesc').value.trim()
@@ -693,26 +680,21 @@ async function submitQuest() {
 
   const btn = document.getElementById('submitBtn')
   btn.disabled = true
-  btn.innerHTML = '<span class="mi sm" style="animation:spin 1s linear infinite;">progress_activity</span> Publication…'
+  btn.innerHTML = '<i class="ph ph-circle-notch spin"></i> Publication…'
 
-  // ── Upload image si fichier sélectionné ──
   let imageUrl = document.getElementById('questImageUrl').value.trim() || null
 
   if (questImageFile) {
     const ext = questImageFile.name.split('.').pop()
     const path = `quests/${currentUser.id}_${Date.now()}.${ext}`
-    const { data: upData, error: upErr } = await sb.storage
-      .from('products')
-      .upload(path, questImageFile, { upsert: true })
+    const { error: upErr } = await sb.storage.from('products').upload(path, questImageFile, { upsert: true })
     if (!upErr) {
       imageUrl = sb.storage.from('products').getPublicUrl(path).data.publicUrl
     } else {
       console.warn('[Wenna] upload image:', upErr.message)
-      // Non bloquant — on continue sans image
     }
   }
 
-  // ── Insert quête ──
   const { error } = await sb.from('quests').insert({
     buyer_id: currentUser.id,
     title,
@@ -728,7 +710,7 @@ async function submitQuest() {
   })
 
   btn.disabled = false
-  btn.innerHTML = '<span class="mi sm">lock</span> Publier et bloquer les fonds'
+  btn.innerHTML = '<i class="ph ph-lock-simple"></i> Publier et bloquer les fonds'
 
   if (error) { showToast('Erreur : ' + error.message, 'error'); return }
 
@@ -738,13 +720,12 @@ async function submitQuest() {
   await loadStats()
 }
 
-// ── HELPERS ───────────────────────────────────────────────────
 function daysUntil(d) { return Math.max(0, Math.ceil((new Date(d) - new Date()) / 86400000)) }
 function fmt(n) { return Number(n).toLocaleString('fr-FR') }
 function esc(s) { return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
 function showEmpty(msg) {
   document.getElementById('questsGrid').innerHTML = `<div class="empty-state">
-    <span class="mi">warning</span>
+    <i class="ph ph-warning"></i>
     <div class="empty-title">${msg}</div>
   </div>`
 }
