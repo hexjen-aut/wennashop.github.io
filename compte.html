@@ -361,6 +361,18 @@ textarea.field-input{resize:vertical;min-height:72px;border-radius:var(--radius-
   </div>
 </div>
 
+<!-- MODAL 2FA (générique — TOTP / SMS / Email) -->
+<div class="modal-ov hidden" id="mfa-modal">
+  <div class="modal-box" style="max-width:440px">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-title" id="mfa-modal-title">2FA</div>
+      <button class="modal-close" onclick="closeMfaModal()"><i class="ph ph-x"></i></button>
+    </div>
+    <div class="modal-body" id="mfa-modal-body"></div>
+  </div>
+</div>
+
 <!-- HEADER -->
 <header class="hd">
   <a href="boutique.html" class="logo"><span>Wenna</span>Shop</a>
@@ -484,6 +496,24 @@ textarea.field-input{resize:vertical;min-height:72px;border-radius:var(--radius-
         <div class="security-row" onclick="handleLogout()">
           <div class="security-row-left" style="color:var(--error)"><i class="ph ph-sign-out" style="color:var(--error)"></i>Se déconnecter</div>
           <i class="ph ph-caret-right" style="font-size:16px;color:var(--error);opacity:.5"></i>
+        </div>
+      </div>
+
+      <!-- 2FA -->
+      <div class="card">
+        <div class="card-title">Authentification à deux facteurs</div>
+        <p style="font-size:12px;font-weight:500;color:var(--text-muted);margin:-8px 0 14px;line-height:1.6">Ajoute une étape de vérification à la connexion. Active une ou plusieurs méthodes, indépendamment les unes des autres.</p>
+        <div class="security-row" onclick="open2faModal('totp')">
+          <div class="security-row-left"><i class="ph ph-device-mobile-camera"></i>Application d'authentification (TOTP)</div>
+          <span class="chip chip-muted" id="mfa-status-totp">Inactif</span>
+        </div>
+        <div class="security-row" onclick="open2faModal('phone')">
+          <div class="security-row-left"><i class="ph ph-chat-teardrop-dots"></i>Code par SMS</div>
+          <span class="chip chip-muted" id="mfa-status-phone">Inactif</span>
+        </div>
+        <div class="security-row" onclick="open2faModal('email')">
+          <div class="security-row-left"><i class="ph ph-envelope-simple"></i>Code par email</div>
+          <span class="chip chip-muted" id="mfa-status-email">Inactif</span>
         </div>
       </div>
 
@@ -793,6 +823,7 @@ async function loadProfile(){
     loadVendeurData()
   }
   loadClientStats(data.id);loadOrders(data.id);loadQuetes(data.id);loadAddresses(data.id)
+  loadMfaStatus()
 }
 
 async function loadShopData(){
@@ -1028,6 +1059,173 @@ async function confirmDeleteAccount(){
     showToast('Erreur : '+e.message,'error')
     btn.disabled=false;btn.innerHTML='<i class="ph ph-trash"></i>Supprimer définitivement'
   }
+}
+
+// ════════════════════════════════════════
+//  2FA — TOTP / SMS / EMAIL
+// ════════════════════════════════════════
+let mfaFactors={totp:null,phone:null}
+let mfaPendingFactorId=null
+let mfaPendingChallengeId=null
+
+async function loadMfaStatus(){
+  const db=getSb();if(!currentUser)return
+  try{
+    const{data,error}=await db.auth.mfa.listFactors()
+    if(error)throw error
+    mfaFactors.totp=(data.totp||[]).find(f=>f.status==='verified')||null
+    mfaFactors.phone=(data.phone||[]).find(f=>f.status==='verified')||null
+  }catch(e){console.warn('[mfa]',e.message)}
+  setMfaChip('totp',!!mfaFactors.totp)
+  setMfaChip('phone',!!mfaFactors.phone)
+  setMfaChip('email',!!(currentProfile&&currentProfile.email_2fa_enabled))
+}
+
+function setMfaChip(type,active){
+  const el=document.getElementById('mfa-status-'+type);if(!el)return
+  el.textContent=active?'Actif':'Inactif'
+  el.className='chip '+(active?'chip-green':'chip-muted')
+}
+
+function openMfaModal(title){
+  document.getElementById('mfa-modal-title').textContent=title
+  document.getElementById('mfa-modal').classList.remove('hidden')
+  document.body.style.overflow='hidden'
+}
+function closeMfaModal(){
+  document.getElementById('mfa-modal').classList.add('hidden')
+  document.body.style.overflow=''
+  mfaPendingFactorId=null;mfaPendingChallengeId=null
+}
+function mfaBody(html){document.getElementById('mfa-modal-body').innerHTML=html}
+
+async function open2faModal(type){
+  if(type==='totp'){
+    if(mfaFactors.totp)return confirmUnenroll(mfaFactors.totp.id)
+    openMfaModal("Application d'authentification")
+    mfaBody('<div style="display:flex;justify-content:center;padding:24px"><div class="spinner"></div></div>')
+    const db=getSb()
+    try{
+      const{data,error}=await db.auth.mfa.enroll({factorType:'totp'})
+      if(error)throw error
+      mfaPendingFactorId=data.id
+      mfaBody(`
+        <div style="text-align:center;margin-bottom:16px">
+          <img src="${data.totp.qr_code}" alt="QR Code" style="width:180px;height:180px;border-radius:var(--radius-md);background:#fff;padding:8px"/>
+          <p style="font-size:11px;font-weight:600;color:var(--text-faint);margin-top:10px;word-break:break-all">${data.totp.secret}</p>
+        </div>
+        <div class="field-group"><label class="field-label">Code à 6 chiffres</label><input id="totp-verify-code" class="field-input" placeholder="123456" maxlength="6" inputmode="numeric"/></div>
+        <button onclick="verifyTotp()" class="btn-primary" style="width:100%;justify-content:center">Confirmer et activer</button>`)
+    }catch(e){mfaBody('<p style="color:var(--error);font-size:13px">Erreur : '+e.message+'</p>')}
+    return
+  }
+  if(type==='phone'){
+    if(mfaFactors.phone)return confirmUnenroll(mfaFactors.phone.id)
+    openMfaModal('Code par SMS')
+    mfaBody(`
+      <div class="field-group"><label class="field-label">Numéro de téléphone</label><input id="phone-enroll-input" class="field-input" placeholder="+212 6 12 34 56 78"/></div>
+      <button onclick="enrollPhone()" class="btn-primary" style="width:100%;justify-content:center">Envoyer le code</button>`)
+    return
+  }
+  if(type==='email'){
+    if(currentProfile?.email_2fa_enabled)return disableEmail2fa()
+    openMfaModal('Code par email')
+    mfaBody(`
+      <p style="font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:14px">Un code sera envoyé à <strong style="color:var(--text)">${currentProfile?.email||currentUser.email}</strong> pour confirmer l'activation.</p>
+      <button onclick="enrollEmail()" class="btn-primary" style="width:100%;justify-content:center">Envoyer le code</button>`)
+  }
+}
+
+async function verifyTotp(){
+  const code=document.getElementById('totp-verify-code').value.trim()
+  if(code.length!==6){showToast('Code invalide','error');return}
+  const db=getSb()
+  try{
+    const{data:ch,error:chErr}=await db.auth.mfa.challenge({factorId:mfaPendingFactorId})
+    if(chErr)throw chErr
+    const{error:vErr}=await db.auth.mfa.verify({factorId:mfaPendingFactorId,challengeId:ch.id,code})
+    if(vErr)throw vErr
+    showToast('TOTP activé ✓','success')
+    closeMfaModal();await loadMfaStatus()
+  }catch(e){showToast('Erreur : '+e.message,'error')}
+}
+
+async function enrollPhone(){
+  const phone=document.getElementById('phone-enroll-input').value.trim()
+  if(!phone){showToast('Numéro requis','error');return}
+  const db=getSb()
+  try{
+    const{data,error}=await db.auth.mfa.enroll({factorType:'phone',phone})
+    if(error)throw error
+    mfaPendingFactorId=data.id
+    const{data:ch,error:chErr}=await db.auth.mfa.challenge({factorId:data.id})
+    if(chErr)throw chErr
+    mfaPendingChallengeId=ch.id
+    mfaBody(`
+      <p style="font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:14px">Code envoyé par SMS au ${phone}.</p>
+      <div class="field-group"><label class="field-label">Code reçu</label><input id="phone-verify-code" class="field-input" placeholder="123456" maxlength="6" inputmode="numeric"/></div>
+      <button onclick="verifyPhone()" class="btn-primary" style="width:100%;justify-content:center">Confirmer et activer</button>`)
+  }catch(e){showToast('Erreur : '+e.message,'error')}
+}
+
+async function verifyPhone(){
+  const code=document.getElementById('phone-verify-code').value.trim()
+  if(code.length!==6){showToast('Code invalide','error');return}
+  const db=getSb()
+  try{
+    const{error}=await db.auth.mfa.verify({factorId:mfaPendingFactorId,challengeId:mfaPendingChallengeId,code})
+    if(error)throw error
+    showToast('SMS activé ✓','success')
+    closeMfaModal();await loadMfaStatus()
+  }catch(e){showToast('Erreur : '+e.message,'error')}
+}
+
+async function enrollEmail(){
+  const db=getSb()
+  try{
+    const{error}=await db.auth.signInWithOtp({email:currentProfile?.email||currentUser.email,options:{shouldCreateUser:false}})
+    if(error)throw error
+    mfaBody(`
+      <p style="font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:14px">Code envoyé. Vérifie ta boîte mail.</p>
+      <div class="field-group"><label class="field-label">Code reçu</label><input id="email-verify-code" class="field-input" placeholder="123456" maxlength="6" inputmode="numeric"/></div>
+      <button onclick="verifyEmail()" class="btn-primary" style="width:100%;justify-content:center">Confirmer et activer</button>`)
+  }catch(e){showToast('Erreur : '+e.message,'error')}
+}
+
+async function verifyEmail(){
+  const code=document.getElementById('email-verify-code').value.trim()
+  if(code.length!==6){showToast('Code invalide','error');return}
+  const db=getSb()
+  try{
+    const{error:vErr}=await db.auth.verifyOtp({email:currentProfile?.email||currentUser.email,token:code,type:'email'})
+    if(vErr)throw vErr
+    const{error:uErr}=await db.from('users').update({email_2fa_enabled:true}).eq('id',currentProfile.id)
+    if(uErr)throw uErr
+    currentProfile.email_2fa_enabled=true
+    showToast('Email 2FA activé ✓','success')
+    closeMfaModal();await loadMfaStatus()
+  }catch(e){showToast('Erreur : '+e.message,'error')}
+}
+
+async function disableEmail2fa(){
+  if(!confirm('Désactiver la vérification par email ?'))return
+  const db=getSb()
+  const{error}=await db.from('users').update({email_2fa_enabled:false}).eq('id',currentProfile.id)
+  if(error){showToast('Erreur : '+error.message,'error');return}
+  currentProfile.email_2fa_enabled=false
+  showToast('Email 2FA désactivé','default')
+  loadMfaStatus()
+}
+
+async function confirmUnenroll(factorId){
+  if(!confirm('Désactiver cette méthode 2FA ?'))return
+  const db=getSb()
+  try{
+    const{error}=await db.auth.mfa.unenroll({factorId})
+    if(error)throw error
+    showToast('Méthode désactivée','default')
+    await loadMfaStatus()
+  }catch(e){showToast('Erreur : '+e.message,'error')}
 }
 
 // ════════════════════════════════════════
