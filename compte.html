@@ -313,14 +313,20 @@ textarea.field-input{resize:vertical;min-height:72px;border-radius:var(--radius-
         <div class="field-group"><label class="field-label">Ville *</label><input id="addr-city" class="field-input" placeholder="Casablanca"/></div>
         <div class="field-group"><label class="field-label">Code postal</label><input id="addr-postal" class="field-input" placeholder="20000"/></div>
       </div>
-      <div class="field-group"><label class="field-label">Pays *</label>
+      <div class="field-group"><label class="field-label"> *</label>
         <select id="addr-country" class="field-input">
           <option value="Maroc">🇲🇦 Maroc</option>
           <option value="Gabon">🇬🇦 Gabon</option>
           <option value="Sénégal">🇸🇳 Sénégal</option>
           <option value="Côte d'Ivoire">🇨🇮 Côte d'Ivoire</option>
           <option value="Cameroun">🇨🇲 Cameroun</option>
-          <option value="France">🇫🇷 France</option>
+          <option value="Congo">🇨🇬 Congo</option>
+          <option value="RD Congo">🇨🇩 RD Congo</option>
+          <option value="Bénin">🇧🇯 Bénin</option>
+          <option value="Togo">🇹🇬 Togo</option>
+          <option value="Mali">🇲🇱 Mali</option>
+          <option value="Burkina Faso">🇧🇫 Burkina Faso</option>
+          <option value="Guinée">🇬🇳 Guinée</option>
           <option value="Autre">🌍 Autre</option>
         </select>
       </div>
@@ -520,6 +526,21 @@ textarea.field-input{resize:vertical;min-height:72px;border-radius:var(--radius-
             <option value="">Sélectionner…</option>
             <option value="Maroc">🇲🇦 Maroc</option>
             <option value="Gabon">🇬🇦 Gabon</option>
+            <option value="Sénégal">🇸🇳 Sénégal</option>
+            <option value="Côte d'Ivoire">🇨🇮 Côte d'Ivoire</option>
+            <option value="Cameroun">🇨🇲 Cameroun</option>
+            <option value="Congo">🇨🇬 Congo</option>
+            <option value="RD Congo">🇨🇩 RD Congo</option>
+            <option value="Bénin">🇧🇯 Bénin</option>
+            <option value="Togo">🇹🇬 Togo</option>
+            <option value="Mali">🇲🇱 Mali</option>
+            <option value="Burkina Faso">🇧🇫 Burkina Faso</option>
+            <option value="Guinée">🇬🇳 Guinée</option>
+            <option value="Algérie">🇩🇿 Algérie</option>
+            <option value="Tunisie">🇹🇳 Tunisie</option>
+            <option value="France">🇫🇷 France</option>
+            <option value="Belgique">🇧🇪 Belgique</option>
+            <option value="Autre">🌍 Autre</option>
           </select>
         </div>
         <div class="field-group" style="margin-bottom:18px"><label class="field-label">Description courte</label><textarea id="upgrade-bio" class="field-input" placeholder="Présente ta boutique en quelques mots…"></textarea></div>
@@ -599,9 +620,21 @@ textarea.field-input{resize:vertical;min-height:72px;border-radius:var(--radius-
           <div class="field-group"><label class="field-label">Nom de la boutique</label><input id="shop-name" class="field-input" placeholder="Nom de votre boutique"/></div>
           <div class="field-group"><label class="field-label">Description / Spécialité</label><input id="shop-specialty" class="field-input" placeholder="Ex: Huiles naturelles…"/></div>
           <div class="field-group" style="margin-bottom:18px"><label class="field-label">Pays</label>
-            <select id="shop-country" class="field-input">
+            <select id="upgrade-country" class="field-input">
+              <option value="">Sélectionner…</option>
               <option value="Maroc">🇲🇦 Maroc</option>
               <option value="Gabon">🇬🇦 Gabon</option>
+              <option value="Sénégal">🇸🇳 Sénégal</option>
+              <option value="Côte d'Ivoire">🇨🇮 Côte d'Ivoire</option>
+              <option value="Cameroun">🇨🇲 Cameroun</option>
+              <option value="Congo">🇨🇬 Congo</option>
+              <option value="RD Congo">🇨🇩 RD Congo</option>
+              <option value="Bénin">🇧🇯 Bénin</option>
+              <option value="Togo">🇹🇬 Togo</option>
+              <option value="Mali">🇲🇱 Mali</option>
+              <option value="Burkina Faso">🇧🇫 Burkina Faso</option>
+              <option value="Guinée">🇬🇳 Guinée</option>
+              <option value="Autre">🌍 Autre</option>
             </select>
           </div>
           <button onclick="saveShop()" class="btn-primary" style="width:100%;justify-content:center;padding:14px"><i class="ph ph-floppy-disk"></i>Mettre à jour</button>
@@ -630,7 +663,18 @@ let currentUser=null,currentProfile=null,isVendeur=false,addrEditId=null
 function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='show '+type;setTimeout(()=>t.className='',3500)}
 function fmt(amount,currency='MAD'){try{return new Intl.NumberFormat('fr-FR',{style:'currency',currency,maximumFractionDigits:0}).format(amount)}catch{return amount+' '+currency}}
 function fmtDate(iso){return new Date(iso).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})}
-function countryFlag(c){if(!c)return'🌍';if(c.toLowerCase().includes('maroc'))return'🇲🇦';if(c.toLowerCase().includes('gabon'))return'🇬🇦';return'🌍'}
+function countryFlag(c){
+  if(!c)return'🌍'
+  const map={
+    maroc:'🇲🇦', gabon:'🇬🇦', 'sénégal':'🇸🇳', senegal:'🇸🇳',
+    "côte d'ivoire":'🇨🇮', "cote d'ivoire":'🇨🇮', cameroun:'🇨🇲',
+    congo:'🇨🇬', 'rd congo':'🇨🇩', 'bénin':'🇧🇯', benin:'🇧🇯',
+    togo:'🇹🇬', mali:'🇲🇱', 'burkina faso':'🇧🇫',
+    'guinée':'🇬🇳', guinee:'🇬🇳', 'algérie':'🇩🇿', algerie:'🇩🇿',
+    tunisie:'🇹🇳', france:'🇫🇷', belgique:'🇧🇪'
+  }
+  return map[c.toLowerCase()]||'🌍'
+}
 function hideOverlay(){document.getElementById('loading-overlay').classList.add('hidden');setTimeout(()=>document.getElementById('loading-overlay').style.display='none',400)}
 
 const statusChip={
