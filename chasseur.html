@@ -19,6 +19,8 @@
       --green:#3ecf8e;--green-bg:rgba(62,207,142,.07);--green-border:rgba(62,207,142,.2);
       --blue:#818cf8;--blue-bg:rgba(78,98,255,.07);--blue-border:rgba(78,98,255,.15);
       --red:#f87171;--red-bg:rgba(248,113,113,.07);--red-border:rgba(248,113,113,.2);
+      /* variables bnav */
+      --accent:#FF6B2B;--text-faint:#444;
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     html{scroll-behavior:smooth;}
@@ -28,15 +30,14 @@
 
     /* NAV */
     nav{position:sticky;top:0;z-index:100;background:rgba(8,8,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
-    .logo { font-family:var(--font); font-size:22px; font-weight:900; color:var(--text); text-decoration:none; letter-spacing:-1px; }
-    .logo span { color:var(--accent); }
+    .logo{font-family:'DM Sans',sans-serif;font-size:22px;font-weight:900;color:var(--snow);text-decoration:none;letter-spacing:-1px;}
+    .logo span{color:var(--fire);}
     .nav-links{display:flex;gap:28px;align-items:center;}
     .nav-links a{text-decoration:none;color:var(--fog);font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;transition:color .2s;}
     .nav-links a:hover,.nav-links a.active{color:var(--snow);}
     .nav-links a.active{color:var(--fire);}
     .btn-nav{background:var(--fire)!important;color:#fff!important;padding:8px 18px;font-size:9px!important;clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));}
     .btn-nav:hover{background:var(--ember)!important;}
-    /* Cloche notifs */
     .notif-bell{position:relative;cursor:pointer;display:flex;align-items:center;color:var(--fog);transition:color .2s;}
     .notif-bell:hover{color:var(--snow);}
     .notif-badge{position:absolute;top:-4px;right:-4px;background:var(--fire);color:#fff;font-size:9px;padding:1px 5px;border-radius:0;min-width:16px;text-align:center;display:none;}
@@ -168,7 +169,7 @@
     .btn-delete:hover{background:var(--red-bg);}
     .btn-delete .material-symbols-outlined{font-size:13px;}
 
-    /* BLOC ACCEPTÉ / WENNA EXPRESS */
+    /* BLOC WENNA EXPRESS */
     .accepted-banner{margin:12px 0;background:rgba(62,207,142,.04);border:1px solid var(--green-border);padding:16px;}
     .accepted-banner-title{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--green);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
     .accepted-banner-title .material-symbols-outlined{font-size:14px;}
@@ -201,7 +202,6 @@
     .tx-icon.pending{background:var(--gold-bg);border:1px solid rgba(208,166,0,.2);color:var(--gold);}
     .tx-icon.selected{background:var(--blue-bg);border:1px solid var(--blue-border);color:var(--blue);}
     .tx-icon .material-symbols-outlined{font-size:16px;}
-    .tx-info{}
     .tx-title{font-size:12px;color:var(--snow);font-weight:500;}
     .tx-date{font-size:10px;color:#444;margin-top:2px;}
     .tx-amount{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;font-style:italic;}
@@ -282,11 +282,13 @@
     #toast.success{border-color:rgba(62,207,142,.4);background:#0a1f12;}
     #toast.error{border-color:rgba(248,113,113,.4);background:#1f0a0a;}
 
-    /* BOTTOM NAV */
-    .bnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:40;background:rgba(8,8,8,.95);backdrop-filter:blur(20px);border-top:1px solid var(--border-fire);padding:10px 0 22px;}
+    /* ── BOTTOM NAV ── */
+    .bnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(10,10,10,.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:10px 0 20px;}
     .bnav-inner{display:flex;justify-content:space-around;}
-    .bnav-item{display:flex;flex-direction:column;align-items:center;gap:4px;color:#555;text-decoration:none;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;transition:color .2s;}
-    .bnav-item.active,.bnav-item:hover{color:var(--fire);}
+    .bnav-item{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--text-faint);text-decoration:none;font-size:10px;font-weight:700;transition:color .2s;}
+    .bnav-item.active,.bnav-item:hover{color:var(--accent);}
+    .bnav-item.gold{color:var(--gold)!important;}
+    .bnav-icon{display:flex;align-items:center;justify-content:center;height:22px;}
     @media(max-width:768px){.bnav{display:block;}}
 
     @keyframes spin{to{transform:rotate(360deg);}}
@@ -304,7 +306,6 @@
     <a href="boutique.html">Boutique</a>
     <a href="quetes.html">Quêtes</a>
     <a href="dashboard-chasseur.html" class="active">Espace Chasseur</a>
-    <!-- Cloche notifications -->
     <div class="notif-bell" id="notifBell" onclick="toggleNotifPanel(event)" style="position:relative;">
       <span class="material-symbols-outlined">notifications</span>
       <span class="notif-badge" id="notifBadge"></span>
@@ -545,13 +546,35 @@
   <img id="lightboxImg" src="" alt=""/>
 </div>
 
+<!-- ── BOTTOM NAV ── -->
 <nav class="bnav">
   <div class="bnav-inner">
-    <a href="hero.html" class="bnav-item"><span class="material-symbols-outlined">home</span><span>Accueil</span></a>
-    <a href="boutique.html" class="bnav-item"><span class="material-symbols-outlined">storefront</span><span>Boutique</span></a>
-    <a href="quetes.html" class="bnav-item"><span class="material-symbols-outlined">search</span><span>Quêtes</span></a>
-    <a href="dashboard-chasseur.html" class="bnav-item active"><span class="material-symbols-outlined">gps_fixed</span><span>Chasse</span></a>
-    <a href="compte.html" class="bnav-item"><span class="material-symbols-outlined">person</span><span>Profil</span></a>
+
+    <a href="boutique.html" class="bnav-item">
+      <span class="bnav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+      <span>Shop</span>
+    </a>
+
+    <a href="dashboard-chasseur.html" class="bnav-item active">
+      <span class="bnav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
+      <span>Chasse</span>
+    </a>
+
+    <a href="dashboard-vendeur.html" class="bnav-item">
+      <span class="bnav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+      <span>Vendre</span>
+    </a>
+
+    <a href="quetes.html" class="bnav-item gold">
+      <span class="bnav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span>
+      <span>Quêtes</span>
+    </a>
+
+    <a href="compte.html" class="bnav-item">
+      <span class="bnav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+      <span>Profil</span>
+    </a>
+
   </div>
 </nav>
 
@@ -561,7 +584,7 @@
 ═══════════════════════════════════════════════ */
 let allQuests = [], myProposals = [], categories = []
 let currentUser = null
-let internalUserId = null   // ← users.id (PK interne), pas auth_id
+let internalUserId = null
 let currentUserRole = null
 let currentUserCountry = null
 let activeCategory = 'all', activeCountry = 'all'
@@ -571,7 +594,7 @@ let notifPollInterval = null
 
 const MAX_IMAGES = 5
 const BUCKET = 'quest-proposals'
-const WENNA_EXPRESS_URL = 'https://express.wennashop.com' // à adapter
+const WENNA_EXPRESS_URL = 'https://express.wennashop.com'
 
 const STATUS_MAP = {
   pending:     { label: 'En attente',    icon: 'hourglass_empty', cls: 'pending' },
@@ -594,14 +617,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       setTimeout(() => location.href = 'hero.html', 1800)
       return
     }
-    await resolveInternalUser()   // ← résout users.id, role, country
+    await resolveInternalUser()
     setHunterIdentity()
     await Promise.all([loadCategories(), loadQuests(), loadMyProposals()])
     computeKPIs()
     initUploadZone()
     loadNotifications()
     notifPollInterval = setInterval(loadNotifications, 30000)
-    // Fermer panel notifs si clic dehors
     document.addEventListener('click', (e) => {
       const panel = document.getElementById('notifPanel')
       const bell = document.getElementById('notifBell')
@@ -636,10 +658,6 @@ async function checkAuth() {
   currentUser = session?.user || null
 }
 
-/* ═══════════════════════════════════════════════
-   RÉSOLUTION users.id INTERNE
-   hunter_id FK → users.id, PAS auth_id
-═══════════════════════════════════════════════ */
 async function resolveInternalUser() {
   const { data, error } = await getSb()
     .from('users')
@@ -653,17 +671,12 @@ async function resolveInternalUser() {
     throw new Error('Profil introuvable')
   }
 
-  internalUserId   = data.id
-  currentUserRole  = data.role
+  internalUserId     = data.id
+  currentUserRole    = data.role
   currentUserCountry = data.country || ''
-
-  // Stocker pour setHunterIdentity
   currentUser._internalData = data
 }
 
-/* ═══════════════════════════════════════════════
-   IDENTITÉ CHASSEUR
-═══════════════════════════════════════════════ */
 function setHunterIdentity() {
   const d = currentUser._internalData || {}
   const name = d.full_name || (d.first_name ? `${d.first_name} ${d.last_name || ''}`.trim() : null)
@@ -672,9 +685,6 @@ function setHunterIdentity() {
   document.getElementById('hunterAvatarLetter').textContent = name.charAt(0).toUpperCase()
 }
 
-/* ═══════════════════════════════════════════════
-   CATÉGORIES
-═══════════════════════════════════════════════ */
 async function loadCategories() {
   const { data } = await getSb().from('categories').select('id, name').order('name')
   categories = data || []
@@ -689,9 +699,6 @@ async function loadCategories() {
   })
 }
 
-/* ═══════════════════════════════════════════════
-   QUÊTES
-═══════════════════════════════════════════════ */
 async function loadQuests() {
   const { data, error } = await getSb()
     .from('quests')
@@ -703,7 +710,6 @@ async function loadQuests() {
 
   const quests = (data || []).map(q => ({ ...q, category_id: String(q.category_id ?? ''), proposals_count: 0 }))
 
-  // Count propositions par quête
   try {
     const ids = quests.map(q => q.id)
     if (ids.length) {
@@ -735,7 +741,6 @@ function renderQuests(quests) {
     return
   }
 
-  // Quêtes déjà soumises par ce chasseur
   const myQuestIds = new Set(myProposals.map(p => p.quest_id))
   const isNew = (d) => (Date.now() - new Date(d)) < 86400000 * 2
 
@@ -746,7 +751,6 @@ function renderQuests(quests) {
     const hot     = props >= 3
     const done    = myQuestIds.has(q.id)
     const fresh   = isNew(q.created_at)
-    // Vérifier que le rôle permet de chasser
     const canHunt = currentUserRole === 'artisan' || currentUserRole === 'admin'
 
     return `
@@ -800,9 +804,6 @@ function showQuestsEmpty(msg) {
   </div>`
 }
 
-/* ═══════════════════════════════════════════════
-   FILTRES
-═══════════════════════════════════════════════ */
 function selectCat(el) {
   document.querySelectorAll('#categoryChips .chip').forEach(c => c.classList.remove('active'))
   el.classList.add('active')
@@ -848,10 +849,6 @@ function resetFilters() {
   renderQuests(allQuests)
 }
 
-/* ═══════════════════════════════════════════════
-   MES PROPOSITIONS
-   hunter_id = internalUserId (users.id)
-═══════════════════════════════════════════════ */
 async function loadMyProposals() {
   if (!internalUserId) return
 
@@ -860,17 +857,14 @@ async function loadMyProposals() {
     .select(`id, quest_id, description, proposed_price, product_url, product_images,
              status, created_at, selected_at, reward_paid_at, delivery_type, tracking_ref,
              quests(title, reward_amount, currency, country_target)`)
-    .eq('hunter_id', internalUserId)   // ← users.id interne
+    .eq('hunter_id', internalUserId)
     .order('created_at', { ascending: false })
 
   if (error) { console.error('[Chasseur] loadMyProposals:', error); return }
 
   myProposals = data || []
-
-  // Badge : propositions pending
   const pendingCount = myProposals.filter(p => p.status === 'pending').length
   document.getElementById('propBadge').textContent = pendingCount
-
   renderProposals()
 }
 
@@ -892,14 +886,10 @@ function renderProposals() {
     const reward     = p.quests?.reward_amount || 0
     const currency   = p.quests?.currency || 'FCFA'
     const images     = Array.isArray(p.product_images) ? p.product_images : []
-
-    // Déterminer type de livraison selon pays de la quête et profil chasseur
     const questCountry   = p.quests?.country_target || ''
     const isInternational = questCountry.toLowerCase().includes('gabon') || questCountry.toLowerCase().includes('maroc')
       ? (currentUserCountry && !questCountry.toLowerCase().includes(currentUserCountry.toLowerCase()))
       : false
-
-    // Bloc Wenna Express pour propositions acceptées/en livraison
     const showExpressBlock = ['selected', 'in_delivery', 'delivered', 'reward_paid'].includes(p.status)
 
     return `
@@ -911,15 +901,11 @@ function renderProposals() {
             ${s.label}
           </span>
         </div>
-
         ${p.description ? `<div class="proposal-body">${esc(p.description)}</div>` : ''}
-
         ${images.length > 0 ? `<div class="prop-images">
           ${images.map(url => `<img class="prop-img-thumb" src="${esc(url)}" alt="photo produit" onclick="openLightbox('${esc(url)}')" loading="lazy"/>`).join('')}
         </div>` : ''}
-
         ${showExpressBlock ? renderExpressBlock(p, isInternational, reward, currency) : ''}
-
         <div class="proposal-footer" style="margin-top:12px;">
           <div class="proposal-meta">
             <span class="meta-item">
@@ -958,7 +944,6 @@ function renderProposals() {
   }).join('')
 }
 
-/* Bloc Wenna Express affiché quand la proposition est acceptée */
 function renderExpressBlock(p, isInternational, reward, currency) {
   const deliveryLabel = isInternational ? 'Wenna Express International (Gabon ↔ Maroc)' : 'Wenna Express Local'
   const deliveryIcon  = isInternational ? 'flight' : 'local_shipping'
@@ -1017,7 +1002,7 @@ async function deleteProposal(propId) {
     .from('quest_proposals')
     .delete()
     .eq('id', propId)
-    .eq('hunter_id', internalUserId)   // ← users.id interne
+    .eq('hunter_id', internalUserId)
 
   if (error) { showToast('Erreur : ' + error.message, 'error'); return }
   showToast('Proposition retirée.', 'success')
@@ -1027,12 +1012,8 @@ async function deleteProposal(propId) {
   renderQuests(allQuests)
 }
 
-/* ═══════════════════════════════════════════════
-   KPIs + GAINS
-═══════════════════════════════════════════════ */
 function computeKPIs() {
   const total    = myProposals.length
-  // "accepted" = selected + in_delivery + delivered + reward_paid
   const accepted = myProposals.filter(p => ['selected','in_delivery','delivered','reward_paid'].includes(p.status)).length
   const paid     = myProposals.filter(p => p.status === 'reward_paid')
   const gains    = paid.reduce((s, p) => s + Number(p.quests?.reward_amount || 0), 0)
@@ -1044,7 +1025,6 @@ function computeKPIs() {
   document.getElementById('kpiRate').textContent      = rate + '%'
   document.getElementById('propBadge').textContent    = myProposals.filter(p => p.status === 'pending').length
 
-  // Tab gains
   document.getElementById('gainsTotalVal').innerHTML = `${fmt(gains)} <span class="gains-total-currency">FCFA</span>`
   const acceptPct = Math.min(rate, 100)
   document.getElementById('progAcceptRate').textContent = acceptPct + '%'
@@ -1053,13 +1033,12 @@ function computeKPIs() {
   document.getElementById('progCompletedRate').textContent = completedPct + '%'
   document.getElementById('progCompletedBar').style.width  = completedPct + '%'
 
-  // Niveau chasseur
   const completedCount = paid.length
   const levels = [
-    { name: 'Chasseur Initié',    min: 0 },
-    { name: 'Chasseur Confirmé',  min: 3 },
-    { name: 'Chasseur Élite',     min: 8 },
-    { name: 'Chasseur Légendaire',min: 20 }
+    { name: 'Chasseur Initié',     min: 0 },
+    { name: 'Chasseur Confirmé',   min: 3 },
+    { name: 'Chasseur Élite',      min: 8 },
+    { name: 'Chasseur Légendaire', min: 20 }
   ]
   const level     = [...levels].reverse().find(l => completedCount >= l.min) || levels[0]
   const nextLevel = levels.find(l => l.min > completedCount)
@@ -1087,8 +1066,6 @@ function renderTransactions(paid, all) {
   }
 
   let html = ''
-
-  // Récompenses perçues
   html += paid.map(p => `
     <div class="transaction-item">
       <div class="tx-left">
@@ -1101,7 +1078,6 @@ function renderTransactions(paid, all) {
       <div class="tx-amount earned">+${fmt(p.quests?.reward_amount || 0)} FCFA</div>
     </div>`).join('')
 
-  // Acceptées en cours
   html += selected.map(p => `
     <div class="transaction-item">
       <div class="tx-left">
@@ -1114,7 +1090,6 @@ function renderTransactions(paid, all) {
       <div class="tx-amount selected">${fmt(p.quests?.reward_amount || 0)} FCFA</div>
     </div>`).join('')
 
-  // Pending
   const pending = all.filter(p => p.status === 'pending').slice(0, 3)
   html += pending.map(p => `
     <div class="transaction-item">
@@ -1131,9 +1106,6 @@ function renderTransactions(paid, all) {
   list.innerHTML = html
 }
 
-/* ═══════════════════════════════════════════════
-   NOTIFICATIONS
-═══════════════════════════════════════════════ */
 async function loadNotifications() {
   if (!internalUserId) return
   try {
@@ -1186,11 +1158,7 @@ function toggleNotifPanel(e) {
   document.getElementById('notifPanel').classList.toggle('open')
 }
 
-/* ═══════════════════════════════════════════════
-   MODAL PROPOSITION
-═══════════════════════════════════════════════ */
 function openModal(quest) {
-  // Vérifier le rôle avant d'ouvrir
   if (currentUserRole !== 'artisan' && currentUserRole !== 'admin') {
     showToast('Seuls les chasseurs (artisans) peuvent proposer.', 'error')
     return
@@ -1230,17 +1198,15 @@ async function submitProposal() {
   btn.disabled = true
   btn.innerHTML = '<span class="material-symbols-outlined" style="animation:spin 1s linear infinite;font-size:15px;">progress_activity</span> Envoi…'
 
-  // Upload images
   let imageUrls = []
   if (selectedFiles.length > 0) {
     btn.innerHTML = '<span class="material-symbols-outlined" style="animation:spin 1s linear infinite;font-size:15px;">progress_activity</span> Upload photos…'
     imageUrls = await uploadImages()
   }
 
-  // INSERT avec hunter_id = internalUserId (users.id PK, pas auth_id)
   const { error } = await getSb().from('quest_proposals').insert({
     quest_id:       currentQuestForModal.id,
-    hunter_id:      internalUserId,       // ← users.id interne
+    hunter_id:      internalUserId,
     description:    message,
     proposed_price: price,
     product_url:    link || null,
@@ -1260,9 +1226,6 @@ async function submitProposal() {
   renderQuests(allQuests)
 }
 
-/* ═══════════════════════════════════════════════
-   IMAGE UPLOAD
-═══════════════════════════════════════════════ */
 function initUploadZone() {
   const zone  = document.getElementById('uploadZone')
   const input = document.getElementById('imageInput')
@@ -1283,16 +1246,10 @@ function handleFiles(fileList) {
   const allowed   = ['image/jpeg','image/png','image/webp','image/gif']
   const remaining = MAX_IMAGES - selectedFiles.length
   const valid     = files.filter(f => allowed.includes(f.type) && f.size <= 5 * 1024 * 1024)
-
   if (valid.length < files.length) showToast('Fichiers ignorés (type ou taille > 5Mo).', 'error')
-
   const toAdd = valid.slice(0, remaining)
   if (valid.length > remaining) showToast(`Maximum ${MAX_IMAGES} photos par proposition.`, 'error')
-
-  toAdd.forEach(file => {
-    selectedFiles.push(file)
-    addPreview(file, selectedFiles.length - 1)
-  })
+  toAdd.forEach(file => { selectedFiles.push(file); addPreview(file, selectedFiles.length - 1) })
   updateCounter()
 }
 
@@ -1347,7 +1304,6 @@ async function uploadImages() {
   const urls = []
   for (const file of selectedFiles) {
     const ext  = file.name.split('.').pop()
-    // Utiliser internalUserId dans le path pour cohérence
     const path = `${internalUserId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
     const { error } = await sb.storage.from(BUCKET).upload(path, file, { upsert: false })
     if (error) { console.error('[Chasseur] Upload error:', error); continue }
@@ -1357,9 +1313,6 @@ async function uploadImages() {
   return urls
 }
 
-/* ═══════════════════════════════════════════════
-   LIGHTBOX
-═══════════════════════════════════════════════ */
 function openLightbox(url) {
   document.getElementById('lightboxImg').src = url
   document.getElementById('lightbox').classList.add('open')
@@ -1370,9 +1323,6 @@ function closeLightbox() {
   document.body.style.overflow = ''
 }
 
-/* ═══════════════════════════════════════════════
-   TABS
-═══════════════════════════════════════════════ */
 function switchTab(name, el) {
   document.querySelectorAll('.htab').forEach(t => t.classList.remove('active'))
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'))
@@ -1380,9 +1330,6 @@ function switchTab(name, el) {
   document.getElementById('tab-' + name).classList.add('active')
 }
 
-/* ═══════════════════════════════════════════════
-   UTILS
-═══════════════════════════════════════════════ */
 function daysUntil(d) { return Math.max(0, Math.ceil((new Date(d) - new Date()) / 86400000)) }
 function fmt(n) { return Number(n).toLocaleString('fr-FR') }
 function esc(s) {
@@ -1393,9 +1340,9 @@ function formatDate(d) {
 }
 function timeAgo(d) {
   const diff = Date.now() - new Date(d)
-  if (diff < 60000)   return 'À l\'instant'
-  if (diff < 3600000) return `${Math.floor(diff / 60000)} min`
-  if (diff < 86400000)return `${Math.floor(diff / 3600000)}h`
+  if (diff < 60000)    return 'À l\'instant'
+  if (diff < 3600000)  return `${Math.floor(diff / 60000)} min`
+  if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`
   return formatDate(d)
 }
 function showToast(msg, type = 'success') {
@@ -1405,12 +1352,8 @@ function showToast(msg, type = 'success') {
   setTimeout(() => t.className = '', 3500)
 }
 
-// Fermer lightbox avec Escape
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    closeLightbox()
-    closeModal()
-  }
+  if (e.key === 'Escape') { closeLightbox(); closeModal() }
 })
 </script>
 </body>
