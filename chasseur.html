@@ -57,7 +57,7 @@
     @media(max-width:768px){nav{padding:14px 20px;}.nav-links a:not(.btn-nav):not(.active){display:none;}.notif-panel{right:-80px;}}
 
     /* HERO CHASSEUR */
-    .hunter-hero{background:var(--coal);border-bottom:1px solid var(--border);padding:40px 40px 0;position:relative;overflow:hidden;}
+    .hunter-hero{background:var(--coal);border-bottom:1px solid var(--border);padding:40px 40px 0;position:relative;overflow:visible;}
     .hunter-hero::before{content:'';position:absolute;top:-100px;right:-80px;width:400px;height:400px;background:radial-gradient(circle,rgba(255,107,43,.06) 0%,transparent 70%);pointer-events:none;}
     .hunter-hero-inner{max-width:1200px;margin:0 auto;display:flex;align-items:flex-end;justify-content:space-between;gap:32px;flex-wrap:wrap;}
     .hunter-identity{display:flex;align-items:center;gap:20px;padding-bottom:32px;}
@@ -1172,7 +1172,7 @@ function openModal(quest) {
   document.getElementById('propLink').value    = ''
   resetImageUpload()
   document.getElementById('modalOverlay').classList.add('open')
-  document.body.style.overflow = 'hidden'
+  document.body.style.overflow = 'visible'
 }
 
 function closeModal() {
