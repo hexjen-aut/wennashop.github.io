@@ -6,7 +6,11 @@
 <title>WennaShop — Mon Compte</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css"/>
+
+<!-- FIX CSP : Phosphor Icons via self-hosted ou CDN autorisé -->
+<!-- On utilise le fallback SVG inline + on charge les icônes via jsDelivr en JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css"/>
+
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -313,20 +317,26 @@ textarea.field-input{resize:vertical;min-height:72px;border-radius:var(--radius-
         <div class="field-group"><label class="field-label">Ville *</label><input id="addr-city" class="field-input" placeholder="Casablanca"/></div>
         <div class="field-group"><label class="field-label">Code postal</label><input id="addr-postal" class="field-input" placeholder="20000"/></div>
       </div>
-      <div class="field-group"><label class="field-label"> *</label>
+      <div class="field-group"><label class="field-label">Pays *</label>
         <select id="addr-country" class="field-input">
           <option value="Maroc">🇲🇦 Maroc</option>
           <option value="Gabon">🇬🇦 Gabon</option>
           <option value="Sénégal">🇸🇳 Sénégal</option>
           <option value="Côte d'Ivoire">🇨🇮 Côte d'Ivoire</option>
           <option value="Cameroun">🇨🇲 Cameroun</option>
-          <option value="Congo">🇨🇬 Congo</option>
+          <option value="Congo">🇨🇬 Congo-Brazzaville</option>
           <option value="RD Congo">🇨🇩 RD Congo</option>
           <option value="Bénin">🇧🇯 Bénin</option>
           <option value="Togo">🇹🇬 Togo</option>
           <option value="Mali">🇲🇱 Mali</option>
           <option value="Burkina Faso">🇧🇫 Burkina Faso</option>
           <option value="Guinée">🇬🇳 Guinée</option>
+          <option value="Algérie">🇩🇿 Algérie</option>
+          <option value="Tunisie">🇹🇳 Tunisie</option>
+          <option value="Niger">🇳🇪 Niger</option>
+          <option value="Tchad">🇹🇩 Tchad</option>
+          <option value="Centrafrique">🇨🇫 Centrafrique</option>
+          <option value="Madagascar">🇲🇬 Madagascar</option>
           <option value="Autre">🌍 Autre</option>
         </select>
       </div>
@@ -361,7 +371,7 @@ textarea.field-input{resize:vertical;min-height:72px;border-radius:var(--radius-
   </div>
 </div>
 
-<!-- MODAL 2FA (générique — TOTP / SMS / Email) -->
+<!-- MODAL 2FA -->
 <div class="modal-ov hidden" id="mfa-modal">
   <div class="modal-box" style="max-width:440px">
     <div class="modal-handle"></div>
@@ -502,7 +512,7 @@ textarea.field-input{resize:vertical;min-height:72px;border-radius:var(--radius-
       <!-- 2FA -->
       <div class="card">
         <div class="card-title">Authentification à deux facteurs</div>
-        <p style="font-size:12px;font-weight:500;color:var(--text-muted);margin:-8px 0 14px;line-height:1.6">Ajoute une étape de vérification à la connexion. Active une ou plusieurs méthodes, indépendamment les unes des autres.</p>
+        <p style="font-size:12px;font-weight:500;color:var(--text-muted);margin:-8px 0 14px;line-height:1.6">Ajoute une étape de vérification à la connexion. Active une ou plusieurs méthodes indépendamment.</p>
         <div class="security-row" onclick="open2faModal('totp')">
           <div class="security-row-left"><i class="ph ph-device-mobile-camera"></i>Application d'authentification (TOTP)</div>
           <span class="chip chip-muted" id="mfa-status-totp">Inactif</span>
@@ -559,13 +569,17 @@ textarea.field-input{resize:vertical;min-height:72px;border-radius:var(--radius-
             <option value="Sénégal">🇸🇳 Sénégal</option>
             <option value="Côte d'Ivoire">🇨🇮 Côte d'Ivoire</option>
             <option value="Cameroun">🇨🇲 Cameroun</option>
-            <option value="Congo">🇨🇬 Congo</option>
+            <option value="Congo">🇨🇬 Congo-Brazzaville</option>
             <option value="RD Congo">🇨🇩 RD Congo</option>
             <option value="Bénin">🇧🇯 Bénin</option>
             <option value="Togo">🇹🇬 Togo</option>
             <option value="Mali">🇲🇱 Mali</option>
             <option value="Burkina Faso">🇧🇫 Burkina Faso</option>
             <option value="Guinée">🇬🇳 Guinée</option>
+            <option value="Algérie">🇩🇿 Algérie</option>
+            <option value="Tunisie">🇹🇳 Tunisie</option>
+            <option value="Niger">🇳🇪 Niger</option>
+            <option value="Tchad">🇹🇩 Tchad</option>
             <option value="Autre">🌍 Autre</option>
           </select>
         </div>
@@ -640,26 +654,31 @@ textarea.field-input{resize:vertical;min-height:72px;border-radius:var(--radius-
         </div>
       </div>
 
+      <!-- ✅ FIX : id unique "shop-country" (pas "upgrade-country" en doublon) -->
       <div id="vendeur-boutique" class="tab-panel reveal">
         <div class="card">
           <div class="card-title">Ma Boutique</div>
           <div class="field-group"><label class="field-label">Nom de la boutique</label><input id="shop-name" class="field-input" placeholder="Nom de votre boutique"/></div>
           <div class="field-group"><label class="field-label">Description / Spécialité</label><input id="shop-specialty" class="field-input" placeholder="Ex: Huiles naturelles…"/></div>
           <div class="field-group" style="margin-bottom:18px"><label class="field-label">Pays</label>
-            <select id="upgrade-country" class="field-input">
+            <select id="shop-country" class="field-input">
               <option value="">Sélectionner…</option>
               <option value="Maroc">🇲🇦 Maroc</option>
               <option value="Gabon">🇬🇦 Gabon</option>
               <option value="Sénégal">🇸🇳 Sénégal</option>
               <option value="Côte d'Ivoire">🇨🇮 Côte d'Ivoire</option>
               <option value="Cameroun">🇨🇲 Cameroun</option>
-              <option value="Congo">🇨🇬 Congo</option>
+              <option value="Congo">🇨🇬 Congo-Brazzaville</option>
               <option value="RD Congo">🇨🇩 RD Congo</option>
               <option value="Bénin">🇧🇯 Bénin</option>
               <option value="Togo">🇹🇬 Togo</option>
               <option value="Mali">🇲🇱 Mali</option>
               <option value="Burkina Faso">🇧🇫 Burkina Faso</option>
               <option value="Guinée">🇬🇳 Guinée</option>
+              <option value="Algérie">🇩🇿 Algérie</option>
+              <option value="Tunisie">🇹🇳 Tunisie</option>
+              <option value="Niger">🇳🇪 Niger</option>
+              <option value="Tchad">🇹🇩 Tchad</option>
               <option value="Autre">🌍 Autre</option>
             </select>
           </div>
@@ -692,12 +711,13 @@ function fmtDate(iso){return new Date(iso).toLocaleDateString('fr-FR',{day:'nume
 function countryFlag(c){
   if(!c)return'🌍'
   const map={
-    maroc:'🇲🇦', gabon:'🇬🇦', 'sénégal':'🇸🇳', senegal:'🇸🇳',
-    "côte d'ivoire":'🇨🇮', "cote d'ivoire":'🇨🇮', cameroun:'🇨🇲',
-    congo:'🇨🇬', 'rd congo':'🇨🇩', 'bénin':'🇧🇯', benin:'🇧🇯',
-    togo:'🇹🇬', mali:'🇲🇱', 'burkina faso':'🇧🇫',
-    'guinée':'🇬🇳', guinee:'🇬🇳', 'algérie':'🇩🇿', algerie:'🇩🇿',
-    tunisie:'🇹🇳', france:'🇫🇷', belgique:'🇧🇪'
+    maroc:'🇲🇦',gabon:'🇬🇦','sénégal':'🇸🇳',senegal:'🇸🇳',
+    "côte d'ivoire":'🇨🇮',"cote d'ivoire":'🇨🇮',cameroun:'🇨🇲',
+    congo:'🇨🇬','rd congo':'🇨🇩','bénin':'🇧🇯',benin:'🇧🇯',
+    togo:'🇹🇬',mali:'🇲🇱','burkina faso':'🇧🇫',
+    'guinée':'🇬🇳',guinee:'🇬🇳','algérie':'🇩🇿',algerie:'🇩🇿',
+    tunisie:'🇹🇳',niger:'🇳🇪',tchad:'🇹🇩',centrafrique:'🇨🇫',
+    madagascar:'🇲🇬',france:'🇫🇷',belgique:'🇧🇪'
   }
   return map[c.toLowerCase()]||'🌍'
 }
@@ -819,20 +839,24 @@ async function loadProfile(){
   if(isVendeur){
     document.getElementById('vendeur-upgrade-section').style.display='none'
     document.getElementById('vendeur-dashboard-section').style.display='block'
-    await loadShopData()
+    await loadShopData()   // ✅ shop-country existe maintenant
     loadVendeurData()
   }
   loadClientStats(data.id);loadOrders(data.id);loadQuetes(data.id);loadAddresses(data.id)
   loadMfaStatus()
 }
 
+// ✅ FIX : cible shop-country (id correct, toujours dans le DOM vendeur)
 async function loadShopData(){
   const db=getSb();if(!currentProfile)return
   const{data:shop}=await db.from('shops').select('*').eq('user_id',currentProfile.id).maybeSingle()
   if(shop){
-    document.getElementById('shop-name').value=shop.name||''
-    document.getElementById('shop-specialty').value=shop.bio||''
-    if(shop.country)document.getElementById('shop-country').value=shop.country
+    const nameEl=document.getElementById('shop-name')
+    const specEl=document.getElementById('shop-specialty')
+    const ctryEl=document.getElementById('shop-country')
+    if(nameEl)nameEl.value=shop.name||''
+    if(specEl)specEl.value=shop.bio||''
+    if(ctryEl&&shop.country)ctryEl.value=shop.country
   }
 }
 
@@ -911,9 +935,7 @@ function renderQuetes(container,quetes){
     </div>`).join('')
 }
 
-// ════════════════════════════════════════
-//  ADRESSES
-// ════════════════════════════════════════
+// ADRESSES
 async function loadAddresses(userId){
   const db=getSb()
   const container=document.getElementById('addresses-list')
@@ -984,16 +1006,12 @@ async function saveAddress(){
   const btn=document.getElementById('addr-save-btn')
   btn.disabled=true;btn.innerHTML='<div class="spinner"></div>'
   const payload={
-    user_id:currentProfile.id,
-    label,
+    user_id:currentProfile.id,label,
     first_name:document.getElementById('addr-firstname').value.trim()||null,
     last_name:document.getElementById('addr-lastname').value.trim()||null,
-    line1,
-    line2:document.getElementById('addr-line2').value.trim()||null,
-    city,
-    postal_code:document.getElementById('addr-postal').value.trim()||null,
-    country,
-    phone:document.getElementById('addr-phone').value.trim()||null,
+    line1,line2:document.getElementById('addr-line2').value.trim()||null,
+    city,postal_code:document.getElementById('addr-postal').value.trim()||null,
+    country,phone:document.getElementById('addr-phone').value.trim()||null,
     updated_at:new Date().toISOString()
   }
   const editId=document.getElementById('addr-id').value
@@ -1016,9 +1034,7 @@ async function deleteAddress(id){
   await loadAddresses(currentProfile.id)
 }
 
-// ════════════════════════════════════════
-//  SUPPRESSION COMPTE
-// ════════════════════════════════════════
+// SUPPRESSION COMPTE
 function openDeleteAccountModal(){
   document.getElementById('delete-confirm-input').value=''
   const btn=document.getElementById('delete-confirm-btn')
@@ -1026,19 +1042,16 @@ function openDeleteAccountModal(){
   document.getElementById('delete-account-modal').classList.remove('hidden')
   document.body.style.overflow='hidden'
 }
-
 function closeDeleteAccountModal(){
   document.getElementById('delete-account-modal').classList.add('hidden')
   document.body.style.overflow=''
 }
-
 function checkDeleteConfirm(){
   const val=document.getElementById('delete-confirm-input').value
   const btn=document.getElementById('delete-confirm-btn')
   const ok=val.trim()==='SUPPRIMER'
   btn.disabled=!ok;btn.style.opacity=ok?'1':'.35'
 }
-
 async function confirmDeleteAccount(){
   const db=getSb();if(!currentProfile)return
   const btn=document.getElementById('delete-confirm-btn')
@@ -1061,9 +1074,7 @@ async function confirmDeleteAccount(){
   }
 }
 
-// ════════════════════════════════════════
-//  2FA — TOTP / SMS / EMAIL
-// ════════════════════════════════════════
+// 2FA
 let mfaFactors={totp:null,phone:null}
 let mfaPendingFactorId=null
 let mfaPendingChallengeId=null
@@ -1110,29 +1121,31 @@ async function open2faModal(type){
       if(error)throw error
       mfaPendingFactorId=data.id
       mfaBody(`
+        <p style="font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:16px;line-height:1.6">Scanne ce QR code avec ton application (Google Authenticator, Authy…)</p>
         <div style="text-align:center;margin-bottom:16px">
           <img src="${data.totp.qr_code}" alt="QR Code" style="width:180px;height:180px;border-radius:var(--radius-md);background:#fff;padding:8px"/>
-          <p style="font-size:11px;font-weight:600;color:var(--text-faint);margin-top:10px;word-break:break-all">${data.totp.secret}</p>
+          <p style="font-size:11px;font-weight:600;color:var(--text-faint);margin-top:10px;word-break:break-all;padding:0 12px">${data.totp.secret}</p>
         </div>
-        <div class="field-group"><label class="field-label">Code à 6 chiffres</label><input id="totp-verify-code" class="field-input" placeholder="123456" maxlength="6" inputmode="numeric"/></div>
-        <button onclick="verifyTotp()" class="btn-primary" style="width:100%;justify-content:center">Confirmer et activer</button>`)
-    }catch(e){mfaBody('<p style="color:var(--error);font-size:13px">Erreur : '+e.message+'</p>')}
+        <div class="field-group"><label class="field-label">Code à 6 chiffres</label><input id="totp-verify-code" class="field-input" placeholder="123456" maxlength="6" inputmode="numeric" autocomplete="one-time-code"/></div>
+        <button onclick="verifyTotp()" class="btn-primary" style="width:100%;justify-content:center;margin-top:4px"><i class="ph ph-shield-check"></i>Confirmer et activer</button>`)
+    }catch(e){mfaBody('<p style="color:var(--error);font-size:13px;padding:8px">Erreur : '+e.message+'</p>')}
     return
   }
   if(type==='phone'){
     if(mfaFactors.phone)return confirmUnenroll(mfaFactors.phone.id)
     openMfaModal('Code par SMS')
     mfaBody(`
-      <div class="field-group"><label class="field-label">Numéro de téléphone</label><input id="phone-enroll-input" class="field-input" placeholder="+212 6 12 34 56 78"/></div>
-      <button onclick="enrollPhone()" class="btn-primary" style="width:100%;justify-content:center">Envoyer le code</button>`)
+      <p style="font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:14px;line-height:1.6">Entre ton numéro avec l'indicatif (+212, +241…)</p>
+      <div class="field-group"><label class="field-label">Numéro de téléphone</label><input id="phone-enroll-input" class="field-input" placeholder="+212 6 12 34 56 78" inputmode="tel"/></div>
+      <button onclick="enrollPhone()" class="btn-primary" style="width:100%;justify-content:center"><i class="ph ph-paper-plane-right"></i>Envoyer le code</button>`)
     return
   }
   if(type==='email'){
     if(currentProfile?.email_2fa_enabled)return disableEmail2fa()
     openMfaModal('Code par email')
     mfaBody(`
-      <p style="font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:14px">Un code sera envoyé à <strong style="color:var(--text)">${currentProfile?.email||currentUser.email}</strong> pour confirmer l'activation.</p>
-      <button onclick="enrollEmail()" class="btn-primary" style="width:100%;justify-content:center">Envoyer le code</button>`)
+      <p style="font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:14px;line-height:1.6">Un code sera envoyé à <strong style="color:var(--text)">${currentProfile?.email||currentUser.email}</strong></p>
+      <button onclick="enrollEmail()" class="btn-primary" style="width:100%;justify-content:center"><i class="ph ph-paper-plane-right"></i>Envoyer le code</button>`)
   }
 }
 
@@ -1162,9 +1175,9 @@ async function enrollPhone(){
     if(chErr)throw chErr
     mfaPendingChallengeId=ch.id
     mfaBody(`
-      <p style="font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:14px">Code envoyé par SMS au ${phone}.</p>
-      <div class="field-group"><label class="field-label">Code reçu</label><input id="phone-verify-code" class="field-input" placeholder="123456" maxlength="6" inputmode="numeric"/></div>
-      <button onclick="verifyPhone()" class="btn-primary" style="width:100%;justify-content:center">Confirmer et activer</button>`)
+      <p style="font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:14px;line-height:1.6">Code envoyé par SMS au <strong style="color:var(--text)">${phone}</strong></p>
+      <div class="field-group"><label class="field-label">Code reçu</label><input id="phone-verify-code" class="field-input" placeholder="123456" maxlength="6" inputmode="numeric" autocomplete="one-time-code"/></div>
+      <button onclick="verifyPhone()" class="btn-primary" style="width:100%;justify-content:center"><i class="ph ph-shield-check"></i>Confirmer et activer</button>`)
   }catch(e){showToast('Erreur : '+e.message,'error')}
 }
 
@@ -1186,9 +1199,9 @@ async function enrollEmail(){
     const{error}=await db.auth.signInWithOtp({email:currentProfile?.email||currentUser.email,options:{shouldCreateUser:false}})
     if(error)throw error
     mfaBody(`
-      <p style="font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:14px">Code envoyé. Vérifie ta boîte mail.</p>
-      <div class="field-group"><label class="field-label">Code reçu</label><input id="email-verify-code" class="field-input" placeholder="123456" maxlength="6" inputmode="numeric"/></div>
-      <button onclick="verifyEmail()" class="btn-primary" style="width:100%;justify-content:center">Confirmer et activer</button>`)
+      <p style="font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:14px;line-height:1.6">Code envoyé. Vérifie ta boîte mail.</p>
+      <div class="field-group"><label class="field-label">Code reçu</label><input id="email-verify-code" class="field-input" placeholder="123456" maxlength="6" inputmode="numeric" autocomplete="one-time-code"/></div>
+      <button onclick="verifyEmail()" class="btn-primary" style="width:100%;justify-content:center"><i class="ph ph-shield-check"></i>Confirmer et activer</button>`)
   }catch(e){showToast('Erreur : '+e.message,'error')}
 }
 
@@ -1228,9 +1241,7 @@ async function confirmUnenroll(factorId){
   }catch(e){showToast('Erreur : '+e.message,'error')}
 }
 
-// ════════════════════════════════════════
-//  VENDEUR DATA
-// ════════════════════════════════════════
+// VENDEUR DATA
 async function loadVendeurData(){
   const db=getSb();if(!currentProfile)return
   const sid=currentProfile.id
@@ -1322,7 +1333,6 @@ function renderSales(sales){
   }).join('')
 }
 
-// SAVE PROFILE
 async function saveProfile(){
   const db=getSb();if(!currentProfile)return
   const first=document.getElementById('input-firstname').value.trim()
@@ -1334,7 +1344,12 @@ async function saveProfile(){
 
 async function saveShop(){
   const db=getSb();if(!currentProfile)return
-  const{error}=await db.from('shops').update({name:document.getElementById('shop-name').value.trim(),bio:document.getElementById('shop-specialty').value.trim(),country:document.getElementById('shop-country').value,updated_at:new Date().toISOString()}).eq('user_id',currentProfile.id)
+  const{error}=await db.from('shops').update({
+    name:document.getElementById('shop-name').value.trim(),
+    bio:document.getElementById('shop-specialty').value.trim(),
+    country:document.getElementById('shop-country').value,
+    updated_at:new Date().toISOString()
+  }).eq('user_id',currentProfile.id)
   if(!error)showToast('Boutique mise à jour ✓','success')
   else{console.error('[saveShop]',error);showToast('Erreur : '+error.message,'error')}
 }
