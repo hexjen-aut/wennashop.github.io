@@ -856,7 +856,7 @@ async function loadMyProposals() {
     .from('quest_proposals')
     .select(`id, quest_id, description, proposed_price, product_url, product_images,
              status, created_at, selected_at, reward_paid_at, delivery_type, tracking_ref,
-             quests(title, reward_amount, currency, country_target)`)
+             quests!quest_proposals_quest_id_fkey(title, reward_amount, currency, country_target)`)
     .eq('hunter_id', internalUserId)
     .order('created_at', { ascending: false })
 
