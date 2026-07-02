@@ -1,313 +1,294 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Espace Chasseur — WennaShop</title>
-  <meta name="description" content="Votre espace chasseur. Trouvez des quêtes, soumettez vos propositions, encaissez vos récompenses."/>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
-  <link rel="apple-touch-icon" href="/icon-192.png">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="/Supabase.config.js"></script>
-  <script src="/wenna-seo.js"></script>
-  <style>
-    :root{
-      --fire:#FF6B2B;--ember:#E85A1A;--ink:#080808;--coal:#111111;--slate:#1A1A1A;
-      --smoke:#242424;--fog:#888;--snow:#f0ece6;--border:rgba(255,255,255,.07);
-      --border-fire:rgba(255,107,43,.25);--gold:#d0a600;--gold-bg:rgba(208,166,0,.07);
-      --green:#3ecf8e;--green-bg:rgba(62,207,142,.07);--green-border:rgba(62,207,142,.2);
-      --blue:#818cf8;--blue-bg:rgba(78,98,255,.07);--blue-border:rgba(78,98,255,.15);
-      --red:#f87171;--red-bg:rgba(248,113,113,.07);--red-border:rgba(248,113,113,.2);
-      /* variables bnav */
-      --accent:#FF6B2B;--text-faint:#444;
-    }
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    html{scroll-behavior:smooth;}
-    body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--snow);min-height:100dvh;padding-bottom:80px;}
-    .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24;font-size:20px;line-height:1;}
-    ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--coal);}::-webkit-scrollbar-thumb{background:rgba(255,107,43,.3);}
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Espace Chasseur — WennaShop</title>
+<meta name="description" content="Votre espace chasseur. Trouvez des quêtes, soumettez vos propositions, encaissez vos récompenses."/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/bold/style.css"/>
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/Supabase.config.js"></script>
+<script src="/wenna-seo.js"></script>
+<style>
+:root{
+  --accent:#ff751f;--accent-dim:#c95c17;
+  --bg:#0a0a0a;--surface:#141414;--surface-2:#1e1e1e;--border:#2a2a2a;
+  --text:#f2f2f2;--text-muted:#8c8c8c;--text-faint:#4a4a4a;
+  --gold:#d0a600;--gold-bg:rgba(208,166,0,.08);--gold-border:rgba(208,166,0,.22);
+  --green:#3ecf8e;--green-bg:rgba(62,207,142,.08);--green-border:rgba(62,207,142,.22);
+  --blue:#7c8cf8;--blue-bg:rgba(124,140,248,.08);--blue-border:rgba(124,140,248,.22);
+  --red:#f2564d;--red-bg:rgba(242,86,77,.08);--red-border:rgba(242,86,77,.22);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;padding-bottom:76px;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--surface);}::-webkit-scrollbar-thumb{background:var(--accent-dim);}
 
-    /* NAV */
-    nav{position:sticky;top:0;z-index:100;background:rgba(8,8,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
-    .logo{font-family:'DM Sans',sans-serif;font-size:22px;font-weight:900;color:var(--snow);text-decoration:none;letter-spacing:-1px;}
-    .logo span{color:var(--fire);}
-    .nav-links{display:flex;gap:28px;align-items:center;}
-    .nav-links a{text-decoration:none;color:var(--fog);font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;transition:color .2s;}
-    .nav-links a:hover,.nav-links a.active{color:var(--snow);}
-    .nav-links a.active{color:var(--fire);}
-    .btn-nav{background:var(--fire)!important;color:#fff!important;padding:8px 18px;font-size:9px!important;clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));}
-    .btn-nav:hover{background:var(--ember)!important;}
-    .notif-bell{position:relative;cursor:pointer;display:flex;align-items:center;color:var(--fog);transition:color .2s;}
-    .notif-bell:hover{color:var(--snow);}
-    .notif-badge{position:absolute;top:-4px;right:-4px;background:var(--fire);color:#fff;font-size:9px;padding:1px 5px;border-radius:0;min-width:16px;text-align:center;display:none;}
-    .notif-badge.show{display:block;}
-    .notif-panel{position:absolute;top:calc(100% + 8px);right:0;width:320px;background:var(--coal);border:1px solid var(--border-fire);z-index:200;max-height:360px;overflow-y:auto;display:none;}
-    .notif-panel.open{display:block;}
-    .notif-panel-head{padding:12px 16px;border-bottom:1px solid var(--border);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--fire);display:flex;justify-content:space-between;align-items:center;}
-    .notif-panel-head button{background:none;border:none;color:#555;font-size:9px;letter-spacing:1px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:color .2s;}
-    .notif-panel-head button:hover{color:var(--snow);}
-    .notif-item{padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .2s;}
-    .notif-item:hover{background:rgba(255,107,43,.04);}
-    .notif-item.unread{border-left:2px solid var(--fire);}
-    .notif-item-title{font-size:12px;font-weight:500;margin-bottom:3px;}
-    .notif-item-body{font-size:11px;color:var(--fog);line-height:1.5;}
-    .notif-item-time{font-size:9px;color:#444;margin-top:4px;}
-    .notif-empty{padding:24px;text-align:center;font-size:12px;color:#444;}
-    @media(max-width:768px){nav{padding:14px 20px;}.nav-links a:not(.btn-nav):not(.active){display:none;}.notif-panel{right:-80px;}}
+/* NAV */
+nav.topnav{position:sticky;top:0;z-index:100;background:rgba(10,10,10,.94);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+.logo{font-size:20px;font-weight:900;color:var(--text);text-decoration:none;letter-spacing:-.5px;}
+.logo span{color:var(--accent);}
+.nav-links{display:flex;gap:26px;align-items:center;}
+.nav-links a{text-decoration:none;color:var(--text-muted);font-size:13px;font-weight:600;transition:color .2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--text);}
+.nav-links a.active{color:var(--accent);}
+.btn-nav{background:var(--accent)!important;color:#fff!important;padding:9px 18px;border-radius:8px;font-size:12px!important;}
+.btn-nav:hover{background:var(--accent-dim)!important;}
+.notif-bell{position:relative;cursor:pointer;display:flex;align-items:center;color:var(--text-muted);font-size:18px;transition:color .2s;}
+.notif-bell:hover{color:var(--text);}
+.notif-badge{position:absolute;top:-5px;right:-6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:8px;min-width:15px;text-align:center;display:none;}
+.notif-badge.show{display:block;}
+.notif-panel{position:absolute;top:calc(100% + 10px);right:0;width:320px;background:var(--surface);border:1px solid var(--border);border-radius:10px;z-index:200;max-height:360px;overflow-y:auto;display:none;box-shadow:0 12px 32px rgba(0,0,0,.4);}
+.notif-panel.open{display:block;}
+.notif-panel-head{padding:12px 16px;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--accent);display:flex;justify-content:space-between;align-items:center;}
+.notif-panel-head button{background:none;border:none;color:var(--text-faint);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:color .2s;}
+.notif-panel-head button:hover{color:var(--text);}
+.notif-item{padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .2s;}
+.notif-item:hover{background:rgba(255,117,31,.04);}
+.notif-item.unread{border-left:2px solid var(--accent);}
+.notif-item-title{font-size:13px;font-weight:700;margin-bottom:3px;}
+.notif-item-body{font-size:12px;color:var(--text-muted);line-height:1.5;}
+.notif-item-time{font-size:10px;color:var(--text-faint);margin-top:4px;}
+.notif-empty{padding:24px;text-align:center;font-size:13px;color:var(--text-faint);}
+@media(max-width:768px){nav.topnav{padding:14px 20px;}.nav-links a:not(.btn-nav):not(.active){display:none;}.notif-panel{right:-70px;}}
 
-    /* HERO CHASSEUR */
-    .hunter-hero{background:var(--coal);border-bottom:1px solid var(--border);padding:40px 40px 0;position:relative;overflow:visible;}
-    .hunter-hero::before{content:'';position:absolute;top:-100px;right:-80px;width:400px;height:400px;background:radial-gradient(circle,rgba(255,107,43,.06) 0%,transparent 70%);pointer-events:none;}
-    .hunter-hero-inner{max-width:1200px;margin:0 auto;display:flex;align-items:flex-end;justify-content:space-between;gap:32px;flex-wrap:wrap;}
-    .hunter-identity{display:flex;align-items:center;gap:20px;padding-bottom:32px;}
-    .hunter-avatar{width:72px;height:72px;background:linear-gradient(135deg,var(--fire),var(--ember));display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;font-style:italic;color:#fff;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));flex-shrink:0;}
-    .hunter-info{}
-    .hunter-eyebrow{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--fog);margin-bottom:4px;}
-    .hunter-name{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;font-style:italic;line-height:1;color:var(--snow);}
-    .hunter-level{display:inline-flex;align-items:center;gap:6px;background:var(--gold-bg);border:1px solid rgba(208,166,0,.25);color:var(--gold);padding:3px 12px;font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-top:8px;}
-    .hunter-tabs{display:flex;gap:0;border-bottom:none;}
-    .htab{display:flex;align-items:center;gap:8px;padding:14px 24px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--fog);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;background:none;border-top:none;border-left:none;border-right:none;font-family:'DM Sans',sans-serif;}
-    .htab:hover{color:var(--snow);}
-    .htab.active{color:var(--fire);border-bottom-color:var(--fire);}
-    .htab .material-symbols-outlined{font-size:16px;}
-    .htab-badge{background:var(--fire);color:#fff;font-size:9px;padding:1px 6px;border-radius:0;min-width:18px;text-align:center;}
+/* HERO */
+.hunter-hero{background:var(--surface);border-bottom:1px solid var(--border);padding:36px 40px 0;}
+.hunter-hero-inner{max-width:1180px;margin:0 auto;display:flex;align-items:flex-end;justify-content:space-between;gap:28px;flex-wrap:wrap;}
+.hunter-identity{display:flex;align-items:center;gap:16px;padding-bottom:28px;}
+.hunter-avatar{width:60px;height:60px;border-radius:14px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;flex-shrink:0;}
+.hunter-eyebrow{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.hunter-name{font-size:24px;font-weight:800;line-height:1.1;color:var(--text);}
+.hunter-level{display:inline-flex;align-items:center;gap:6px;background:var(--gold-bg);border:1px solid var(--gold-border);color:var(--gold);border-radius:8px;padding:3px 10px;font-size:11px;font-weight:700;margin-top:8px;}
+.hunter-tabs{display:flex;gap:2px;}
+.htab{display:flex;align-items:center;gap:7px;padding:14px 20px;font-size:13px;font-weight:700;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;}
+.htab:hover{color:var(--text);}
+.htab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.htab i{font-size:16px;}
+.htab-badge{background:var(--accent);color:#fff;font-size:10px;font-weight:800;padding:1px 6px;border-radius:6px;min-width:17px;text-align:center;}
 
-    /* MAIN */
-    .dashboard-body{max-width:1200px;margin:0 auto;padding:32px 24px;}
-    .tab-content{display:none;}
-    .tab-content.active{display:block;}
+/* BODY */
+.dashboard-body{max-width:1180px;margin:0 auto;padding:28px 24px;}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
 
-    /* KPI */
-    .kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-bottom:24px;}
-    @media(max-width:900px){.kpi-strip{grid-template-columns:repeat(2,1fr);}}
-    .kpi{background:var(--slate);padding:20px 24px;border-left:2px solid transparent;transition:border-color .2s;}
-    .kpi:hover{border-left-color:var(--fire);}
-    .kpi-icon{display:flex;align-items:center;gap:8px;color:var(--fog);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
-    .kpi-icon .material-symbols-outlined{font-size:16px;}
-    .kpi-val{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:700;font-style:italic;line-height:1;color:var(--snow);}
-    .kpi-val.fire{color:var(--fire);}
-    .kpi-val.gold{color:var(--gold);}
-    .kpi-val.green{color:var(--green);}
-    .kpi-sub{font-size:10px;color:#444;margin-top:4px;}
+/* KPI */
+.kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+@media(max-width:900px){.kpi-strip{grid-template-columns:repeat(2,1fr);}}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;}
+.kpi-label{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;}
+.kpi-val{font-size:28px;font-weight:800;line-height:1;color:var(--text);}
+.kpi-val.accent{color:var(--accent);}
+.kpi-val.gold{color:var(--gold);}
+.kpi-val.green{color:var(--green);}
+.kpi-sub{font-size:11px;color:var(--text-faint);margin-top:5px;}
 
-    /* SECTION */
-    .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
-    .section-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;font-style:italic;display:flex;align-items:center;gap:12px;}
-    .section-title::before{content:'';display:block;width:20px;height:1px;background:var(--fire);}
+/* SECTION */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;}
+.section-title{font-size:18px;font-weight:800;color:var(--text);}
 
-    /* FILTRES */
-    .quests-layout{display:grid;grid-template-columns:200px 1fr;gap:20px;align-items:start;}
-    @media(max-width:900px){.quests-layout{grid-template-columns:1fr;}}
-    .filter-panel{background:var(--coal);border:1px solid var(--border);padding:18px;position:sticky;top:72px;}
-    .filter-panel-title{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--fire);display:flex;align-items:center;gap:8px;margin-bottom:18px;}
-    .filter-panel-title::before{content:'';display:block;width:12px;height:1px;background:var(--fire);}
-    .filter-group{margin-bottom:16px;}
-    .filter-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:7px;display:block;}
-    .filter-input{width:100%;background:rgba(255,255,255,.04);border:none;border-bottom:1px solid var(--border);color:var(--snow);padding:9px 11px;font-size:12px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
-    .filter-input:focus{border-bottom-color:var(--fire);}
-    .filter-input::placeholder{color:#333;}
-    .chip-group{display:flex;flex-wrap:wrap;gap:5px;}
-    .chip{padding:4px 10px;border:1px solid var(--border);color:#555;font-size:9px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .18s;background:transparent;letter-spacing:1px;}
-    .chip:hover{border-color:var(--border-fire);color:var(--fire);}
-    .chip.active{border-color:var(--fire);background:rgba(255,107,43,.08);color:var(--fire);}
-    .btn-reset{width:100%;padding:8px;border:1px solid var(--border);background:transparent;color:#555;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;margin-top:6px;}
-    .btn-reset:hover{border-color:var(--border-fire);color:var(--fire);}
-    .content-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
-    .content-count{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;font-style:italic;}
-    .sort-select{background:rgba(255,255,255,.04);border:none;border-bottom:1px solid var(--border);color:var(--snow);padding:7px 11px;font-size:11px;font-family:'DM Sans',sans-serif;outline:none;appearance:none;cursor:pointer;}
-    .sort-select option{background:var(--slate);}
+/* LAYOUT / FILTRES */
+.quests-layout{display:grid;grid-template-columns:220px 1fr;gap:20px;align-items:start;}
+@media(max-width:900px){.quests-layout{grid-template-columns:1fr;}}
+.filter-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;position:sticky;top:76px;}
+.filter-panel-title{font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--accent);margin-bottom:16px;}
+.filter-group{margin-bottom:16px;}
+.filter-lbl{font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:7px;display:block;}
+.filter-input{width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:9px 11px;font-size:13px;font-family:inherit;outline:none;transition:border-color .2s;}
+.filter-input:focus{border-color:var(--accent);}
+.filter-input::placeholder{color:var(--text-faint);}
+.chip-group{display:flex;flex-wrap:wrap;gap:6px;}
+.chip{padding:5px 11px;border:1px solid var(--border);border-radius:8px;color:var(--text-muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .18s;background:transparent;}
+.chip:hover{border-color:var(--accent-dim);color:var(--accent);}
+.chip.active{border-color:var(--accent);background:rgba(255,117,31,.1);color:var(--accent);}
+.btn-reset{width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text-muted);font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit;margin-top:4px;}
+.btn-reset:hover{border-color:var(--accent-dim);color:var(--accent);}
+.content-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+.content-count{font-size:15px;font-weight:700;color:var(--text-muted);}
+.sort-select{background:var(--surface-2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 11px;font-size:12px;font-family:inherit;outline:none;appearance:none;cursor:pointer;}
+.sort-select option{background:var(--surface-2);}
 
-    /* QUEST CARDS */
-    .quests-list{display:flex;flex-direction:column;gap:2px;}
-    .quest-card{background:var(--slate);border-left:2px solid transparent;padding:20px 22px;cursor:pointer;transition:all .2s;display:block;color:inherit;text-decoration:none;}
-    .quest-card:hover{border-left-color:var(--fire);background:var(--smoke);}
-    .quest-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:8px;}
-    .quest-title{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;font-style:italic;line-height:1.2;flex:1;}
-    .quest-badges{display:flex;gap:5px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;}
-    .badge{padding:3px 9px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
-    .badge-hot{background:rgba(255,107,43,.1);color:var(--fire);}
-    .badge-new{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);}
-    .badge-cat{background:rgba(255,255,255,.04);color:#555;border:1px solid var(--border);}
-    .badge-country{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border);}
-    .quest-desc{font-size:12px;color:#666;line-height:1.6;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-    .quest-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
-    .quest-meta{display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
-    .meta-item{display:flex;align-items:center;gap:4px;font-size:11px;color:#555;}
-    .meta-item .material-symbols-outlined{font-size:14px;}
-    .meta-urgent{color:var(--fire)!important;}
-    .reward-box{background:var(--gold-bg);border:1px solid rgba(208,166,0,.2);padding:7px 14px;text-align:right;flex-shrink:0;}
-    .reward-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:1px;}
-    .reward-amount{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;font-style:italic;color:var(--gold);}
-    .btn-hunt{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--border-fire);color:var(--fire);padding:7px 16px;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;margin-top:8px;}
-    .btn-hunt:hover{background:rgba(255,107,43,.08);}
-    .btn-hunt .material-symbols-outlined{font-size:14px;}
+/* QUEST CARDS */
+.quests-list{display:flex;flex-direction:column;gap:10px;}
+.quest-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;cursor:pointer;transition:all .2s;}
+.quest-card:hover{border-color:var(--accent-dim);}
+.quest-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:8px;}
+.quest-title{font-size:16px;font-weight:800;line-height:1.25;flex:1;}
+.quest-badges{display:flex;gap:5px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;}
+.badge{padding:3px 9px;border-radius:6px;font-size:10px;font-weight:700;}
+.badge-hot{background:rgba(255,117,31,.1);color:var(--accent);}
+.badge-new{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);}
+.badge-cat{background:var(--surface-2);color:var(--text-muted);border:1px solid var(--border);}
+.badge-country{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border);}
+.quest-desc{font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.quest-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.quest-meta{display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
+.meta-item{font-size:12px;color:var(--text-muted);font-weight:600;}
+.meta-urgent{color:var(--accent)!important;}
+.reward-box{background:var(--gold-bg);border:1px solid var(--gold-border);border-radius:8px;padding:6px 14px;text-align:right;flex-shrink:0;}
+.reward-label{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--gold);margin-bottom:1px;}
+.reward-amount{font-size:16px;font-weight:800;color:var(--gold);}
+.btn-hunt{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--accent-dim);color:var(--accent);border-radius:8px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit;}
+.btn-hunt:hover{background:rgba(255,117,31,.1);}
 
-    /* PROPOSITION CARDS */
-    .proposals-list{display:flex;flex-direction:column;gap:2px;}
-    .proposal-card{background:var(--slate);padding:20px 24px;border-left:2px solid transparent;transition:border-color .2s;}
-    .proposal-card.status-pending{border-left-color:rgba(208,166,0,.4);}
-    .proposal-card.status-selected{border-left-color:rgba(62,207,142,.6);}
-    .proposal-card.status-in_delivery{border-left-color:rgba(129,140,248,.6);}
-    .proposal-card.status-delivered{border-left-color:rgba(62,207,142,.4);}
-    .proposal-card.status-reward_paid{border-left-color:rgba(208,166,0,.7);}
-    .proposal-card.status-rejected{border-left-color:rgba(248,113,113,.3);}
-    .proposal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:10px;flex-wrap:wrap;}
-    .proposal-quest-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;font-style:italic;line-height:1.2;}
-    .status-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 12px;font-size:9px;letter-spacing:2px;text-transform:uppercase;flex-shrink:0;}
-    .status-pill.pending{background:var(--gold-bg);border:1px solid rgba(208,166,0,.25);color:var(--gold);}
-    .status-pill.selected{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);}
-    .status-pill.in_delivery{background:var(--blue-bg);border:1px solid var(--blue-border);color:var(--blue);}
-    .status-pill.delivered{background:rgba(62,207,142,.04);border:1px solid var(--green-border);color:var(--green);}
-    .status-pill.reward_paid{background:var(--gold-bg);border:1px solid rgba(208,166,0,.5);color:var(--gold);}
-    .status-pill.rejected{background:var(--red-bg);border:1px solid var(--red-border);color:var(--red);}
-    .status-pill .material-symbols-outlined{font-size:13px;}
-    .proposal-body{font-size:12px;color:#666;line-height:1.6;margin-bottom:12px;padding:12px;background:rgba(255,255,255,.02);border-left:2px solid var(--border);}
-    .proposal-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
-    .proposal-meta{display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
-    .btn-delete{display:inline-flex;align-items:center;gap:5px;background:transparent;border:1px solid var(--red-border);color:var(--red);padding:6px 14px;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
-    .btn-delete:hover{background:var(--red-bg);}
-    .btn-delete .material-symbols-outlined{font-size:13px;}
+/* PROPOSITION CARDS */
+.proposals-list{display:flex;flex-direction:column;gap:10px;}
+.proposal-card{background:var(--surface);border:1px solid var(--border);border-left:3px solid transparent;border-radius:12px;padding:18px 20px;}
+.proposal-card.status-pending{border-left-color:var(--gold);}
+.proposal-card.status-selected{border-left-color:var(--green);}
+.proposal-card.status-in_delivery{border-left-color:var(--blue);}
+.proposal-card.status-delivered{border-left-color:var(--green);}
+.proposal-card.status-reward_paid{border-left-color:var(--gold);}
+.proposal-card.status-rejected{border-left-color:var(--red);opacity:.7;}
+.proposal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:10px;flex-wrap:wrap;}
+.proposal-quest-title{font-size:15px;font-weight:800;line-height:1.25;}
+.status-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 12px;border-radius:8px;font-size:10px;font-weight:700;flex-shrink:0;}
+.status-pill.pending{background:var(--gold-bg);border:1px solid var(--gold-border);color:var(--gold);}
+.status-pill.selected{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);}
+.status-pill.in_delivery{background:var(--blue-bg);border:1px solid var(--blue-border);color:var(--blue);}
+.status-pill.delivered{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);}
+.status-pill.reward_paid{background:var(--gold-bg);border:1px solid var(--gold-border);color:var(--gold);}
+.status-pill.rejected{background:var(--red-bg);border:1px solid var(--red-border);color:var(--red);}
+.status-pill i{font-size:12px;}
+.proposal-body{font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:12px;padding:12px 14px;background:var(--surface-2);border-radius:8px;}
+.proposal-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.proposal-meta{display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
+.btn-delete{display:inline-flex;align-items:center;gap:5px;background:transparent;border:1px solid var(--red-border);color:var(--red);border-radius:8px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit;}
+.btn-delete:hover{background:var(--red-bg);}
 
-    /* BLOC WENNA EXPRESS */
-    .accepted-banner{margin:12px 0;background:rgba(62,207,142,.04);border:1px solid var(--green-border);padding:16px;}
-    .accepted-banner-title{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--green);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
-    .accepted-banner-title .material-symbols-outlined{font-size:14px;}
-    .accepted-banner-text{font-size:12px;color:var(--fog);line-height:1.7;margin-bottom:12px;}
-    .wenna-express-btn{display:inline-flex;align-items:center;gap:8px;background:var(--fire);color:#fff;padding:10px 20px;font-size:9px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;text-decoration:none;clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));transition:background .2s;}
-    .wenna-express-btn:hover{background:var(--ember);}
-    .wenna-express-btn .material-symbols-outlined{font-size:14px;}
-    .reward-pending-note{display:inline-flex;align-items:center;gap:6px;font-size:10px;color:var(--gold);background:var(--gold-bg);border:1px solid rgba(208,166,0,.2);padding:6px 12px;margin-top:8px;}
-    .reward-pending-note .material-symbols-outlined{font-size:13px;}
+/* BLOC EXPRESS */
+.accepted-banner{margin:12px 0;background:var(--green-bg);border:1px solid var(--green-border);border-radius:10px;padding:16px;}
+.accepted-banner.gold{background:var(--gold-bg);border-color:var(--gold-border);}
+.accepted-banner-title{font-size:11px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;color:var(--green);margin-bottom:10px;}
+.accepted-banner.gold .accepted-banner-title{color:var(--gold);}
+.accepted-banner-text{font-size:13px;color:var(--text-muted);line-height:1.7;margin-bottom:12px;}
+.wenna-express-btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;border-radius:8px;padding:10px 18px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:inherit;text-decoration:none;transition:background .2s;}
+.wenna-express-btn:hover{background:var(--accent-dim);}
+.reward-pending-note{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--gold);background:var(--gold-bg);border:1px solid var(--gold-border);border-radius:8px;padding:6px 12px;margin-top:8px;}
 
-    /* GAINS */
-    .gains-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;}
-    @media(max-width:700px){.gains-layout{grid-template-columns:1fr;}}
-    .gains-card{background:var(--slate);padding:24px;}
-    .gains-card-title{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--fire);display:flex;align-items:center;gap:8px;margin-bottom:20px;}
-    .gains-card-title::before{content:'';display:block;width:12px;height:1px;background:var(--fire);}
-    .gains-total{text-align:center;padding:24px;background:var(--gold-bg);border:1px solid rgba(208,166,0,.2);margin-bottom:20px;}
-    .gains-total-lbl{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
-    .gains-total-val{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:700;font-style:italic;color:var(--gold);line-height:1;}
-    .gains-total-currency{font-size:16px;font-style:normal;}
-    .progress-section{margin-bottom:20px;}
-    .progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--fog);margin-bottom:6px;}
-    .progress-bar{height:3px;background:rgba(255,255,255,.05);position:relative;overflow:hidden;}
-    .progress-fill{height:100%;background:linear-gradient(90deg,var(--fire),var(--gold));transition:width .8s cubic-bezier(.22,1,.36,1);}
-    .transaction-item{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);}
-    .transaction-item:last-child{border-bottom:none;}
-    .tx-left{display:flex;align-items:center;gap:12px;}
-    .tx-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-    .tx-icon.earned{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);}
-    .tx-icon.pending{background:var(--gold-bg);border:1px solid rgba(208,166,0,.2);color:var(--gold);}
-    .tx-icon.selected{background:var(--blue-bg);border:1px solid var(--blue-border);color:var(--blue);}
-    .tx-icon .material-symbols-outlined{font-size:16px;}
-    .tx-title{font-size:12px;color:var(--snow);font-weight:500;}
-    .tx-date{font-size:10px;color:#444;margin-top:2px;}
-    .tx-amount{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;font-style:italic;}
-    .tx-amount.earned{color:var(--green);}
-    .tx-amount.pending{color:var(--gold);}
-    .tx-amount.selected{color:var(--blue);}
+/* GAINS */
+.gains-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;}
+@media(max-width:700px){.gains-layout{grid-template-columns:1fr;}}
+.gains-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;}
+.gains-card-title{font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--accent);margin-bottom:18px;}
+.gains-total{text-align:center;padding:22px;background:var(--gold-bg);border:1px solid var(--gold-border);border-radius:12px;margin-bottom:20px;}
+.gains-total-lbl{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+.gains-total-val{font-size:36px;font-weight:800;color:var(--gold);line-height:1;}
+.gains-total-currency{font-size:14px;font-weight:700;}
+.progress-section{margin-bottom:18px;}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);font-weight:600;margin-bottom:6px;}
+.progress-bar{height:6px;background:var(--surface-2);border-radius:6px;position:relative;overflow:hidden;}
+.progress-fill{height:100%;background:var(--accent);border-radius:6px;transition:width .8s cubic-bezier(.22,1,.36,1);}
+.transaction-item{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);}
+.transaction-item:last-child{border-bottom:none;}
+.tx-left{display:flex;align-items:center;gap:12px;}
+.tx-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;}
+.tx-icon.earned{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);}
+.tx-icon.pending{background:var(--gold-bg);border:1px solid var(--gold-border);color:var(--gold);}
+.tx-icon.selected{background:var(--blue-bg);border:1px solid var(--blue-border);color:var(--blue);}
+.tx-title{font-size:13px;color:var(--text);font-weight:700;}
+.tx-date{font-size:11px;color:var(--text-faint);margin-top:2px;}
+.tx-amount{font-size:15px;font-weight:800;}
+.tx-amount.earned{color:var(--green);}
+.tx-amount.pending{color:var(--gold);}
+.tx-amount.selected{color:var(--blue);}
 
-    /* EMPTY / SKELETON */
-    .empty-state{background:var(--slate);padding:48px 32px;text-align:center;}
-    .empty-state .material-symbols-outlined{font-size:40px;color:#333;display:block;margin-bottom:12px;}
-    .empty-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;font-style:italic;margin-bottom:6px;}
-    .empty-sub{font-size:12px;color:var(--fog);}
-    @keyframes shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}
-    .skeleton{background:linear-gradient(90deg,var(--slate) 25%,var(--smoke) 50%,var(--slate) 75%);background-size:600px 100%;animation:shimmer 1.4s infinite linear;}
-    .sk-card{background:var(--slate);padding:20px 22px;margin-bottom:2px;}
-    .sk-line{border-radius:2px;margin-bottom:8px;}
+/* EMPTY / SKELETON */
+.empty-state{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:48px 32px;text-align:center;}
+.empty-title{font-size:17px;font-weight:800;margin-bottom:6px;}
+.empty-sub{font-size:13px;color:var(--text-muted);}
+@keyframes shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}
+.skeleton{background:linear-gradient(90deg,var(--surface) 25%,var(--surface-2) 50%,var(--surface) 75%);background-size:600px 100%;animation:shimmer 1.4s infinite linear;}
+.sk-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:10px;}
+.sk-line{border-radius:6px;margin-bottom:8px;}
 
-    /* MODAL */
-    .modal-overlay{position:fixed;inset:0;background:rgba(8,8,8,.88);backdrop-filter:blur(14px);z-index:999;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .25s;}
-    .modal-overlay.open{opacity:1;pointer-events:all;}
-    .modal-box{background:var(--coal);border:1px solid var(--border);width:100%;max-width:540px;max-height:90vh;overflow-y:auto;transform:translateY(16px);transition:transform .25s;position:relative;}
-    .modal-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--fire),transparent);}
-    .modal-overlay.open .modal-box{transform:translateY(0);}
-    .modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--coal);z-index:10;}
-    .modal-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;font-style:italic;}
-    .modal-quest-ref{font-size:11px;color:var(--fog);margin-top:2px;}
-    .modal-close{background:none;border:1px solid var(--border);color:#555;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;}
-    .modal-close:hover{border-color:var(--border-fire);color:var(--fire);}
-    .modal-close .material-symbols-outlined{font-size:15px;}
-    .modal-body{padding:22px;display:flex;flex-direction:column;gap:14px;}
-    .form-group{display:flex;flex-direction:column;gap:5px;}
-    .form-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#555;}
-    .form-label span{color:#333;letter-spacing:0;text-transform:none;font-size:10px;}
-    .inp-full{width:100%;background:rgba(255,255,255,.04);border:none;border-bottom:1px solid var(--border);color:var(--snow);padding:11px 13px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
-    .inp-full:focus{border-bottom-color:var(--fire);}
-    .inp-full::placeholder{color:#333;}
-    textarea.inp-full{resize:vertical;min-height:100px;}
-    .quest-summary-box{background:rgba(255,107,43,.04);border:1px solid var(--border-fire);padding:14px 16px;}
-    .quest-summary-title{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--fire);margin-bottom:8px;}
-    .quest-summary-text{font-size:12px;color:var(--fog);line-height:1.6;}
-    .reward-highlight{display:flex;align-items:center;justify-content:space-between;background:var(--gold-bg);border:1px solid rgba(208,166,0,.2);padding:12px 16px;}
-    .reward-hl-lbl{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);}
-    .reward-hl-val{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;font-style:italic;color:var(--gold);}
-    .modal-footer{padding:0 22px 22px;}
-    .btn-submit{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--fire);color:#fff;padding:13px;font-size:10px;font-weight:500;letter-spacing:3px;text-transform:uppercase;border:none;cursor:pointer;transition:background .2s;font-family:'DM Sans',sans-serif;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));}
-    .btn-submit:hover{background:var(--ember);}
-    .btn-submit:disabled{opacity:.5;cursor:not-allowed;}
-    .modal-hint{text-align:center;font-size:10px;color:#444;margin-top:9px;letter-spacing:.5px;}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(10,10,10,.85);backdrop-filter:blur(10px);z-index:999;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .25s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;transform:translateY(16px);transition:transform .25s;}
+.modal-overlay.open .modal-box{transform:translateY(0);}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:10;}
+.modal-title{font-size:18px;font-weight:800;}
+.modal-quest-ref{font-size:12px;color:var(--text-muted);margin-top:2px;}
+.modal-close{background:var(--surface-2);border:1px solid var(--border);color:var(--text-muted);width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;}
+.modal-close:hover{border-color:var(--accent-dim);color:var(--accent);}
+.modal-body{padding:22px;display:flex;flex-direction:column;gap:14px;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-label{font-size:11px;font-weight:700;color:var(--text-muted);}
+.form-label span{color:var(--text-faint);font-weight:600;}
+.inp-full{width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:11px 13px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s;}
+.inp-full:focus{border-color:var(--accent);}
+.inp-full::placeholder{color:var(--text-faint);}
+textarea.inp-full{resize:vertical;min-height:100px;}
+.quest-summary-box{background:rgba(255,117,31,.06);border:1px solid var(--accent-dim);border-radius:10px;padding:14px 16px;}
+.quest-summary-title{font-size:11px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+.quest-summary-text{font-size:13px;color:var(--text-muted);line-height:1.6;}
+.reward-highlight{display:flex;align-items:center;justify-content:space-between;background:var(--gold-bg);border:1px solid var(--gold-border);border-radius:10px;padding:12px 16px;}
+.reward-hl-lbl{font-size:11px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--gold);}
+.reward-hl-val{font-size:20px;font-weight:800;color:var(--gold);}
+.modal-footer{padding:0 22px 22px;}
+.btn-submit{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--accent);color:#fff;border-radius:10px;padding:14px;font-size:13px;font-weight:800;border:none;cursor:pointer;transition:background .2s;font-family:inherit;}
+.btn-submit:hover{background:var(--accent-dim);}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed;}
+.modal-hint{text-align:center;font-size:11px;color:var(--text-faint);margin-top:10px;}
 
-    /* UPLOAD */
-    .upload-zone{border:1px dashed rgba(255,107,43,.3);background:rgba(255,107,43,.02);padding:20px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
-    .upload-zone:hover,.upload-zone.dragover{border-color:var(--fire);background:rgba(255,107,43,.06);}
-    .upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
-    .upload-zone-icon{font-size:28px;color:#444;display:block;margin-bottom:8px;}
-    .upload-zone-text{font-size:11px;color:#555;line-height:1.6;}
-    .upload-zone-text b{color:var(--fire);}
-    .upload-previews{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px;}
-    .preview-thumb{position:relative;aspect-ratio:1;background:var(--slate);overflow:hidden;}
-    .preview-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
-    .preview-thumb .remove-img{position:absolute;top:3px;right:3px;background:rgba(8,8,8,.8);border:1px solid var(--red-border);color:var(--red);width:20px;height:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .2s;}
-    .preview-thumb:hover .remove-img{opacity:1;}
-    .preview-thumb .remove-img .material-symbols-outlined{font-size:12px;}
-    .upload-counter{font-size:9px;color:#555;letter-spacing:2px;text-transform:uppercase;margin-top:8px;text-align:right;}
-    .prop-images{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
-    .prop-img-thumb{width:60px;height:60px;object-fit:cover;cursor:pointer;border:1px solid var(--border);transition:border-color .2s;}
-    .prop-img-thumb:hover{border-color:var(--fire);}
+/* UPLOAD */
+.upload-zone{border:1.5px dashed var(--accent-dim);background:rgba(255,117,31,.03);border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--accent);background:rgba(255,117,31,.07);}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.upload-zone-icon{font-size:26px;color:var(--text-faint);display:block;margin-bottom:8px;}
+.upload-zone-text{font-size:12px;color:var(--text-muted);line-height:1.6;}
+.upload-zone-text b{color:var(--accent);}
+.upload-previews{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px;}
+.preview-thumb{position:relative;aspect-ratio:1;background:var(--surface-2);border-radius:8px;overflow:hidden;}
+.preview-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.preview-thumb .remove-img{position:absolute;top:3px;right:3px;background:rgba(10,10,10,.85);border:1px solid var(--red-border);color:var(--red);width:20px;height:20px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .2s;font-size:11px;}
+.preview-thumb:hover .remove-img{opacity:1;}
+.upload-counter{font-size:11px;color:var(--text-faint);margin-top:8px;text-align:right;}
+.prop-images{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+.prop-img-thumb{width:60px;height:60px;object-fit:cover;border-radius:8px;cursor:pointer;border:1px solid var(--border);transition:border-color .2s;}
+.prop-img-thumb:hover{border-color:var(--accent);}
 
-    /* LIGHTBOX */
-    .lightbox{position:fixed;inset:0;background:rgba(8,8,8,.95);z-index:2000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
-    .lightbox.open{opacity:1;pointer-events:all;}
-    .lightbox img{max-width:90vw;max-height:90vh;object-fit:contain;}
-    .lightbox-close{position:absolute;top:20px;right:20px;background:none;border:1px solid var(--border);color:#555;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-    .lightbox-close:hover{border-color:var(--border-fire);color:var(--fire);}
+/* LIGHTBOX */
+.lightbox{position:fixed;inset:0;background:rgba(10,10,10,.96);z-index:2000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
+.lightbox.open{opacity:1;pointer-events:all;}
+.lightbox img{max-width:90vw;max-height:90vh;object-fit:contain;border-radius:8px;}
+.lightbox-close{position:absolute;top:20px;right:20px;background:var(--surface);border:1px solid var(--border);color:var(--text-muted);width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.lightbox-close:hover{border-color:var(--accent-dim);color:var(--accent);}
 
-    /* TOAST */
-    #toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(10px);z-index:1400;background:var(--slate);border:1px solid var(--border-fire);color:var(--snow);padding:11px 22px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
-    #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-    #toast.success{border-color:rgba(62,207,142,.4);background:#0a1f12;}
-    #toast.error{border-color:rgba(248,113,113,.4);background:#1f0a0a;}
+/* TOAST */
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(10px);z-index:1400;background:var(--surface);border:1px solid var(--accent-dim);border-radius:10px;color:var(--text);padding:11px 22px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;white-space:nowrap;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+#toast.success{border-color:var(--green-border);background:#0d1a13;}
+#toast.error{border-color:var(--red-border);background:#1c0d0c;}
 
-    /* ── BOTTOM NAV ── */
-    .bnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(10,10,10,.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:10px 0 20px;}
-    .bnav-inner{display:flex;justify-content:space-around;}
-    .bnav-item{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--text-faint);text-decoration:none;font-size:10px;font-weight:700;transition:color .2s;}
-    .bnav-item.active,.bnav-item:hover{color:var(--accent);}
-    .bnav-item.gold{color:var(--gold)!important;}
-    .bnav-icon{display:flex;align-items:center;justify-content:center;height:22px;}
-    @media(max-width:768px){.bnav{display:block;}}
+/* BOTTOM NAV */
+.bnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(10,10,10,.97);backdrop-filter:blur(16px);border-top:1px solid var(--border);padding:10px 0 20px;}
+.bnav-inner{display:flex;justify-content:space-around;}
+.bnav-item{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--text-faint);text-decoration:none;font-size:10px;font-weight:700;transition:color .2s;}
+.bnav-item.active,.bnav-item:hover{color:var(--accent);}
+.bnav-item.gold{color:var(--gold)!important;}
+.bnav-icon{display:flex;align-items:center;justify-content:center;height:22px;font-size:20px;}
+@media(max-width:768px){.bnav{display:block;}}
 
-    @keyframes spin{to{transform:rotate(360deg);}}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-    .anim-up{animation:fadeUp .6s cubic-bezier(.22,1,.36,1) forwards;}
-  </style>
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
 </head>
 <body>
 
 <div id="toast"></div>
 
-<nav>
+<nav class="topnav">
   <a href="boutique.html" class="logo"><span>Wenna</span>Shop</a>
   <div class="nav-links">
     <a href="boutique.html">Boutique</a>
     <a href="quetes.html">Quêtes</a>
     <a href="dashboard-chasseur.html" class="active">Espace Chasseur</a>
-    <div class="notif-bell" id="notifBell" onclick="toggleNotifPanel(event)" style="position:relative;">
-      <span class="material-symbols-outlined">notifications</span>
+    <div class="notif-bell" id="notifBell" onclick="toggleNotifPanel(event)">
+      <i class="ph-bold ph-bell"></i>
       <span class="notif-badge" id="notifBadge"></span>
       <div class="notif-panel" id="notifPanel">
         <div class="notif-panel-head">
@@ -321,60 +302,51 @@
   </div>
 </nav>
 
-<!-- HERO CHASSEUR -->
-<div class="hunter-hero anim-up">
+<div class="hunter-hero">
   <div class="hunter-hero-inner">
     <div class="hunter-identity">
       <div class="hunter-avatar" id="hunterAvatarLetter">—</div>
-      <div class="hunter-info">
+      <div>
         <div class="hunter-eyebrow">Espace chasseur</div>
         <div class="hunter-name" id="hunterName">Chargement…</div>
-        <div class="hunter-level" id="hunterLevel">
-          <span class="material-symbols-outlined" style="font-size:12px;">verified</span>
-          Chasseur Initié
-        </div>
+        <div class="hunter-level" id="hunterLevel">Chasseur Initié</div>
       </div>
     </div>
     <div class="hunter-tabs">
       <button class="htab active" onclick="switchTab('quests',this)">
-        <span class="material-symbols-outlined">search</span>
-        Quêtes
+        <i class="ph-bold ph-magnifying-glass"></i>Quêtes
       </button>
       <button class="htab" onclick="switchTab('proposals',this)">
-        <span class="material-symbols-outlined">assignment</span>
-        Mes propositions
+        <i class="ph-bold ph-clipboard-text"></i>Mes propositions
         <span class="htab-badge" id="propBadge">0</span>
       </button>
       <button class="htab" onclick="switchTab('gains',this)">
-        <span class="material-symbols-outlined">payments</span>
-        Gains
+        <i class="ph-bold ph-wallet"></i>Gains
       </button>
     </div>
   </div>
 </div>
 
-<!-- BODY -->
 <div class="dashboard-body">
 
-  <!-- KPI -->
   <div class="kpi-strip">
     <div class="kpi">
-      <div class="kpi-icon"><span class="material-symbols-outlined">assignment</span>Propositions</div>
-      <div class="kpi-val fire" id="kpiProposals">—</div>
+      <div class="kpi-label">Propositions</div>
+      <div class="kpi-val accent" id="kpiProposals">—</div>
       <div class="kpi-sub">soumises au total</div>
     </div>
     <div class="kpi">
-      <div class="kpi-icon"><span class="material-symbols-outlined">check_circle</span>Acceptées</div>
+      <div class="kpi-label">Acceptées</div>
       <div class="kpi-val green" id="kpiAccepted">—</div>
       <div class="kpi-sub">propositions retenues</div>
     </div>
     <div class="kpi">
-      <div class="kpi-icon"><span class="material-symbols-outlined">payments</span>Gains totaux</div>
+      <div class="kpi-label">Gains totaux</div>
       <div class="kpi-val gold" id="kpiGains">—</div>
       <div class="kpi-sub">FCFA encaissés</div>
     </div>
     <div class="kpi">
-      <div class="kpi-icon"><span class="material-symbols-outlined">trending_up</span>Taux succès</div>
+      <div class="kpi-label">Taux succès</div>
       <div class="kpi-val" id="kpiRate">—</div>
       <div class="kpi-sub">propositions gagnantes</div>
     </div>
@@ -382,9 +354,7 @@
 
   <!-- TAB: QUÊTES -->
   <div class="tab-content active" id="tab-quests">
-    <div class="section-header">
-      <div class="section-title">Quêtes disponibles</div>
-    </div>
+    <div class="section-header"><div class="section-title">Quêtes disponibles</div></div>
     <div class="quests-layout">
       <aside class="filter-panel">
         <div class="filter-panel-title">Filtres</div>
@@ -424,9 +394,9 @@
           </select>
         </div>
         <div class="quests-list" id="questsGrid">
-          <div class="sk-card"><div class="skeleton sk-line" style="height:18px;width:55%;"></div><div class="skeleton sk-line" style="height:12px;width:85%;"></div></div>
-          <div class="sk-card"><div class="skeleton sk-line" style="height:18px;width:45%;"></div><div class="skeleton sk-line" style="height:12px;width:90%;"></div></div>
-          <div class="sk-card"><div class="skeleton sk-line" style="height:18px;width:60%;"></div><div class="skeleton sk-line" style="height:12px;width:80%;"></div></div>
+          <div class="sk-card"><div class="skeleton sk-line" style="height:16px;width:55%;"></div><div class="skeleton sk-line" style="height:12px;width:85%;"></div></div>
+          <div class="sk-card"><div class="skeleton sk-line" style="height:16px;width:45%;"></div><div class="skeleton sk-line" style="height:12px;width:90%;"></div></div>
+          <div class="sk-card"><div class="skeleton sk-line" style="height:16px;width:60%;"></div><div class="skeleton sk-line" style="height:12px;width:80%;"></div></div>
         </div>
       </div>
     </div>
@@ -434,19 +404,15 @@
 
   <!-- TAB: PROPOSITIONS -->
   <div class="tab-content" id="tab-proposals">
-    <div class="section-header">
-      <div class="section-title">Mes propositions</div>
-    </div>
+    <div class="section-header"><div class="section-title">Mes propositions</div></div>
     <div class="proposals-list" id="proposalsList">
-      <div class="sk-card"><div class="skeleton sk-line" style="height:18px;width:55%;"></div><div class="skeleton sk-line" style="height:12px;width:85%;"></div></div>
+      <div class="sk-card"><div class="skeleton sk-line" style="height:16px;width:55%;"></div><div class="skeleton sk-line" style="height:12px;width:85%;"></div></div>
     </div>
   </div>
 
   <!-- TAB: GAINS -->
   <div class="tab-content" id="tab-gains">
-    <div class="section-header">
-      <div class="section-title">Mes gains</div>
-    </div>
+    <div class="section-header"><div class="section-title">Mes gains</div></div>
     <div class="gains-layout">
       <div>
         <div class="gains-total">
@@ -464,8 +430,8 @@
             <div class="progress-bar"><div class="progress-fill" id="progCompletedBar" style="width:0%"></div></div>
           </div>
           <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
-            <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:12px;">Niveau suivant</div>
-            <div style="font-size:12px;color:var(--fog);line-height:1.7;">Complétez <span id="nextLevelText" style="color:var(--fire)">5 quêtes</span> pour atteindre le rang <span id="nextLevelName" style="color:var(--gold)">Chasseur Élite</span>.</div>
+            <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:10px;">Niveau suivant</div>
+            <div style="font-size:13px;color:var(--text-muted);line-height:1.7;">Complétez <span id="nextLevelText" style="color:var(--accent);font-weight:700;">5 quêtes</span> pour atteindre le rang <span id="nextLevelName" style="color:var(--gold);font-weight:700;">Chasseur Élite</span>.</div>
           </div>
         </div>
       </div>
@@ -473,7 +439,6 @@
         <div class="gains-card-title">Historique des transactions</div>
         <div id="transactionsList">
           <div class="empty-state" style="padding:32px;">
-            <span class="material-symbols-outlined">receipt_long</span>
             <div class="empty-title">Aucune transaction</div>
             <div class="empty-sub">Vos récompenses apparaîtront ici.</div>
           </div>
@@ -492,12 +457,10 @@
         <div class="modal-title">Soumettre une proposition</div>
         <div class="modal-quest-ref" id="modalQuestRef">—</div>
       </div>
-      <button class="modal-close" onclick="closeModal()">
-        <span class="material-symbols-outlined">close</span>
-      </button>
+      <button class="modal-close" onclick="closeModal()"><i class="ph-bold ph-x"></i></button>
     </div>
     <div class="modal-body">
-      <div class="quest-summary-box" id="questSummaryBox">
+      <div class="quest-summary-box">
         <div class="quest-summary-title">Résumé de la quête</div>
         <div class="quest-summary-text" id="questSummaryText">—</div>
       </div>
@@ -521,7 +484,7 @@
         <label class="form-label">Photos du produit <span>(max 5 · jpg/png/webp)</span></label>
         <div class="upload-zone" id="uploadZone">
           <input type="file" id="imageInput" accept="image/jpeg,image/png,image/webp,image/gif" multiple/>
-          <span class="material-symbols-outlined upload-zone-icon">add_photo_alternate</span>
+          <i class="ph-bold ph-image upload-zone-icon"></i>
           <div class="upload-zone-text">Glissez vos photos ici ou <b>parcourir</b></div>
         </div>
         <div class="upload-previews" id="uploadPreviews"></div>
@@ -530,8 +493,7 @@
     </div>
     <div class="modal-footer">
       <button class="btn-submit" id="submitProposalBtn" onclick="submitProposal()">
-        <span class="material-symbols-outlined" style="font-size:15px;">send</span>
-        Envoyer ma proposition
+        <i class="ph-bold ph-paper-plane-tilt"></i>Envoyer ma proposition
       </button>
       <p class="modal-hint">Aucun paiement en liquide. La récompense est versée à la réception du colis.</p>
     </div>
@@ -540,41 +502,28 @@
 
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-  <button class="lightbox-close" onclick="closeLightbox()">
-    <span class="material-symbols-outlined">close</span>
-  </button>
+  <button class="lightbox-close" onclick="closeLightbox()"><i class="ph-bold ph-x"></i></button>
   <img id="lightboxImg" src="" alt=""/>
 </div>
 
-<!-- ── BOTTOM NAV ── -->
+<!-- BOTTOM NAV -->
 <nav class="bnav">
   <div class="bnav-inner">
-
     <a href="boutique.html" class="bnav-item">
-      <span class="bnav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
-      <span>Shop</span>
+      <span class="bnav-icon"><i class="ph-bold ph-storefront"></i></span><span>Shop</span>
     </a>
-
     <a href="dashboard-chasseur.html" class="bnav-item active">
-      <span class="bnav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
-      <span>Chasse</span>
+      <span class="bnav-icon"><i class="ph-bold ph-target"></i></span><span>Chasse</span>
     </a>
-
     <a href="dashboard-vendeur.html" class="bnav-item">
-      <span class="bnav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
-      <span>Vendre</span>
+      <span class="bnav-icon"><i class="ph-bold ph-plus-circle"></i></span><span>Vendre</span>
     </a>
-
     <a href="quetes.html" class="bnav-item gold">
-      <span class="bnav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span>
-      <span>Quêtes</span>
+      <span class="bnav-icon"><i class="ph-bold ph-compass"></i></span><span>Quêtes</span>
     </a>
-
     <a href="compte.html" class="bnav-item">
-      <span class="bnav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-      <span>Profil</span>
+      <span class="bnav-icon"><i class="ph-bold ph-user-circle"></i></span><span>Profil</span>
     </a>
-
   </div>
 </nav>
 
@@ -593,16 +542,17 @@ let selectedFiles = []
 let notifPollInterval = null
 
 const MAX_IMAGES = 5
-const BUCKET = 'quest-proposals'
+const BUCKET = 'products'
+const STORAGE_PREFIX = 'quests'
 const WENNA_EXPRESS_URL = 'https://express.wennashop.com'
 
 const STATUS_MAP = {
-  pending:     { label: 'En attente',    icon: 'hourglass_empty', cls: 'pending' },
-  selected:    { label: 'Acceptée ✓',    icon: 'check_circle',    cls: 'selected' },
-  in_delivery: { label: 'En livraison',  icon: 'local_shipping',  cls: 'in_delivery' },
-  delivered:   { label: 'Livrée',        icon: 'inventory_2',     cls: 'delivered' },
-  reward_paid: { label: 'Récompensé',    icon: 'payments',        cls: 'reward_paid' },
-  rejected:    { label: 'Non retenue',   icon: 'cancel',          cls: 'rejected' }
+  pending:     { label: 'En attente',    icon: 'ph-hourglass',      cls: 'pending' },
+  selected:    { label: 'Acceptée',      icon: 'ph-check-circle',   cls: 'selected' },
+  in_delivery: { label: 'En livraison',  icon: 'ph-truck',          cls: 'in_delivery' },
+  delivered:   { label: 'Livrée',        icon: 'ph-package',        cls: 'delivered' },
+  reward_paid: { label: 'Récompensé',    icon: 'ph-wallet',         cls: 'reward_paid' },
+  rejected:    { label: 'Non retenue',   icon: 'ph-x-circle',       cls: 'rejected' }
 }
 
 /* ═══════════════════════════════════════════════
@@ -627,9 +577,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.addEventListener('click', (e) => {
       const panel = document.getElementById('notifPanel')
       const bell = document.getElementById('notifBell')
-      if (panel.classList.contains('open') && !bell.contains(e.target)) {
-        panel.classList.remove('open')
-      }
+      if (panel.classList.contains('open') && !bell.contains(e.target)) panel.classList.remove('open')
     })
   } catch(e) {
     console.error('[Chasseur] Init error:', e)
@@ -647,7 +595,6 @@ function waitForDb(n = 0) {
     check(n)
   })
 }
-
 function getSb() {
   if (typeof window.db === 'undefined') throw new Error('[WennaShop] window.db non disponible')
   return window.db
@@ -670,7 +617,6 @@ async function resolveInternalUser() {
     showToast('Profil introuvable. Contactez le support.', 'error')
     throw new Error('Profil introuvable')
   }
-
   internalUserId     = data.id
   currentUserRole    = data.role
   currentUserCountry = data.country || ''
@@ -720,7 +666,7 @@ async function loadQuests() {
         quests.forEach(q => { q.proposals_count = map[q.id] || 0 })
       }
     }
-  } catch(e) { /* non bloquant */ }
+  } catch(e) {}
 
   allQuests = quests
   renderQuests(allQuests)
@@ -734,7 +680,6 @@ function renderQuests(quests) {
 
   if (!quests.length) {
     grid.innerHTML = `<div class="empty-state">
-      <span class="material-symbols-outlined">search_off</span>
       <div class="empty-title">Aucune quête disponible</div>
       <div class="empty-sub">Revenez plus tard ou modifiez vos filtres.</div>
     </div>`
@@ -758,7 +703,7 @@ function renderQuests(quests) {
         <div class="quest-card-head">
           <div class="quest-title">${esc(q.title)}</div>
           <div class="quest-badges">
-            ${done ? '<span class="badge" style="background:rgba(62,207,142,.08);color:#3ecf8e;border:1px solid rgba(62,207,142,.2);">Proposé ✓</span>' : ''}
+            ${done ? '<span class="badge" style="background:rgba(62,207,142,.1);color:#3ecf8e;border:1px solid rgba(62,207,142,.22);">Proposé</span>' : ''}
             ${fresh && !done ? '<span class="badge badge-new">Nouveau</span>' : ''}
             ${hot ? '<span class="badge badge-hot">Populaire</span>' : ''}
             ${cat ? `<span class="badge badge-cat">${cat}</span>` : ''}
@@ -768,28 +713,18 @@ function renderQuests(quests) {
         ${q.description ? `<p class="quest-desc">${esc(q.description)}</p>` : ''}
         <div class="quest-footer">
           <div class="quest-meta">
-            <span class="meta-item">
-              <span class="material-symbols-outlined">group</span>
-              ${props} prop${props !== 1 ? 's' : ''}
-            </span>
-            <span class="meta-item${exp <= 1 ? ' meta-urgent' : ''}">
-              <span class="material-symbols-outlined">schedule</span>
-              ${exp <= 1 ? '<strong>Expire demain</strong>' : `${exp}j restants`}
-            </span>
-            <span class="meta-item">
-              <span class="material-symbols-outlined">payments</span>
-              Budget ${fmt(q.product_budget)} ${q.currency}
-            </span>
+            <span class="meta-item">${props} prop${props !== 1 ? 's' : ''}</span>
+            <span class="meta-item${exp <= 1 ? ' meta-urgent' : ''}">${exp <= 1 ? 'Expire demain' : `${exp}j restants`}</span>
+            <span class="meta-item">Budget ${fmt(q.product_budget)} ${q.currency}</span>
           </div>
           <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
             ${!done && canHunt ? `<button class="btn-hunt" onclick='openModal(${JSON.stringify(q)})'>
-              <span class="material-symbols-outlined">gps_fixed</span>
-              Je chasse
+              <i class="ph-bold ph-crosshair-simple"></i>Je chasse
             </button>` : ''}
-            ${!done && !canHunt ? `<span style="font-size:10px;color:#555;font-style:italic;">Rôle chasseur requis</span>` : ''}
+            ${!done && !canHunt ? `<span style="font-size:11px;color:var(--text-faint);font-weight:600;">Rôle chasseur requis</span>` : ''}
             <div class="reward-box">
               <div class="reward-label">Récompense</div>
-              <div class="reward-amount">${fmt(q.reward_amount)} <span style="font-size:.65em;font-style:normal;">${q.currency || 'FCFA'}</span></div>
+              <div class="reward-amount">${fmt(q.reward_amount)} <span style="font-size:.65em;">${q.currency || 'FCFA'}</span></div>
             </div>
           </div>
         </div>
@@ -798,10 +733,7 @@ function renderQuests(quests) {
 }
 
 function showQuestsEmpty(msg) {
-  document.getElementById('questsGrid').innerHTML = `<div class="empty-state">
-    <span class="material-symbols-outlined">warning</span>
-    <div class="empty-title">${msg}</div>
-  </div>`
+  document.getElementById('questsGrid').innerHTML = `<div class="empty-state"><div class="empty-title">${msg}</div></div>`
 }
 
 function selectCat(el) {
@@ -810,7 +742,6 @@ function selectCat(el) {
   activeCategory = el.dataset.cat
   applyFilters()
 }
-
 function selectCountry(el) {
   document.querySelectorAll('[data-country]').forEach(c => c.classList.remove('active'))
   el.classList.add('active')
@@ -851,7 +782,6 @@ function resetFilters() {
 
 async function loadMyProposals() {
   if (!internalUserId) return
-
   const { data, error } = await getSb()
     .from('quest_proposals')
     .select(`id, quest_id, description, proposed_price, product_url, product_images,
@@ -863,17 +793,14 @@ async function loadMyProposals() {
   if (error) { console.error('[Chasseur] loadMyProposals:', error); return }
 
   myProposals = data || []
-  const pendingCount = myProposals.filter(p => p.status === 'pending').length
-  document.getElementById('propBadge').textContent = pendingCount
+  document.getElementById('propBadge').textContent = myProposals.filter(p => p.status === 'pending').length
   renderProposals()
 }
 
 function renderProposals() {
   const list = document.getElementById('proposalsList')
-
   if (!myProposals.length) {
     list.innerHTML = `<div class="empty-state">
-      <span class="material-symbols-outlined">assignment_late</span>
       <div class="empty-title">Aucune proposition</div>
       <div class="empty-sub">Parcourez les quêtes et cliquez sur "Je chasse" pour commencer.</div>
     </div>`
@@ -896,10 +823,7 @@ function renderProposals() {
       <div class="proposal-card status-${p.status}">
         <div class="proposal-head">
           <div class="proposal-quest-title">${esc(questTitle)}</div>
-          <span class="status-pill ${s.cls}">
-            <span class="material-symbols-outlined">${s.icon}</span>
-            ${s.label}
-          </span>
+          <span class="status-pill ${s.cls}"><i class="ph-bold ${s.icon}"></i>${s.label}</span>
         </div>
         ${p.description ? `<div class="proposal-body">${esc(p.description)}</div>` : ''}
         ${images.length > 0 ? `<div class="prop-images">
@@ -908,36 +832,18 @@ function renderProposals() {
         ${showExpressBlock ? renderExpressBlock(p, isInternational, reward, currency) : ''}
         <div class="proposal-footer" style="margin-top:12px;">
           <div class="proposal-meta">
-            <span class="meta-item">
-              <span class="material-symbols-outlined">payments</span>
-              Prix estimé : ${p.proposed_price ? fmt(p.proposed_price) + ' FCFA' : 'N/A'}
-            </span>
-            ${p.product_url ? `<span class="meta-item">
-              <span class="material-symbols-outlined">link</span>
-              <a href="${esc(p.product_url)}" target="_blank" rel="noopener" style="color:var(--fire);font-size:11px;">Référence</a>
-            </span>` : ''}
-            <span class="meta-item">
-              <span class="material-symbols-outlined">calendar_today</span>
-              ${formatDate(p.created_at)}
-            </span>
-            ${p.selected_at ? `<span class="meta-item" style="color:var(--green);">
-              <span class="material-symbols-outlined">check_circle</span>
-              Sélectionnée le ${formatDate(p.selected_at)}
-            </span>` : ''}
-            ${p.reward_paid_at ? `<span class="meta-item" style="color:var(--gold);">
-              <span class="material-symbols-outlined">payments</span>
-              Récompense versée le ${formatDate(p.reward_paid_at)}
-            </span>` : ''}
+            <span class="meta-item">Prix estimé : ${p.proposed_price ? fmt(p.proposed_price) + ' FCFA' : 'N/A'}</span>
+            ${p.product_url ? `<span class="meta-item"><a href="${esc(p.product_url)}" target="_blank" rel="noopener" style="color:var(--accent);">Référence</a></span>` : ''}
+            <span class="meta-item">${formatDate(p.created_at)}</span>
+            ${p.selected_at ? `<span class="meta-item" style="color:var(--green);">Sélectionnée le ${formatDate(p.selected_at)}</span>` : ''}
+            ${p.reward_paid_at ? `<span class="meta-item" style="color:var(--gold);">Récompense versée le ${formatDate(p.reward_paid_at)}</span>` : ''}
           </div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
             <div class="reward-box">
               <div class="reward-label">Récompense quête</div>
-              <div class="reward-amount">${fmt(reward)} <span style="font-size:.65em;font-style:normal;">${currency}</span></div>
+              <div class="reward-amount">${fmt(reward)} <span style="font-size:.65em;">${currency}</span></div>
             </div>
-            ${p.status === 'pending' ? `<button class="btn-delete" onclick="deleteProposal('${p.id}')">
-              <span class="material-symbols-outlined">delete</span>
-              Retirer
-            </button>` : ''}
+            ${p.status === 'pending' ? `<button class="btn-delete" onclick="deleteProposal('${p.id}')"><i class="ph-bold ph-trash"></i>Retirer</button>` : ''}
           </div>
         </div>
       </div>`
@@ -946,64 +852,39 @@ function renderProposals() {
 
 function renderExpressBlock(p, isInternational, reward, currency) {
   const deliveryLabel = isInternational ? 'Wenna Express International (Gabon ↔ Maroc)' : 'Wenna Express Local'
-  const deliveryIcon  = isInternational ? 'flight' : 'local_shipping'
 
   if (p.status === 'reward_paid') {
-    return `<div class="accepted-banner" style="border-color:rgba(208,166,0,.3);background:var(--gold-bg);">
-      <div class="accepted-banner-title" style="color:var(--gold);">
-        <span class="material-symbols-outlined">workspace_premium</span>
-        Récompense versée — ${fmt(reward)} ${currency}
-      </div>
+    return `<div class="accepted-banner gold">
+      <div class="accepted-banner-title">Récompense versée — ${fmt(reward)} ${currency}</div>
       <div class="accepted-banner-text">Félicitations ! Votre récompense a été versée suite à la réception du colis par l'acheteur.</div>
     </div>`
   }
-
   if (p.status === 'delivered') {
-    return `<div class="accepted-banner" style="border-color:var(--green-border);">
-      <div class="accepted-banner-title">
-        <span class="material-symbols-outlined">inventory_2</span>
-        Colis livré — en attente de confirmation acheteur
-      </div>
+    return `<div class="accepted-banner">
+      <div class="accepted-banner-title">Colis livré — en attente de confirmation acheteur</div>
       <div class="accepted-banner-text">L'acheteur doit confirmer la réception. Votre récompense de <strong style="color:var(--gold);">${fmt(reward)} ${currency}</strong> sera versée dès confirmation.</div>
-      <div class="reward-pending-note">
-        <span class="material-symbols-outlined">hourglass_top</span>
-        Récompense en attente de confirmation
-      </div>
+      <div class="reward-pending-note">Récompense en attente de confirmation</div>
     </div>`
   }
-
   return `<div class="accepted-banner">
-    <div class="accepted-banner-title">
-      <span class="material-symbols-outlined">check_circle</span>
-      Proposition acceptée — passez à l'étape suivante
-    </div>
+    <div class="accepted-banner-title">Proposition acceptée — passez à l'étape suivante</div>
     <div class="accepted-banner-text">
-      Votre proposition a été retenue par l'acheteur. Vous devez maintenant procéder à l'envoi via 
-      <strong style="color:var(--fire);">${deliveryLabel}</strong>.<br/>
-      <span style="color:var(--fog);font-size:11px;margin-top:4px;display:block;">
+      Votre proposition a été retenue par l'acheteur. Vous devez maintenant procéder à l'envoi via
+      <strong style="color:var(--accent);">${deliveryLabel}</strong>.<br/>
+      <span style="color:var(--text-faint);font-size:12px;margin-top:4px;display:block;">
         Aucun paiement en liquide. La récompense de <strong style="color:var(--gold);">${fmt(reward)} ${currency}</strong> sera versée automatiquement à la réception du colis par l'acheteur.
       </span>
     </div>
-    <a href="${WENNA_EXPRESS_URL}?proposal=${p.id}&type=${isInternational ? 'international' : 'local'}" 
-       target="_blank" class="wenna-express-btn">
-      <span class="material-symbols-outlined">${deliveryIcon}</span>
+    <a href="${WENNA_EXPRESS_URL}?proposal=${p.id}&type=${isInternational ? 'international' : 'local'}" target="_blank" class="wenna-express-btn">
       Utiliser Wenna Express ${isInternational ? 'International' : 'Local'}
     </a>
-    ${p.status === 'selected' ? `<div class="reward-pending-note">
-      <span class="material-symbols-outlined">info</span>
-      Récompense versée à la confirmation de réception par l'acheteur
-    </div>` : ''}
+    ${p.status === 'selected' ? `<div class="reward-pending-note">Récompense versée à la confirmation de réception par l'acheteur</div>` : ''}
   </div>`
 }
 
 async function deleteProposal(propId) {
   if (!confirm('Retirer cette proposition ?')) return
-  const { error } = await getSb()
-    .from('quest_proposals')
-    .delete()
-    .eq('id', propId)
-    .eq('hunter_id', internalUserId)
-
+  const { error } = await getSb().from('quest_proposals').delete().eq('id', propId).eq('hunter_id', internalUserId)
   if (error) { showToast('Erreur : ' + error.message, 'error'); return }
   showToast('Proposition retirée.', 'success')
   myProposals = myProposals.filter(p => p.id !== propId)
@@ -1042,7 +923,7 @@ function computeKPIs() {
   ]
   const level     = [...levels].reverse().find(l => completedCount >= l.min) || levels[0]
   const nextLevel = levels.find(l => l.min > completedCount)
-  document.getElementById('hunterLevel').innerHTML = `<span class="material-symbols-outlined" style="font-size:12px;">verified</span> ${level.name}`
+  document.getElementById('hunterLevel').textContent = level.name
   if (nextLevel) {
     const needed = nextLevel.min - completedCount
     document.getElementById('nextLevelText').textContent = `${needed} quête${needed > 1 ? 's' : ''} de plus`
@@ -1058,7 +939,6 @@ function renderTransactions(paid, all) {
 
   if (!paid.length && !selected.length) {
     list.innerHTML = `<div class="empty-state" style="padding:32px;">
-      <span class="material-symbols-outlined">receipt_long</span>
       <div class="empty-title">Aucune transaction</div>
       <div class="empty-sub">Vos récompenses apparaîtront ici.</div>
     </div>`
@@ -1069,8 +949,8 @@ function renderTransactions(paid, all) {
   html += paid.map(p => `
     <div class="transaction-item">
       <div class="tx-left">
-        <div class="tx-icon earned"><span class="material-symbols-outlined">payments</span></div>
-        <div class="tx-info">
+        <div class="tx-icon earned"><i class="ph-bold ph-wallet"></i></div>
+        <div>
           <div class="tx-title">${esc(p.quests?.title || 'Quête')}</div>
           <div class="tx-date">Versée le ${formatDate(p.reward_paid_at || p.created_at)}</div>
         </div>
@@ -1081,8 +961,8 @@ function renderTransactions(paid, all) {
   html += selected.map(p => `
     <div class="transaction-item">
       <div class="tx-left">
-        <div class="tx-icon selected"><span class="material-symbols-outlined">local_shipping</span></div>
-        <div class="tx-info">
+        <div class="tx-icon selected"><i class="ph-bold ph-truck"></i></div>
+        <div>
           <div class="tx-title">${esc(p.quests?.title || 'Quête')} — en livraison</div>
           <div class="tx-date">Sélectionnée le ${formatDate(p.selected_at || p.created_at)}</div>
         </div>
@@ -1094,8 +974,8 @@ function renderTransactions(paid, all) {
   html += pending.map(p => `
     <div class="transaction-item">
       <div class="tx-left">
-        <div class="tx-icon pending"><span class="material-symbols-outlined">hourglass_empty</span></div>
-        <div class="tx-info">
+        <div class="tx-icon pending"><i class="ph-bold ph-hourglass"></i></div>
+        <div>
           <div class="tx-title">${esc(p.quests?.title || 'Quête')} — en attente</div>
           <div class="tx-date">Soumise le ${formatDate(p.created_at)}</div>
         </div>
@@ -1117,17 +997,13 @@ async function loadNotifications() {
       .limit(20)
 
     if (!data) return
-
     const unread = data.filter(n => !n.is_read).length
     const badge  = document.getElementById('notifBadge')
     badge.textContent = unread > 9 ? '9+' : unread
     badge.classList.toggle('show', unread > 0)
 
     const listEl = document.getElementById('notifList')
-    if (!data.length) {
-      listEl.innerHTML = '<div class="notif-empty">Aucune notification</div>'
-      return
-    }
+    if (!data.length) { listEl.innerHTML = '<div class="notif-empty">Aucune notification</div>'; return }
 
     listEl.innerHTML = data.map(n => `
       <div class="notif-item${n.is_read ? '' : ' unread'}" onclick="readNotif('${n.id}', '${n.link || ''}')">
@@ -1135,9 +1011,7 @@ async function loadNotifications() {
         ${n.body ? `<div class="notif-item-body">${esc(n.body)}</div>` : ''}
         <div class="notif-item-time">${timeAgo(n.created_at)}</div>
       </div>`).join('')
-  } catch(e) {
-    console.error('[Notifs] loadNotifications:', e)
-  }
+  } catch(e) { console.error('[Notifs] loadNotifications:', e) }
 }
 
 async function readNotif(id, link) {
@@ -1145,14 +1019,12 @@ async function readNotif(id, link) {
   if (link) window.location.href = link
   else await loadNotifications()
 }
-
 async function markAllRead(e) {
   e.stopPropagation()
   if (!internalUserId) return
   await getSb().from('notifications').update({ is_read: true }).eq('user_id', internalUserId)
   await loadNotifications()
 }
-
 function toggleNotifPanel(e) {
   e.stopPropagation()
   document.getElementById('notifPanel').classList.toggle('open')
@@ -1172,15 +1044,11 @@ function openModal(quest) {
   document.getElementById('propLink').value    = ''
   resetImageUpload()
   document.getElementById('modalOverlay').classList.add('open')
-  document.body.style.overflow = 'visible'
 }
-
 function closeModal() {
   document.getElementById('modalOverlay').classList.remove('open')
-  document.body.style.overflow = ''
   currentQuestForModal = null
 }
-
 function closeModalOutside(e) {
   if (e.target === document.getElementById('modalOverlay')) closeModal()
 }
@@ -1191,16 +1059,16 @@ async function submitProposal() {
   const price   = parseFloat(document.getElementById('propPrice').value)
   const link    = document.getElementById('propLink').value.trim()
 
-  if (!message)             return showToast('Décrivez votre proposition.', 'error')
+  if (!message)              return showToast('Décrivez votre proposition.', 'error')
   if (!price || price < 100) return showToast('Indiquez un prix estimé valide.', 'error')
 
   const btn = document.getElementById('submitProposalBtn')
   btn.disabled = true
-  btn.innerHTML = '<span class="material-symbols-outlined" style="animation:spin 1s linear infinite;font-size:15px;">progress_activity</span> Envoi…'
+  btn.innerHTML = '<i class="ph-bold ph-circle-notch" style="animation:spin 1s linear infinite;"></i>Envoi…'
 
   let imageUrls = []
   if (selectedFiles.length > 0) {
-    btn.innerHTML = '<span class="material-symbols-outlined" style="animation:spin 1s linear infinite;font-size:15px;">progress_activity</span> Upload photos…'
+    btn.innerHTML = '<i class="ph-bold ph-circle-notch" style="animation:spin 1s linear infinite;"></i>Upload photos…'
     imageUrls = await uploadImages()
   }
 
@@ -1215,7 +1083,7 @@ async function submitProposal() {
   })
 
   btn.disabled = false
-  btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:15px;">send</span> Envoyer ma proposition'
+  btn.innerHTML = '<i class="ph-bold ph-paper-plane-tilt"></i>Envoyer ma proposition'
 
   if (error) { showToast('Erreur : ' + error.message, 'error'); return }
 
@@ -1260,11 +1128,8 @@ function addPreview(file, idx) {
     const thumb = document.createElement('div')
     thumb.className   = 'preview-thumb'
     thumb.dataset.idx = idx
-    thumb.innerHTML = `
-      <img src="${e.target.result}" alt="photo ${idx + 1}"/>
-      <div class="remove-img" onclick="removeImage(${idx})">
-        <span class="material-symbols-outlined">close</span>
-      </div>`
+    thumb.innerHTML = `<img src="${e.target.result}" alt="photo ${idx + 1}"/>
+      <div class="remove-img" onclick="removeImage(${idx})"><i class="ph-bold ph-x"></i></div>`
     previews.appendChild(thumb)
   }
   reader.readAsDataURL(file)
@@ -1275,12 +1140,10 @@ function removeImage(idx) {
   rebuildPreviews()
   updateCounter()
 }
-
 function rebuildPreviews() {
   document.getElementById('uploadPreviews').innerHTML = ''
   selectedFiles.forEach((file, i) => addPreview(file, i))
 }
-
 function updateCounter() {
   document.getElementById('uploadCounter').textContent = `${selectedFiles.length} / ${MAX_IMAGES} photos`
   const zone = document.getElementById('uploadZone')
@@ -1288,7 +1151,6 @@ function updateCounter() {
   zone.style.opacity = full ? '.4' : ''
   zone.style.pointerEvents = full ? 'none' : ''
 }
-
 function resetImageUpload() {
   selectedFiles = []
   document.getElementById('uploadPreviews').innerHTML = ''
@@ -1304,7 +1166,7 @@ async function uploadImages() {
   const urls = []
   for (const file of selectedFiles) {
     const ext  = file.name.split('.').pop()
-    const path = `${internalUserId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+    const path = `${STORAGE_PREFIX}/${internalUserId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
     const { error } = await sb.storage.from(BUCKET).upload(path, file, { upsert: false })
     if (error) { console.error('[Chasseur] Upload error:', error); continue }
     const { data } = sb.storage.from(BUCKET).getPublicUrl(path)
@@ -1316,11 +1178,9 @@ async function uploadImages() {
 function openLightbox(url) {
   document.getElementById('lightboxImg').src = url
   document.getElementById('lightbox').classList.add('open')
-  document.body.style.overflow = 'hidden'
 }
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open')
-  document.body.style.overflow = ''
 }
 
 function switchTab(name, el) {
@@ -1340,7 +1200,7 @@ function formatDate(d) {
 }
 function timeAgo(d) {
   const diff = Date.now() - new Date(d)
-  if (diff < 60000)    return 'À l\'instant'
+  if (diff < 60000)    return "À l'instant"
   if (diff < 3600000)  return `${Math.floor(diff / 60000)} min`
   if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`
   return formatDate(d)
