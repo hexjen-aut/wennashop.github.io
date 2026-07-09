@@ -1010,11 +1010,19 @@ function renderNotifList(){
 function clickNotif(id){
   const n=allNotifications.find(x=>x.id===id);if(!n)return
   n.read=true;updateNotifBadge();renderNotifList()
-  if(n.action==='orders'){closeNotifPanel();showSection('orders')}
-  else if(n.action==='reviews'){closeNotifPanel();showSection('reviews')}
-  else if(n.action==='products'){closeNotifPanel();showSection('products')}
-  else if(n.action==='revenue'){closeNotifPanel();showSection('revenue')}
-  saveNotifRead(id)
+  closeNotifPanel()
+  if(n.action==='orders'){
+    showSection('orders')
+    if(n.targetId)setTimeout(()=>openOrderModal(n.targetId),150)
+  }else if(n.action==='products'){
+    showSection('products')
+    if(n.targetId){
+      const tryOpen=()=>{const p=allProducts.find(pr=>pr.id===n.targetId);if(p)openProductModal(p)}
+      setTimeout(()=>{tryOpen();setTimeout(tryOpen,400)},150)
+    }
+  }else if(n.action==='reviews'){showSection('reviews')}
+  else if(n.action==='revenue'){showSection('revenue')}
+  if(!n.synthetic)saveNotifRead(id)
 }
 
 async function saveNotifRead(id){
@@ -1074,17 +1082,17 @@ async function generateNotificationsFromData(){
       const orderIds=[...new Set((items||[]).map(i=>i.order_id))]
       if(orderIds.length){
         const{data:pendingOrders}=await db.from('orders').select('id,total_amount,created_at,status,users!orders_user_id_fkey(full_name,email)').in('id',orderIds).eq('status','pending').order('created_at',{ascending:false}).limit(5)
-        ;(pendingOrders||[]).forEach(o=>{notifs.push({id:'ord-'+o.id,type:'order',title:'Nouvelle commande en attente',body:`${o.users?.full_name||o.users?.email||'Un client'} — ${Number(o.total_amount).toLocaleString('fr-FR')} MAD`,created_at:o.created_at,read:false,action:'orders'})})
+        ;(pendingOrders||[]).forEach(o=>{notifs.push({id:'ord-'+o.id,type:'order',title:'Nouvelle commande en attente',body:`${o.users?.full_name||o.users?.email||'Un client'} — ${Number(o.total_amount).toLocaleString('fr-FR')} MAD`,created_at:o.created_at,read:false,action:'orders',targetId:o.id,synthetic:true})})
       }
     }catch(e){}
   }
   try{
     const{data:lowStock}=await db.from('products').select('id,name,stock').eq('seller_id',currentSeller.id).lte('stock',3).gt('stock',0).limit(3)
-    ;(lowStock||[]).forEach(p=>{notifs.push({id:'stock-'+p.id,type:'stock',title:'Stock critique',body:`"${p.name}" — ${p.stock} unité${p.stock>1?'s':''} restante${p.stock>1?'s':''}`,created_at:new Date(Date.now()-86400000).toISOString(),read:false,action:'products'})})
+    ;(lowStock||[]).forEach(p=>{notifs.push({id:'stock-'+p.id,type:'stock',title:'Stock critique',body:`"${p.name}" — ${p.stock} unité${p.stock>1?'s':''} restante${p.stock>1?'s':''}`,created_at:new Date(Date.now()-86400000).toISOString(),read:false,action:'products',targetId:p.id,synthetic:true})})
   }catch(e){}
   return notifs
 }
-
+  
 async function startRealtimeNotifications(){
   const db=getDb();if(!db||!currentSeller)return
   if(!myProductIds.length)myProductIds=await getMyProductIds()
@@ -1094,7 +1102,7 @@ async function startRealtimeNotifications(){
   realtimeChannel.on('postgres_changes',{event:'INSERT',schema:'public',table:'orders'},async(payload)=>{
     const order=payload.new
     try{const{data:items}=await db.from('order_items').select('product_id').eq('order_id',order.id).in('product_id',myProductIds).limit(1);if(!items?.length)return}catch(e){return}
-    addNotification({id:'rt-ord-'+order.id,type:'order',title:'Nouvelle commande !',body:`${Number(order.total_amount||0).toLocaleString('fr-FR')} MAD reçus`,created_at:order.created_at||new Date().toISOString(),read:false,action:'orders'})
+    addNotification({id:'rt-ord-'+order.id,type:'order',title:'Nouvelle commande !',body:`${Number(order.total_amount||0).toLocaleString('fr-FR')} MAD reçus`,created_at:order.created_at||new Date().toISOString(),read:false,action:'orders',targetId:order.id,synthetic:true})
     const badge=document.getElementById('badge-pending')
     if(badge){const cur=parseInt(badge.textContent)||0;badge.textContent=cur+1;badge.classList.remove('hidden')}
     loadOverview()
@@ -1102,7 +1110,7 @@ async function startRealtimeNotifications(){
   realtimeChannel.on('postgres_changes',{event:'UPDATE',schema:'public',table:'products'},(payload)=>{
     const p=payload.new
     if(p.seller_id!==currentSeller.id)return
-    if((p.stock||0)<=3&&(p.stock||0)>0&&(payload.old?.stock||0)>3){addNotification({id:'rt-stock-'+p.id+'-'+Date.now(),type:'stock',title:'Stock critique',body:`"${p.name}" — ${p.stock} unité${p.stock>1?'s':''} restante${p.stock>1?'s':''}`,created_at:new Date().toISOString(),read:false,action:'products'})}
+    if((p.stock||0)<=3&&(p.stock||0)>0&&(payload.old?.stock||0)>3){addNotification({id:'rt-stock-'+p.id+'-'+Date.now(),type:'stock',title:'Stock critique',body:`"${p.name}" — ${p.stock} unité${p.stock>1?'s':''} restante${p.stock>1?'s':''}`,created_at:new Date().toISOString(),read:false,action:'products',targetId:p.id,synthetic:true})}
     if(document.getElementById('section-products')?.classList.contains('active'))loadProducts()
   })
   realtimeChannel.subscribe((status)=>{
