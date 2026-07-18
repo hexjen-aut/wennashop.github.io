@@ -679,28 +679,34 @@ function currencyForCountry(country) {
   if(!country) return null
   const c = country.toLowerCase()
   if(c.includes('maroc')) return 'MAD'
-  if(c.includes('gabon') || c.includes('cameroun')) return 'XAF'
-  if(c.includes('bénin') || c.includes('benin') || c.includes('sénégal') || c.includes('senegal') || c.includes("côte d'ivoire") || c.includes('cote d') || c.includes('mali')) return 'XOF'
+  if(c.includes('tunisie')) return 'TND'
+  if(c.includes('madagascar')) return 'MGA'
+  if(c.includes('rdc')) return 'CDF'
+  // Zone CEMAC (franc CFA / XAF)
+  if(c.includes('gabon') || c.includes('cameroun') || (c.includes('congo') && !c.includes('rdc'))) return 'XAF'
+  // Zone UEMOA (franc CFA / XOF)
+  if(c.includes('benin') || c.includes('bénin') || c.includes('senegal') || c.includes('sénégal') || c.includes('cote d') || c.includes("côte d") || c.includes('mali') || c.includes('burkina') || c.includes('togo') || c.includes('niger')) return 'XOF'
   return null
 }
 function smartPrice(amount, currency, country) {
   const cur = currency || currencyForCountry(country) || window.defaultCurrency || 'MAD'
-  if(cur === 'XAF' || cur === 'XOF') return fmtFcfa(amount)
+  if(cur === 'XAF' || cur === 'XOF' || cur === 'FCFA') return fmtFcfa(amount)
   return fmtPrice(amount, cur)
 }
 
 function daysLeft(d) { return Math.max(0, Math.ceil((new Date(d)-new Date())/86400000)) }
 function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
 
-/* ── NOTATION BOUTIQUE / PRODUIT (étoiles actives, basées sur les vraies données) ── */
+/* ── NOTATION BOUTIQUE (étoiles actives, basées sur la note réelle du vendeur : shops.rating_avg/rating_count,
+   recalculée automatiquement en base à chaque avis approuvé — voir trigger trg_update_shop_rating) ── */
 function renderStars(avg, count) {
   if(!window.reviewsEnabled) return ''
-  if(avg === null || avg === undefined) return ''
+  const c = count || 0
+  if(c <= 0) return '' // pas encore d'avis approuvé pour cette boutique → on n'affiche rien plutôt que de fausses étoiles
   const r = Math.max(0, Math.min(5, Number(avg) || 0))
   const full = Math.round(r)
   let stars = ''
   for(let i=1;i<=5;i++) stars += i<=full ? '★' : '☆'
-  const c = count || 0
   return `<div class="prod-stars" title="${r.toFixed(1)}/5 · ${c} avis">${stars}</div>`
 }
 
@@ -938,16 +944,19 @@ async function loadBoostedShops() {
   if(typeof db === 'undefined') return
   const body = document.getElementById('bp-body')
   try {
-    const {data,error} = await db.from('boosted_shops').select('id,shop_name,description,banner_url,shop_url').eq('is_active',true).gt('boost_expires_at', new Date().toISOString()).order('sort_order',{ascending:true}).limit(10)
+    // "boosted_shops" n'existe pas en base — les boutiques boostées sont des boosts
+    // (type='shop_homepage') actifs et non expirés, liés à la table shops.
+    const {data,error} = await db.from('boosts').select('id,expires_at,shops(id,name,slug,banner_url,bio)').eq('type','shop_homepage').eq('status','active').gt('expires_at', new Date().toISOString()).order('created_at',{ascending:false}).limit(10)
     if(error) throw new Error(error.message)
-    if(!data||!data.length) { body.innerHTML = `<div class="bp-empty">Aucune boutique boostée pour le moment.<br><br><a href="dashboard-vendeur.html" style="color:var(--accent);font-weight:700;">Booster ma boutique →</a></div>`; return }
-    body.innerHTML = data.map(shop => `
-      <a class="boost-card" href="${esc(shop.shop_url||'boutique.html')}">
-        ${shop.banner_url ? `<img class="boost-card-banner" src="${esc(shop.banner_url)}" alt="${esc(shop.shop_name)}" loading="lazy" onerror="this.style.display='none'"/>` : `<div style="height:120px;background:linear-gradient(135deg,var(--surface-2),var(--border));display:flex;align-items:center;justify-content:center;color:var(--text-faint);font-size:12px;font-weight:600;letter-spacing:.05em;">BOUTIQUE</div>`}
+    const shops = (data||[]).map(b => b.shops).filter(Boolean)
+    if(!shops.length) { body.innerHTML = `<div class="bp-empty">Aucune boutique boostée pour le moment.<br><br><a href="dashboard-vendeur.html" style="color:var(--accent);font-weight:700;">Booster ma boutique →</a></div>`; return }
+    body.innerHTML = shops.map(shop => `
+      <a class="boost-card" href="boutique-vendeur.html?slug=${encodeURIComponent(shop.slug||shop.id)}">
+        ${shop.banner_url ? `<img class="boost-card-banner" src="${esc(shop.banner_url)}" alt="${esc(shop.name)}" loading="lazy" onerror="this.style.display='none'"/>` : `<div style="height:120px;background:linear-gradient(135deg,var(--surface-2),var(--border));display:flex;align-items:center;justify-content:center;color:var(--text-faint);font-size:12px;font-weight:600;letter-spacing:.05em;">BOUTIQUE</div>`}
         <div class="boost-card-body">
           <div class="boost-badge">Boutique boostée</div>
-          <div class="boost-card-name">${esc(shop.shop_name)}</div>
-          ${shop.description?`<div class="boost-card-desc">${esc(shop.description)}</div>`:''}
+          <div class="boost-card-name">${esc(shop.name)}</div>
+          ${shop.bio?`<div class="boost-card-desc">${esc(shop.bio)}</div>`:''}
           <span class="boost-card-cta">Visiter la boutique</span>
         </div>
       </a>`).join('')
@@ -1099,17 +1108,19 @@ async function loadBoostTeaser() {
   if(typeof db === 'undefined' || isFloatDismissed('boost')) return
   const body = document.getElementById('float-boost-body')
   try {
-    const {data,error} = await db.from('boosted_shops').select('id,shop_name,description,banner_url,shop_url').eq('is_active',true).gt('boost_expires_at', new Date().toISOString()).order('sort_order',{ascending:true}).limit(1)
-    if(error||!data||!data.length) return // pas de boutique boostée → pas de teaser publicitaire
-    const shop = data[0]
-    body.innerHTML = `<a class="float-item" href="${esc(shop.shop_url||'boutique.html')}">
-      <img class="float-item-img" src="${esc(shop.banner_url||'https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=80&q=60')}" alt="${esc(shop.shop_name)}" onerror="this.src='https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=80&q=60'" loading="lazy"/>
+    // Même source que le panneau complet : boosts actifs (type='shop_homepage') liés à shops.
+    const {data,error} = await db.from('boosts').select('id,expires_at,shops(id,name,slug,banner_url,bio)').eq('type','shop_homepage').eq('status','active').gt('expires_at', new Date().toISOString()).order('created_at',{ascending:false}).limit(1)
+    if(error||!data||!data.length||!data[0].shops) return // pas de boutique boostée → pas de teaser publicitaire
+    const shop = data[0].shops
+    const url = `boutique-vendeur.html?slug=${encodeURIComponent(shop.slug||shop.id)}`
+    body.innerHTML = `<a class="float-item" href="${url}">
+      <img class="float-item-img" src="${esc(shop.banner_url||'https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=80&q=60')}" alt="${esc(shop.name)}" onerror="this.src='https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=80&q=60'" loading="lazy"/>
       <div style="flex:1;min-width:0;">
-        <div class="float-item-name">${esc(shop.shop_name)}</div>
-        <div class="float-item-meta">${shop.description?esc(shop.description).slice(0,40):'Boutique vérifiée'}</div>
+        <div class="float-item-name">${esc(shop.name)}</div>
+        <div class="float-item-meta">${shop.bio?esc(shop.bio).slice(0,40):'Boutique vérifiée'}</div>
       </div>
     </a>`
-    document.getElementById('float-boost-cta').href = esc(shop.shop_url||'boutique.html')
+    document.getElementById('float-boost-cta').href = url
     // Décalé par rapport au teaser des quêtes pour ne jamais apparaître en même temps
     setTimeout(() => showFloatPanel('boost'), 11000)
   } catch(e) {}
@@ -1217,7 +1228,7 @@ async function loadProducts() {
   const [col,dir] = state.sort.split(':')
   const offset = (state.page-1)*PAGE_SIZE
   try {
-    let q = db.from('products').select('id,name,price,currency,country,origin_city,stock,images,image_url,category_id,rating_avg,rating_count,categories(name)',{count:'exact'}).eq('status','active').gte('price',state.priceMin).lte('price',state.priceMax).range(offset,offset+PAGE_SIZE-1).order(col,{ascending:dir==='asc'})
+    let q = db.from('products').select('id,name,price,currency,country,origin_city,stock,images,image_url,category_id,shop_id,categories(name),shops(rating_avg,rating_count)',{count:'exact'}).eq('status','active').gte('price',state.priceMin).lte('price',state.priceMax).range(offset,offset+PAGE_SIZE-1).order(col,{ascending:dir==='asc'})
     if(state.pays) {q = Array.isArray(state.pays) ? q.in('country', state.pays) : q.ilike('country', state.pays)}
     if(state.catId) q = q.eq('category_id',state.catId)
     if(state.stockOnly) q = q.gt('stock',0)
@@ -1245,7 +1256,7 @@ function renderProducts(products) {
     const pays = (p.country||'').toLowerCase().includes('maroc') ? 'MA' : 'GA'
     const catName = p.categories?.name||''
     const sn = (p.name||'').replace(/'/g,"\\'").replace(/"/g,'&quot;')
-    const pCur = p.currency || currencyForCountry(p.country) || window.defaultCurrency || 'MAD'
+    const pCur = (p.currency || currencyForCountry(p.country) || window.defaultCurrency || 'MAD').replace('FCFA','XOF')
     return `<div class="prod-card" onclick="location.href='detail_produit.html?id=${p.id}'">
       <div class="prod-img">
         <img src="${img}" alt="${sn}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=400&q=80'"/>
@@ -1258,7 +1269,7 @@ function renderProducts(products) {
         <div class="prod-name">${p.name}</div>
         <div class="prod-ft">
           <div class="prod-price">${smartPrice(p.price, p.currency, p.country)}</div>
-          ${renderStars(p.rating_avg, p.rating_count)}
+          ${renderStars(p.shops?.rating_avg, p.shops?.rating_count)}
         </div>
       </div>
     </div>`
