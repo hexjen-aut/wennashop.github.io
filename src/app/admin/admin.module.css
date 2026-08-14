@@ -1,0 +1,23 @@
+.gate { min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+.gateBox { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px; width: 100%; max-width: 380px; }
+.input { width: 100%; background: var(--surface-2); border: 1.5px solid var(--border); border-radius: var(--radius-md); color: var(--text); padding: 11px 14px; font-size: 13px; font-family: var(--font); outline: none; margin-bottom: 12px; }
+.btnPrimary { width: 100%; background: var(--accent); color: #fff; border: none; padding: 12px; border-radius: var(--radius-pill); font-weight: 700; cursor: pointer; }
+
+.wrap { display: flex; min-height: 100vh; }
+.sidebar { width: 220px; flex-shrink: 0; background: var(--surface); border-right: 1px solid var(--border); padding: 20px 12px; }
+.navItem { display: block; width: 100%; text-align: left; padding: 9px 12px; border-radius: var(--radius-md); color: var(--text-faint); font-size: 12px; font-weight: 700; cursor: pointer; background: none; border: none; margin-bottom: 2px; }
+.navItemActive { background: var(--accent-light); color: var(--accent); }
+.main { flex: 1; padding: 26px; }
+.statGrid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; margin-bottom: 16px; }
+.statCard { background: var(--surface); padding: 18px; }
+.statNum { font-size: 26px; font-weight: 900; }
+.statLabel { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--text-faint); margin-top: 4px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 12px; }
+.cardHead { padding: 14px 18px; border-bottom: 1px solid var(--border); font-weight: 800; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
+.table { width: 100%; border-collapse: collapse; }
+.table th { text-align: left; padding: 10px 14px; font-size: 9px; text-transform: uppercase; color: var(--text-faint); }
+.table td { padding: 11px 14px; font-size: 12px; border-top: 1px solid var(--border); }
+.badge { padding: 3px 9px; border-radius: var(--radius-pill); font-size: 9px; font-weight: 800; }
+.btnSm { background: none; border: none; color: var(--accent); font-size: 11px; font-weight: 700; cursor: pointer; }
+.btnDanger { background: none; border: none; color: var(--error); font-size: 11px; font-weight: 700; cursor: pointer; }
+@media (max-width: 900px) { .sidebar { display: none; } .statGrid { grid-template-columns: repeat(2,1fr); } }

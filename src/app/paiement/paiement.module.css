@@ -1,0 +1,14 @@
+.wrap { max-width: 1000px; margin: 0 auto; padding: calc(var(--nav-height) + 32px) 24px 60px; }
+.title { font-size: 32px; font-weight: 900; margin-bottom: 24px; }
+.layout { display: flex; gap: 28px; align-items: flex-start; flex-wrap: wrap; }
+.main { flex: 2; min-width: 280px; }
+.aside { flex: 1; min-width: 260px; position: sticky; top: calc(var(--nav-height) + 20px); }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; margin-bottom: 16px; }
+.cardTitle { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); margin-bottom: 16px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.input { width: 100%; background: var(--surface-2); border: 1.5px solid var(--border); border-radius: var(--radius-md); color: var(--text); padding: 12px 14px; font-size: 13px; font-family: var(--font); outline: none; }
+.methods { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.methodCard { text-align: left; background: var(--surface-2); border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 14px; cursor: pointer; }
+.methodActive { border-color: var(--accent); background: var(--accent-light); }
+.btnSubmit { width: 100%; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-pill); padding: 14px; font-weight: 800; font-size: 14px; cursor: pointer; margin-top: 16px; }
+.btnSubmit:disabled { opacity: .5; }

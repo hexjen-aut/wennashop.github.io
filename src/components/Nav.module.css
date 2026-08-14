@@ -1,0 +1,29 @@
+.nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100; height: var(--nav-height);
+  background: rgba(10,10,10,.95); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border); padding: 0 20px;
+}
+.navInner {
+  max-width: 1200px; margin: 0 auto; height: 100%;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.navBtn {
+  background: none; border: none; color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: var(--radius-md);
+  transition: color .2s, background .2s; font-size: 20px; cursor: pointer;
+  position: relative; text-decoration: none;
+}
+.navBtn:hover { color: var(--accent); background: var(--accent-light); }
+.navActs { display: flex; align-items: center; gap: 4px; }
+.logo { font-family: var(--font); font-size: 22px; font-weight: 900; color: var(--text); text-decoration: none; letter-spacing: -1px; }
+.logo span { color: var(--accent); }
+.cartBadge {
+  position: absolute; top: 4px; right: 4px;
+  background: var(--accent); color: #fff;
+  font-size: 9px; font-weight: 800; width: 16px; height: 16px;
+  border-radius: 50%; display: none; align-items: center;
+  justify-content: center; font-family: var(--font);
+}
+.cartBadge.show { display: flex; }

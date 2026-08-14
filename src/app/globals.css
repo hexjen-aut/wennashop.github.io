@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  --accent:        #ff751f;
+  --accent-dark:   #cc5e18;
+  --accent-light:  rgba(255,117,31,.12);
+  --bg:            #0a0a0a;
+  --surface:       #141414;
+  --surface-2:     #1e1e1e;
+  --border:        #2a2a2a;
+  --border-accent: rgba(255,117,31,.3);
+  --text:          #ffffff;
+  --text-muted:    #a0a0a0;
+  --text-faint:    #555555;
+  --success:       #22c55e;
+  --error:         #ef4444;
+  --gold:          #f59e0b;
+  --gold-light:    rgba(245,158,11,.12);
+  --font:          'Nunito','Varela Round',system-ui,sans-serif;
+  --radius-sm:     6px;
+  --radius-md:     12px;
+  --radius-lg:     16px;
+  --radius-pill:   9999px;
+  --shadow-orange: 0 4px 24px rgba(255,117,31,.2);
+  --shadow-md:     0 4px 16px rgba(0,0,0,.5);
+  --nav-height:    64px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: rgba(255,117,31,.3); border-radius: 99px; }
+
+a { color: inherit; }
+button { font-family: var(--font); }
+
+/* Toast partagé (même style que sur toutes les anciennes pages) */
+#toast {
+  position: fixed; bottom: 28px; left: 50%;
+  transform: translateX(-50%) translateY(8px); z-index: 500;
+  background: var(--surface); border: 1.5px solid var(--border-accent);
+  border-radius: var(--radius-pill); color: var(--text);
+  padding: 10px 20px; font-size: 13px; font-weight: 700;
+  opacity: 0; pointer-events: none;
+  transition: opacity .3s, transform .3s; white-space: nowrap;
+  box-shadow: var(--shadow-orange);
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }

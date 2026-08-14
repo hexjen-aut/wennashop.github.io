@@ -1,0 +1,22 @@
+# Dépendances
+/node_modules
+
+# Fichiers générés par Next.js
+/.next/
+/out/
+
+# Variables secrètes (clés) — ne jamais partager ce fichier
+.env.local
+.env*.local
+
+# Fichiers système
+.DS_Store
+*.pem
+
+# Journaux
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Vercel
+.vercel

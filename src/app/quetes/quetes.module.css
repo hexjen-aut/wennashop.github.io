@@ -1,0 +1,17 @@
+.hero { background: var(--surface); border-bottom: 1px solid var(--border); padding: calc(var(--nav-height) + 40px) 40px 40px; text-align: center; }
+.title { font-size: clamp(28px,5vw,44px); font-weight: 900; margin-bottom: 12px; }
+.title span { color: var(--accent); }
+.sub { font-size: 14px; color: var(--text-muted); max-width: 480px; margin: 0 auto 24px; }
+.btnPrimary { background: var(--accent); color: #fff; border: none; padding: 13px 24px; border-radius: var(--radius-pill); font-weight: 700; cursor: pointer; }
+.list { max-width: 800px; margin: 0 auto; padding: 30px 20px; display: flex; flex-direction: column; gap: 8px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: var(--radius-lg); padding: 18px 20px; display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; align-items: center; }
+.cardTitle { font-size: 16px; font-weight: 800; margin-bottom: 6px; }
+.cardDesc { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+.meta { font-size: 11px; color: var(--text-faint); }
+.rewardBox { background: var(--gold-light); border: 1px solid rgba(245,158,11,.3); border-radius: var(--radius-md); padding: 8px 16px; text-align: right; }
+.rewardAmount { font-size: 18px; font-weight: 900; color: var(--gold); }
+.modalOv { position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 500; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.modalBox { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); width: 100%; max-width: 480px; max-height: 88vh; overflow-y: auto; }
+.modalHead { display: flex; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); font-weight: 800; }
+.modalBody { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+.input { width: 100%; background: var(--surface-2); border: 1.5px solid var(--border); border-radius: var(--radius-md); color: var(--text); padding: 10px 12px; font-size: 13px; font-family: var(--font); outline: none; }
