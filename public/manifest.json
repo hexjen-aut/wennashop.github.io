@@ -1,0 +1,53 @@
+{
+  "name": "WennaShop",
+  "short_name": "WennaShop",
+  "description": "Marketplace Gabon ↔ Maroc — Produits authentiques",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#ff751f",
+  "orientation": "portrait-primary",
+  "lang": "fr",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "categories": ["shopping", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Boutique",
+      "short_name": "Boutique",
+      "url": "/boutique",
+      "description": "Parcourir les produits",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Mon panier",
+      "short_name": "Panier",
+      "url": "/panier",
+      "description": "Voir mon panier",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Espace Vendeur",
+      "short_name": "Vendeur",
+      "url": "/vendeur",
+      "description": "Gérer ma boutique",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Administration",
+      "short_name": "Admin",
+      "url": "/admin",
+      "description": "Tableau de bord admin",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

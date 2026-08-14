@@ -4,11 +4,24 @@ import { CartProvider } from '@/context/CartContext';
 export const metadata = {
   title: 'WennaShop — Marketplace Gabon ↔ Maroc',
   description: "WennaShop — La marketplace qui connecte le Gabon et le Maroc. Achetez et vendez des produits authentiques.",
+  manifest: '/manifest.json',
+  icons: {
+    icon: '/icon-192.png',
+    apple: '/icon-192.png',
+  },
+};
+
+export const viewport = {
+  themeColor: '#ff751f',
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="fr">
+      <head>
+        {/* Police d'icônes utilisée dans tout le site (panier, recherche, menu...) */}
+        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css" />
+      </head>
       <body>
         <CartProvider>
           {children}
