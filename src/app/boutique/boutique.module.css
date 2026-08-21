@@ -199,7 +199,7 @@
   .activeFilters { padding: 0 16px 8px; }
   .productsArea { padding: 12px 8px; }
   .prodGrid { grid-template-columns: repeat(2,1fr); }
-  body { padding-bottom: 72px; }
+  :global(body) { padding-bottom: 72px; }
   .bnav { display: block; }
   .floatPanel { bottom: 88px; }
 }
