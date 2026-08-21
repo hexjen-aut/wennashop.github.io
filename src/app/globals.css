@@ -1,5 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap');
-
 :root {
   --accent:        #ff751f;
   --accent-dark:   #cc5e18;
@@ -25,7 +24,6 @@
   --shadow-md:     0 4px 16px rgba(0,0,0,.5);
   --nav-height:    64px;
 }
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
@@ -38,10 +36,8 @@ body {
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--surface); }
 ::-webkit-scrollbar-thumb { background: rgba(255,117,31,.3); border-radius: 99px; }
-
 a { color: inherit; }
 button { font-family: var(--font); }
-
 /* Toast partagé (même style que sur toutes les anciennes pages) */
 #toast {
   position: fixed; bottom: 28px; left: 50%;
@@ -54,3 +50,8 @@ button { font-family: var(--font); }
   box-shadow: var(--shadow-orange);
 }
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Padding bas mobile pour laisser la place à la bottom nav (boutique) */
+@media (max-width: 768px) {
+  body { padding-bottom: 72px; }
+}
