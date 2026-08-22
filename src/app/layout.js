@@ -20,7 +20,7 @@ export default function RootLayout({ children }) {
     <html lang="fr">
       <head>
         {/* Police d'icônes utilisée dans tout le site (panier, recherche, menu...) */}
-        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css" />
+        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
       </head>
       <body>
         <CartProvider>
