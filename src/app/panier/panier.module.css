@@ -1,14 +1,18 @@
-.wrap { max-width: 1000px; margin: 0 auto; padding: calc(var(--nav-height) + 32px) 24px 60px; }
-.title { font-size: 32px; font-weight: 900; margin-bottom: 24px; }
-.layout { display: flex; gap: 28px; align-items: flex-start; flex-wrap: wrap; }
-.main { flex: 2; min-width: 280px; }
-.aside { flex: 1; min-width: 260px; position: sticky; top: calc(var(--nav-height) + 20px); }
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; margin-bottom: 16px; }
-.cardTitle { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); margin-bottom: 16px; }
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.input { width: 100%; background: var(--surface-2); border: 1.5px solid var(--border); border-radius: var(--radius-md); color: var(--text); padding: 12px 14px; font-size: 13px; font-family: var(--font); outline: none; }
-.methods { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.methodCard { text-align: left; background: var(--surface-2); border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 14px; cursor: pointer; }
-.methodActive { border-color: var(--accent); background: var(--accent-light); }
-.btnSubmit { width: 100%; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-pill); padding: 14px; font-weight: 800; font-size: 14px; cursor: pointer; margin-top: 16px; }
-.btnSubmit:disabled { opacity: .5; }
+.wrap { max-width: 900px; margin: 0 auto; padding: calc(var(--nav-height) + 32px) 24px 60px; }
+.title { font-size: clamp(28px,4vw,40px); font-weight: 900; margin-bottom: 24px; }
+.empty { text-align: center; padding: 80px 24px; }
+.emptyTitle { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+.btnPrimary { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: #fff; padding: 12px 24px; border-radius: var(--radius-pill); font-weight: 700; text-decoration: none; margin-top: 16px; }
+.layout { display: flex; gap: 32px; align-items: flex-start; flex-wrap: wrap; }
+.itemsCol { flex: 2; min-width: 280px; }
+.summaryCol { flex: 1; min-width: 260px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; position: sticky; top: calc(var(--nav-height) + 20px); }
+.row { display: flex; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--border); }
+.img { width: 80px; height: 96px; object-fit: cover; border-radius: var(--radius-md); background: var(--surface-2); flex-shrink: 0; }
+.info { flex: 1; }
+.name { font-weight: 800; margin-bottom: 6px; }
+.price { color: var(--accent); font-weight: 900; }
+.qtyRow { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.qtyBtn { width: 30px; height: 30px; border: 1px solid var(--border); background: var(--surface-2); border-radius: 6px; color: var(--text); cursor: pointer; }
+.removeBtn { margin-left: auto; background: none; border: none; color: var(--text-faint); cursor: pointer; font-size: 12px; }
+.totalRow { display: flex; justify-content: space-between; font-size: 18px; font-weight: 900; padding: 16px 0; border-top: 1px solid var(--border); margin-top: 8px; }
+.checkoutBtn { width: 100%; height: 50px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-pill); font-weight: 800; cursor: pointer; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; }
