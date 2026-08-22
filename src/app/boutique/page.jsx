@@ -122,11 +122,21 @@ export default function BoutiquePage() {
   }, [catId, sort, page, countries, stockOnly, priceMin, priceMax, searchTerm, displayCurrency]);
 
   // ── Boutiques boostées ──
+  // Une boutique est "boostée" si elle a un boost actif (table boosts,
+  // type='shop', status='active', pas encore expiré) — il n'y a pas de
+  // colonne is_boosted directement sur shops.
   useEffect(() => {
     (async () => {
       const sb = getSupabase();
-      const { data } = await sb.from('shops').select('id,slug,name,banner_url,bio').eq('is_boosted', true).limit(8);
-      setBoostedShops(data || []);
+      const { data } = await sb.from('boosts')
+        .select('shop_id, expires_at, shops(id,slug,name,banner_url,bio)')
+        .eq('type', 'shop')
+        .eq('status', 'active')
+        .gt('expires_at', new Date().toISOString())
+        .order('expires_at', { ascending: false })
+        .limit(8);
+      const shops = (data || []).map((b) => b.shops).filter(Boolean);
+      setBoostedShops(shops);
     })();
   }, []);
 
@@ -225,9 +235,11 @@ export default function BoutiquePage() {
       <Nav onOpenCart={() => setCartOpen(true)} />
       <CartSidebar open={cartOpen} onClose={() => setCartOpen(false)} />
 
-      {siteConfig.boutique_banner_enabled === 'true' && siteConfig.boutique_banner_text && (
+      {siteConfig.boutique_banner_enabled === 'true' && siteConfig.boutique_banner_url && (
         <div className={styles.promoBanner}>
-          <a href={siteConfig.boutique_banner_link || '#'}>{siteConfig.boutique_banner_text}</a>
+          <a href={siteConfig.boutique_banner_link || '#'}>
+            <img src={siteConfig.boutique_banner_url} alt="Promotion" style={{ maxHeight: 32, verticalAlign: 'middle' }} />
+          </a>
         </div>
       )}
 
@@ -285,7 +297,7 @@ export default function BoutiquePage() {
           ))}
         </div>
         <div className={styles.toolbarRight}>
-          <button className={styles.hdBtn} onClick={() => setSearchOpen(true)} aria-label="Rechercher">
+          <button className={styles.hdBtn} onClick={() => setSearchOpen(true)} aria-label="Rechercher" style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 18, display: 'flex' }}>
             <i className="ph ph-magnifying-glass" />
           </button>
           <button className={styles.btnBoostToolbar} onClick={() => setBoostPanelOpen(true)}>Boostées</button>
