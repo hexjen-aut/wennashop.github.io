@@ -28,8 +28,24 @@ function PaiementContent() {
       const sb = getSupabase();
       const { data: { user } } = await sb.auth.getUser();
       if (!user) { setError('Session expirée.'); setLoading(false); return; }
+
+      // Profil — auth_id d'abord, email en fallback (aligné sur panier/vendeur)
+      let profile = null;
+      const { data: byAuth } = await sb.from('users').select('id').eq('auth_id', user.id).maybeSingle();
+      if (byAuth) {
+        profile = byAuth;
+      } else {
+        const { data: byEmail } = await sb.from('users').select('id').ilike('email', user.email).maybeSingle();
+        if (byEmail) {
+          profile = byEmail;
+          await sb.from('users').update({ auth_id: user.id }).eq('id', byEmail.id);
+        }
+      }
+      if (!profile) { setError('Profil introuvable. Contacte le support.'); setLoading(false); return; }
+
       const { data: o } = await sb.from('orders').select('*').eq('id', orderId).single();
       if (!o) { setError('Commande introuvable.'); setLoading(false); return; }
+      if (o.user_id !== profile.id) { setError("Cette commande ne t'appartient pas."); setLoading(false); return; }
       if (['processing', 'shipped', 'delivered'].includes(o.status)) { setSuccess(true); setLoading(false); return; }
       setOrder(o);
       const { data: it } = await sb.from('order_items').select('id,quantity,unit_price,products(name,image_url)').eq('order_id', orderId);
@@ -42,13 +58,16 @@ function PaiementContent() {
     if (!form.first || !form.last || !form.address || !form.city) { alert('Complète tous les champs requis.'); return; }
     setSending(true);
     const sb = getSupabase();
+    const { data: { user } } = await sb.auth.getUser();
+    let row = null;
+    const { data: byAuth } = await sb.from('users').select('id').eq('auth_id', user.id).maybeSingle();
+    row = byAuth || (await sb.from('users').select('id').ilike('email', user.email).maybeSingle()).data;
+    if (row?.id !== order.user_id) { alert("Cette commande ne t'appartient pas."); setSending(false); return; }
     await sb.from('orders').update({
       shipping_name: `${form.first} ${form.last}`, shipping_address: form.address, shipping_city: form.city,
       shipping_country: form.country, notes: form.notes || null, status: 'processing', updated_at: new Date().toISOString(),
     }).eq('id', orderId);
     await sb.from('payments').insert({ order_id: orderId, amount: order.total_amount, currency: order.currency || 'MAD', method, status: 'pending', type: 'order_payment' });
-    const { data: { user } } = await sb.auth.getUser();
-    const { data: row } = await sb.from('users').select('id').eq('auth_id', user.id).single();
     if (row) await sb.from('cart_items').delete().eq('user_id', row.id);
     setSending(false);
     setSuccess(true);
@@ -104,6 +123,13 @@ function PaiementContent() {
                   <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Attijari · CIH · BCP</div>
                 </button>
               </div>
+              {method === 'virement' && (
+                <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, padding: '12px 14px', marginTop: 14, fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+                  <p style={{ marginBottom: 6 }}>Effectue un virement à :</p>
+                  <p style={{ fontWeight: 700, letterSpacing: '.5px', marginBottom: 4, color: 'var(--text)' }}>RIB : 0000 0000 0000 0000 0000 0000 000</p>
+                  <p>Banque : Attijari Maroc · SWIFT : BCMAMAMC</p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -116,6 +142,12 @@ function PaiementContent() {
                   <span style={{ fontWeight: 700, color: 'var(--accent)' }}>{fmt(it.unit_price * it.quantity, order?.currency)}</span>
                 </div>
               ))}
+              {order?.discount_pct > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, padding: '8px 0', color: 'var(--success)' }}>
+                  <span>Remise ({order.promo_code})</span>
+                  <span>−{fmt((order.subtotal || order.total_amount) * (order.discount_pct / 100), order.currency)}</span>
+                </div>
+              )}
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 18, fontWeight: 900, marginTop: 14 }}>
                 <span>Total</span><span style={{ color: 'var(--accent)' }}>{fmt(order?.total_amount, order?.currency)}</span>
               </div>
