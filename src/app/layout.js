@@ -2,8 +2,8 @@ import './globals.css';
 import { CartProvider } from '@/context/CartContext';
 
 export const metadata = {
-  title: 'WennaShop — Marketplace Gabon ↔ Maroc',
-  description: "WennaShop — La marketplace qui connecte le Gabon et le Maroc. Achetez et vendez des produits authentiques.",
+  title: 'WennaShop — Marketplace africain',
+  description: "WennaShop — La marketplace qui connecte l'Afrique. Achetez et vendez des produits authentiques.",
   manifest: '/manifest.json',
   icons: {
     icon: '/icon-192.png',
