@@ -74,6 +74,9 @@
 .viewBtn { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: transparent; color: var(--text-muted); font-size: 13px; font-weight: 700; cursor: pointer; }
 .viewBtnActive { background: var(--accent); border-color: var(--accent); color: #fff; }
 
+/* ── BOUTON RECHERCHE (toolbar) ── */
+.hdBtn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; display: flex; }
+
 /* ── SHOP LAYOUT / SIDEBAR ── */
 .shopLayout { display: flex; }
 .sidebar { width: 220px; flex-shrink: 0; border-right: 1px solid var(--border); padding: 24px 20px; position: sticky; top: calc(var(--nav-height) + 28px); align-self: flex-start; max-height: calc(100vh - 120px); overflow-y: auto; }
@@ -89,7 +92,6 @@
 .shippingInfo { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 12px; font-size: 12px; font-weight: 500; color: var(--text-muted); line-height: 1.7; }
 .btnReset { width: 100%; padding: 9px; font-size: 12px; font-weight: 700; background: transparent; border: 1.5px solid var(--border); border-radius: var(--radius-pill); color: var(--text-muted); font-family: var(--font); margin-top: 6px; cursor: pointer; }
 .sidebarQueteLink { display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--gold); font-size: 12px; font-weight: 700; text-decoration: none; padding: 10px; border: 1px solid rgba(245,158,11,.25); border-radius: var(--radius-md); background: var(--gold-light); }
-.productsArea { flex: 1; padding: 20px 24px; }
 @media (max-width: 1024px) { .sidebar { display: none; } }
 
 /* ── CATEGORY PANEL ── */
@@ -160,6 +162,7 @@
 .srchResultMeta { font-size: 11px; font-weight: 500; color: var(--text-faint); margin-top: 2px; }
 .srchResultPrice { font-size: 13px; font-weight: 800; color: var(--accent); flex-shrink: 0; }
 .srchLoading, .srchEmpty { padding: 20px; text-align: center; font-size: 12px; font-weight: 600; color: var(--text-faint); }
+.srchSuggestions { margin-top: 8px; }
 .srchSugTitle { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-faint); margin: 28px 0 12px; }
 .srchSugTags { display: flex; flex-wrap: wrap; gap: 6px; }
 .srchSugTag { display: inline-flex; align-items: center; border: 1.5px solid var(--border); border-radius: var(--radius-pill); background: transparent; color: var(--text-muted); padding: 6px 14px; font-size: 12px; font-weight: 600; font-family: var(--font); cursor: pointer; }
@@ -176,6 +179,8 @@
 .floatQuetesIcon { background: var(--gold-light); border: 1px solid rgba(245,158,11,.3); color: var(--gold); }
 .floatBoostIcon { background: var(--accent-light); border: 1px solid var(--border-accent); color: var(--accent); }
 .floatTitle { font-size: 12px; font-weight: 800; letter-spacing: .02em; }
+.floatQuetes .floatTitle { color: var(--gold); }
+.floatBoost .floatTitle { color: var(--accent); }
 .floatSub { font-size: 11px; font-weight: 500; color: var(--text-faint); margin-top: 1px; }
 .floatBody { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
 .floatItem { display: flex; align-items: center; gap: 8px; padding: 6px; border-radius: var(--radius-md); text-decoration: none; color: inherit; }
@@ -184,7 +189,7 @@
 .floatItemName { font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .floatItemMeta { font-size: 10px; font-weight: 600; color: var(--text-faint); }
 .floatCtaQuetes { display: flex; align-items: center; justify-content: center; gap: 6px; border-radius: var(--radius-pill); padding: 8px; font-size: 11px; font-weight: 700; text-decoration: none; background: var(--gold-light); border: 1px solid rgba(245,158,11,.3); color: var(--gold); }
-.floatCtaBoost { display: flex; align-items: center; justify-content: center; gap: 6px; border-radius: var(--radius-pill); padding: 8px; font-size: 11px; font-weight: 700; text-decoration: none; background: var(--accent-light); border: 1px solid var(--border-accent); color: var(--accent); }
+.floatCtaBoost { display: flex; align-items: center; justify-content: center; gap: 6px; border-radius: var(--radius-pill); padding: 8px; font-size: 11px; font-weight: 700; text-decoration: none; background: var(--accent-light); border: 1px solid var(--border-accent); color: var(--accent); cursor: pointer; width: 100%; }
 
 /* ── BOTTOM NAV (mobile) ── */
 .bnav { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; background: rgba(10,10,10,.97); border-top: 1px solid var(--border); padding: 10px 0 20px; }
@@ -193,14 +198,30 @@
 .bnavItemActive { color: var(--accent); }
 .bnavItemGold { color: var(--gold); }
 
+/* ── ÉCRAN DE MAINTENANCE ── */
+.maintenanceScreen { min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; text-align: center; padding: 40px; background: var(--bg); }
+.logo { font-family: var(--font); font-size: 22px; font-weight: 900; color: var(--text); letter-spacing: -1px; }
+.maintTitle { font-size: 24px; font-weight: 800; color: var(--text-muted); }
+.maintSub { font-size: 13px; color: var(--text-faint); max-width: 360px; line-height: 1.8; }
+
+/* ── VARIANTES DE GRILLE (bascule grille/liste) ── */
+.cols3 { grid-template-columns: repeat(4,1fr); }
+.cols4 { grid-template-columns: repeat(6,1fr); }
+.listView { grid-template-columns: 1fr !important; gap: 6px; }
+.listView .prodCard { display: flex; flex-direction: row; border-radius: var(--radius-md); }
+.listView .prodImg { aspect-ratio: 1/1; width: 80px; flex-shrink: 0; }
+.listView .prodInfo { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 12px 16px; }
+.listView .prodAdd { position: static; opacity: 1; transform: none; margin-top: 8px; align-self: flex-start; }
+
 @media (max-width: 768px) {
   .pageHero { padding: calc(var(--nav-height) + 40px) 20px 20px; }
   .toolbar { padding: 10px 16px; }
   .activeFilters { padding: 0 16px 8px; }
   .productsArea { padding: 12px 8px; }
-  .prodGrid { grid-template-columns: repeat(2,1fr); }
+  .prodGrid, .cols3, .cols4 { grid-template-columns: repeat(2,1fr); }
   .bnav { display: block; }
   .floatPanel { bottom: 88px; }
+  body { padding-bottom: 72px; }
 }
 @media (max-width: 640px) {
   .floatBoost, .floatQuetes { left: 16px; right: 16px; width: auto; }
