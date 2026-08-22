@@ -74,9 +74,6 @@
 .viewBtn { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: transparent; color: var(--text-muted); font-size: 13px; font-weight: 700; cursor: pointer; }
 .viewBtnActive { background: var(--accent); border-color: var(--accent); color: #fff; }
 
-/* ── BOUTON RECHERCHE (toolbar) ── */
-.hdBtn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; display: flex; }
-
 /* ── SHOP LAYOUT / SIDEBAR ── */
 .shopLayout { display: flex; }
 .sidebar { width: 220px; flex-shrink: 0; border-right: 1px solid var(--border); padding: 24px 20px; position: sticky; top: calc(var(--nav-height) + 28px); align-self: flex-start; max-height: calc(100vh - 120px); overflow-y: auto; }
@@ -162,7 +159,6 @@
 .srchResultMeta { font-size: 11px; font-weight: 500; color: var(--text-faint); margin-top: 2px; }
 .srchResultPrice { font-size: 13px; font-weight: 800; color: var(--accent); flex-shrink: 0; }
 .srchLoading, .srchEmpty { padding: 20px; text-align: center; font-size: 12px; font-weight: 600; color: var(--text-faint); }
-.srchSuggestions { margin-top: 8px; }
 .srchSugTitle { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-faint); margin: 28px 0 12px; }
 .srchSugTags { display: flex; flex-wrap: wrap; gap: 6px; }
 .srchSugTag { display: inline-flex; align-items: center; border: 1.5px solid var(--border); border-radius: var(--radius-pill); background: transparent; color: var(--text-muted); padding: 6px 14px; font-size: 12px; font-weight: 600; font-family: var(--font); cursor: pointer; }
@@ -221,7 +217,6 @@
   .prodGrid, .cols3, .cols4 { grid-template-columns: repeat(2,1fr); }
   .bnav { display: block; }
   .floatPanel { bottom: 88px; }
-  body { padding-bottom: 72px; }
 }
 @media (max-width: 640px) {
   .floatBoost, .floatQuetes { left: 16px; right: 16px; width: auto; }
