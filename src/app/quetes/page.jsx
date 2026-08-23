@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { getSupabase } from '@/lib/supabase';
 import Nav from '@/components/Nav';
 import styles from './quetes.module.css';
@@ -12,9 +13,10 @@ export default function QuetesPage() {
   const [quests, setQuests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const [isHunter, setIsHunter] = useState(false);
   const [form, setForm] = useState({ title: '', description: '', budget: '', reward: '', country: 'Les deux' });
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); checkHunter(); }, []);
 
   async function load() {
     const sb = getSupabase();
@@ -23,6 +25,16 @@ export default function QuetesPage() {
       .eq('status', 'open').order('created_at', { ascending: false });
     setQuests(data || []);
     setLoading(false);
+  }
+
+  // Détecte si le visiteur connecté a déjà un statut de chasseur, pour
+  // adapter le bouton ("Devenir chasseur" vs "Mon espace chasseur").
+  async function checkHunter() {
+    const sb = getSupabase();
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) return;
+    const { data: u } = await sb.from('users').select('hunter_status').eq('auth_id', session.user.id).maybeSingle();
+    setIsHunter(!!u?.hunter_status);
   }
 
   async function submit() {
@@ -50,7 +62,12 @@ export default function QuetesPage() {
       <section className={styles.hero}>
         <h1 className={styles.title}>Vous cherchez, <span>on trouve.</span></h1>
         <p className={styles.sub}>Publiez une quête pour un produit introuvable. Des chasseurs du Gabon et du Maroc le dénichent pour vous.</p>
-        <button className={styles.btnPrimary} onClick={() => setModalOpen(true)}>Poster une quête</button>
+        <div className={styles.heroActions}>
+          <button className={styles.btnPrimary} onClick={() => setModalOpen(true)}>Poster une quête</button>
+          <Link href={isHunter ? '/chasseur' : '/devenir-chasseur'} className={styles.btnGhost}>
+            {isHunter ? 'Mon espace chasseur' : 'Devenir chasseur'}
+          </Link>
+        </div>
       </section>
 
       <div className={styles.list}>
@@ -65,9 +82,12 @@ export default function QuetesPage() {
               {q.description && <div className={styles.cardDesc}>{q.description}</div>}
               <div className={styles.meta}>{daysLeft(q.expires_at)}j restants · Budget {fmt(q.product_budget)} {q.currency} · {q.country_target}</div>
             </div>
-            <div className={styles.rewardBox}>
-              <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--gold)', textTransform: 'uppercase' }}>Récompense</div>
-              <div className={styles.rewardAmount}>{fmt(q.reward_amount)} {q.currency}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div className={styles.rewardBox}>
+                <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--gold)', textTransform: 'uppercase' }}>Récompense</div>
+                <div className={styles.rewardAmount}>{fmt(q.reward_amount)} {q.currency}</div>
+              </div>
+              <Link href="/chasseur" className={styles.btnChase}>Je chasse</Link>
             </div>
           </div>
         ))}
@@ -88,6 +108,10 @@ export default function QuetesPage() {
                 <option value="Les deux">Les deux</option>
                 <option value="Gabon">Gabon</option>
                 <option value="Maroc">Maroc</option>
+                <option value="Maroc">Cote d'ivoire</option>
+                <option value="Maroc">Senegal</option>
+                <option value="Maroc">Benin</option>
+                <option value="Maroc">Mali</option>
               </select>
               <button className={styles.btnPrimary} onClick={submit}>Publier la quête</button>
             </div>
