@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import Nav from '@/components/Nav';
 import CartSidebar from '@/components/CartSidebar';
@@ -10,9 +11,24 @@ function formatPrice(amount, currency = 'MAD') {
   catch { return `${amount} ${currency}`; }
 }
 export default function PanierPage() {
-  const { items, subtotal, updateQuantity, remove, loading } = useCart();
+  const { items, subtotal, updateQuantity, remove, loading, createOrder } = useCart();
   const [cartOpen, setCartOpen] = useState(false);
+  const [checkingOut, setCheckingOut] = useState(false);
+  const router = useRouter();
   const currency = items[0]?.currency || 'MAD';
+
+  async function handleCheckout() {
+    setCheckingOut(true);
+    const res = await createOrder();
+    setCheckingOut(false);
+    if (!res.success) {
+      if (res.error === 'not_authenticated') { router.push('/connexion'); return; }
+      if (res.error === 'out_of_stock') { alert(`Stock insuffisant pour "${res.product}".`); return; }
+      alert("Impossible de créer la commande. Réessaie.");
+      return;
+    }
+    router.push(`/paiement?order_id=${res.orderId}`);
+  }
   return (
     <>
       <Nav onOpenCart={() => setCartOpen(true)} />
@@ -50,9 +66,9 @@ export default function PanierPage() {
                 <span>Total</span>
                 <span style={{ color: 'var(--accent)' }}>{formatPrice(subtotal, currency)}</span>
               </div>
-              <Link href="/paiement" className={styles.checkoutBtn}>
-                <i className="ph ph-lock-simple" /> Passer au paiement
-              </Link>
+              <button onClick={handleCheckout} disabled={checkingOut} className={styles.checkoutBtn}>
+                <i className="ph ph-lock-simple" /> {checkingOut ? 'Création…' : 'Passer au paiement'}
+              </button>
             </div>
           </div>
         )}
