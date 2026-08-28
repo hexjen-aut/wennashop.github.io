@@ -216,7 +216,10 @@ export default function ConnexionPage() {
     const { data: authData, error: authErr } = await sb.auth.signUp({
       email: email.trim(),
       password: pwd,
-      options: { data: { full_name: `${prenom} ${nom}`, first_name: prenom, last_name: nom, country: pays, role, gender: finalGenre } },
+      options: {
+        data: { full_name: `${prenom} ${nom}`, first_name: prenom, last_name: nom, country: pays, role, gender: finalGenre },
+        emailRedirectTo: window.location.origin + '/connexion',
+      },
     });
 
     if (authErr) {
