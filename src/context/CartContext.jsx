@@ -141,8 +141,43 @@ export function CartProvider({ children }) {
   const count = items.reduce((s, i) => s + (i.quantity || 1), 0);
   const subtotal = items.reduce((s, i) => s + (i.price || 0) * (i.quantity || 1), 0);
 
+  // ── Création de commande à partir du panier ─────────────────────
+  // Transforme les cart_items du user connecté en une ligne `orders`
+  // + ses `order_items`, et retourne l'order_id pour la page /paiement.
+  // Nécessite un compte (pas de panier invité) — les prix sont relus
+  // en base au moment de la commande, jamais depuis le state client.
+  const createOrder = useCallback(async () => {
+    if (!userId) return { success: false, error: 'not_authenticated' };
+    const sb = getSupabase();
+
+    const { data: cartRows, error: cartErr } = await sb.from('cart_items')
+      .select('quantity, product_id, products(price, currency, stock, name)')
+      .eq('user_id', userId);
+    if (cartErr) return { success: false, error: cartErr.message };
+    if (!cartRows || cartRows.length === 0) return { success: false, error: 'empty_cart' };
+
+    const outOfStock = cartRows.find((r) => r.products?.stock != null && r.products.stock < r.quantity);
+    if (outOfStock) return { success: false, error: 'out_of_stock', product: outOfStock.products?.name };
+
+    const currency = cartRows[0]?.products?.currency || 'MAD';
+    const subtotalCalc = cartRows.reduce((s, r) => s + (r.products?.price || 0) * r.quantity, 0);
+
+    const { data: order, error: orderErr } = await sb.from('orders')
+      .insert({ user_id: userId, status: 'pending', subtotal: subtotalCalc, total_amount: subtotalCalc, currency })
+      .select('id').single();
+    if (orderErr || !order) return { success: false, error: orderErr?.message || 'order_create_failed' };
+
+    const itemsPayload = cartRows.map((r) => ({
+      order_id: order.id, product_id: r.product_id, quantity: r.quantity, unit_price: r.products?.price || 0,
+    }));
+    const { error: itemsErr } = await sb.from('order_items').insert(itemsPayload);
+    if (itemsErr) return { success: false, error: itemsErr.message };
+
+    return { success: true, orderId: order.id };
+  }, [userId]);
+
   return (
-    <CartContext.Provider value={{ items, count, subtotal, loading, add, updateQuantity, remove, clear, refresh }}>
+    <CartContext.Provider value={{ items, count, subtotal, loading, add, updateQuantity, remove, clear, refresh, createOrder }}>
       {children}
     </CartContext.Provider>
   );
