@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import styles from './CartSidebar.module.css';
 
@@ -10,8 +12,24 @@ function formatPrice(amount, currency = 'MAD') {
 }
 
 export default function CartSidebar({ open, onClose }) {
-  const { items, count, subtotal, updateQuantity, remove } = useCart();
+  const { items, count, subtotal, updateQuantity, remove, createOrder } = useCart();
+  const [checkingOut, setCheckingOut] = useState(false);
+  const router = useRouter();
   const currency = items[0]?.currency || 'MAD';
+
+  async function handleCheckout() {
+    setCheckingOut(true);
+    const res = await createOrder();
+    setCheckingOut(false);
+    if (!res.success) {
+      if (res.error === 'not_authenticated') { router.push('/connexion'); return; }
+      if (res.error === 'out_of_stock') { alert(`Stock insuffisant pour "${res.product}".`); return; }
+      alert("Impossible de créer la commande. Réessaie.");
+      return;
+    }
+    onClose?.();
+    router.push(`/paiement?order_id=${res.orderId}`);
+  }
 
   return (
     <>
@@ -56,7 +74,7 @@ export default function CartSidebar({ open, onClose }) {
             <div className={styles.summaryRow}><span>Sous-total</span><span>{formatPrice(subtotal, currency)}</span></div>
             <div className={styles.summaryRow} style={{ fontSize: 11, color: 'var(--text-faint)' }}>Livraison calculée à la commande</div>
             <div className={styles.totalRow}><span>Total</span><span className={styles.totalAmount}>{formatPrice(subtotal, currency)}</span></div>
-            <Link href="/paiement" className={styles.checkout}><i className="ph ph-lock-simple" style={{ fontSize: 16 }} /> Commander</Link>
+            <button onClick={handleCheckout} disabled={checkingOut} className={styles.checkout}><i className="ph ph-lock-simple" style={{ fontSize: 16 }} /> {checkingOut ? 'Création…' : 'Commander'}</button>
             <Link href="/panier" className={styles.viewCart}>Voir le panier complet</Link>
           </div>
         )}
