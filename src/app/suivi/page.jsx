@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
 import Nav from '@/components/Nav';
@@ -76,7 +76,7 @@ async function fetchOrder(sb, identifier, userId) {
   return order;
 }
 
-export default function SuiviPage() {
+function SuiviContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [query, setQuery] = useState('');
@@ -350,5 +350,13 @@ export default function SuiviPage() {
         )}
       </div>
     </>
+  );
+}
+
+export default function SuiviPage() {
+  return (
+    <Suspense fallback={null}>
+      <SuiviContent />
+    </Suspense>
   );
 }
