@@ -1,0 +1,138 @@
+From 1bd59a494c1f9849e4c82b04cfd335b372917c7c Mon Sep 17 00:00:00 2001
+From: Wenna Assistant <assistant@wennashop.local>
+Date: Sat, 5 Sep 2026 17:50:15 +0000
+Subject: [PATCH] =?UTF-8?q?S=C3=A9curit=C3=A9=20paiements:=20retrait=20du?=
+ =?UTF-8?q?=20fallback=20Supabase=20cod=C3=A9=20en=20dur=20+=20idempotence?=
+ =?UTF-8?q?=20commande/paiement?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ src/app/paiement/page.jsx   |  6 ++++-
+ src/context/CartContext.jsx | 44 +++++++++++++++++++++++++++++++++++--
+ src/lib/supabase.js         | 15 +++++++++----
+ 3 files changed, 58 insertions(+), 7 deletions(-)
+
+diff --git a/src/app/paiement/page.jsx b/src/app/paiement/page.jsx
+index a0f15a1..d1da242 100644
+--- a/src/app/paiement/page.jsx
++++ b/src/app/paiement/page.jsx
+@@ -67,7 +67,11 @@ function PaiementContent() {
+       shipping_name: `${form.first} ${form.last}`, shipping_address: form.address, shipping_city: form.city,
+       shipping_country: form.country, notes: form.notes || null, status: 'processing', updated_at: new Date().toISOString(),
+     }).eq('id', orderId);
+-    await sb.from('payments').insert({ order_id: orderId, amount: order.total_amount, currency: order.currency || 'MAD', method, status: 'pending', type: 'order_payment' });
++    // Un seul paiement 'order_payment' par commande (contrainte unique en base).
++    // Si ce paiement existe déjà (double clic, nouvelle tentative réseau),
++    // on continue normalement plutôt que d'afficher une erreur.
++    const { error: payErr } = await sb.from('payments').insert({ order_id: orderId, amount: order.total_amount, currency: order.currency || 'MAD', method, status: 'pending', type: 'order_payment' });
++    if (payErr && payErr.code !== '23505') { alert('Erreur lors de l\'enregistrement du paiement : ' + payErr.message); setSending(false); return; }
+     if (row) await sb.from('cart_items').delete().eq('user_id', row.id);
+     setSending(false);
+     setSuccess(true);
+diff --git a/src/context/CartContext.jsx b/src/context/CartContext.jsx
+index a68b276..7fc09cd 100644
+--- a/src/context/CartContext.jsx
++++ b/src/context/CartContext.jsx
+@@ -5,6 +5,24 @@ import { getSupabase } from '@/lib/supabase';
+ 
+ const CartContext = createContext(null);
+ const LOCAL_KEY = 'wenna_cart_guest';
++const CHECKOUT_KEY = 'wenna_checkout_idempotency_key';
++
++// ── Clé d'idempotence de commande ───────────────────────────────────
++// Générée une seule fois au début d'une tentative de paiement, réutilisée
++// tant que la commande n'a pas abouti (double-clic, coupure réseau, retry).
++// Effacée dès que la commande est créée avec succès.
++function getOrCreateIdempotencyKey() {
++  if (typeof window === 'undefined') return null;
++  let key = sessionStorage.getItem(CHECKOUT_KEY);
++  if (!key) {
++    key = (crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`);
++    sessionStorage.setItem(CHECKOUT_KEY, key);
++  }
++  return key;
++}
++function clearIdempotencyKey() {
++  try { sessionStorage.removeItem(CHECKOUT_KEY); } catch {}
++}
+ 
+ // ── Panier local (mode invité / hors-ligne) ─────────────────────────
+ // Le navigateur garde le panier même sans connexion internet.
+@@ -149,6 +167,16 @@ export function CartProvider({ children }) {
+   const createOrder = useCallback(async () => {
+     if (!userId) return { success: false, error: 'not_authenticated' };
+     const sb = getSupabase();
++    const idempotencyKey = getOrCreateIdempotencyKey();
++
++    // Si une tentative précédente avec la même clé a déjà abouti (retry après
++    // coupure réseau, double clic...), on renvoie cette commande au lieu d'en
++    // recréer une deuxième.
++    if (idempotencyKey) {
++      const { data: existing } = await sb.from('orders')
++        .select('id').eq('user_id', userId).eq('idempotency_key', idempotencyKey).maybeSingle();
++      if (existing) { clearIdempotencyKey(); return { success: true, orderId: existing.id }; }
++    }
+ 
+     const { data: cartRows, error: cartErr } = await sb.from('cart_items')
+       .select('quantity, product_id, products(price, currency, stock, name)')
+@@ -163,9 +191,20 @@ export function CartProvider({ children }) {
+     const subtotalCalc = cartRows.reduce((s, r) => s + (r.products?.price || 0) * r.quantity, 0);
+ 
+     const { data: order, error: orderErr } = await sb.from('orders')
+-      .insert({ user_id: userId, status: 'pending', subtotal: subtotalCalc, total_amount: subtotalCalc, currency })
++      .insert({ user_id: userId, status: 'pending', subtotal: subtotalCalc, total_amount: subtotalCalc, currency, idempotency_key: idempotencyKey })
+       .select('id').single();
+-    if (orderErr || !order) return { success: false, error: orderErr?.message || 'order_create_failed' };
++
++    if (orderErr) {
++      // Code 23505 = violation de contrainte unique : une autre requête (même
++      // clé) a créé la commande entre-temps. On la récupère au lieu d'échouer.
++      if (orderErr.code === '23505' && idempotencyKey) {
++        const { data: raced } = await sb.from('orders')
++          .select('id').eq('user_id', userId).eq('idempotency_key', idempotencyKey).maybeSingle();
++        if (raced) { clearIdempotencyKey(); return { success: true, orderId: raced.id }; }
++      }
++      return { success: false, error: orderErr.message };
++    }
++    if (!order) return { success: false, error: 'order_create_failed' };
+ 
+     const itemsPayload = cartRows.map((r) => ({
+       order_id: order.id, product_id: r.product_id, quantity: r.quantity, unit_price: r.products?.price || 0,
+@@ -173,6 +212,7 @@ export function CartProvider({ children }) {
+     const { error: itemsErr } = await sb.from('order_items').insert(itemsPayload);
+     if (itemsErr) return { success: false, error: itemsErr.message };
+ 
++    clearIdempotencyKey();
+     return { success: true, orderId: order.id };
+   }, [userId]);
+ 
+diff --git a/src/lib/supabase.js b/src/lib/supabase.js
+index ac20238..d1febaf 100644
+--- a/src/lib/supabase.js
++++ b/src/lib/supabase.js
+@@ -2,10 +2,17 @@
+ 
+ import { createClient } from '@supabase/supabase-js';
+ 
+-// Mêmes identifiants que l'ancien site (Supabase.config.js)
+-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://aakxoydznmybstfozjte.supabase.co';
+-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFha3hveWR6bm15YnN0Zm96anRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MDQxMjAsImV4cCI6MjA5MTE4MDEyMH0.ncjxAvqVrxW75QJ4zcu0StOJsNtEZfY1SD48nRyJCs0';
++// Aucune valeur de repli : un déploiement sans ces variables doit échouer
++// bruyamment plutôt que de pointer silencieusement vers la mauvaise instance.
++const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
++const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
++
++if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
++  throw new Error(
++    'Configuration Supabase manquante : NEXT_PUBLIC_SUPABASE_URL et ' +
++    'NEXT_PUBLIC_SUPABASE_ANON_KEY doivent être définies (voir .env.example).'
++  );
++}
+ 
+ // Une seule connexion partagée par toute l'application
+ // (équivalent exact de l'ancien window.db)
+-- 
+2.43.0
