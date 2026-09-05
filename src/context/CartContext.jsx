@@ -5,6 +5,24 @@ import { getSupabase } from '@/lib/supabase';
 
 const CartContext = createContext(null);
 const LOCAL_KEY = 'wenna_cart_guest';
+const CHECKOUT_KEY = 'wenna_checkout_idempotency_key';
+
+// ── Clé d'idempotence de commande ───────────────────────────────────
+// Générée une seule fois au début d'une tentative de paiement, réutilisée
+// tant que la commande n'a pas abouti (double-clic, coupure réseau, retry).
+// Effacée dès que la commande est créée avec succès.
+function getOrCreateIdempotencyKey() {
+  if (typeof window === 'undefined') return null;
+  let key = sessionStorage.getItem(CHECKOUT_KEY);
+  if (!key) {
+    key = (crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    sessionStorage.setItem(CHECKOUT_KEY, key);
+  }
+  return key;
+}
+function clearIdempotencyKey() {
+  try { sessionStorage.removeItem(CHECKOUT_KEY); } catch {}
+}
 
 // ── Panier local (mode invité / hors-ligne) ─────────────────────────
 // Le navigateur garde le panier même sans connexion internet.
@@ -149,6 +167,16 @@ export function CartProvider({ children }) {
   const createOrder = useCallback(async () => {
     if (!userId) return { success: false, error: 'not_authenticated' };
     const sb = getSupabase();
+    const idempotencyKey = getOrCreateIdempotencyKey();
+
+    // Si une tentative précédente avec la même clé a déjà abouti (retry après
+    // coupure réseau, double clic...), on renvoie cette commande au lieu d'en
+    // recréer une deuxième.
+    if (idempotencyKey) {
+      const { data: existing } = await sb.from('orders')
+        .select('id').eq('user_id', userId).eq('idempotency_key', idempotencyKey).maybeSingle();
+      if (existing) { clearIdempotencyKey(); return { success: true, orderId: existing.id }; }
+    }
 
     const { data: cartRows, error: cartErr } = await sb.from('cart_items')
       .select('quantity, product_id, products(price, currency, stock, name)')
@@ -163,9 +191,20 @@ export function CartProvider({ children }) {
     const subtotalCalc = cartRows.reduce((s, r) => s + (r.products?.price || 0) * r.quantity, 0);
 
     const { data: order, error: orderErr } = await sb.from('orders')
-      .insert({ user_id: userId, status: 'pending', subtotal: subtotalCalc, total_amount: subtotalCalc, currency })
+      .insert({ user_id: userId, status: 'pending', subtotal: subtotalCalc, total_amount: subtotalCalc, currency, idempotency_key: idempotencyKey })
       .select('id').single();
-    if (orderErr || !order) return { success: false, error: orderErr?.message || 'order_create_failed' };
+
+    if (orderErr) {
+      // Code 23505 = violation de contrainte unique : une autre requête (même
+      // clé) a créé la commande entre-temps. On la récupère au lieu d'échouer.
+      if (orderErr.code === '23505' && idempotencyKey) {
+        const { data: raced } = await sb.from('orders')
+          .select('id').eq('user_id', userId).eq('idempotency_key', idempotencyKey).maybeSingle();
+        if (raced) { clearIdempotencyKey(); return { success: true, orderId: raced.id }; }
+      }
+      return { success: false, error: orderErr.message };
+    }
+    if (!order) return { success: false, error: 'order_create_failed' };
 
     const itemsPayload = cartRows.map((r) => ({
       order_id: order.id, product_id: r.product_id, quantity: r.quantity, unit_price: r.products?.price || 0,
@@ -173,6 +212,7 @@ export function CartProvider({ children }) {
     const { error: itemsErr } = await sb.from('order_items').insert(itemsPayload);
     if (itemsErr) return { success: false, error: itemsErr.message };
 
+    clearIdempotencyKey();
     return { success: true, orderId: order.id };
   }, [userId]);
 
