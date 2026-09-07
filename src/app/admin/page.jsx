@@ -26,7 +26,7 @@ export default function AdminPage() {
   const [loginError, setLoginError] = useState('');
 
   const [section, setSection] = useState('dashboard');
-  const [kpis, setKpis] = useState({ revenue: 0, orders: 0, users: 0, products: 0, pending: 0 });
+  const [kpis, setKpis] = useState({ revenue: 0, orders: 0, users: 0, products: 0, pending: 0, pendingVendors: 0, pendingPayouts: 0 });
   const [pendingProducts, setPendingProducts] = useState([]);
   const [orders, setOrders] = useState([]);
   const [users, setUsers] = useState([]);
@@ -39,10 +39,11 @@ export default function AdminPage() {
   const [catFilterMode, setCatFilterMode] = useState('all');
   const [openCatIds, setOpenCatIds] = useState([]);
 
-  // ── Artisans / Avis / Paiements / Analytiques ──
+  // ── Artisans / Avis / Paiements / Retraits / Analytiques ──
   const [artisans, setArtisans] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [payments, setPayments] = useState([]);
+  const [payouts, setPayouts] = useState([]);
   const [analytics, setAnalytics] = useState({ orders: [], countries: {}, statuses: {} });
 
   useEffect(() => { checkAuth(); }, []);
@@ -69,15 +70,17 @@ export default function AdminPage() {
 
   async function loadDashboard() {
     const sb = getSupabase();
-    const [{ count: orderCount }, { count: userCount }, { count: prodCount }, { count: pendCount }, { data: paymentsData }] = await Promise.all([
+    const [{ count: orderCount }, { count: userCount }, { count: prodCount }, { count: pendCount }, { count: pendVendorCount }, { count: pendPayoutCount }, { data: paymentsData }] = await Promise.all([
       sb.from('orders').select('id', { count: 'exact', head: true }),
       sb.from('users').select('id', { count: 'exact', head: true }),
       sb.from('products').select('id', { count: 'exact', head: true }).eq('status', 'active'),
       sb.from('products').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+      sb.from('users').select('id', { count: 'exact', head: true }).eq('role', 'artisan').eq('status', 'pending'),
+      sb.from('payouts').select('id', { count: 'exact', head: true }).eq('status', 'PENDING'),
       sb.from('payments').select('amount,status'),
     ]);
     const revenue = (paymentsData || []).filter((p) => p.status === 'paid').reduce((s, p) => s + Number(p.amount || 0), 0);
-    setKpis({ revenue, orders: orderCount || 0, users: userCount || 0, products: prodCount || 0, pending: pendCount || 0 });
+    setKpis({ revenue, orders: orderCount || 0, users: userCount || 0, products: prodCount || 0, pending: pendCount || 0, pendingVendors: pendVendorCount || 0, pendingPayouts: pendPayoutCount || 0 });
   }
 
   async function loadValidation() {
@@ -144,6 +147,47 @@ export default function AdminPage() {
     const { data } = await sb.from('users').select('*').eq('role', 'artisan').order('created_at', { ascending: false });
     setArtisans(data || []);
   }
+  async function viewKycDoc(path) {
+    if (!path) return;
+    const sb = getSupabase();
+    const { data, error } = await sb.storage.from('kyc-documents').createSignedUrl(path, 300);
+    if (error || !data?.signedUrl) { alert("Impossible d'ouvrir ce document : " + (error?.message || 'inconnu')); return; }
+    window.open(data.signedUrl, '_blank', 'noopener,noreferrer');
+  }
+  async function approveArtisan(id) {
+    const sb = getSupabase();
+    const { error } = await sb.from('users').update({ status: 'active', vendor_validated_at: new Date().toISOString(), vendor_reject_reason: null }).eq('id', id);
+    if (error) { alert('Erreur : ' + error.message); return; }
+    await loadArtisans();
+  }
+  async function rejectArtisan(id) {
+    const reason = prompt('Motif du rejet (visible par le vendeur) :');
+    if (reason === null) return;
+    const sb = getSupabase();
+    const { error } = await sb.from('users').update({ status: 'inactive', vendor_reject_reason: reason || 'Dossier incomplet ou non conforme.' }).eq('id', id);
+    if (error) { alert('Erreur : ' + error.message); return; }
+    await loadArtisans();
+  }
+
+  // ── Retraits vendeurs (payouts) ──
+  async function loadPayouts() {
+    const sb = getSupabase();
+    const { data } = await sb.from('payouts').select('*, shops(name), users:user_id(full_name,email)').order('requested_at', { ascending: false });
+    setPayouts(data || []);
+  }
+  async function updatePayoutStatus(id, status) {
+    if (status === 'REJECTED') {
+      const reason = prompt('Motif du rejet (optionnel) :') || null;
+      const sb = getSupabase();
+      const { error } = await sb.from('payouts').update({ status, admin_note: reason, processed_at: new Date().toISOString() }).eq('id', id);
+      if (error) { alert('Erreur : ' + error.message); return; }
+    } else {
+      const sb = getSupabase();
+      const { error } = await sb.from('payouts').update({ status, processed_at: new Date().toISOString() }).eq('id', id);
+      if (error) { alert('Erreur : ' + error.message); return; }
+    }
+    await loadPayouts();
+  }
 
   // ── Avis ──
   async function loadReviews() {
@@ -189,6 +233,7 @@ export default function AdminPage() {
     if (s === 'artisans') loadArtisans();
     if (s === 'reviews') loadReviews();
     if (s === 'payments') loadPayments();
+    if (s === 'payouts') loadPayouts();
     if (s === 'analytics') loadAnalytics();
   }
 
@@ -240,10 +285,11 @@ export default function AdminPage() {
         <button className={`${styles.navItem} ${section === 'validation' ? styles.navItemActive : ''}`} onClick={() => goTo('validation')}>Validation ({kpis.pending})</button>
         <button className={`${styles.navItem} ${section === 'orders' ? styles.navItemActive : ''}`} onClick={() => goTo('orders')}>Commandes</button>
         <button className={`${styles.navItem} ${section === 'categories' ? styles.navItemActive : ''}`} onClick={() => goTo('categories')}>Catégories</button>
-        <button className={`${styles.navItem} ${section === 'artisans' ? styles.navItemActive : ''}`} onClick={() => goTo('artisans')}>Artisans</button>
+        <button className={`${styles.navItem} ${section === 'artisans' ? styles.navItemActive : ''}`} onClick={() => goTo('artisans')}>Artisans {kpis.pendingVendors > 0 && `(${kpis.pendingVendors})`}</button>
         <button className={`${styles.navItem} ${section === 'users' ? styles.navItemActive : ''}`} onClick={() => goTo('users')}>Utilisateurs</button>
         <button className={`${styles.navItem} ${section === 'reviews' ? styles.navItemActive : ''}`} onClick={() => goTo('reviews')}>Avis</button>
         <button className={`${styles.navItem} ${section === 'payments' ? styles.navItemActive : ''}`} onClick={() => goTo('payments')}>Paiements</button>
+        <button className={`${styles.navItem} ${section === 'payouts' ? styles.navItemActive : ''}`} onClick={() => goTo('payouts')}>Retraits {kpis.pendingPayouts > 0 && `(${kpis.pendingPayouts})`}</button>
         <button className={`${styles.navItem} ${section === 'analytics' ? styles.navItemActive : ''}`} onClick={() => goTo('analytics')}>Analytiques</button>
       </aside>
 
@@ -382,6 +428,41 @@ export default function AdminPage() {
         {section === 'artisans' && (
           <>
             <h1 style={{ fontSize: 22, fontWeight: 900, marginBottom: 18 }}>Artisans</h1>
+
+            {artisans.filter((u) => u.status === 'pending').length > 0 && (
+              <>
+                <div className={styles.cardTitle} style={{ marginBottom: 10 }}>Dossiers en attente de validation</div>
+                {artisans.filter((u) => u.status === 'pending').map((u) => {
+                  const name = u.full_name || `${u.first_name || ''} ${u.last_name || ''}`.trim() || '—';
+                  return (
+                    <div className={styles.card} key={u.id} style={{ marginBottom: 10, border: '1px solid var(--gold, #f59e0b)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+                        <div style={{ width: 44, height: 44, background: 'var(--accent-light)', border: '1px solid var(--border-accent)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 18, color: 'var(--accent)' }}>{name[0]?.toUpperCase()}</div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: 700, fontSize: 13 }}>{name}</div>
+                          <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>{u.email} · {flag(u.country)}</div>
+                        </div>
+                        <span style={{ fontSize: 10, color: 'var(--text-faint)' }}>Inscrit le {fdate(u.created_at)}</span>
+                      </div>
+                      <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 10 }}>
+                        <div><strong style={{ color: 'var(--text)' }}>Document :</strong> {u.document_type === 'cni' ? "Carte d'identité" : u.document_type === 'passeport' ? 'Passeport' : '—'}</div>
+                        <div><strong style={{ color: 'var(--text)' }}>Adresse :</strong> {u.address || '—'}</div>
+                      </div>
+                      <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+                        <button className={styles.btnGhost} disabled={!u.id_card_front_url} onClick={() => viewKycDoc(u.id_card_front_url)}>📄 Voir le recto</button>
+                        {u.id_card_back_url && <button className={styles.btnGhost} onClick={() => viewKycDoc(u.id_card_back_url)}>📄 Voir le verso</button>}
+                      </div>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <button className={styles.btnSm} onClick={() => approveArtisan(u.id)}>✓ Valider le vendeur</button>
+                        <button className={styles.btnDanger} onClick={() => rejectArtisan(u.id)}>✕ Rejeter</button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </>
+            )}
+
+            <div className={styles.cardTitle} style={{ margin: '18px 0 10px' }}>Tous les artisans</div>
             {artisans.length === 0 ? (
               <div className={styles.card}><div className={styles.empty}>Aucun artisan</div></div>
             ) : (
@@ -401,6 +482,9 @@ export default function AdminPage() {
                         <Badge status={u.status || 'active'} label={u.status || 'actif'} />
                         <span style={{ fontSize: 10, color: 'var(--text-faint)' }}>{fdate(u.created_at)}</span>
                       </div>
+                      {u.status === 'inactive' && u.vendor_reject_reason && (
+                        <div style={{ fontSize: 10, color: 'var(--error)', marginTop: 8 }}>Motif du rejet : {u.vendor_reject_reason}</div>
+                      )}
                     </div>
                   );
                 })}
@@ -479,6 +563,44 @@ export default function AdminPage() {
                       <td style={{ color: 'var(--text-faint)' }}>{p.method || '—'}</td>
                       <td><Badge status={p.status} /></td>
                       <td style={{ color: 'var(--text-faint)' }}>{fdate(p.created_at)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+
+        {section === 'payouts' && (
+          <>
+            <h1 style={{ fontSize: 22, fontWeight: 900, marginBottom: 18 }}>Retraits vendeurs</h1>
+            <div className={styles.card}>
+              <table className={styles.table}>
+                <thead><tr><th>Boutique</th><th>Vendeur</th><th>Montant</th><th>Moyen</th><th>Téléphone</th><th>Demandé le</th><th>Statut</th><th>Actions</th></tr></thead>
+                <tbody>
+                  {payouts.length === 0 ? (
+                    <tr><td colSpan={8} style={{ textAlign: 'center', padding: 30, color: 'var(--text-faint)' }}>Aucune demande de retrait</td></tr>
+                  ) : payouts.map((p) => (
+                    <tr key={p.id}>
+                      <td>{p.shops?.name || '—'}</td>
+                      <td style={{ color: 'var(--text-faint)' }}>{p.users?.full_name || p.users?.email || '—'}</td>
+                      <td style={{ color: 'var(--accent)', fontWeight: 700 }}>{fmt(p.amount, p.currency)}</td>
+                      <td style={{ color: 'var(--text-faint)' }}>{p.payment_method_code || '—'}</td>
+                      <td style={{ color: 'var(--text-faint)', fontFamily: 'monospace' }}>{p.recipient_phone || '—'}</td>
+                      <td style={{ color: 'var(--text-faint)' }}>{fdate(p.requested_at)}</td>
+                      <td><Badge status={p.status?.toLowerCase()} label={p.status} /></td>
+                      <td>
+                        {p.status === 'PENDING' && (
+                          <>
+                            <button className={styles.btnSm} onClick={() => updatePayoutStatus(p.id, 'APPROVED')}>✓ Approuver</button>{' '}
+                            <button className={styles.btnDanger} onClick={() => updatePayoutStatus(p.id, 'REJECTED')}>✕ Rejeter</button>
+                          </>
+                        )}
+                        {p.status === 'APPROVED' && (
+                          <button className={styles.btnSm} onClick={() => updatePayoutStatus(p.id, 'PAID')}>💸 Marquer payé</button>
+                        )}
+                        {p.admin_note && <div style={{ fontSize: 10, color: 'var(--text-faint)', marginTop: 4 }}>{p.admin_note}</div>}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

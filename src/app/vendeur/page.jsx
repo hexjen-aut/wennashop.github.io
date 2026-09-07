@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { getSupabase } from '@/lib/supabase';
 import { COUNTRY_NAMES as COUNTRIES } from '@/lib/geo';
 import styles from './vendeur.module.css';
@@ -507,6 +508,9 @@ export default function VendeurPage() {
 
       <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ''}`}>
         <div className={styles.logo}><span>Wenna</span>Shop</div>
+        <Link href="/boutique" className={styles.linkBtn} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, margin: '0 0 14px' }}>
+          <i className="ph ph-arrow-left" /> Retour à la boutique principale
+        </Link>
         <div className={styles.sellerBox}>
           <div className={styles.sellerAv}>{(seller.full_name || seller.email || '?').charAt(0).toUpperCase()}</div>
           <div>
@@ -811,7 +815,23 @@ export default function VendeurPage() {
 
         {/* ─────────── SHOP ─────────── */}
         {section === 'shop' && (
-          <form className={styles.card} onSubmit={saveShop} style={{ maxWidth: 640, padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <>
+            <div className={styles.card} style={{ maxWidth: 640, padding: '14px 18px', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 12, background: shop?.status === 'active' ? 'var(--accent-light)' : 'var(--surface-2)', border: shop?.status === 'active' ? '1px solid var(--border-accent)' : '1px solid var(--border)' }}>
+              <i className="ph ph-storefront" style={{ fontSize: 20, color: shop?.status === 'active' ? 'var(--accent)' : 'var(--text-faint)' }} />
+              {shop?.status === 'active' ? (
+                <>
+                  <span style={{ flex: 1, fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>Ta boutique est en ligne et visible par les acheteurs.</span>
+                  <a href={`/boutique-vendeur?slug=${shop.slug}`} target="_blank" rel="noopener noreferrer" className={styles.btnPrimary} style={{ whiteSpace: 'nowrap' }}>
+                    <i className="ph ph-arrow-square-out" /> Voir ma boutique
+                  </a>
+                </>
+              ) : (
+                <span style={{ flex: 1, fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>
+                  Ta boutique n'est pas encore visible publiquement (statut : {shop?.status || 'en attente de validation'}). Elle apparaîtra ici dès qu'elle sera active.
+                </span>
+              )}
+            </div>
+            <form className={styles.card} onSubmit={saveShop} style={{ maxWidth: 640, padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div className={styles.formGrid}>
               <div className={styles.formGroup}><label className={styles.formLabel}>Nom de la boutique *</label><input className={styles.input} value={shopForm.name} onChange={(e) => setShopForm({ ...shopForm, name: e.target.value })} /></div>
               <div className={styles.formGroup}><label className={styles.formLabel}>Slug (URL)</label><input className={styles.input} value={shopForm.slug} onChange={(e) => setShopForm({ ...shopForm, slug: e.target.value })} /></div>
@@ -844,6 +864,7 @@ export default function VendeurPage() {
             <div className={styles.formGroup}><label className={styles.formLabel}>Politique (retours, délais…)</label><textarea className={styles.input} rows={3} value={shopForm.shop_policies} onChange={(e) => setShopForm({ ...shopForm, shop_policies: e.target.value })} /></div>
             <button type="submit" className={styles.btnPrimary} style={{ alignSelf: 'flex-start' }}><i className="ph ph-floppy-disk" /> Enregistrer</button>
           </form>
+          </>
         )}
 
         {/* ─────────── PROFILE ─────────── */}
