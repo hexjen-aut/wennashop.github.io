@@ -155,8 +155,20 @@ export default function ConnexionPage() {
       showToast(msg, 'ko');
       return;
     }
-    showToast('Connexion réussie', 'ok');
-    const userRole = data.user?.user_metadata?.role;
+    const { data: profile } = await sb.from('users').select('id, status, role').eq('auth_id', data.user.id).single();
+
+    if (profile?.status === 'pending_deletion') {
+      const { data: cancelResult } = await sb.rpc('cancel_account_deletion', { p_user_id: profile.id });
+      if (cancelResult?.success) {
+        showToast('Bon retour ! Ta suppression de compte a été annulée.', 'ok');
+      } else {
+        showToast('Connexion réussie', 'ok');
+      }
+    } else {
+      showToast('Connexion réussie', 'ok');
+    }
+
+    const userRole = profile?.role || data.user?.user_metadata?.role;
     setTimeout(() => router.push(userRole === 'artisan' ? '/vendeur' : '/boutique'), 700);
   }
 

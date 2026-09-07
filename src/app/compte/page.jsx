@@ -194,11 +194,9 @@ export default function ComptePage() {
     setDeletingAccount(true);
     const sb = getSupabase();
     try {
-      if (profile.role === 'artisan') {
-        await sb.from('products').update({ status: 'inactive' }).eq('seller_id', profile.id);
-        await sb.from('shops').delete().eq('user_id', profile.id);
-      }
-      await sb.from('users').update({ status: 'deleted', email: `deleted_${Date.now()}_${profile.email}`, updated_at: new Date().toISOString() }).eq('id', profile.id);
+      const { data, error } = await sb.rpc('request_account_deletion', { p_user_id: profile.id });
+      if (error) throw error;
+      if (!data?.success) throw new Error(data?.error || 'Échec de la demande de suppression');
       await sb.auth.signOut();
       router.push('/');
     } catch (err) {
@@ -590,7 +588,7 @@ export default function ComptePage() {
           <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, width: '100%', maxWidth: 420, padding: 20 }} onClick={(e) => e.stopPropagation()}>
             <div style={{ textAlign: 'center', marginBottom: 16 }}>
               <div style={{ fontSize: 18, fontWeight: 900, marginBottom: 8 }}>Supprimer mon compte ?</div>
-              <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>Action <strong style={{ color: 'var(--error)' }}>permanente et irréversible</strong>.</p>
+              <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>Ta boutique et tes produits seront désactivés immédiatement. Tu as <strong style={{ color: 'var(--text)' }}>30 jours</strong> pour te raviser : reconnecte-toi avant cette date pour tout annuler. Passé ce délai, la suppression devient <strong style={{ color: 'var(--error)' }}>définitive</strong>.</p>
             </div>
             <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, padding: 12, marginBottom: 16 }}>
               <label style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 6, display: 'block' }}>Tapez <strong style={{ color: 'var(--error)' }}>SUPPRIMER</strong></label>
@@ -598,7 +596,7 @@ export default function ComptePage() {
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
               <button onClick={() => setDeleteModalOpen(false)} style={{ flex: 1, background: 'transparent', border: '1.5px solid var(--border)', borderRadius: 999, color: 'var(--text-muted)', padding: 11, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Annuler</button>
-              <button onClick={confirmDeleteAccount} disabled={deleteConfirm.trim() !== 'SUPPRIMER' || deletingAccount} style={{ flex: 2, background: 'var(--error)', border: 'none', borderRadius: 999, color: '#fff', padding: 11, fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: deleteConfirm.trim() === 'SUPPRIMER' ? 1 : 0.4 }}>{deletingAccount ? '…' : 'Supprimer définitivement'}</button>
+              <button onClick={confirmDeleteAccount} disabled={deleteConfirm.trim() !== 'SUPPRIMER' || deletingAccount} style={{ flex: 2, background: 'var(--error)', border: 'none', borderRadius: 999, color: '#fff', padding: 11, fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: deleteConfirm.trim() === 'SUPPRIMER' ? 1 : 0.4 }}>{deletingAccount ? '…' : 'Demander la suppression'}</button>
             </div>
           </div>
         </div>
