@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getSupabase } from '@/lib/supabase';
+import { COUNTRY_NAMES as COUNTRIES } from '@/lib/geo';
 import Nav from '@/components/Nav';
 import CartSidebar from '@/components/CartSidebar';
 import styles from './compte.module.css';
@@ -15,7 +16,6 @@ function fmt(n, currency = 'MAD') {
 function fmtDate(d) { return d ? new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : ''; }
 
 const STATUS_LABEL = { pending: 'En attente', processing: 'En préparation', shipped: 'En transit', delivered: 'Livré', cancelled: 'Annulée' };
-const COUNTRIES = ['Maroc', 'Gabon', 'Sénégal', "Côte d'Ivoire", 'Cameroun', 'Congo', 'RD Congo', 'Bénin', 'Togo', 'Mali', 'Burkina Faso', 'Guinée', 'Algérie', 'Tunisie', 'Niger', 'Tchad', 'Autre'];
 
 export default function ComptePage() {
   const router = useRouter();

@@ -8,10 +8,10 @@ import Nav from '@/components/Nav';
 import CartSidebar from '@/components/CartSidebar';
 import UrgencyTimer from '@/components/UrgencyTimer';
 import { convertPrice, formatSmartPrice } from '@/lib/currency';
+import { COUNTRY_NAMES as COUNTRIES } from '@/lib/geo';
 import styles from './boutique.module.css';
 
 const PAGE_SIZE = 24;
-const COUNTRIES = ['Gabon', 'Maroc', 'Bénin', 'Sénégal', "Côte d'Ivoire", 'Cameroun', 'Mali'];
 const DISPLAY_CURRENCIES = [
   { value: 'MAD', label: 'MAD (Maroc)' },
   { value: 'XOF', label: 'FCFA — UEMOA' },

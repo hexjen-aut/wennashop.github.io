@@ -3,26 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
+import { COUNTRY_GROUPS } from '@/lib/geo';
 import styles from './connexion.module.css';
-
-const PAYS_GROUPS = [
-  { label: 'Maghreb', options: [
-    { v: 'maroc', l: 'Maroc' }, { v: 'algerie', l: 'Algérie' }, { v: 'tunisie', l: 'Tunisie' },
-  ] },
-  { label: 'Afrique Centrale', options: [
-    { v: 'gabon', l: 'Gabon' }, { v: 'cameroun', l: 'Cameroun' }, { v: 'congo_brazza', l: 'Congo-Brazzaville' },
-    { v: 'rdc', l: 'RD Congo' }, { v: 'centrafrique', l: 'Centrafrique' }, { v: 'tchad', l: 'Tchad' },
-  ] },
-  { label: "Afrique de l'Ouest", options: [
-    { v: 'senegal', l: 'Sénégal' }, { v: 'cote_ivoire', l: "Côte d'Ivoire" }, { v: 'mali', l: 'Mali' },
-    { v: 'burkina', l: 'Burkina Faso' }, { v: 'guinee', l: 'Guinée' }, { v: 'benin', l: 'Bénin' },
-    { v: 'togo', l: 'Togo' }, { v: 'niger', l: 'Niger' }, { v: 'mauritanie', l: 'Mauritanie' },
-  ] },
-  { label: "Afrique de l'Est & Océan Indien", options: [
-    { v: 'madagascar', l: 'Madagascar' }, { v: 'djibouti', l: 'Djibouti' }, { v: 'comores', l: 'Comores' },
-  ] },
-  { label: 'Autre', options: [{ v: 'autre', l: 'Autre pays' }] },
-];
 
 const GENRE_HINTS = {
   homme: 'Vous verrez en priorité : bijoux hommes, accessoires, djellabas, art traditionnel masculin.',
@@ -387,7 +369,7 @@ export default function ConnexionPage() {
                 <label className={styles.label}>Pays</label>
                 <select className={styles.select} value={pays} onChange={(e) => setPays(e.target.value)}>
                   <option value="">Sélectionnez votre pays</option>
-                  {PAYS_GROUPS.map((grp) => (
+                  {COUNTRY_GROUPS.map((grp) => (
                     <optgroup key={grp.label} label={grp.label}>
                       {grp.options.map((o) => <option key={o.v} value={o.v}>{o.l}</option>)}
                     </optgroup>
