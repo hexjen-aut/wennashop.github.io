@@ -18,7 +18,7 @@
 .navBtn:hover { color: var(--accent); background: var(--accent-light); }
 .navActs { display: flex; align-items: center; gap: 4px; }
 .logo { display: flex; align-items: center; text-decoration: none; }
-.logoImg { height: 32px; width: auto; display: block; }
+.logoImg { height: 48px; width: auto; display: block; }
 .cartBadge {
   position: absolute; top: 4px; right: 4px;
   background: var(--accent); color: #fff;

@@ -223,7 +223,7 @@ export default function BoutiquePage() {
   if (maintenance) {
     return (
       <div className={styles.maintenanceScreen}>
-        <div className={styles.logo}><img src="/wenna_logo01.png" alt="WennaShop" style={{ height: 40, width: 'auto' }} /></div>
+        <div className={styles.logo}><img src="/wenna_logo01.png" alt="WennaShop" style={{ height: 72, width: 'auto' }} /></div>
         <div className={styles.maintTitle}>Site en maintenance</div>
         <p className={styles.maintSub}>Nous effectuons des mises à jour. La boutique sera de retour très bientôt.</p>
       </div>
