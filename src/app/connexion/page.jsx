@@ -115,6 +115,25 @@ export default function ConnexionPage() {
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
 
+  // Carrousel vertical du panneau gauche — vraies photos produits
+  const [slides, setSlides] = useState([]);
+  const [slideIndex, setSlideIndex] = useState(0);
+
+  useEffect(() => {
+    (async () => {
+      const sb = getSupabase();
+      const { data } = await sb.from('products').select('image_url').eq('status', 'active').not('image_url', 'is', null).limit(8);
+      const urls = [...new Set((data || []).map((p) => p.image_url))];
+      setSlides(urls);
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (slides.length < 2) return;
+    const id = setInterval(() => setSlideIndex((i) => (i + 1) % slides.length), 5000);
+    return () => clearInterval(id);
+  }, [slides]);
+
   // Connexion
   const [cnxEmail, setCnxEmail] = useState('');
   const [cnxPwd, setCnxPwd] = useState('');
@@ -287,7 +306,15 @@ export default function ConnexionPage() {
     <div className={styles.layout}>
       {/* PANNEAU GAUCHE */}
       <div className={styles.leftPanel}>
-        <div className={styles.leftBg} />
+        <div className={styles.leftBg}>
+          {slides.map((url, i) => (
+            <div
+              key={url}
+              className={`${styles.leftSlide} ${i === slideIndex ? styles.leftSlideActive : ''}`}
+              style={{ backgroundImage: `url('${url}')` }}
+            />
+          ))}
+        </div>
         <div className={styles.leftOverlay} />
         <div className={styles.leftContent}>
           <div className={styles.leftLogo}><span>Wenna</span>Shop</div>
