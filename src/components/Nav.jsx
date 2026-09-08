@@ -10,7 +10,9 @@ export default function Nav({ onOpenCart }) {
   return (
     <nav className={styles.nav}>
       <div className={styles.navInner}>
-        <Link href="/boutique" className={styles.logo}><span>Wenna</span>Shop</Link>
+        <Link href="/boutique" className={styles.logo}>
+          <img src="/wenna_logo01.png" alt="WennaShop" className={styles.logoImg} />
+        </Link>
         <div className={styles.navActs}>
           <Link href="/recherche" className={styles.navBtn} aria-label="Rechercher">
             <i className="ph ph-magnifying-glass" />

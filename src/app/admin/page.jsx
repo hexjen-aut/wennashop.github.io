@@ -416,7 +416,7 @@ export default function AdminPage() {
     return (
       <div className={styles.gate}>
         <div className={styles.gateBox}>
-          <div style={{ fontSize: 22, fontWeight: 900, marginBottom: 4 }}><span style={{ color: 'var(--accent)' }}>Wenna</span>Shop</div>
+          <img src="/wenna_logo01.png" alt="WennaShop" style={{ height: 34, width: 'auto', marginBottom: 4 }} />
           <div style={{ fontSize: 12, color: 'var(--text-faint)', marginBottom: 20 }}>Administration — accès réservé</div>
           {loginError && <div style={{ color: 'var(--error)', fontSize: 12, marginBottom: 12 }}>{loginError}</div>}
           <input className={styles.input} type="email" placeholder="email@wennashop.com" value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -435,7 +435,10 @@ export default function AdminPage() {
   return (
     <div className={styles.wrap}>
       <aside className={styles.sidebar}>
-        <div style={{ fontSize: 18, fontWeight: 900, marginBottom: 16, padding: '0 12px' }}><span style={{ color: 'var(--accent)' }}>Wenna</span>Shop <span style={{ fontSize: 9, color: 'var(--accent)' }}>ADMIN</span></div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, padding: '0 12px' }}>
+          <img src="/wenna_logo01.png" alt="WennaShop" style={{ height: 26, width: 'auto' }} />
+          <span style={{ fontSize: 9, fontWeight: 900, color: 'var(--accent)' }}>ADMIN</span>
+        </div>
         <button className={`${styles.navItem} ${section === 'dashboard' ? styles.navItemActive : ''}`} onClick={() => goTo('dashboard')}>Dashboard</button>
         <button className={`${styles.navItem} ${section === 'validation' ? styles.navItemActive : ''}`} onClick={() => goTo('validation')}>Validation ({kpis.pending})</button>
         <button className={`${styles.navItem} ${section === 'orders' ? styles.navItemActive : ''}`} onClick={() => goTo('orders')}>Commandes</button>
