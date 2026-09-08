@@ -1,26 +1,28 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Montserrat:wght@700;800;900&display=swap');
 :root {
-  --accent:        #ff751f;
-  --accent-dark:   #cc5e18;
-  --accent-light:  rgba(255,117,31,.12);
-  --bg:            #0a0a0a;
-  --surface:       #141414;
-  --surface-2:     #1e1e1e;
-  --border:        #2a2a2a;
-  --border-accent: rgba(255,117,31,.3);
+  /* Charte graphique WennaShop */
+  --accent:        #ff6800;
+  --accent-dark:   #e65100;
+  --accent-light:  rgba(255,104,0,.12);
+  --bg:            #111111;
+  --surface:       #1a1a1a;
+  --surface-2:     #232323;
+  --border:        #2d2d2d;
+  --border-accent: rgba(255,104,0,.3);
   --text:          #ffffff;
-  --text-muted:    #a0a0a0;
-  --text-faint:    #555555;
+  --text-muted:    #9ca3af;
+  --text-faint:    #6b7280;
   --success:       #22c55e;
   --error:         #ef4444;
   --gold:          #f59e0b;
   --gold-light:    rgba(245,158,11,.12);
-  --font:          'Nunito','Varela Round',system-ui,sans-serif;
+  --font:          'Inter',system-ui,sans-serif;
+  --font-heading:  'Montserrat','Inter',system-ui,sans-serif;
   --radius-sm:     6px;
   --radius-md:     12px;
   --radius-lg:     16px;
   --radius-pill:   9999px;
-  --shadow-orange: 0 4px 24px rgba(255,117,31,.2);
+  --shadow-orange: 0 4px 24px rgba(255,104,0,.2);
   --shadow-md:     0 4px 16px rgba(0,0,0,.5);
   --nav-height:    64px;
 }
@@ -33,9 +35,10 @@ body {
   min-height: 100dvh;
   overflow-x: hidden;
 }
+h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--surface); }
-::-webkit-scrollbar-thumb { background: rgba(255,117,31,.3); border-radius: 99px; }
+::-webkit-scrollbar-thumb { background: rgba(255,104,0,.3); border-radius: 99px; }
 a { color: inherit; }
 button { font-family: var(--font); }
 /* Toast partagé (même style que sur toutes les anciennes pages) */
