@@ -45,7 +45,7 @@ export default function AdminPage() {
   const [artisans, setArtisans] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [payments, setPayments] = useState([]);
-  const [analytics, setAnalytics] = useState({ orders: [], countries: {}, statuses: {}, gmv: 0, commission: 0, avgBasket: 0, cancelRate: 0, months: [], vendorsNoProducts: 0, topCategories: [], topVendors: [], reviewStats: { avg: '—', pending: 0, lowPct: 0 } });
+  const [analytics, setAnalytics] = useState({ orders: [], countries: {}, statuses: {}, gmv: 0, commission: 0, avgBasket: 0, cancelRate: 0, months: [], vendorsNoProducts: [], topCategories: [], topVendors: [], reviewStats: { avg: '—', pending: 0, lowPct: 0 } });
 
   // ── Vitrine — sélection des photos produits (carrousel connexion) ──
   const [showcaseProducts, setShowcaseProducts] = useState([]);
@@ -199,7 +199,7 @@ export default function AdminPage() {
       { data: itemsData },
     ] = await Promise.all([
       sb.from('orders').select('status,shipping_country,total_amount,currency,created_at'),
-      sb.from('users').select('role,status,created_at'),
+      sb.from('users').select('id,full_name,email,role,status,created_at'),
       sb.from('products').select('seller_id,category_id,status'),
       sb.from('shops').select('id,user_id,name,commission_rate'),
       sb.from('reviews').select('rating,status'),
@@ -244,7 +244,9 @@ export default function AdminPage() {
     const products = productsData || [];
     const sellersWithActiveProduct = new Set(products.filter((p) => p.status === 'active').map((p) => p.seller_id));
     const artisansActive = users.filter((u) => u.role === 'artisan' && u.status === 'active');
-    const vendorsNoProducts = artisansActive.filter((u) => !sellersWithActiveProduct.has(u.id)).length;
+    const vendorsNoProducts = artisansActive
+      .filter((u) => !sellersWithActiveProduct.has(u.id))
+      .map((u) => ({ id: u.id, name: u.full_name || 'Sans nom', email: u.email }));
 
     // Top catégories par nombre de produits actifs
     const catNames = new Map((categoriesData || []).map((c) => [c.id, c.name]));
@@ -254,6 +256,7 @@ export default function AdminPage() {
 
     // Top vendeurs par revenu livré
     const shopByUser = new Map((shopsData || []).map((s) => [s.user_id, s.name]));
+    const userById = new Map(users.map((u) => [u.id, u]));
     const items = itemsData || [];
     const revenueBySeller = {};
     items.forEach((it) => {
@@ -262,7 +265,7 @@ export default function AdminPage() {
       revenueBySeller[sid] = (revenueBySeller[sid] || 0) + Number(it.unit_price || 0) * Number(it.quantity || 0);
     });
     const topVendors = Object.entries(revenueBySeller)
-      .map(([sid, revenue]) => ({ name: shopByUser.get(sid) || 'Boutique sans nom', revenue }))
+      .map(([sid, revenue]) => ({ id: sid, name: shopByUser.get(sid) || userById.get(sid)?.full_name || 'Boutique sans nom', email: userById.get(sid)?.email, revenue }))
       .sort((a, b) => b.revenue - a.revenue).slice(0, 5);
 
     // Santé des avis
@@ -754,8 +757,11 @@ export default function AdminPage() {
               <div className={styles.card}>
                 <div className={styles.cardTitle} style={{ marginBottom: 14 }}>Top 5 vendeurs (CA livré)</div>
                 {analytics.topVendors.length === 0 ? <div className={styles.empty}>Aucune donnée</div> : analytics.topVendors.map((v, i) => (
-                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderTop: i > 0 ? '1px solid var(--border)' : 'none', fontSize: 12 }}>
-                    <span style={{ fontWeight: 700 }}>{v.name}</span>
+                  <div key={v.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 0', borderTop: i > 0 ? '1px solid var(--border)' : 'none', fontSize: 12 }}>
+                    <div>
+                      <div style={{ fontWeight: 700 }}>{v.name}</div>
+                      {v.email && <div style={{ fontSize: 10, color: 'var(--text-faint)' }}>{v.email}</div>}
+                    </div>
                     <span style={{ color: 'var(--accent)', fontWeight: 800 }}>{fmt(v.revenue)}</span>
                   </div>
                 ))}
@@ -775,14 +781,24 @@ export default function AdminPage() {
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-              <div className={styles.card} style={{ padding: 18, borderColor: analytics.vendorsNoProducts > 0 ? 'rgba(239,68,68,.3)' : undefined }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <i className="ph ph-warning" style={{ fontSize: 20, color: analytics.vendorsNoProducts > 0 ? 'var(--error)' : 'var(--success)' }} />
+              <div className={styles.card} style={{ padding: 18, borderColor: analytics.vendorsNoProducts.length > 0 ? 'rgba(239,68,68,.3)' : undefined }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: analytics.vendorsNoProducts.length > 0 ? 12 : 0 }}>
+                  <i className="ph ph-warning" style={{ fontSize: 20, color: analytics.vendorsNoProducts.length > 0 ? 'var(--error)' : 'var(--success)' }} />
                   <div>
-                    <div style={{ fontSize: 20, fontWeight: 900 }}>{analytics.vendorsNoProducts}</div>
-                    <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>Vendeur{analytics.vendorsNoProducts > 1 ? 's' : ''} actif{analytics.vendorsNoProducts > 1 ? 's' : ''} sans produit — à relancer</div>
+                    <div style={{ fontSize: 20, fontWeight: 900 }}>{analytics.vendorsNoProducts.length}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>Vendeur{analytics.vendorsNoProducts.length > 1 ? 's' : ''} actif{analytics.vendorsNoProducts.length > 1 ? 's' : ''} sans produit — à relancer</div>
                   </div>
                 </div>
+                {analytics.vendorsNoProducts.length > 0 && (
+                  <div style={{ maxHeight: 180, overflowY: 'auto' }}>
+                    {analytics.vendorsNoProducts.map((v) => (
+                      <div key={v.id} style={{ display: 'flex', justifyContent: 'space-between', gap: 10, padding: '6px 0', borderTop: '1px solid var(--border)', fontSize: 11 }}>
+                        <span style={{ fontWeight: 700 }}>{v.name}</span>
+                        <span style={{ color: 'var(--text-faint)', fontFamily: 'monospace' }}>{v.email || v.id.slice(0, 8)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className={styles.card} style={{ padding: 18 }}>
                 <div style={{ display: 'flex', gap: 24 }}>
