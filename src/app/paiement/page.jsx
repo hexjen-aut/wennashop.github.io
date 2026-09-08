@@ -79,7 +79,7 @@ function PaiementContent() {
     // Un seul paiement 'order_payment' par commande (contrainte unique en base).
     // Si ce paiement existe déjà (double clic, nouvelle tentative réseau),
     // on continue normalement plutôt que d'afficher une erreur.
-    const { error: payErr } = await sb.from('payments').insert({ order_id: orderId, amount: order.total_amount, currency: order.currency || 'MAD', method, status: 'pending', type: 'order_payment' });
+    const { error: payErr } = await sb.from('payments').insert({ order_id: orderId, user_id: row.id, amount: order.total_amount, currency: order.currency || 'MAD', method, status: 'pending', type: 'order_payment' });
     if (payErr && payErr.code !== '23505') { alert('Erreur lors de l\'enregistrement du paiement : ' + payErr.message); setSending(false); return; }
     if (row) await sb.from('cart_items').delete().eq('user_id', row.id);
     setSending(false);
