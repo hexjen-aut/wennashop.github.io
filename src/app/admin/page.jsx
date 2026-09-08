@@ -45,7 +45,7 @@ export default function AdminPage() {
   const [artisans, setArtisans] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [payments, setPayments] = useState([]);
-  const [analytics, setAnalytics] = useState({ orders: [], countries: {}, statuses: {} });
+  const [analytics, setAnalytics] = useState({ orders: [], countries: {}, statuses: {}, gmv: 0, commission: 0, avgBasket: 0, cancelRate: 0, months: [], vendorsNoProducts: 0, topCategories: [], topVendors: [], reviewStats: { avg: '—', pending: 0, lowPct: 0 } });
 
   // ── Vitrine — sélection des photos produits (carrousel connexion) ──
   const [showcaseProducts, setShowcaseProducts] = useState([]);
@@ -189,11 +189,92 @@ export default function AdminPage() {
   // ── Analytiques ──
   async function loadAnalytics() {
     const sb = getSupabase();
-    const { data } = await sb.from('orders').select('status,shipping_country');
-    const ords = data || [];
+    const [
+      { data: ordersData },
+      { data: usersData },
+      { data: productsData },
+      { data: shopsData },
+      { data: reviewsData },
+      { data: categoriesData },
+      { data: itemsData },
+    ] = await Promise.all([
+      sb.from('orders').select('status,shipping_country,total_amount,currency,created_at'),
+      sb.from('users').select('role,status,created_at'),
+      sb.from('products').select('seller_id,category_id,status'),
+      sb.from('shops').select('id,user_id,name,commission_rate'),
+      sb.from('reviews').select('rating,status'),
+      sb.from('categories').select('id,name'),
+      sb.from('order_items').select('quantity,unit_price,products(seller_id,category_id),orders(status,created_at)'),
+    ]);
+
+    const ords = ordersData || [];
     const statuses = {}; ords.forEach((o) => { statuses[o.status] = (statuses[o.status] || 0) + 1; });
-    const countries = {}; ords.forEach((o) => { if (o.shipping_country) countries[o.shipping_country] = (countries[o.shipping_country] || 0) + 1; });
-    setAnalytics({ orders: ords, statuses, countries });
+    const delivered = ords.filter((o) => o.status === 'delivered');
+    const gmv = delivered.reduce((s, o) => s + Number(o.total_amount || 0), 0);
+    const cancelRate = ords.length ? Math.round((ords.filter((o) => o.status === 'cancelled').length / ords.length) * 100) : 0;
+
+    const countries = {};
+    ords.forEach((o) => {
+      if (!o.shipping_country) return;
+      if (!countries[o.shipping_country]) countries[o.shipping_country] = { orders: 0, revenue: 0 };
+      countries[o.shipping_country].orders += 1;
+      if (o.status === 'delivered') countries[o.shipping_country].revenue += Number(o.total_amount || 0);
+    });
+
+    // Croissance des comptes (6 derniers mois, acheteurs vs vendeurs)
+    const users = usersData || [];
+    const now = new Date();
+    const months = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push({ key: `${d.getFullYear()}-${d.getMonth()}`, label: d.toLocaleDateString('fr-FR', { month: 'short' }), buyers: 0, vendors: 0, revenue: 0 });
+    }
+    const monthKey = (d) => { const x = new Date(d); return `${x.getFullYear()}-${x.getMonth()}`; };
+    users.forEach((u) => {
+      const m = months.find((x) => x.key === monthKey(u.created_at));
+      if (!m) return;
+      if (u.role === 'artisan') m.vendors += 1; else if (u.role === 'buyer') m.buyers += 1;
+    });
+    delivered.forEach((o) => {
+      const m = months.find((x) => x.key === monthKey(o.created_at));
+      if (m) m.revenue += Number(o.total_amount || 0);
+    });
+
+    // Vendeurs sans aucun produit actif — à relancer
+    const products = productsData || [];
+    const sellersWithActiveProduct = new Set(products.filter((p) => p.status === 'active').map((p) => p.seller_id));
+    const artisansActive = users.filter((u) => u.role === 'artisan' && u.status === 'active');
+    const vendorsNoProducts = artisansActive.filter((u) => !sellersWithActiveProduct.has(u.id)).length;
+
+    // Top catégories par nombre de produits actifs
+    const catNames = new Map((categoriesData || []).map((c) => [c.id, c.name]));
+    const catCounts = {};
+    products.filter((p) => p.status === 'active').forEach((p) => { const name = catNames.get(p.category_id) || 'Sans catégorie'; catCounts[name] = (catCounts[name] || 0) + 1; });
+    const topCategories = Object.entries(catCounts).sort((a, b) => b[1] - a[1]).slice(0, 6);
+
+    // Top vendeurs par revenu livré
+    const shopByUser = new Map((shopsData || []).map((s) => [s.user_id, s.name]));
+    const items = itemsData || [];
+    const revenueBySeller = {};
+    items.forEach((it) => {
+      if (it.orders?.status !== 'delivered' || !it.products?.seller_id) return;
+      const sid = it.products.seller_id;
+      revenueBySeller[sid] = (revenueBySeller[sid] || 0) + Number(it.unit_price || 0) * Number(it.quantity || 0);
+    });
+    const topVendors = Object.entries(revenueBySeller)
+      .map(([sid, revenue]) => ({ name: shopByUser.get(sid) || 'Boutique sans nom', revenue }))
+      .sort((a, b) => b.revenue - a.revenue).slice(0, 5);
+
+    // Santé des avis
+    const reviews = reviewsData || [];
+    const approvedReviews = reviews.filter((r) => r.status === 'approved');
+    const reviewStats = {
+      avg: approvedReviews.length ? (approvedReviews.reduce((s, r) => s + r.rating, 0) / approvedReviews.length).toFixed(1) : '—',
+      pending: reviews.filter((r) => r.status === 'pending').length,
+      lowPct: approvedReviews.length ? Math.round((approvedReviews.filter((r) => r.rating <= 2).length / approvedReviews.length) * 100) : 0,
+    };
+
+    setAnalytics({ orders: ords, statuses, countries, gmv, commission: gmv * 0.08, avgBasket: delivered.length ? gmv / delivered.length : 0, cancelRate, months, vendorsNoProducts, topCategories, topVendors, reviewStats });
   }
 
   // ── Vitrine ──
@@ -609,30 +690,115 @@ export default function AdminPage() {
         {section === 'analytics' && (
           <>
             <h1 style={{ fontSize: 22, fontWeight: 900, marginBottom: 18 }}>Analytiques</h1>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+
+            <div className={styles.statGrid} style={{ marginBottom: 16 }}>
+              <div className={styles.statCard}><div className={styles.statNum} style={{ color: 'var(--accent)' }}>{fmt(analytics.gmv)}</div><div className={styles.statLabel}>GMV livrée</div></div>
+              <div className={styles.statCard}><div className={styles.statNum} style={{ color: 'var(--gold)' }}>{fmt(analytics.commission)}</div><div className={styles.statLabel}>Commission (8%)</div></div>
+              <div className={styles.statCard}><div className={styles.statNum}>{fmt(analytics.avgBasket)}</div><div className={styles.statLabel}>Panier moyen</div></div>
+              <div className={styles.statCard}><div className={styles.statNum} style={{ color: analytics.cancelRate > 10 ? 'var(--error)' : 'var(--success)' }}>{analytics.cancelRate}%</div><div className={styles.statLabel}>Taux d'annulation</div></div>
+            </div>
+
+            <div className={styles.card} style={{ marginBottom: 16 }}>
+              <div className={styles.cardTitle} style={{ marginBottom: 14 }}>Revenus livrés — 6 derniers mois</div>
+              <div style={{ padding: '4px 4px 0' }}>
+                <svg viewBox="0 0 300 140" style={{ width: '100%', height: 140 }}>
+                  {(() => { const max = Math.max(1, ...analytics.months.map((m) => m.revenue)); return analytics.months.map((m, i) => {
+                    const h = (m.revenue / max) * 100; const x = i * 50 + 8;
+                    return (<g key={m.key}><rect x={x} y={120 - h} width="30" height={h} rx="4" fill="var(--accent)" opacity=".85" /><text x={x + 15} y="134" textAnchor="middle" fontSize="9" fill="var(--text-faint)">{m.label}</text></g>);
+                  }); })()}
+                </svg>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
               <div className={styles.card}>
-                <div className={styles.cardTitle} style={{ marginBottom: 14 }}>Commandes par statut</div>
-                {Object.keys(analytics.statuses).length === 0 ? <div className={styles.empty}>Aucune donnée</div> : Object.entries(analytics.statuses).map(([s, n]) => {
-                  const max = Math.max(...Object.values(analytics.statuses));
+                <div className={styles.cardTitle} style={{ marginBottom: 14 }}>Nouveaux comptes — 6 derniers mois</div>
+                {analytics.months.every((m) => m.buyers === 0 && m.vendors === 0) ? <div className={styles.empty}>Aucune donnée</div> : (
+                  <>
+                    <div style={{ display: 'flex', gap: 14, fontSize: 10, marginBottom: 10 }}>
+                      <span><span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: 2, background: 'var(--accent)', marginRight: 4 }} />Acheteurs</span>
+                      <span><span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: 2, background: 'var(--gold)', marginRight: 4 }} />Vendeurs</span>
+                    </div>
+                    {analytics.months.map((m) => {
+                      const max = Math.max(1, ...analytics.months.map((x) => x.buyers + x.vendors));
+                      return (
+                        <div key={m.key} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                          <span style={{ fontSize: 10, color: 'var(--text-faint)', width: 28 }}>{m.label}</span>
+                          <div style={{ flex: 1, display: 'flex', height: 10, borderRadius: 3, overflow: 'hidden', background: 'var(--surface-2)' }}>
+                            <div style={{ width: `${(m.buyers / max) * 100}%`, background: 'var(--accent)' }} />
+                            <div style={{ width: `${(m.vendors / max) * 100}%`, background: 'var(--gold)' }} />
+                          </div>
+                          <span style={{ fontSize: 10, fontWeight: 700 }}>{m.buyers + m.vendors}</span>
+                        </div>
+                      );
+                    })}
+                  </>
+                )}
+              </div>
+
+              <div className={styles.card}>
+                <div className={styles.cardTitle} style={{ marginBottom: 14 }}>Répartition par pays</div>
+                {Object.keys(analytics.countries).length === 0 ? <div className={styles.empty}>Aucune donnée</div> : Object.entries(analytics.countries).sort((a, b) => b[1].revenue - a[1].revenue).map(([c, v]) => {
+                  const max = Math.max(...Object.values(analytics.countries).map((x) => x.revenue), 1);
                   return (
-                    <div key={s} style={{ marginBottom: 12 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 700, marginBottom: 5 }}><span>{s}</span><strong>{n}</strong></div>
-                      <div style={{ height: 6, background: 'var(--surface-2)', borderRadius: 3, overflow: 'hidden' }}><div style={{ height: '100%', width: `${(n / max) * 100}%`, background: 'var(--accent)' }} /></div>
+                    <div key={c} style={{ marginBottom: 12 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 700, marginBottom: 5 }}><span>{flag(c)}</span><span>{fmt(v.revenue)} · {v.orders} cmd</span></div>
+                      <div style={{ height: 6, background: 'var(--surface-2)', borderRadius: 3, overflow: 'hidden' }}><div style={{ height: '100%', width: `${(v.revenue / max) * 100}%`, background: 'var(--success)' }} /></div>
                     </div>
                   );
                 })}
               </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
               <div className={styles.card}>
-                <div className={styles.cardTitle} style={{ marginBottom: 14 }}>Répartition par pays</div>
-                {Object.keys(analytics.countries).length === 0 ? <div className={styles.empty}>Aucune donnée</div> : Object.entries(analytics.countries).map(([c, n]) => {
-                  const max = Math.max(...Object.values(analytics.countries));
+                <div className={styles.cardTitle} style={{ marginBottom: 14 }}>Top 5 vendeurs (CA livré)</div>
+                {analytics.topVendors.length === 0 ? <div className={styles.empty}>Aucune donnée</div> : analytics.topVendors.map((v, i) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderTop: i > 0 ? '1px solid var(--border)' : 'none', fontSize: 12 }}>
+                    <span style={{ fontWeight: 700 }}>{v.name}</span>
+                    <span style={{ color: 'var(--accent)', fontWeight: 800 }}>{fmt(v.revenue)}</span>
+                  </div>
+                ))}
+              </div>
+              <div className={styles.card}>
+                <div className={styles.cardTitle} style={{ marginBottom: 14 }}>Top catégories (produits actifs)</div>
+                {analytics.topCategories.length === 0 ? <div className={styles.empty}>Aucune donnée</div> : analytics.topCategories.map(([name, count], i) => {
+                  const max = analytics.topCategories[0][1];
                   return (
-                    <div key={c} style={{ marginBottom: 12 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 700, marginBottom: 5 }}><span>{flag(c)}</span><strong>{n}</strong></div>
-                      <div style={{ height: 6, background: 'var(--surface-2)', borderRadius: 3, overflow: 'hidden' }}><div style={{ height: '100%', width: `${(n / max) * 100}%`, background: 'var(--success)' }} /></div>
+                    <div key={name} style={{ marginBottom: 10 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 700, marginBottom: 4 }}><span>{name}</span><strong>{count}</strong></div>
+                      <div style={{ height: 6, background: 'var(--surface-2)', borderRadius: 3, overflow: 'hidden' }}><div style={{ height: '100%', width: `${(count / max) * 100}%`, background: 'var(--accent)' }} /></div>
                     </div>
                   );
                 })}
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div className={styles.card} style={{ padding: 18, borderColor: analytics.vendorsNoProducts > 0 ? 'rgba(239,68,68,.3)' : undefined }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <i className="ph ph-warning" style={{ fontSize: 20, color: analytics.vendorsNoProducts > 0 ? 'var(--error)' : 'var(--success)' }} />
+                  <div>
+                    <div style={{ fontSize: 20, fontWeight: 900 }}>{analytics.vendorsNoProducts}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>Vendeur{analytics.vendorsNoProducts > 1 ? 's' : ''} actif{analytics.vendorsNoProducts > 1 ? 's' : ''} sans produit — à relancer</div>
+                  </div>
+                </div>
+              </div>
+              <div className={styles.card} style={{ padding: 18 }}>
+                <div style={{ display: 'flex', gap: 24 }}>
+                  <div>
+                    <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--gold)' }}>{analytics.reviewStats.avg}★</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>Note moyenne</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 20, fontWeight: 900, color: analytics.reviewStats.pending > 0 ? 'var(--gold)' : 'var(--text)' }}>{analytics.reviewStats.pending}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>Avis à modérer</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 20, fontWeight: 900, color: analytics.reviewStats.lowPct > 15 ? 'var(--error)' : 'var(--text)' }}>{analytics.reviewStats.lowPct}%</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>Avis ≤ 2★</div>
+                  </div>
+                </div>
               </div>
             </div>
           </>
