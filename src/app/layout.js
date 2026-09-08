@@ -19,8 +19,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <head>
-        {/* Police d'icônes utilisée dans tout le site (panier, recherche, menu...) */}
-        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+        {/* Police d'icônes utilisée dans tout le site (panier, recherche, menu...) — auto-hébergée pour ne pas dépendre d'un CDN tiers (lenteur/coupure au premier chargement) */}
+        <link rel="stylesheet" href="/phosphor/style.css" />
       </head>
       <body>
         <CartProvider>
