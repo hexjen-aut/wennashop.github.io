@@ -45,6 +45,9 @@ export default function AdminPage() {
   const [payments, setPayments] = useState([]);
   const [analytics, setAnalytics] = useState({ orders: [], countries: {}, statuses: {} });
 
+  // ── Vitrine — sélection des photos produits (carrousel connexion) ──
+  const [showcaseProducts, setShowcaseProducts] = useState([]);
+
   // ── Paramètres — comptes bancaires ──
   const [bankAccounts, setBankAccounts] = useState([]);
   const [countries, setCountries] = useState([]);
@@ -186,6 +189,24 @@ export default function AdminPage() {
     setAnalytics({ orders: ords, statuses, countries });
   }
 
+  // ── Vitrine ──
+  async function loadShowcase() {
+    const sb = getSupabase();
+    const [{ data: products }, { data: ratings }] = await Promise.all([
+      sb.from('products').select('id,name,image_url,is_featured,shops(name)').eq('status', 'active').not('image_url', 'is', null).order('created_at', { ascending: false }).limit(200),
+      sb.from('product_ratings').select('product_id,avg_rating,review_count'),
+    ]);
+    const ratingMap = new Map((ratings || []).map((r) => [r.product_id, r]));
+    const merged = (products || []).map((p) => ({ ...p, avg_rating: ratingMap.get(p.id)?.avg_rating ?? null, review_count: ratingMap.get(p.id)?.review_count ?? 0 }));
+    merged.sort((a, b) => (b.is_featured - a.is_featured) || (b.avg_rating ?? -1) - (a.avg_rating ?? -1) || b.review_count - a.review_count);
+    setShowcaseProducts(merged);
+  }
+  async function toggleFeatured(id, next) {
+    const sb = getSupabase();
+    await sb.from('products').update({ is_featured: next }).eq('id', id);
+    setShowcaseProducts((prev) => prev.map((p) => (p.id === id ? { ...p, is_featured: next } : p)));
+  }
+
   // ── Paramètres — comptes bancaires ──
   async function loadSettings() {
     const sb = getSupabase();
@@ -238,6 +259,7 @@ export default function AdminPage() {
     if (s === 'reviews') loadReviews();
     if (s === 'payments') loadPayments();
     if (s === 'analytics') loadAnalytics();
+    if (s === 'showcase') loadShowcase();
     if (s === 'settings') loadSettings();
   }
 
@@ -294,6 +316,7 @@ export default function AdminPage() {
         <button className={`${styles.navItem} ${section === 'reviews' ? styles.navItemActive : ''}`} onClick={() => goTo('reviews')}>Avis</button>
         <button className={`${styles.navItem} ${section === 'payments' ? styles.navItemActive : ''}`} onClick={() => goTo('payments')}>Paiements</button>
         <button className={`${styles.navItem} ${section === 'analytics' ? styles.navItemActive : ''}`} onClick={() => goTo('analytics')}>Analytiques</button>
+        <button className={`${styles.navItem} ${section === 'showcase' ? styles.navItemActive : ''}`} onClick={() => goTo('showcase')}>Vitrine</button>
         <button className={`${styles.navItem} ${section === 'settings' ? styles.navItemActive : ''}`} onClick={() => goTo('settings')}>Paramètres</button>
       </aside>
 
@@ -565,6 +588,37 @@ export default function AdminPage() {
                   );
                 })}
               </div>
+            </div>
+          </>
+        )}
+
+        {section === 'showcase' && (
+          <>
+            <div style={{ marginBottom: 18 }}>
+              <h1 style={{ fontSize: 22, fontWeight: 900, marginBottom: 4 }}>Vitrine</h1>
+              <p style={{ fontSize: 12, color: 'var(--text-faint)' }}>Sélectionne les photos affichées en carrousel sur la page de connexion. Les produits "En vitrine" passent en premier ; le reste du carrousel se complète automatiquement avec les mieux notés, triés ci-dessous par note.</p>
+            </div>
+            <div className={styles.card}>
+              <table className={styles.table}>
+                <thead><tr><th></th><th>Produit</th><th>Boutique</th><th>Note</th><th>Vitrine</th></tr></thead>
+                <tbody>
+                  {showcaseProducts.length === 0 ? (
+                    <tr><td colSpan={5} style={{ textAlign: 'center', padding: 30, color: 'var(--text-faint)' }}>Aucun produit actif avec photo</td></tr>
+                  ) : showcaseProducts.map((p) => (
+                    <tr key={p.id}>
+                      <td><img src={p.image_url} alt="" style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 6 }} /></td>
+                      <td>{p.name}</td>
+                      <td style={{ color: 'var(--text-faint)' }}>{p.shops?.name || '—'}</td>
+                      <td style={{ color: 'var(--gold)' }}>{p.avg_rating ? `${stars(p.avg_rating)} (${p.review_count})` : '—'}</td>
+                      <td>
+                        <button className={p.is_featured ? styles.btnSm : styles.btnGhost} onClick={() => toggleFeatured(p.id, !p.is_featured)}>
+                          {p.is_featured ? '✓ En vitrine' : 'Mettre en vitrine'}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </>
         )}

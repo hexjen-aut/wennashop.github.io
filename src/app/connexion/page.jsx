@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
 import styles from './connexion.module.css';
@@ -122,9 +123,30 @@ export default function ConnexionPage() {
   useEffect(() => {
     (async () => {
       const sb = getSupabase();
-      const { data } = await sb.from('products').select('image_url').eq('status', 'active').not('image_url', 'is', null).limit(8);
-      const urls = [...new Set((data || []).map((p) => p.image_url))];
-      setSlides(urls);
+      const cols = 'id,name,image_url,shops(name,slug)';
+      const { data: featured } = await sb.from('products').select(cols).eq('status', 'active').eq('is_featured', true).not('image_url', 'is', null).limit(8);
+      let picked = featured || [];
+
+      if (picked.length < 6) {
+        const { data: ratings } = await sb.from('product_ratings').select('product_id,avg_rating,review_count').order('avg_rating', { ascending: false }).order('review_count', { ascending: false }).limit(20);
+        const excludeIds = new Set(picked.map((p) => p.id));
+        const topIds = (ratings || []).map((r) => r.product_id).filter((id) => !excludeIds.has(id));
+        if (topIds.length) {
+          const { data: topProducts } = await sb.from('products').select(cols).eq('status', 'active').not('image_url', 'is', null).in('id', topIds.slice(0, 8 - picked.length));
+          picked = [...picked, ...(topProducts || [])];
+        }
+      }
+
+      if (picked.length === 0) {
+        const { data: fallback } = await sb.from('products').select(cols).eq('status', 'active').not('image_url', 'is', null).limit(8);
+        picked = fallback || [];
+      }
+
+      const seenUrls = new Set();
+      const items = picked
+        .filter((p) => (seenUrls.has(p.image_url) ? false : (seenUrls.add(p.image_url), true)))
+        .map((p) => ({ url: p.image_url, name: p.name, shopName: p.shops?.name || null, shopSlug: p.shops?.slug || null }));
+      setSlides(items);
     })();
   }, []);
 
@@ -307,11 +329,11 @@ export default function ConnexionPage() {
       {/* PANNEAU GAUCHE */}
       <div className={styles.leftPanel}>
         <div className={styles.leftBg}>
-          {slides.map((url, i) => (
+          {slides.map((slide, i) => (
             <div
-              key={url}
+              key={slide.url}
               className={`${styles.leftSlide} ${i === slideIndex ? styles.leftSlideActive : ''}`}
-              style={{ backgroundImage: `url('${url}')` }}
+              style={{ backgroundImage: `url('${slide.url}')` }}
             />
           ))}
         </div>
@@ -322,6 +344,12 @@ export default function ConnexionPage() {
             L'écosystème qui permet à tout commerçant africain de créer, développer et gérer
             son activité — sans chercher séparément ses clients, ses outils et ses partenaires.
           </p>
+          {slides[slideIndex]?.shopSlug && (
+            <Link href={`/boutique-vendeur?slug=${slides[slideIndex].shopSlug}`} className={styles.shopBadge}>
+              <span className={styles.corridorDot} />
+              Vu chez <strong>{slides[slideIndex].shopName}</strong>
+            </Link>
+          )}
           <div className={styles.corridor}>
             <div className={styles.corridorDot} />
             <span className={styles.corridorLabel}>Afrique</span>

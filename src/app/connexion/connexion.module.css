@@ -28,6 +28,9 @@
 @media (max-width: 900px) { .leftTagline { display: none; } }
 .corridor { display: inline-flex; align-items: center; gap: 10px; background: rgba(255,117,31,.12); border: 1px solid rgba(255,117,31,.25); border-radius: var(--radius-pill); padding: 8px 16px; width: fit-content; }
 @media (max-width: 900px) { .corridor { display: none; } }
+.shopBadge { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); border-radius: var(--radius-pill); padding: 7px 14px; width: fit-content; margin-bottom: 14px; font-size: 12px; color: rgba(255,255,255,.75); text-decoration: none; }
+.shopBadge strong { color: #fff; }
+@media (max-width: 900px) { .shopBadge { display: none; } }
 .corridorDot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
 .corridorLabel { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.7); }
 .corridorSep { width: 1px; height: 12px; background: rgba(255,117,31,.3); }
