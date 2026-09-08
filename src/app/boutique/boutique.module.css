@@ -22,6 +22,8 @@
 .prodCard:hover .prodImg img { transform: scale(1.06); }
 .prodAdd { position: absolute; bottom: 8px; right: 8px; width: 28px; height: 28px; background: var(--accent); border-radius: var(--radius-pill); display: flex; align-items: center; justify-content: center; opacity: 0; transform: scale(.8); transition: opacity .2s, transform .2s; border: none; color: #fff; font-size: 18px; cursor: pointer; }
 .prodCard:hover .prodAdd { opacity: 1; transform: scale(1); }
+/* Sur écran tactile, il n'y a pas de survol : le bouton reste toujours visible */
+@media (hover: none) { .prodAdd { opacity: 1; transform: scale(1); } }
 .prodBadge { position: absolute; top: 8px; left: 8px; background: rgba(10,10,10,.8); border: 1px solid var(--border); border-radius: var(--radius-pill); padding: 3px 8px; font-size: 10px; font-weight: 700; color: var(--text-muted); }
 .prodInfo { padding: 10px 12px 12px; }
 .prodCat { font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 3px; }
@@ -68,6 +70,9 @@
 
 /* ── TOOLBAR EXTRAS ── */
 .btnCatsPanel { display: inline-flex; align-items: center; gap: 7px; background: var(--accent-light); border: 1px solid var(--border-accent); border-radius: var(--radius-pill); color: var(--accent); padding: 6px 16px; font-size: 12px; font-weight: 700; font-family: var(--font); flex-shrink: 0; white-space: nowrap; cursor: pointer; }
+.btnFiltersPanel { display: none; position: relative; align-items: center; gap: 7px; background: transparent; border: 1.5px solid var(--border); border-radius: var(--radius-pill); color: var(--text-muted); padding: 6px 16px; font-size: 12px; font-weight: 700; font-family: var(--font); flex-shrink: 0; white-space: nowrap; cursor: pointer; }
+.filtersDot { position: absolute; top: 4px; right: 8px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+@media (max-width: 1024px) { .btnFiltersPanel { display: inline-flex; } }
 .btnBoostToolbar { display: inline-flex; align-items: center; gap: 6px; border: 1px solid rgba(245,158,11,.35); border-radius: var(--radius-pill); background: var(--gold-light); color: var(--gold); padding: 6px 16px; font-size: 12px; font-weight: 700; font-family: var(--font); cursor: pointer; white-space: nowrap; }
 .btnQueteToolbar { display: inline-flex; align-items: center; gap: 5px; border: 1px solid rgba(245,158,11,.35); border-radius: var(--radius-pill); background: var(--gold-light); color: var(--gold); padding: 6px 14px; font-size: 12px; font-weight: 700; text-decoration: none; white-space: nowrap; font-family: var(--font); }
 .viewBtns { display: flex; gap: 2px; }
@@ -96,6 +101,8 @@
 .catPanelOverlayOpen { opacity: 1; pointer-events: all; }
 .catPanel { position: fixed; top: 0; left: 0; bottom: 0; z-index: 401; width: 340px; max-width: 90vw; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; transform: translateX(-100%); transition: transform .35s cubic-bezier(.22,1,.36,1); overflow: hidden; }
 .catPanelOpen { transform: translateX(0); }
+.filtersPanel { position: fixed; top: 0; right: 0; bottom: 0; z-index: 401; width: 340px; max-width: 90vw; background: var(--surface); border-left: 1px solid var(--border); display: flex; flex-direction: column; transform: translateX(100%); transition: transform .35s cubic-bezier(.22,1,.36,1); overflow: hidden; }
+.filtersPanelOpen { transform: translateX(0); }
 .cpHead { padding: 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
 .cpEyebrow { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
 .cpTitle { font-size: 20px; font-weight: 800; }
@@ -217,6 +224,12 @@
   .prodGrid, .cols3, .cols4 { grid-template-columns: repeat(2,1fr); }
   .bnav { display: block; }
   .floatPanel { bottom: 88px; }
+  /* .toolbarRight avait flex-shrink:0 avec des contrôles non compressibles
+     (devise, tri, vues) — ça poussait toute la page ~244px plus large que
+     l'écran (défilement horizontal involontaire). On la laisse maintenant
+     rétrécir et passer à la ligne. */
+  .toolbarRight { flex-shrink: 1; flex-wrap: wrap; justify-content: flex-end; row-gap: 8px; }
+  .resultsCount { flex-basis: 100%; text-align: right; order: 1; }
 }
 @media (max-width: 640px) {
   .floatBoost, .floatQuetes { left: 16px; right: 16px; width: auto; }

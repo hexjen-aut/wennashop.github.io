@@ -609,7 +609,7 @@ export default function VendeurPage() {
               </div>
             </div>
 
-            <div className={styles.twoCol}>
+            <div className={styles.twoColGrid}>
               <div className={styles.card}>
                 <div className={styles.cardHead}><div className={styles.cardTitle}>Commandes récentes</div><button className={styles.linkBtn} onClick={() => showSection('orders')}>Voir tout</button></div>
                 {recentOrders.length === 0 ? <div className={styles.empty}>Aucune commande pour l'instant.</div> : recentOrders.map((o) => (
@@ -659,14 +659,14 @@ export default function VendeurPage() {
                       <tr><td colSpan={5} className={styles.empty}>Aucun produit</td></tr>
                     ) : products.map((p) => (
                       <tr key={p.id}>
-                        <td style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <td style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 10, fontWeight: 700 }}>
                           {p.image_url ? <img src={p.image_url} alt="" style={{ width: 34, height: 34, objectFit: 'cover', borderRadius: 6 }} /> : <div style={{ width: 34, height: 34, background: 'var(--surface-2)', borderRadius: 6 }} />}
                           {p.name}
                         </td>
-                        <td style={{ color: 'var(--accent)', fontWeight: 700 }}>{fmt(p.price)}</td>
-                        <td>{p.stock}</td>
-                        <td><span className={styles.badge} style={{ background: `${STATUS_COLOR[p.status]}22`, color: STATUS_COLOR[p.status] }}>{STATUS_LABEL[p.status] || p.status}</span></td>
-                        <td style={{ display: 'flex', gap: 10 }}>
+                        <td data-label="Prix" style={{ color: 'var(--accent)', fontWeight: 700 }}>{fmt(p.price)}</td>
+                        <td data-label="Stock">{p.stock}</td>
+                        <td data-label="Statut"><span className={styles.badge} style={{ background: `${STATUS_COLOR[p.status]}22`, color: STATUS_COLOR[p.status] }}>{STATUS_LABEL[p.status] || p.status}</span></td>
+                        <td data-label="Actions" style={{ display: 'flex', gap: 10 }}>
                           <button className={styles.linkBtn} onClick={() => openProductModal(p)}>Modifier</button>
                           <button className={styles.btnDanger} onClick={() => setDeleteTarget(p.id)}>Suppr.</button>
                         </td>
@@ -710,12 +710,12 @@ export default function VendeurPage() {
                       <tr><td colSpan={6} className={styles.empty}>Aucune commande</td></tr>
                     ) : orders.map((o) => (
                       <tr key={o.id}>
-                        <td style={{ fontFamily: 'monospace' }}>#{o.id.slice(0, 8).toUpperCase()}</td>
-                        <td>{o.shipping_name || '—'}</td>
-                        <td style={{ color: 'var(--accent)', fontWeight: 700 }}>{fmt(o.total_amount, o.currency)}</td>
-                        <td><span className={styles.badge} style={{ background: `${STATUS_COLOR[o.status]}22`, color: STATUS_COLOR[o.status] }}>{STATUS_LABEL[o.status] || o.status}</span></td>
-                        <td>{o.tracking_number ? <span style={{ fontFamily: 'monospace', fontSize: 10 }}>{o.tracking_number}</span> : '—'}</td>
-                        <td><button className={styles.linkBtn} onClick={() => openOrderModal(o)}>Détail</button></td>
+                        <td data-label="Réf." style={{ fontFamily: 'monospace' }}>#{o.id.slice(0, 8).toUpperCase()}</td>
+                        <td data-label="Client">{o.shipping_name || '—'}</td>
+                        <td data-label="Montant" style={{ color: 'var(--accent)', fontWeight: 700 }}>{fmt(o.total_amount, o.currency)}</td>
+                        <td data-label="Statut"><span className={styles.badge} style={{ background: `${STATUS_COLOR[o.status]}22`, color: STATUS_COLOR[o.status] }}>{STATUS_LABEL[o.status] || o.status}</span></td>
+                        <td data-label="Suivi">{o.tracking_number ? <span style={{ fontFamily: 'monospace', fontSize: 10 }}>{o.tracking_number}</span> : '—'}</td>
+                        <td data-label="Actions"><button className={styles.linkBtn} onClick={() => openOrderModal(o)}>Détail</button></td>
                       </tr>
                     ))}
                   </tbody>
@@ -744,12 +744,12 @@ export default function VendeurPage() {
                       <tr><td colSpan={6} className={styles.empty}>Aucun paiement</td></tr>
                     ) : payments.map((p) => (
                       <tr key={p.id}>
-                        <td style={{ fontFamily: 'monospace' }}>#{p.order_id.slice(0, 8).toUpperCase()}</td>
-                        <td>{fmt(p.amount, p.currency)}</td>
-                        <td style={{ color: 'var(--error)' }}>-{fmt(p.commission, p.currency)}</td>
-                        <td style={{ color: 'var(--success)', fontWeight: 700 }}>{fmt(p.net, p.currency)}</td>
-                        <td style={{ fontSize: 11, color: 'var(--text-faint)' }}>{fmtDate(p.created_at)}</td>
-                        <td><span className={styles.badge} style={{ background: `${STATUS_COLOR[p.status] || '#555'}22`, color: STATUS_COLOR[p.status] || 'var(--text-muted)' }}>{STATUS_LABEL[p.status] || p.status}</span></td>
+                        <td data-label="Réf." style={{ fontFamily: 'monospace' }}>#{p.order_id.slice(0, 8).toUpperCase()}</td>
+                        <td data-label="Brut">{fmt(p.amount, p.currency)}</td>
+                        <td data-label="Comm." style={{ color: 'var(--error)' }}>-{fmt(p.commission, p.currency)}</td>
+                        <td data-label="Net" style={{ color: 'var(--success)', fontWeight: 700 }}>{fmt(p.net, p.currency)}</td>
+                        <td data-label="Date" style={{ fontSize: 11, color: 'var(--text-faint)' }}>{fmtDate(p.created_at)}</td>
+                        <td data-label="Statut"><span className={styles.badge} style={{ background: `${STATUS_COLOR[p.status] || '#555'}22`, color: STATUS_COLOR[p.status] || 'var(--text-muted)' }}>{STATUS_LABEL[p.status] || p.status}</span></td>
                       </tr>
                     ))}
                   </tbody>

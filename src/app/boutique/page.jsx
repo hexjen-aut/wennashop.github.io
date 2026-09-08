@@ -53,6 +53,7 @@ export default function BoutiquePage() {
   // Panneaux
   const [catPanelOpen, setCatPanelOpen] = useState(false);
   const [catPanelFilter, setCatPanelFilter] = useState('');
+  const [filtersPanelOpen, setFiltersPanelOpen] = useState(false);
   const [boostPanelOpen, setBoostPanelOpen] = useState(false);
   const [boostedShops, setBoostedShops] = useState([]);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -289,6 +290,10 @@ export default function BoutiquePage() {
         <button className={styles.btnCatsPanel} onClick={() => setCatPanelOpen(true)}>
           <i className="ph ph-squares-four" /> Catégories
         </button>
+        <button className={styles.btnFiltersPanel} onClick={() => setFiltersPanelOpen(true)}>
+          <i className="ph ph-funnel" /> Filtres
+          {(countries.length > 0 || stockOnly || priceMin > 0 || priceMax < 100000) && <span className={styles.filtersDot} />}
+        </button>
         <div className={styles.catsScroll}>
           <button className={`${styles.catBtn} ${!catId ? styles.catBtnActive : ''}`} onClick={() => { setCatId(''); setPage(1); }}>Tout</button>
           {categories.map((c) => (
@@ -443,6 +448,47 @@ export default function BoutiquePage() {
         <div className={styles.cpFooter}>
           <button className={styles.cpBtnAll} onClick={() => { setCatId(''); setPage(1); setCatPanelOpen(false); }}>Tout afficher</button>
           <button className={styles.cpBtnReset} onClick={() => setCatPanelOpen(false)}>Retour</button>
+        </div>
+      </div>
+
+      {/* Panneau filtres (mobile — la sidebar desktop est masquée sous 1024px) */}
+      <div className={`${styles.catPanelOverlay} ${filtersPanelOpen ? styles.catPanelOverlayOpen : ''}`} onClick={() => setFiltersPanelOpen(false)} />
+      <div className={`${styles.filtersPanel} ${filtersPanelOpen ? styles.filtersPanelOpen : ''}`}>
+        <div className={styles.cpHead}>
+          <div><div className={styles.cpEyebrow}>Affiner</div><div className={styles.cpTitle}>Filtres</div></div>
+          <button className={styles.cpClose} onClick={() => setFiltersPanelOpen(false)}><i className="ph ph-x" /></button>
+        </div>
+        <div className={styles.cpBody} style={{ padding: '16px' }}>
+          <div className={styles.filterSection}>
+            <div className={styles.filterTitle}>Recherche</div>
+            <input className={styles.filterSearch} type="search" placeholder="Nom, produit…" value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }} />
+          </div>
+          <div className={styles.filterSection}>
+            <div className={styles.filterTitle}>Origine</div>
+            {COUNTRIES.map((c) => (
+              <div className={styles.checkRow} key={c}>
+                <input type="checkbox" id={`fm-${c}`} checked={countries.includes(c)} onChange={() => toggleCountry(c)} />
+                <label htmlFor={`fm-${c}`}>{c}</label>
+              </div>
+            ))}
+          </div>
+          <div className={styles.filterSection}>
+            <div className={styles.filterTitle}>Prix — <span className={styles.priceDisplay}>{priceMin.toLocaleString('fr-FR')} – {priceMax.toLocaleString('fr-FR')} MAD</span></div>
+            <div className={styles.priceRange}>
+              <input type="range" min="0" max="100000" step="500" value={priceMin} onChange={(e) => setPriceMin(Number(e.target.value))} onMouseUp={() => setPage(1)} onTouchEnd={() => setPage(1)} />
+              <input type="range" min="0" max="100000" step="500" value={priceMax} onChange={(e) => setPriceMax(Number(e.target.value))} onMouseUp={() => setPage(1)} onTouchEnd={() => setPage(1)} />
+            </div>
+          </div>
+          <div className={styles.filterSection}>
+            <div className={styles.checkRow}>
+              <input type="checkbox" id="fm-stock" checked={stockOnly} onChange={(e) => { setStockOnly(e.target.checked); setPage(1); }} />
+              <label htmlFor="fm-stock">En stock uniquement</label>
+            </div>
+          </div>
+        </div>
+        <div className={styles.cpFooter}>
+          <button className={styles.cpBtnAll} onClick={() => setFiltersPanelOpen(false)}>Voir les résultats</button>
+          <button className={styles.cpBtnReset} onClick={() => { resetFilters(); setFiltersPanelOpen(false); }}>Réinitialiser</button>
         </div>
       </div>
 
