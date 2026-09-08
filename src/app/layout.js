@@ -1,5 +1,6 @@
 import './globals.css';
 import { CartProvider } from '@/context/CartContext';
+import { Analytics } from '@vercel/analytics/next';
 
 export const metadata = {
   title: 'WennaShop — Marketplace africain',
@@ -27,6 +28,7 @@ export default function RootLayout({ children }) {
           {children}
           <div id="toast" />
         </CartProvider>
+        <Analytics />
       </body>
     </html>
   );
