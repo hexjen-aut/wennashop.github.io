@@ -139,7 +139,9 @@ function PaiementContent() {
                 )}
               </div>
               {method === 'virement' && (() => {
-                const account = bankAccounts.find((a) => a.currency === order?.currency) || bankAccounts[0];
+                const account = bankAccounts.find((a) => a.country_name === form.country)
+                  || bankAccounts.find((a) => a.currency === order?.currency)
+                  || bankAccounts[0];
                 if (!account) return null;
                 return (
                   <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, padding: '12px 14px', marginTop: 14, fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>

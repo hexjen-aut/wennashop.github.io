@@ -47,8 +47,9 @@ export default function AdminPage() {
 
   // ── Paramètres — comptes bancaires ──
   const [bankAccounts, setBankAccounts] = useState([]);
+  const [countries, setCountries] = useState([]);
   const [bankModalOpen, setBankModalOpen] = useState(false);
-  const [bankForm, setBankForm] = useState({ idx: null, currency: 'MAD', bank_name: '', holder: '', rib: '', swift: '' });
+  const [bankForm, setBankForm] = useState({ idx: null, country_code: '', bank_name: '', holder: '', rib: '', swift: '' });
 
   useEffect(() => { checkAuth(); }, []);
 
@@ -188,13 +189,17 @@ export default function AdminPage() {
   // ── Paramètres — comptes bancaires ──
   async function loadSettings() {
     const sb = getSupabase();
-    const { data } = await sb.from('site_config').select('value').eq('key', 'bank_accounts').maybeSingle();
+    const [{ data }, { data: countryRows }] = await Promise.all([
+      sb.from('site_config').select('value').eq('key', 'bank_accounts').maybeSingle(),
+      sb.from('countries').select('code,name,currency_code,flag_emoji').eq('status', 'ACTIVE').order('sort_order'),
+    ]);
     let list = [];
     if (data?.value) { try { list = JSON.parse(data.value); } catch { list = []; } }
     setBankAccounts(Array.isArray(list) ? list : []);
+    setCountries(countryRows || []);
   }
   function openAddBankAccount() {
-    setBankForm({ idx: null, currency: 'MAD', bank_name: '', holder: '', rib: '', swift: '' });
+    setBankForm({ idx: null, country_code: countries[0]?.code || '', bank_name: '', holder: '', rib: '', swift: '' });
     setBankModalOpen(true);
   }
   function openEditBankAccount(idx) {
@@ -208,8 +213,11 @@ export default function AdminPage() {
     setBankAccounts(list);
   }
   async function saveBankAccount() {
+    if (!bankForm.country_code) { alert('Pays requis'); return; }
     if (!bankForm.bank_name.trim() || !bankForm.rib.trim()) { alert('Banque et RIB requis'); return; }
-    const { idx, ...entry } = bankForm;
+    const country = countries.find((c) => c.code === bankForm.country_code);
+    const { idx, ...form } = bankForm;
+    const entry = { ...form, country_name: country?.name || '', flag: country?.flag_emoji || '', currency: country?.currency_code || '' };
     const next = [...bankAccounts];
     if (idx === null) next.push(entry); else next[idx] = entry;
     await persistBankAccounts(next);
@@ -570,12 +578,13 @@ export default function AdminPage() {
               <div className={styles.cardTitle} style={{ marginBottom: 4 }}>Comptes bancaires — virement</div>
               <p style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 14 }}>Affichés aux acheteurs qui choisissent "Virement bancaire" au paiement. Un compte par devise si besoin.</p>
               <table className={styles.table}>
-                <thead><tr><th>Devise</th><th>Banque</th><th>Titulaire</th><th>RIB</th><th>SWIFT</th><th></th></tr></thead>
+                <thead><tr><th>Pays</th><th>Devise</th><th>Banque</th><th>Titulaire</th><th>RIB</th><th>SWIFT</th><th></th></tr></thead>
                 <tbody>
                   {bankAccounts.length === 0 ? (
-                    <tr><td colSpan={6} style={{ textAlign: 'center', padding: 30, color: 'var(--text-faint)' }}>Aucun compte — le virement bancaire est masqué au paiement tant qu'aucun compte n'est ajouté.</td></tr>
+                    <tr><td colSpan={7} style={{ textAlign: 'center', padding: 30, color: 'var(--text-faint)' }}>Aucun compte — le virement bancaire est masqué au paiement tant qu'aucun compte n'est ajouté.</td></tr>
                   ) : bankAccounts.map((a, i) => (
                     <tr key={i}>
+                      <td>{a.flag} {a.country_name}</td>
                       <td>{a.currency}</td>
                       <td>{a.bank_name}</td>
                       <td style={{ color: 'var(--text-faint)' }}>{a.holder || '—'}</td>
@@ -638,10 +647,9 @@ export default function AdminPage() {
           <div className={styles.modalBox} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHead}>{bankForm.idx === null ? 'Nouveau compte' : 'Modifier le compte'}</div>
             <div className={styles.modalBody}>
-              <select className={styles.input} value={bankForm.currency} onChange={(e) => setBankForm({ ...bankForm, currency: e.target.value })}>
-                <option value="MAD">MAD — Maroc</option>
-                <option value="XAF">XAF — Gabon</option>
-                <option value="EUR">EUR</option>
+              <select className={styles.input} value={bankForm.country_code} onChange={(e) => setBankForm({ ...bankForm, country_code: e.target.value })}>
+                <option value="">— Pays * —</option>
+                {countries.map((c) => <option key={c.code} value={c.code}>{c.flag_emoji} {c.name} — {c.currency_code}</option>)}
               </select>
               <input className={styles.input} placeholder="Banque *" value={bankForm.bank_name} onChange={(e) => setBankForm({ ...bankForm, bank_name: e.target.value })} />
               <input className={styles.input} placeholder="Titulaire du compte" value={bankForm.holder} onChange={(e) => setBankForm({ ...bankForm, holder: e.target.value })} />
