@@ -28,6 +28,39 @@ function timeAgo(d) {
 }
 const PAGE_SIZE = 10;
 
+const TOUR_STEPS = [
+  { navKey: 'overview', title: "Vue d'ensemble", text: "Ton tableau de bord : ventes, commandes récentes, stock faible et tes objectifs, en un coup d'œil." },
+  { navKey: 'products', title: 'Mes produits', text: "Ajoute et gère les produits que tu vends. C'est le cœur de ta boutique." },
+  { navKey: 'orders', title: 'Commandes', text: 'Suis chaque commande et marque-la comme expédiée avec un numéro de suivi.' },
+  { navKey: 'revenue', title: 'Revenus', text: "Ton chiffre d'affaires et l'historique détaillé de tes paiements." },
+  { navKey: 'shop', title: 'Ma boutique', text: 'Personnalise ta vitrine publique : logo, bannière, réseaux sociaux.' },
+  { navKey: 'new-product', title: 'Nouveau produit', text: 'Ce bouton reste accessible partout pour ajouter rapidement un produit.' },
+];
+
+function shopCompletionScore(shop, activeProductCount) {
+  const checks = [
+    !!shop?.name,
+    !!shop?.bio,
+    !!shop?.logo_url,
+    !!shop?.banner_url,
+    !!(shop?.whatsapp || shop?.instagram || shop?.facebook || shop?.tiktok),
+    activeProductCount > 0,
+  ];
+  return Math.round((checks.filter(Boolean).length / checks.length) * 100);
+}
+
+function goalProgress(goal, overview) {
+  const value = {
+    revenue: goal.period === 'monthly' ? overview.monthRevenue : overview.revenue,
+    orders_count: goal.period === 'monthly' ? overview.monthOrders : overview.orders,
+    products_count: overview.products,
+    shop_completion: overview.shopCompletion,
+  }[goal.metric];
+  if (value == null) return null; // 'custom' — pas de barre de progression
+  const target = Number(goal.target_value) || 1;
+  return { value, target, pct: Math.min(100, Math.round((value / target) * 100)) };
+}
+
 export default function VendeurPage() {
   const router = useRouter();
 
@@ -50,11 +83,15 @@ export default function VendeurPage() {
   const [pushToast, setPushToast] = useState(null);
 
   // Overview
-  const [overview, setOverview] = useState({ products: 0, orders: 0, revenue: 0, rating: 0 });
+  const [overview, setOverview] = useState({ products: 0, orders: 0, revenue: 0, rating: 0, monthRevenue: 0, monthOrders: 0, shopCompletion: 0 });
   const [recentOrders, setRecentOrders] = useState([]);
   const [lowStock, setLowStock] = useState([]);
   const [openQuests, setOpenQuests] = useState({ count: 0, reward: 0 });
   const [chartData, setChartData] = useState([]);
+  const [goals, setGoals] = useState([]);
+
+  // Tutoriel interactif
+  const [tourStep, setTourStep] = useState(null); // null = pas en cours
 
   // Products
   const [products, setProducts] = useState([]);
@@ -145,9 +182,13 @@ export default function VendeurPage() {
       }
       setMyOrderIds(orderIds);
 
+      const { data: goalRows } = await sb.from('platform_goals').select('*').eq('is_active', true).in('audience', ['artisan', 'all']).order('created_at', { ascending: false });
+      setGoals(goalRows || []);
+
       await loadOverview(sb, user, shopRow, prodIds, orderIds);
       await loadNotifications(sb, user.id);
       setChecking(false);
+      if (!user.onboarding_completed_at) setTourStep(0);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -186,11 +227,18 @@ export default function VendeurPage() {
       ordersList = o || [];
     }
     const delivered = ordersList.filter((o) => o.status === 'delivered');
+    const now0 = new Date();
+    const isThisMonth = (d) => { const x = new Date(d); return x.getFullYear() === now0.getFullYear() && x.getMonth() === now0.getMonth(); };
+    const monthOrdersList = ordersList.filter((o) => isThisMonth(o.created_at));
+    const monthDelivered = delivered.filter((o) => isThisMonth(o.created_at));
     setOverview({
       products: activeProds?.count ?? 0,
       orders: ordersList.length,
       revenue: delivered.reduce((s, o) => s + Number(o.total_amount || 0), 0),
       rating: shopRow?.rating_avg ? Number(shopRow.rating_avg).toFixed(1) : '—',
+      monthRevenue: monthDelivered.reduce((s, o) => s + Number(o.total_amount || 0), 0),
+      monthOrders: monthOrdersList.length,
+      shopCompletion: shopCompletionScore(shopRow, prodIds.length),
     });
     setRecentOrders(ordersList.slice(0, 5));
 
@@ -498,6 +546,17 @@ export default function VendeurPage() {
 
   function showSection(s) { setSection(s); setSidebarOpen(false); }
 
+  async function endTour() {
+    setTourStep(null);
+    const sb = getSupabase();
+    await sb.from('users').update({ onboarding_completed_at: new Date().toISOString() }).eq('id', seller.id);
+    setSeller((prev) => ({ ...prev, onboarding_completed_at: new Date().toISOString() }));
+  }
+  function nextTourStep() {
+    if (tourStep < TOUR_STEPS.length - 1) setTourStep(tourStep + 1);
+    else endTour();
+  }
+
   if (checking) return <div style={{ padding: 60, textAlign: 'center', color: 'var(--text-faint)', minHeight: '100vh' }}>Vérification du compte…</div>;
 
   const maxChart = Math.max(1, ...chartData.map((m) => m.total));
@@ -535,7 +594,7 @@ export default function VendeurPage() {
           ['shop', 'ph-storefront', 'Ma boutique'],
           ['profile', 'ph-user', 'Mon profil'],
         ].map(([key, icon, label]) => (
-          <button key={key} className={`${styles.navItem} ${section === key ? styles.navItemActive : ''}`} onClick={() => showSection(key)}>
+          <button key={key} className={`${styles.navItem} ${section === key ? styles.navItemActive : ''} ${tourStep !== null && TOUR_STEPS[tourStep]?.navKey === key ? styles.tourHighlight : ''}`} onClick={() => showSection(key)}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}><i className={`ph ${icon}`} />{label}</span>
             {key === 'orders' && orders.filter((o) => o.status === 'pending').length > 0 && <span className={styles.navBadge}>{orders.filter((o) => o.status === 'pending').length}</span>}
           </button>
@@ -556,7 +615,8 @@ export default function VendeurPage() {
               <i className="ph ph-bell" />
               {unreadCount > 0 && <span className={styles.notifDot}>{unreadCount}</span>}
             </button>
-            <button className={styles.btnPrimary} onClick={() => { showSection('products'); openProductModal(); }}><i className="ph ph-plus" /> Nouveau produit</button>
+            <button className={`${styles.btnPrimary} ${tourStep !== null && TOUR_STEPS[tourStep]?.navKey === 'new-product' ? styles.tourHighlight : ''}`} onClick={() => { showSection('products'); openProductModal(); }}><i className="ph ph-plus" /> Nouveau produit</button>
+            <button className={styles.linkBtn} title="Revoir le tutoriel" onClick={() => setTourStep(0)}><i className="ph ph-question" /></button>
           </div>
         </div>
 
@@ -567,6 +627,54 @@ export default function VendeurPage() {
               <i className="ph ph-percent" style={{ fontSize: 20, color: 'var(--accent)' }} />
               <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>Commission WennaShop : <strong style={{ color: 'var(--text)' }}>{shop?.commission_rate || 8}%</strong> par vente.</span>
             </div>
+
+            {overview.shopCompletion < 100 && (
+              <div className={styles.card} style={{ marginBottom: 14, padding: 18 }}>
+                <div className={styles.cardHead} style={{ marginBottom: 12 }}>
+                  <div className={styles.cardTitle}>Premiers pas</div>
+                  <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--accent)' }}>{overview.shopCompletion}%</span>
+                </div>
+                <div style={{ height: 6, background: 'var(--surface-2)', borderRadius: 3, overflow: 'hidden', marginBottom: 14 }}>
+                  <div style={{ height: '100%', width: `${overview.shopCompletion}%`, background: 'var(--accent)' }} />
+                </div>
+                {[
+                  { done: !!shop?.name, label: 'Nommer ma boutique', section: 'shop' },
+                  { done: !!shop?.bio, label: 'Ajouter une description', section: 'shop' },
+                  { done: !!shop?.logo_url, label: 'Ajouter un logo', section: 'shop' },
+                  { done: !!shop?.banner_url, label: 'Ajouter une bannière', section: 'shop' },
+                  { done: !!(shop?.whatsapp || shop?.instagram || shop?.facebook || shop?.tiktok), label: 'Ajouter un réseau social', section: 'shop' },
+                  { done: overview.products > 0, label: 'Ajouter mon premier produit', section: 'products' },
+                ].map((step, i) => (
+                  <div key={i} onClick={() => showSection(step.section)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', cursor: 'pointer', borderTop: i > 0 ? '1px solid var(--border)' : 'none' }}>
+                    <i className={`ph ${step.done ? 'ph-check-circle' : 'ph-circle'}`} style={{ fontSize: 18, color: step.done ? 'var(--success)' : 'var(--text-faint)' }} />
+                    <span style={{ fontSize: 12, fontWeight: 700, color: step.done ? 'var(--text-faint)' : 'var(--text)', textDecoration: step.done ? 'line-through' : 'none' }}>{step.label}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {goals.length > 0 && (
+              <div className={styles.card} style={{ marginBottom: 14, padding: 18 }}>
+                <div className={styles.cardTitle} style={{ marginBottom: 12 }}>🎯 Objectifs</div>
+                {goals.map((goal) => {
+                  const p = goalProgress(goal, overview);
+                  return (
+                    <div key={goal.id} style={{ marginBottom: 14 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 700, marginBottom: 4 }}>
+                        <span>{goal.title}</span>
+                        {p && <span style={{ color: 'var(--text-faint)' }}>{goal.metric === 'revenue' ? fmt(p.value) : p.value} / {goal.metric === 'revenue' ? fmt(p.target) : p.target}</span>}
+                      </div>
+                      {goal.description && <div style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 6 }}>{goal.description}</div>}
+                      {p && (
+                        <div style={{ height: 6, background: 'var(--surface-2)', borderRadius: 3, overflow: 'hidden' }}>
+                          <div style={{ height: '100%', width: `${p.pct}%`, background: p.pct >= 100 ? 'var(--success)' : 'var(--accent)' }} />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
 
             {openQuests.count > 0 && (
               <div className={styles.card} onClick={() => router.push('/quetes')} style={{ padding: '14px 18px', marginBottom: 14, cursor: 'pointer', background: 'var(--gold-light)', border: '1px solid rgba(245,158,11,.3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
@@ -1162,6 +1270,19 @@ export default function VendeurPage() {
         <button className={styles.bnItem} onClick={() => setSidebarOpen(true)}><i className="ph ph-dots-three-outline" /><span>Plus</span></button>
       </nav>
       <button className={styles.fab} onClick={() => { showSection('products'); openProductModal(); }}><i className="ph ph-plus" /></button>
+
+      {/* ── TUTORIEL INTERACTIF ── */}
+      {tourStep !== null && (
+        <div className={styles.tourPanel}>
+          <div className={styles.tourStepLabel}>Étape {tourStep + 1}/{TOUR_STEPS.length}</div>
+          <div className={styles.tourTitle}>{TOUR_STEPS[tourStep].title}</div>
+          <p className={styles.tourText}>{TOUR_STEPS[tourStep].text}</p>
+          <div className={styles.tourActions}>
+            <button className={styles.linkBtn} onClick={endTour}>Passer</button>
+            <button className={styles.btnPrimary} onClick={nextTourStep}>{tourStep === TOUR_STEPS.length - 1 ? "C'est parti !" : 'Suivant'}</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

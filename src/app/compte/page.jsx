@@ -22,6 +22,8 @@ export default function ComptePage() {
   const [cartOpen, setCartOpen] = useState(false);
   const [profile, setProfile] = useState(null);
   const [orders, setOrders] = useState([]);
+  const [buyerStats, setBuyerStats] = useState({ orderCount: 0, totalSpent: 0 });
+  const [buyerGoals, setBuyerGoals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('commandes');
   const [mode, setMode] = useState('client'); // client | vendeur
@@ -80,6 +82,14 @@ export default function ComptePage() {
 
         const { data: addrs } = await sb.from('addresses').select('*').eq('user_id', p.id).order('created_at', { ascending: false });
         setAddresses(addrs || []);
+
+        const [{ count: orderCount }, { data: deliveredOrders }, { data: goalRows }] = await Promise.all([
+          sb.from('orders').select('id', { count: 'exact', head: true }).eq('user_id', p.id),
+          sb.from('orders').select('total_amount').eq('user_id', p.id).eq('status', 'delivered'),
+          sb.from('platform_goals').select('*').eq('is_active', true).in('audience', ['buyer', 'all']),
+        ]);
+        setBuyerStats({ orderCount: orderCount || 0, totalSpent: (deliveredOrders || []).reduce((s, o) => s + Number(o.total_amount || 0), 0) });
+        setBuyerGoals(goalRows || []);
 
         if (p.role === 'artisan' || p.role === 'admin') {
           await loadVendeurData(sb, p.id);
@@ -365,6 +375,28 @@ export default function ComptePage() {
 
         {mode === 'client' && (
           <>
+            <div className={styles.card} style={{ marginBottom: 16, padding: 16, display: 'flex', flexWrap: 'wrap', gap: 24, alignItems: 'center' }}>
+              <div>
+                <div style={{ fontSize: 20, fontWeight: 900 }}>{buyerStats.orderCount}</div>
+                <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>Commande{buyerStats.orderCount > 1 ? 's' : ''}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--accent)' }}>{fmt(buyerStats.totalSpent)}</div>
+                <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>Total dépensé</div>
+              </div>
+              {buyerGoals.map((g) => (
+                <div key={g.id} style={{ flex: '1 1 220px', minWidth: 200 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700 }}>{g.title}</div>
+                  {g.description && <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>{g.description}</div>}
+                  {g.metric === 'orders_count' && (
+                    <div style={{ height: 5, background: 'var(--surface-2)', borderRadius: 3, overflow: 'hidden', marginTop: 5 }}>
+                      <div style={{ height: '100%', width: `${Math.min(100, (buyerStats.orderCount / (Number(g.target_value) || 1)) * 100)}%`, background: 'var(--accent)' }} />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
             <div className={styles.tabs}>
               <button className={`${styles.tab} ${tab === 'commandes' ? styles.tabActive : ''}`} onClick={() => setTab('commandes')}>Commandes</button>
               <button className={`${styles.tab} ${tab === 'adresses' ? styles.tabActive : ''}`} onClick={() => setTab('adresses')}>Adresses</button>
