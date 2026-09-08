@@ -6,6 +6,12 @@ import Link from 'next/link';
 import { getSupabase } from '@/lib/supabase';
 import { COUNTRY_NAMES as COUNTRIES } from '@/lib/geo';
 import styles from './vendeur.module.css';
+import bvStyles from '../boutique-vendeur/boutique-vendeur.module.css';
+
+function shopInitials(name) {
+  if (!name) return 'W';
+  return name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2);
+}
 
 // ─────────────────────────────────────────────────────────
 // Constantes
@@ -101,6 +107,7 @@ export default function VendeurPage() {
 
   // Shop form
   const [shopForm, setShopForm] = useState({ name: '', slug: '', bio: '', city: '', country: 'Maroc', logo_url: '', banner_url: '', whatsapp: '', instagram: '', facebook: '', tiktok: '', shop_policies: '' });
+  const [shopPreviewOpen, setShopPreviewOpen] = useState(false);
 
   // Profile form
   const [profileForm, setProfileForm] = useState({ first_name: '', last_name: '', specialty: '', country: 'Maroc' });
@@ -862,9 +869,74 @@ export default function VendeurPage() {
               <div className={styles.formGroup}><label className={styles.formLabel}>TikTok</label><input className={styles.input} value={shopForm.tiktok} onChange={(e) => setShopForm({ ...shopForm, tiktok: e.target.value })} /></div>
             </div>
             <div className={styles.formGroup}><label className={styles.formLabel}>Politique (retours, délais…)</label><textarea className={styles.input} rows={3} value={shopForm.shop_policies} onChange={(e) => setShopForm({ ...shopForm, shop_policies: e.target.value })} /></div>
-            <button type="submit" className={styles.btnPrimary} style={{ alignSelf: 'flex-start' }}><i className="ph ph-floppy-disk" /> Enregistrer</button>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button type="button" className={styles.btnGhost} onClick={() => setShopPreviewOpen(true)}><i className="ph ph-eye" /> Prévisualiser</button>
+              <button type="submit" className={styles.btnPrimary}><i className="ph ph-floppy-disk" /> Enregistrer</button>
+            </div>
           </form>
           </>
+        )}
+
+        {/* ─────────── APERÇU BOUTIQUE (non enregistré) ─────────── */}
+        {shopPreviewOpen && (
+          <div style={{ position: 'fixed', inset: 0, background: 'var(--bg)', zIndex: 7000, overflowY: 'auto' }}>
+            <div style={{ position: 'sticky', top: 0, zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, padding: '14px 20px', background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, fontWeight: 700 }}>
+                <i className="ph ph-eye" style={{ color: 'var(--accent)' }} />
+                Aperçu — pas encore enregistré
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button className={styles.btnPrimary} onClick={(e) => { setShopPreviewOpen(false); saveShop(e); }}><i className="ph ph-floppy-disk" /> Enregistrer</button>
+                <button className={styles.btnGhost} onClick={() => setShopPreviewOpen(false)}><i className="ph ph-x" /> Fermer</button>
+              </div>
+            </div>
+
+            <div className={bvStyles.banner}>
+              {shopForm.banner_url ? <img src={shopForm.banner_url} alt="" className={bvStyles.bannerImg} /> : <div className={bvStyles.bannerPlaceholder} />}
+            </div>
+            <div className={bvStyles.header}>
+              <div className={bvStyles.logo}>
+                {shopForm.logo_url ? <img src={shopForm.logo_url} alt={shopForm.name} /> : shopInitials(shopForm.name)}
+              </div>
+              <div className={bvStyles.info}>
+                <div className={bvStyles.name}>{shopForm.name || 'Nom de ta boutique'}</div>
+                <div className={bvStyles.tags}>
+                  {shopForm.country && <span className={bvStyles.tag}>{shopForm.country}</span>}
+                  {shopForm.city && <span className={bvStyles.tag}>{shopForm.city}</span>}
+                </div>
+                <div className={bvStyles.stats}>
+                  <div className={bvStyles.stat}><span className={bvStyles.statVal}>0</span><span className={bvStyles.statLabel}>Ventes</span></div>
+                  <div className={bvStyles.stat}><span className={bvStyles.statVal}>—</span><span className={bvStyles.statLabel}>Note</span></div>
+                  <div className={bvStyles.stat}><span className={bvStyles.statVal}>0</span><span className={bvStyles.statLabel}>Avis</span></div>
+                </div>
+              </div>
+              <div className={bvStyles.actions}>
+                {shopForm.whatsapp && <span className={bvStyles.btnContact}>Contacter</span>}
+                <span className={bvStyles.btnFollow}>Suivre</span>
+                <div className={bvStyles.socials}>
+                  {shopForm.instagram && <span className={bvStyles.socialBtn}>Instagram</span>}
+                  {shopForm.facebook && <span className={bvStyles.socialBtn}>Facebook</span>}
+                  {shopForm.tiktok && <span className={bvStyles.socialBtn}>TikTok</span>}
+                </div>
+              </div>
+            </div>
+
+            <div className={bvStyles.divider} />
+
+            <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px 40px', display: 'grid', gridTemplateColumns: 'minmax(0,320px)', gap: 16 }}>
+              {shopForm.bio && (
+                <div className={bvStyles.sideCard}>
+                  <div className={bvStyles.sideTitle}>À propos</div>
+                  <p className={bvStyles.bio}>{shopForm.bio}</p>
+                </div>
+              )}
+              <div className={bvStyles.sideCard}>
+                <div className={bvStyles.sideTitle}>Informations</div>
+                {shopForm.shop_policies ? <div className={bvStyles.infoRow}>Politique<strong>{shopForm.shop_policies}</strong></div> : <div className={bvStyles.infoRow}><strong>Artisan WennaShop</strong></div>}
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--text-faint)', textAlign: 'center' }}>Le catalogue de produits s'affichera ici, sous ces informations, une fois la boutique enregistrée.</div>
+            </div>
+          </div>
         )}
 
         {/* ─────────── PROFILE ─────────── */}
