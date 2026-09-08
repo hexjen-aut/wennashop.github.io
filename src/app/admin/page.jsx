@@ -10,6 +10,8 @@ function flag(c) { const m = { Gabon: '🇬🇦', Maroc: '🇲🇦', Morocco: '�
 function stars(r) { return r ? '★'.repeat(Math.round(r)) + '☆'.repeat(5 - Math.round(r)) : '—'; }
 
 const ORDER_STATUS_LABEL = { pending: 'En attente', processing: 'En cours', shipped: 'Expédié', delivered: 'Livré', cancelled: 'Annulé' };
+const GOAL_METRIC_LABEL = { revenue: "Chiffre d'affaires", orders_count: 'Nombre de commandes', products_count: 'Nombre de produits', shop_completion: 'Complétion boutique', custom: 'Personnalisé (informatif)' };
+const GOAL_AUDIENCE_LABEL = { artisan: 'Vendeurs', buyer: 'Acheteurs', all: 'Tous' };
 const STATUS_COLOR = { pending: '#f59e0b', active: '#22c55e', inactive: '#555', processing: '#3b82f6', shipped: '#3b82f6', delivered: '#22c55e', cancelled: '#ef4444', approved: '#22c55e', rejected: '#ef4444', paid: '#22c55e', failed: '#ef4444' };
 const ICONS = ['🛍️','👗','👠','👜','👒','🧣','🧢','💍','📿','🛒','🍽️','🫙','🌿','🫚','🧴','🪴','🎨','🪵','🏺','🧺','🧶','🪡','✂️','🔨','🪚','🧲','💎','🌍','🇬🇦','🇲🇦','🎁','📦','🏠','🚗','📱','💻','🎵','📚','⚽','🌺','🌾','☕','🍵','🥘','🧁','🍊','🥭','🌴','🐘','🦁','🦅','🎭','🎪','🏆','⭐','✨','🔥','💫','🌟','💚','🌱','🍃'];
 
@@ -47,6 +49,11 @@ export default function AdminPage() {
 
   // ── Vitrine — sélection des photos produits (carrousel connexion) ──
   const [showcaseProducts, setShowcaseProducts] = useState([]);
+
+  // ── Objectifs ──
+  const [goals, setGoals] = useState([]);
+  const [goalModalOpen, setGoalModalOpen] = useState(false);
+  const [goalForm, setGoalForm] = useState({ id: null, audience: 'artisan', metric: 'revenue', title: '', description: '', target_value: '', period: 'monthly', is_active: true });
 
   // ── Paramètres — comptes bancaires ──
   const [bankAccounts, setBankAccounts] = useState([]);
@@ -207,6 +214,43 @@ export default function AdminPage() {
     setShowcaseProducts((prev) => prev.map((p) => (p.id === id ? { ...p, is_featured: next } : p)));
   }
 
+  // ── Objectifs ──
+  async function loadGoals() {
+    const sb = getSupabase();
+    const { data } = await sb.from('platform_goals').select('*').order('created_at', { ascending: false });
+    setGoals(data || []);
+  }
+  function openAddGoal() {
+    setGoalForm({ id: null, audience: 'artisan', metric: 'revenue', title: '', description: '', target_value: '', period: 'monthly', is_active: true });
+    setGoalModalOpen(true);
+  }
+  function openEditGoal(g) {
+    setGoalForm({ id: g.id, audience: g.audience, metric: g.metric, title: g.title, description: g.description || '', target_value: g.target_value, period: g.period, is_active: g.is_active });
+    setGoalModalOpen(true);
+  }
+  async function saveGoal() {
+    if (!goalForm.title.trim()) { alert('Titre requis'); return; }
+    if (goalForm.metric !== 'custom' && (goalForm.target_value === '' || Number(goalForm.target_value) <= 0)) { alert('Objectif chiffré requis pour ce type'); return; }
+    const sb = getSupabase();
+    const { id, ...payload } = goalForm;
+    payload.target_value = goalForm.metric === 'custom' ? 0 : Number(goalForm.target_value);
+    const { error } = id ? await sb.from('platform_goals').update(payload).eq('id', id) : await sb.from('platform_goals').insert(payload);
+    if (error) { alert('Erreur : ' + error.message); return; }
+    setGoalModalOpen(false);
+    await loadGoals();
+  }
+  async function toggleGoalActive(g) {
+    const sb = getSupabase();
+    await sb.from('platform_goals').update({ is_active: !g.is_active }).eq('id', g.id);
+    await loadGoals();
+  }
+  async function deleteGoal(id) {
+    if (!confirm('Supprimer cet objectif ?')) return;
+    const sb = getSupabase();
+    await sb.from('platform_goals').delete().eq('id', id);
+    await loadGoals();
+  }
+
   // ── Paramètres — comptes bancaires ──
   async function loadSettings() {
     const sb = getSupabase();
@@ -260,6 +304,7 @@ export default function AdminPage() {
     if (s === 'payments') loadPayments();
     if (s === 'analytics') loadAnalytics();
     if (s === 'showcase') loadShowcase();
+    if (s === 'goals') loadGoals();
     if (s === 'settings') loadSettings();
   }
 
@@ -317,6 +362,7 @@ export default function AdminPage() {
         <button className={`${styles.navItem} ${section === 'payments' ? styles.navItemActive : ''}`} onClick={() => goTo('payments')}>Paiements</button>
         <button className={`${styles.navItem} ${section === 'analytics' ? styles.navItemActive : ''}`} onClick={() => goTo('analytics')}>Analytiques</button>
         <button className={`${styles.navItem} ${section === 'showcase' ? styles.navItemActive : ''}`} onClick={() => goTo('showcase')}>Vitrine</button>
+        <button className={`${styles.navItem} ${section === 'goals' ? styles.navItemActive : ''}`} onClick={() => goTo('goals')}>Objectifs</button>
         <button className={`${styles.navItem} ${section === 'settings' ? styles.navItemActive : ''}`} onClick={() => goTo('settings')}>Paramètres</button>
       </aside>
 
@@ -623,6 +669,42 @@ export default function AdminPage() {
           </>
         )}
 
+        {section === 'goals' && (
+          <>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+              <div>
+                <h1 style={{ fontSize: 22, fontWeight: 900 }}>Objectifs</h1>
+                <p style={{ fontSize: 12, color: 'var(--text-faint)', marginTop: 4 }}>Affichés sur le dashboard des vendeurs (et acheteurs si ciblés) avec une barre de progression calculée automatiquement.</p>
+              </div>
+              <button className={styles.btnPrimary} onClick={openAddGoal}>+ Nouvel objectif</button>
+            </div>
+            <div className={styles.card}>
+              <table className={styles.table}>
+                <thead><tr><th>Titre</th><th>Cible</th><th>Type</th><th>Objectif</th><th>Période</th><th>Statut</th><th></th></tr></thead>
+                <tbody>
+                  {goals.length === 0 ? (
+                    <tr><td colSpan={7} style={{ textAlign: 'center', padding: 30, color: 'var(--text-faint)' }}>Aucun objectif défini</td></tr>
+                  ) : goals.map((g) => (
+                    <tr key={g.id}>
+                      <td>{g.title}</td>
+                      <td style={{ color: 'var(--text-faint)' }}>{GOAL_AUDIENCE_LABEL[g.audience]}</td>
+                      <td style={{ color: 'var(--text-faint)' }}>{GOAL_METRIC_LABEL[g.metric]}</td>
+                      <td>{g.metric === 'custom' ? '—' : g.metric === 'revenue' ? fmt(g.target_value) : g.target_value}</td>
+                      <td style={{ color: 'var(--text-faint)' }}>{g.period === 'monthly' ? 'Ce mois' : 'Permanent'}</td>
+                      <td><Badge status={g.is_active ? 'active' : 'inactive'} label={g.is_active ? 'Actif' : 'Inactif'} /></td>
+                      <td>
+                        <button className={styles.btnSm} onClick={() => openEditGoal(g)}>✎</button>{' '}
+                        <button className={styles.btnGhost} onClick={() => toggleGoalActive(g)}>{g.is_active ? 'Désactiver' : 'Activer'}</button>{' '}
+                        <button className={styles.btnDanger} onClick={() => deleteGoal(g.id)}>✕</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+
         {section === 'settings' && (
           <>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
@@ -691,6 +773,42 @@ export default function AdminPage() {
                 <input type="checkbox" checked={catForm.is_active} onChange={(e) => setCatForm({ ...catForm, is_active: e.target.checked })} />
               </div>
               <button className={styles.btnPrimary} onClick={saveCategory}>Enregistrer</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {goalModalOpen && (
+        <div className={styles.modalOv} onClick={() => setGoalModalOpen(false)}>
+          <div className={styles.modalBox} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHead}>{goalForm.id ? "Modifier l'objectif" : 'Nouvel objectif'}</div>
+            <div className={styles.modalBody}>
+              <select className={styles.input} value={goalForm.audience} onChange={(e) => setGoalForm({ ...goalForm, audience: e.target.value })}>
+                <option value="artisan">Vendeurs</option>
+                <option value="buyer">Acheteurs</option>
+                <option value="all">Tous</option>
+              </select>
+              <select className={styles.input} value={goalForm.metric} onChange={(e) => setGoalForm({ ...goalForm, metric: e.target.value })}>
+                <option value="revenue">Chiffre d'affaires (vendeurs)</option>
+                <option value="orders_count">Nombre de commandes</option>
+                <option value="products_count">Nombre de produits (vendeurs)</option>
+                <option value="shop_completion">Complétion boutique (vendeurs)</option>
+                <option value="custom">Personnalisé — message informatif sans chiffre</option>
+              </select>
+              <input className={styles.input} placeholder="Titre *" value={goalForm.title} onChange={(e) => setGoalForm({ ...goalForm, title: e.target.value })} />
+              <textarea className={styles.input} rows={2} placeholder="Description (optionnel)" value={goalForm.description} onChange={(e) => setGoalForm({ ...goalForm, description: e.target.value })} />
+              {goalForm.metric !== 'custom' && (
+                <input className={styles.input} type="number" min="0" placeholder="Valeur cible *" value={goalForm.target_value} onChange={(e) => setGoalForm({ ...goalForm, target_value: e.target.value })} />
+              )}
+              <select className={styles.input} value={goalForm.period} onChange={(e) => setGoalForm({ ...goalForm, period: e.target.value })}>
+                <option value="monthly">Ce mois-ci (se réinitialise chaque mois)</option>
+                <option value="all_time">Permanent (cumulé depuis toujours)</option>
+              </select>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderTop: '1px solid var(--border)' }}>
+                <span style={{ fontSize: 12, fontWeight: 700 }}>Actif immédiatement</span>
+                <input type="checkbox" checked={goalForm.is_active} onChange={(e) => setGoalForm({ ...goalForm, is_active: e.target.checked })} />
+              </div>
+              <button className={styles.btnPrimary} onClick={saveGoal}>Enregistrer</button>
             </div>
           </div>
         </div>
