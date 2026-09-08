@@ -21,6 +21,15 @@ function PaiementContent() {
 
   const [form, setForm] = useState({ first: '', last: '', address: '', city: '', country: 'Maroc', notes: '' });
   const [method, setMethod] = useState('cash_on_delivery');
+  const [bankAccounts, setBankAccounts] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      const sb = getSupabase();
+      const { data } = await sb.from('site_config').select('value').eq('key', 'bank_accounts').maybeSingle();
+      if (data?.value) { try { setBankAccounts(JSON.parse(data.value)); } catch { setBankAccounts([]); } }
+    })();
+  }, []);
 
   useEffect(() => {
     if (!orderId) { setError('Aucune commande spécifiée.'); setLoading(false); return; }
@@ -122,18 +131,25 @@ function PaiementContent() {
                   <div style={{ fontWeight: 700, fontSize: 13 }}>Paiement à la livraison</div>
                   <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Espèces à la réception</div>
                 </button>
-                <button className={`${styles.methodCard} ${method === 'virement' ? styles.methodActive : ''}`} onClick={() => setMethod('virement')}>
-                  <div style={{ fontWeight: 700, fontSize: 13 }}>Virement bancaire</div>
-                  <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Attijari · CIH · BCP</div>
-                </button>
+                {bankAccounts.length > 0 && (
+                  <button className={`${styles.methodCard} ${method === 'virement' ? styles.methodActive : ''}`} onClick={() => setMethod('virement')}>
+                    <div style={{ fontWeight: 700, fontSize: 13 }}>Virement bancaire</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{bankAccounts.map((a) => a.bank_name).join(' · ')}</div>
+                  </button>
+                )}
               </div>
-              {method === 'virement' && (
-                <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, padding: '12px 14px', marginTop: 14, fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>
-                  <p style={{ marginBottom: 6 }}>Effectue un virement à :</p>
-                  <p style={{ fontWeight: 700, letterSpacing: '.5px', marginBottom: 4, color: 'var(--text)' }}>RIB : 0000 0000 0000 0000 0000 0000 000</p>
-                  <p>Banque : Attijari Maroc · SWIFT : BCMAMAMC</p>
-                </div>
-              )}
+              {method === 'virement' && (() => {
+                const account = bankAccounts.find((a) => a.currency === order?.currency) || bankAccounts[0];
+                if (!account) return null;
+                return (
+                  <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, padding: '12px 14px', marginTop: 14, fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+                    <p style={{ marginBottom: 6 }}>Effectue un virement à :</p>
+                    {account.holder && <p>Titulaire : {account.holder}</p>}
+                    <p style={{ fontWeight: 700, letterSpacing: '.5px', marginBottom: 4, color: 'var(--text)' }}>RIB : {account.rib}</p>
+                    <p>Banque : {account.bank_name}{account.swift ? ` · SWIFT : ${account.swift}` : ''}</p>
+                  </div>
+                );
+              })()}
             </div>
           </div>
 
