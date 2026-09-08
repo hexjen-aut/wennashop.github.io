@@ -11,7 +11,8 @@ export default function Nav({ onOpenCart }) {
     <nav className={styles.nav}>
       <div className={styles.navInner}>
         <Link href="/boutique" className={styles.logo}>
-          <img src="/wenna_logo01.png" alt="WennaShop" className={styles.logoImg} />
+          <img src="/wenna_icon.png" alt="" className={styles.logoIcon} />
+          <span>Wenna</span>Shop
         </Link>
         <div className={styles.navActs}>
           <Link href="/recherche" className={styles.navBtn} aria-label="Rechercher">

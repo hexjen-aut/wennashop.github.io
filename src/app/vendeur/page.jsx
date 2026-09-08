@@ -566,7 +566,7 @@ export default function VendeurPage() {
       {sidebarOpen && <div className={styles.sidebarOverlay} onClick={() => setSidebarOpen(false)} />}
 
       <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ''}`}>
-        <div className={styles.logo}><img src="/wenna_logo01.png" alt="WennaShop" className={styles.logoImg} /></div>
+        <div className={styles.logo}><img src="/wenna_icon.png" alt="" className={styles.logoIcon} /><span>Wenna</span>Shop</div>
         <Link href="/boutique" className={styles.btnGhost} style={{ width: '100%', justifyContent: 'center', marginBottom: 12, textDecoration: 'none' }}>
           <i className="ph ph-arrow-left" /> Retour à la boutique
         </Link>

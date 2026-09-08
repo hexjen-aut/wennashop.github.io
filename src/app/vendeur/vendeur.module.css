@@ -2,8 +2,9 @@
 
 /* ── SIDEBAR ── */
 .sidebar { width: 240px; flex-shrink: 0; background: var(--surface); border-right: 1px solid var(--border); padding: 20px 12px; position: sticky; top: 0; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; z-index: 500; }
-.logo { padding: 0 10px 18px; }
-.logoImg { height: 42px; width: auto; display: block; }
+.logo { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 900; padding: 0 10px 18px; }
+.logo span { color: var(--accent); }
+.logoIcon { height: 26px; width: auto; display: block; }
 .sellerBox { display: flex; align-items: center; gap: 10px; padding: 10px; margin-bottom: 12px; border-bottom: 1px solid var(--border); }
 .sellerAv { width: 36px; height: 36px; border-radius: 50%; background: var(--accent-light); color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; flex-shrink: 0; }
 .sellerName { font-size: 13px; font-weight: 800; }

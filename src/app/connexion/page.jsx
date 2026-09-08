@@ -339,7 +339,7 @@ export default function ConnexionPage() {
         </div>
         <div className={styles.leftOverlay} />
         <div className={styles.leftContent}>
-          <div className={styles.leftLogo}><img src="/wenna_logo01.png" alt="WennaShop" className={styles.leftLogoImg} /></div>
+          <div className={styles.leftLogo}><img src="/wenna_icon.png" alt="" className={styles.leftLogoIcon} /><span>Wenna</span>Shop</div>
           <p className={styles.leftTagline}>
             L'écosystème qui permet à tout commerçant africain de créer, développer et gérer
             son activité — sans chercher séparément ses clients, ses outils et ses partenaires.
