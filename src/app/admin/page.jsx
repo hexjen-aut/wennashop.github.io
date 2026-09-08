@@ -416,7 +416,7 @@ export default function AdminPage() {
     return (
       <div className={styles.gate}>
         <div className={styles.gateBox}>
-          <img src="/wenna_logo01.png" alt="WennaShop" style={{ height: 34, width: 'auto', marginBottom: 4 }} />
+          <img src="/wenna_logo01.png" alt="WennaShop" style={{ height: 64, width: 'auto', marginBottom: 4 }} />
           <div style={{ fontSize: 12, color: 'var(--text-faint)', marginBottom: 20 }}>Administration — accès réservé</div>
           {loginError && <div style={{ color: 'var(--error)', fontSize: 12, marginBottom: 12 }}>{loginError}</div>}
           <input className={styles.input} type="email" placeholder="email@wennashop.com" value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -436,7 +436,7 @@ export default function AdminPage() {
     <div className={styles.wrap}>
       <aside className={styles.sidebar}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, padding: '0 12px' }}>
-          <img src="/wenna_logo01.png" alt="WennaShop" style={{ height: 26, width: 'auto' }} />
+          <img src="/wenna_logo01.png" alt="WennaShop" style={{ height: 40, width: 'auto' }} />
           <span style={{ fontSize: 9, fontWeight: 900, color: 'var(--accent)' }}>ADMIN</span>
         </div>
         <button className={`${styles.navItem} ${section === 'dashboard' ? styles.navItemActive : ''}`} onClick={() => goTo('dashboard')}>Dashboard</button>
