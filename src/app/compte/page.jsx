@@ -22,6 +22,7 @@ export default function ComptePage() {
   const [cartOpen, setCartOpen] = useState(false);
   const [profile, setProfile] = useState(null);
   const [orders, setOrders] = useState([]);
+  const [reviewItems, setReviewItems] = useState({}); // order_id -> [{product_id, name}]
   const [buyerStats, setBuyerStats] = useState({ orderCount: 0, totalSpent: 0 });
   const [buyerGoals, setBuyerGoals] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -82,6 +83,18 @@ export default function ComptePage() {
 
         const { data: addrs } = await sb.from('addresses').select('*').eq('user_id', p.id).order('created_at', { ascending: false });
         setAddresses(addrs || []);
+
+        const deliveredIds = (o || []).filter((x) => x.status === 'delivered').map((x) => x.id);
+        if (deliveredIds.length) {
+          const { data: its } = await sb.from('order_items').select('order_id,product_id,products(name)').in('order_id', deliveredIds);
+          const byOrder = {};
+          (its || []).forEach((it) => {
+            if (!it.product_id) return;
+            if (!byOrder[it.order_id]) byOrder[it.order_id] = [];
+            if (!byOrder[it.order_id].some((x) => x.product_id === it.product_id)) byOrder[it.order_id].push({ product_id: it.product_id, name: it.products?.name || 'Produit' });
+          });
+          setReviewItems(byOrder);
+        }
 
         const [{ count: orderCount }, { data: deliveredOrders }, { data: goalRows }] = await Promise.all([
           sb.from('orders').select('id', { count: 'exact', head: true }).eq('user_id', p.id),
@@ -409,12 +422,23 @@ export default function ComptePage() {
                 {orders.length === 0 ? (
                   <div className={styles.empty}>Aucune commande pour l'instant.<br /><Link href="/boutique" style={{ color: 'var(--accent)' }}>Découvrir la boutique</Link></div>
                 ) : orders.map((o) => (
-                  <div className={styles.row} key={o.id}>
-                    <div className={styles.rowInfo}>
-                      <div className={styles.rowName}>Commande #{o.id.slice(0, 8).toUpperCase()}</div>
-                      <div className={styles.rowMeta}>{fmtDate(o.created_at)} · {STATUS_LABEL[o.status] || o.status}</div>
+                  <div key={o.id}>
+                    <div className={styles.row}>
+                      <div className={styles.rowInfo}>
+                        <div className={styles.rowName}>Commande #{o.id.slice(0, 8).toUpperCase()}</div>
+                        <div className={styles.rowMeta}>{fmtDate(o.created_at)} · {STATUS_LABEL[o.status] || o.status}</div>
+                      </div>
+                      <div style={{ fontWeight: 900, color: 'var(--accent)' }}>{fmt(o.total_amount, o.currency)}</div>
                     </div>
-                    <div style={{ fontWeight: 900, color: 'var(--accent)' }}>{fmt(o.total_amount, o.currency)}</div>
+                    {o.status === 'delivered' && reviewItems[o.id]?.length > 0 && (
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 0 14px' }}>
+                        {reviewItems[o.id].map((it) => (
+                          <Link key={it.product_id} href={`/produit?id=${it.product_id}`} style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent)', border: '1px solid var(--border-accent)', background: 'var(--accent-light)', borderRadius: 999, padding: '5px 12px', textDecoration: 'none' }}>
+                            ★ Laisser un avis — {it.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
