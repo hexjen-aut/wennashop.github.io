@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
 import { COUNTRY_NAMES as COUNTRIES } from '@/lib/geo';
 import styles from './vendeur.module.css';
@@ -515,8 +515,8 @@ export default function VendeurPage() {
 
       <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ''}`}>
         <div className={styles.logo}><span>Wenna</span>Shop</div>
-        <Link href="/boutique" className={styles.linkBtn} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, margin: '0 0 14px' }}>
-          <i className="ph ph-arrow-left" /> Retour à la boutique principale
+        <Link href="/boutique" className={styles.btnGhost} style={{ width: '100%', justifyContent: 'center', marginBottom: 12, textDecoration: 'none' }}>
+          <i className="ph ph-arrow-left" /> Retour à la boutique
         </Link>
         <div className={styles.sellerBox}>
           <div className={styles.sellerAv}>{(seller.full_name || seller.email || '?').charAt(0).toUpperCase()}</div>

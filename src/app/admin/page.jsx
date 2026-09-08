@@ -46,6 +46,12 @@ export default function AdminPage() {
   const [payouts, setPayouts] = useState([]);
   const [analytics, setAnalytics] = useState({ orders: [], countries: {}, statuses: {} });
 
+  // ── Paramètres — comptes bancaires ──
+  const [bankAccounts, setBankAccounts] = useState([]);
+  const [countries, setCountries] = useState([]);
+  const [bankModalOpen, setBankModalOpen] = useState(false);
+  const [bankForm, setBankForm] = useState({ idx: null, country_code: '', bank_name: '', holder: '', rib: '', swift: '' });
+
   useEffect(() => { checkAuth(); }, []);
 
   async function checkAuth() {
@@ -224,6 +230,48 @@ export default function AdminPage() {
     setAnalytics({ orders: ords, statuses, countries });
   }
 
+  // ── Paramètres — comptes bancaires ──
+  async function loadSettings() {
+    const sb = getSupabase();
+    const [{ data }, { data: countryRows }] = await Promise.all([
+      sb.from('site_config').select('value').eq('key', 'bank_accounts').maybeSingle(),
+      sb.from('countries').select('code,name,currency_code,flag_emoji').eq('status', 'ACTIVE').order('sort_order'),
+    ]);
+    let list = [];
+    if (data?.value) { try { list = JSON.parse(data.value); } catch { list = []; } }
+    setBankAccounts(Array.isArray(list) ? list : []);
+    setCountries(countryRows || []);
+  }
+  function openAddBankAccount() {
+    setBankForm({ idx: null, country_code: countries[0]?.code || '', bank_name: '', holder: '', rib: '', swift: '' });
+    setBankModalOpen(true);
+  }
+  function openEditBankAccount(idx) {
+    setBankForm({ idx, ...bankAccounts[idx] });
+    setBankModalOpen(true);
+  }
+  async function persistBankAccounts(list) {
+    const sb = getSupabase();
+    const { error } = await sb.from('site_config').upsert({ key: 'bank_accounts', value: JSON.stringify(list), updated_at: new Date().toISOString() });
+    if (error) { alert('Erreur : ' + error.message); return; }
+    setBankAccounts(list);
+  }
+  async function saveBankAccount() {
+    if (!bankForm.country_code) { alert('Pays requis'); return; }
+    if (!bankForm.bank_name.trim() || !bankForm.rib.trim()) { alert('Banque et RIB requis'); return; }
+    const country = countries.find((c) => c.code === bankForm.country_code);
+    const { idx, ...form } = bankForm;
+    const entry = { ...form, country_name: country?.name || '', flag: country?.flag_emoji || '', currency: country?.currency_code || '' };
+    const next = [...bankAccounts];
+    if (idx === null) next.push(entry); else next[idx] = entry;
+    await persistBankAccounts(next);
+    setBankModalOpen(false);
+  }
+  async function deleteBankAccount(idx) {
+    if (!confirm('Supprimer ce compte ?')) return;
+    await persistBankAccounts(bankAccounts.filter((_, i) => i !== idx));
+  }
+
   function goTo(s) {
     setSection(s);
     if (s === 'validation') loadValidation();
@@ -235,6 +283,7 @@ export default function AdminPage() {
     if (s === 'payments') loadPayments();
     if (s === 'payouts') loadPayouts();
     if (s === 'analytics') loadAnalytics();
+    if (s === 'settings') loadSettings();
   }
 
   async function approveProduct(id) {
@@ -291,6 +340,7 @@ export default function AdminPage() {
         <button className={`${styles.navItem} ${section === 'payments' ? styles.navItemActive : ''}`} onClick={() => goTo('payments')}>Paiements</button>
         <button className={`${styles.navItem} ${section === 'payouts' ? styles.navItemActive : ''}`} onClick={() => goTo('payouts')}>Retraits {kpis.pendingPayouts > 0 && `(${kpis.pendingPayouts})`}</button>
         <button className={`${styles.navItem} ${section === 'analytics' ? styles.navItemActive : ''}`} onClick={() => goTo('analytics')}>Analytiques</button>
+        <button className={`${styles.navItem} ${section === 'settings' ? styles.navItemActive : ''}`} onClick={() => goTo('settings')}>Paramètres</button>
       </aside>
 
       <main className={styles.main}>
@@ -641,6 +691,40 @@ export default function AdminPage() {
           </>
         )}
 
+        {section === 'settings' && (
+          <>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+              <h1 style={{ fontSize: 22, fontWeight: 900 }}>Paramètres</h1>
+            </div>
+            <div className={styles.card}>
+              <div className={styles.cardTitle} style={{ marginBottom: 4 }}>Comptes bancaires — virement</div>
+              <p style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 14 }}>Affichés aux acheteurs qui choisissent "Virement bancaire" au paiement. Un compte par devise si besoin.</p>
+              <table className={styles.table}>
+                <thead><tr><th>Pays</th><th>Devise</th><th>Banque</th><th>Titulaire</th><th>RIB</th><th>SWIFT</th><th></th></tr></thead>
+                <tbody>
+                  {bankAccounts.length === 0 ? (
+                    <tr><td colSpan={7} style={{ textAlign: 'center', padding: 30, color: 'var(--text-faint)' }}>Aucun compte — le virement bancaire est masqué au paiement tant qu'aucun compte n'est ajouté.</td></tr>
+                  ) : bankAccounts.map((a, i) => (
+                    <tr key={i}>
+                      <td>{a.flag} {a.country_name}</td>
+                      <td>{a.currency}</td>
+                      <td>{a.bank_name}</td>
+                      <td style={{ color: 'var(--text-faint)' }}>{a.holder || '—'}</td>
+                      <td style={{ fontFamily: 'monospace' }}>{a.rib}</td>
+                      <td style={{ color: 'var(--text-faint)' }}>{a.swift || '—'}</td>
+                      <td>
+                        <button className={styles.btnSm} onClick={() => openEditBankAccount(i)}>✎</button>{' '}
+                        <button className={styles.btnDanger} onClick={() => deleteBankAccount(i)}>✕</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <button className={styles.btnPrimary} style={{ marginTop: 14 }} onClick={openAddBankAccount}>+ Ajouter un compte</button>
+            </div>
+          </>
+        )}
+
       </main>
 
       {catModalOpen && (
@@ -675,6 +759,25 @@ export default function AdminPage() {
                 <input type="checkbox" checked={catForm.is_active} onChange={(e) => setCatForm({ ...catForm, is_active: e.target.checked })} />
               </div>
               <button className={styles.btnPrimary} onClick={saveCategory}>Enregistrer</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {bankModalOpen && (
+        <div className={styles.modalOv} onClick={() => setBankModalOpen(false)}>
+          <div className={styles.modalBox} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHead}>{bankForm.idx === null ? 'Nouveau compte' : 'Modifier le compte'}</div>
+            <div className={styles.modalBody}>
+              <select className={styles.input} value={bankForm.country_code} onChange={(e) => setBankForm({ ...bankForm, country_code: e.target.value })}>
+                <option value="">— Pays * —</option>
+                {countries.map((c) => <option key={c.code} value={c.code}>{c.flag_emoji} {c.name} — {c.currency_code}</option>)}
+              </select>
+              <input className={styles.input} placeholder="Banque *" value={bankForm.bank_name} onChange={(e) => setBankForm({ ...bankForm, bank_name: e.target.value })} />
+              <input className={styles.input} placeholder="Titulaire du compte" value={bankForm.holder} onChange={(e) => setBankForm({ ...bankForm, holder: e.target.value })} />
+              <input className={styles.input} placeholder="RIB *" value={bankForm.rib} onChange={(e) => setBankForm({ ...bankForm, rib: e.target.value })} />
+              <input className={styles.input} placeholder="SWIFT / BIC" value={bankForm.swift} onChange={(e) => setBankForm({ ...bankForm, swift: e.target.value })} />
+              <button className={styles.btnPrimary} onClick={saveBankAccount}>Enregistrer</button>
             </div>
           </div>
         </div>
