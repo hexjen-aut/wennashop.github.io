@@ -267,7 +267,9 @@ export default function ChasseurPage() {
     <>
       {/* NAV */}
       <nav className={styles.topnav}>
-        <Link href="/boutique" className={styles.logo}><span>Wenna</span>Shop</Link>
+        <Link href="/boutique" className={styles.logo}>
+          <img src="/wenna_logo01.png" alt="WennaShop" className={styles.logoImg} />
+        </Link>
         <div className={styles.navLinks}>
           <Link href="/boutique">Boutique</Link>
           <Link href="/quetes">Quêtes</Link>

@@ -1,6 +1,6 @@
 .topnav { position: sticky; top: 0; z-index: 100; background: rgba(10,10,10,.94); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); padding: 14px 32px; display: flex; align-items: center; justify-content: space-between; }
-.logo { font-size: 20px; font-weight: 900; color: var(--text); text-decoration: none; }
-.logo span { color: var(--accent); }
+.logo { display: flex; align-items: center; text-decoration: none; }
+.logoImg { height: 28px; width: auto; display: block; }
 .navLinks { display: flex; gap: 22px; align-items: center; }
 .navLinks a { text-decoration: none; color: var(--text-muted); font-size: 13px; font-weight: 600; }
 .navLinks a:hover, .navLinkActive { color: var(--text) !important; }
