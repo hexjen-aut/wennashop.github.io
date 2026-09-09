@@ -677,13 +677,13 @@ export default function AdminPage() {
                       {u.status === 'pending' && (
                         <>
                           <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
-                            <button className={styles.btnGhost} style={{ padding: '5px 10px', fontSize: 10 }} onClick={() => viewKycDoc(u.id_card_front_url)}>📄 Recto</button>
-                            {u.id_card_back_url && <button className={styles.btnGhost} style={{ padding: '5px 10px', fontSize: 10 }} onClick={() => viewKycDoc(u.id_card_back_url)}>📄 Verso</button>}
+                            <button className={styles.btnGhost} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 10px', fontSize: 10 }} onClick={() => viewKycDoc(u.id_card_front_url)}><i className="ph ph-file-text" /> Recto</button>
+                            {u.id_card_back_url && <button className={styles.btnGhost} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 10px', fontSize: 10 }} onClick={() => viewKycDoc(u.id_card_back_url)}><i className="ph ph-file-text" /> Verso</button>}
                           </div>
                           <div style={{ fontSize: 10, color: 'var(--text-faint)', marginBottom: 10 }}>{u.document_type === 'cni' ? 'CNI' : 'Passeport'} · {u.address || 'Adresse non renseignée'}</div>
-                          <div style={{ display: 'flex', gap: 6 }}>
-                            <button className={styles.btnPrimary} style={{ flex: 1, padding: '7px 10px', fontSize: 11 }} onClick={() => approveVendor(u)}>✓ Valider</button>
-                            <button className={styles.btnDanger} style={{ flex: 1, padding: '7px 10px', fontSize: 11 }} onClick={() => rejectVendor(u)}>✕ Rejeter</button>
+                          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                            <button className={styles.btnPrimary} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5, flex: 1, padding: '7px 10px', fontSize: 11 }} onClick={() => approveVendor(u)}><i className="ph ph-check" /> Valider</button>
+                            <button className={styles.btnDanger} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5, flex: 1, padding: '7px 10px', fontSize: 11 }} onClick={() => rejectVendor(u)}><i className="ph ph-x" /> Rejeter</button>
                           </div>
                         </>
                       )}
@@ -713,15 +713,15 @@ export default function AdminPage() {
                         <td>{p.recipient_phone}</td>
                         <td><Badge status={p.status?.toLowerCase()} label={p.status} /></td>
                         <td>{fdate(p.requested_at)}</td>
-                        <td style={{ display: 'flex', gap: 6 }}>
+                        <td style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                           {p.status === 'PENDING' && (
                             <>
-                              <button className={styles.btnPrimary} onClick={() => approvePayout(p)}>✓ Approuver</button>
-                              <button className={styles.btnDanger} onClick={() => rejectPayout(p)}>✕ Rejeter</button>
+                              <button className={styles.btnPrimary} style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }} onClick={() => approvePayout(p)}><i className="ph ph-check" /> Approuver</button>
+                              <button className={styles.btnDanger} style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }} onClick={() => rejectPayout(p)}><i className="ph ph-x" /> Rejeter</button>
                             </>
                           )}
                           {p.status === 'APPROVED' && (
-                            <button className={styles.btnPrimary} onClick={() => markPayoutPaid(p)}>Marquer payé</button>
+                            <button className={styles.btnPrimary} style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }} onClick={() => markPayoutPaid(p)}><i className="ph ph-check-circle" /> Marquer payé</button>
                           )}
                         </td>
                       </tr>

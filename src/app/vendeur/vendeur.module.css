@@ -100,6 +100,12 @@ textarea.input { resize: vertical; min-height: 70px; }
 .walletLabel { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--gold); margin-bottom: 6px; }
 .boostRow { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-top: 1px solid var(--border); }
 .boostRow:first-child { border-top: none; }
+.walletActions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; justify-content: center; }
+.walletActions button { display: inline-flex; align-items: center; gap: 6px; }
+@media (max-width: 480px) {
+  .walletActions { flex-direction: column; }
+  .walletActions button { width: 100%; justify-content: center; }
+}
 
 /* ── NOTIF (bouton + badge) ── */
 .notifBtn { position: relative; background: var(--surface-2); border: 1px solid var(--border); color: var(--text-muted); width: 36px; height: 36px; border-radius: var(--radius-md); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; }

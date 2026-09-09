@@ -908,9 +908,9 @@ export default function VendeurPage() {
             <div className={styles.walletCard}>
               <div className={styles.walletLabel}>Solde Crédits Boost</div>
               <div className={styles.walletAmount}>{fmt(wallet?.balance, wallet?.currency)}</div>
-              <div style={{ display: 'flex', gap: 10, marginTop: 14, flexWrap: 'wrap' }}>
-                <button className={styles.btnPrimary} onClick={() => setRechargeOpen(true)}><i className="ph ph-plus-circle" /> Recharger / Activer un boost</button>
-                <button className={styles.btnGhost} onClick={openPayoutModal}><i className="ph ph-bank" /> Demander un retrait</button>
+              <div className={styles.walletActions}>
+                <button className={styles.btnPrimary} onClick={() => setRechargeOpen(true)}><i className="ph ph-plus-circle" /> Recharger</button>
+                <button className={styles.btnGhost} onClick={openPayoutModal}><i className="ph ph-bank" /> Retrait</button>
               </div>
             </div>
             <div className={styles.card}>
