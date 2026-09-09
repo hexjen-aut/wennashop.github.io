@@ -45,6 +45,7 @@ export default function AdminPage() {
   const [artisans, setArtisans] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [payments, setPayments] = useState([]);
+  const [payouts, setPayouts] = useState([]);
   const [analytics, setAnalytics] = useState({ orders: [], countries: {}, statuses: {}, gmv: 0, commission: 0, avgBasket: 0, cancelRate: 0, months: [], vendorsNoProducts: [], topCategories: [], topVendors: [], reviewStats: { avg: '—', pending: 0, lowPct: 0 } });
 
   // ── Vitrine — sélection des photos produits (carrousel connexion) ──
@@ -159,6 +160,65 @@ export default function AdminPage() {
     const sb = getSupabase();
     const { data } = await sb.from('users').select('*').eq('role', 'artisan').order('created_at', { ascending: false });
     setArtisans(data || []);
+  }
+
+  async function viewKycDoc(path) {
+    if (!path) return;
+    const sb = getSupabase();
+    const { data, error } = await sb.storage.from('kyc-documents').createSignedUrl(path, 300);
+    if (error || !data?.signedUrl) { alert("Impossible d'ouvrir le document : " + (error?.message || 'erreur inconnue')); return; }
+    window.open(data.signedUrl, '_blank', 'noopener,noreferrer');
+  }
+
+  async function approveVendor(u) {
+    if (!confirm(`Valider le dossier vendeur de ${u.full_name || u.email} ? Sa boutique deviendra visible publiquement.`)) return;
+    const sb = getSupabase();
+    await sb.from('users').update({ status: 'active', vendor_validated_at: new Date().toISOString(), vendor_reject_reason: null }).eq('id', u.id);
+    await sb.from('shops').update({ status: 'active', updated_at: new Date().toISOString() }).eq('user_id', u.id);
+    await loadArtisans();
+  }
+
+  async function rejectVendor(u) {
+    const reason = prompt('Motif du refus (visible par le vendeur) :');
+    if (reason === null) return;
+    const sb = getSupabase();
+    await sb.from('users').update({ status: 'rejected', vendor_reject_reason: reason || null }).eq('id', u.id);
+    await sb.from('shops').update({ status: 'rejected', updated_at: new Date().toISOString() }).eq('user_id', u.id);
+    await loadArtisans();
+  }
+
+  // ── Retraits ──
+  async function loadPayouts() {
+    const sb = getSupabase();
+    const { data } = await sb.from('payouts').select('*, users(full_name,email)').order('requested_at', { ascending: false });
+    setPayouts(data || []);
+  }
+
+  async function approvePayout(p) {
+    if (!confirm(`Approuver le retrait de ${fmt(p.amount, p.currency)} pour ${p.users?.full_name || p.users?.email} ?`)) return;
+    const sb = getSupabase();
+    const { data: w } = await sb.from('vendor_wallets').select('balance').eq('user_id', p.user_id).maybeSingle();
+    const balance = Number(w?.balance || 0);
+    if (balance < Number(p.amount)) { alert(`Solde insuffisant côté vendeur (${fmt(balance, p.currency)}) — impossible d'approuver.`); return; }
+    const { error: wErr } = await sb.from('vendor_wallets').update({ balance: balance - Number(p.amount), updated_at: new Date().toISOString() }).eq('user_id', p.user_id);
+    if (wErr) { alert("Erreur lors du débit du wallet : " + wErr.message); return; }
+    await sb.from('wallet_transactions').insert({ user_id: p.user_id, shop_id: p.shop_id, type: 'payout', amount: -Number(p.amount), currency: p.currency, description: `Retrait approuvé — ${p.payment_method_code || ''} ${p.recipient_phone || ''}`, status: 'completed' });
+    await sb.from('payouts').update({ status: 'APPROVED' }).eq('id', p.id);
+    await loadPayouts();
+  }
+
+  async function rejectPayout(p) {
+    const note = prompt('Motif du rejet (optionnel) :') || null;
+    const sb = getSupabase();
+    await sb.from('payouts').update({ status: 'REJECTED', admin_note: note, processed_at: new Date().toISOString() }).eq('id', p.id);
+    await loadPayouts();
+  }
+
+  async function markPayoutPaid(p) {
+    if (!confirm('Confirmer que ce retrait a bien été envoyé au vendeur ?')) return;
+    const sb = getSupabase();
+    await sb.from('payouts').update({ status: 'PAID', processed_at: new Date().toISOString() }).eq('id', p.id);
+    await loadPayouts();
   }
 
   // ── Avis ──
@@ -384,6 +444,7 @@ export default function AdminPage() {
     if (s === 'users') loadUsers();
     if (s === 'categories') loadCategories();
     if (s === 'artisans') loadArtisans();
+    if (s === 'payouts') loadPayouts();
     if (s === 'reviews') loadReviews();
     if (s === 'payments') loadPayments();
     if (s === 'analytics') loadAnalytics();
@@ -448,6 +509,7 @@ export default function AdminPage() {
         <button className={`${styles.navItem} ${section === 'orders' ? styles.navItemActive : ''}`} onClick={() => goTo('orders')}>Commandes</button>
         <button className={`${styles.navItem} ${section === 'categories' ? styles.navItemActive : ''}`} onClick={() => goTo('categories')}>Catégories</button>
         <button className={`${styles.navItem} ${section === 'artisans' ? styles.navItemActive : ''}`} onClick={() => goTo('artisans')}>Artisans</button>
+        <button className={`${styles.navItem} ${section === 'payouts' ? styles.navItemActive : ''}`} onClick={() => goTo('payouts')}>Retraits</button>
         <button className={`${styles.navItem} ${section === 'users' ? styles.navItemActive : ''}`} onClick={() => goTo('users')}>Utilisateurs</button>
         <button className={`${styles.navItem} ${section === 'reviews' ? styles.navItemActive : ''}`} onClick={() => goTo('reviews')}>Avis</button>
         <button className={`${styles.navItem} ${section === 'payments' ? styles.navItemActive : ''}`} onClick={() => goTo('payments')}>Paiements</button>
@@ -595,8 +657,8 @@ export default function AdminPage() {
             {artisans.length === 0 ? (
               <div className={styles.card}><div className={styles.empty}>Aucun artisan</div></div>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
-                {artisans.map((u) => {
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 }}>
+                {[...artisans].sort((a, b) => (a.status === 'pending' ? -1 : 1) - (b.status === 'pending' ? -1 : 1)).map((u) => {
                   const name = u.full_name || `${u.first_name || ''} ${u.last_name || ''}`.trim() || '—';
                   return (
                     <div className={styles.card} key={u.id}>
@@ -604,16 +666,68 @@ export default function AdminPage() {
                         <div style={{ width: 44, height: 44, background: 'var(--accent-light)', border: '1px solid var(--border-accent)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 18, color: 'var(--accent)' }}>{name[0]?.toUpperCase()}</div>
                         <div>
                           <div style={{ fontWeight: 700, fontSize: 13 }}>{name}</div>
+                          <div style={{ fontSize: 10, color: 'var(--text-faint)' }}>{u.email}</div>
                           <div style={{ fontSize: 10, color: 'var(--text-faint)' }}>{flag(u.country)}</div>
                         </div>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: u.status === 'pending' ? 12 : 0 }}>
                         <Badge status={u.status || 'active'} label={u.status || 'actif'} />
                         <span style={{ fontSize: 10, color: 'var(--text-faint)' }}>{fdate(u.created_at)}</span>
                       </div>
+                      {u.status === 'pending' && (
+                        <>
+                          <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
+                            <button className={styles.btnGhost} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 10px', fontSize: 10 }} onClick={() => viewKycDoc(u.id_card_front_url)}><i className="ph ph-file-text" /> Recto</button>
+                            {u.id_card_back_url && <button className={styles.btnGhost} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 10px', fontSize: 10 }} onClick={() => viewKycDoc(u.id_card_back_url)}><i className="ph ph-file-text" /> Verso</button>}
+                          </div>
+                          <div style={{ fontSize: 10, color: 'var(--text-faint)', marginBottom: 10 }}>{u.document_type === 'cni' ? 'CNI' : 'Passeport'} · {u.address || 'Adresse non renseignée'}</div>
+                          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                            <button className={styles.btnPrimary} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5, flex: 1, padding: '7px 10px', fontSize: 11 }} onClick={() => approveVendor(u)}><i className="ph ph-check" /> Valider</button>
+                            <button className={styles.btnDanger} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5, flex: 1, padding: '7px 10px', fontSize: 11 }} onClick={() => rejectVendor(u)}><i className="ph ph-x" /> Rejeter</button>
+                          </div>
+                        </>
+                      )}
                     </div>
                   );
                 })}
+              </div>
+            )}
+          </>
+        )}
+
+        {section === 'payouts' && (
+          <>
+            <h1 style={{ fontSize: 22, fontWeight: 900, marginBottom: 18 }}>Retraits</h1>
+            {payouts.length === 0 ? (
+              <div className={styles.card}><div className={styles.empty}>Aucune demande de retrait</div></div>
+            ) : (
+              <div className={styles.card} style={{ overflowX: 'auto' }}>
+                <table className={styles.table}>
+                  <thead><tr><th>Vendeur</th><th>Montant</th><th>Méthode</th><th>Contact</th><th>Statut</th><th>Demandé le</th><th></th></tr></thead>
+                  <tbody>
+                    {payouts.map((p) => (
+                      <tr key={p.id}>
+                        <td>{p.users?.full_name || '—'}<br /><span style={{ fontSize: 10, color: 'var(--text-faint)' }}>{p.users?.email}</span></td>
+                        <td>{fmt(p.amount, p.currency)}</td>
+                        <td>{p.payment_method_code === 'bank_transfer' ? 'Virement bancaire' : 'Mobile Money'}</td>
+                        <td>{p.recipient_phone}</td>
+                        <td><Badge status={p.status?.toLowerCase()} label={p.status} /></td>
+                        <td>{fdate(p.requested_at)}</td>
+                        <td style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                          {p.status === 'PENDING' && (
+                            <>
+                              <button className={styles.btnPrimary} style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }} onClick={() => approvePayout(p)}><i className="ph ph-check" /> Approuver</button>
+                              <button className={styles.btnDanger} style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }} onClick={() => rejectPayout(p)}><i className="ph ph-x" /> Rejeter</button>
+                            </>
+                          )}
+                          {p.status === 'APPROVED' && (
+                            <button className={styles.btnPrimary} style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }} onClick={() => markPayoutPaid(p)}><i className="ph ph-check-circle" /> Marquer payé</button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </>

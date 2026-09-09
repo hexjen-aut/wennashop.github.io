@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { getSupabase } from '@/lib/supabase';
 import { useCart } from '@/context/CartContext';
 import Nav from '@/components/Nav';
+import Footer from '@/components/Footer';
 import CartSidebar from '@/components/CartSidebar';
 import UrgencyTimer from '@/components/UrgencyTimer';
 import { convertPrice, formatSmartPrice } from '@/lib/currency';
@@ -545,6 +546,8 @@ export default function BoutiquePage() {
           <button className={styles.floatCtaBoost} onClick={() => setBoostPanelOpen(true)}>Voir les boutiques boostées</button>
         </div>
       )}
+
+      <Footer />
 
       {/* Barre mobile */}
       <nav className={styles.bnav}>

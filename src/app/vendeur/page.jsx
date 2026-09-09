@@ -11,8 +11,9 @@ import styles from './vendeur.module.css';
 // ─────────────────────────────────────────────────────────
 const COUNTRIES = ['Maroc', 'Gabon', 'Sénégal', "Côte d'Ivoire", 'Cameroun', 'RDC', 'Congo', 'Mali', 'Burkina Faso', 'Niger', 'Guinée', 'Bénin', 'Togo', 'Tchad', 'Madagascar', 'Mauritanie', 'Comores', 'Djibouti', 'Autre'];
 
-const STATUS_LABEL = { pending: 'En attente', active: 'Actif', inactive: 'Inactif', processing: 'En traitement', shipped: 'Expédiée', delivered: 'Livrée', cancelled: 'Annulée', approved: 'Approuvé', paid: 'Payé' };
-const STATUS_COLOR = { pending: '#f59e0b', active: '#22c55e', inactive: '#555', processing: '#3b82f6', shipped: '#3b82f6', delivered: '#22c55e', cancelled: '#ef4444', approved: '#22c55e', paid: '#22c55e' };
+const STATUS_LABEL = { pending: 'En attente', active: 'Actif', inactive: 'Inactif', processing: 'En traitement', shipped: 'Expédiée', delivered: 'Livrée', cancelled: 'Annulée', approved: 'Approuvé', paid: 'Payé', rejected: 'Rejeté' };
+const STATUS_COLOR = { pending: '#f59e0b', active: '#22c55e', inactive: '#555', processing: '#3b82f6', shipped: '#3b82f6', delivered: '#22c55e', cancelled: '#ef4444', approved: '#22c55e', paid: '#22c55e', rejected: '#ef4444' };
+const PAYOUT_METHOD_LABEL = { mobile_money: 'Mobile Money', bank_transfer: 'Virement bancaire' };
 
 const NOTIF_ICON = { order: 'ph-shopping-bag', money: 'ph-currency-circle-dollar', review: 'ph-star', stock: 'ph-warning', system: 'ph-bell' };
 
@@ -130,6 +131,11 @@ export default function VendeurPage() {
   const [boostPacks, setBoostPacks] = useState([]);
   const [rechargeOpen, setRechargeOpen] = useState(false);
   const [selectedPack, setSelectedPack] = useState(null);
+
+  // Retraits
+  const [payouts, setPayouts] = useState([]);
+  const [payoutModalOpen, setPayoutModalOpen] = useState(false);
+  const [payoutForm, setPayoutForm] = useState({ amount: '', payment_method_code: 'mobile_money', recipient_phone: '' });
 
   // Reviews
   const [reviews, setReviews] = useState([]);
@@ -446,6 +452,35 @@ export default function VendeurPage() {
     setBoosts(b || []);
     const { data: packs } = await sb.from('boost_packs').select('*').eq('is_active', true).order('sort_order', { ascending: true });
     setBoostPacks(packs || []);
+    const { data: p } = await sb.from('payouts').select('*').eq('user_id', seller.id).order('requested_at', { ascending: false });
+    setPayouts(p || []);
+  }
+
+  function openPayoutModal() {
+    setPayoutForm({ amount: '', payment_method_code: 'mobile_money', recipient_phone: '' });
+    setPayoutModalOpen(true);
+  }
+
+  async function submitPayoutRequest() {
+    const amount = Number(payoutForm.amount);
+    const balance = Number(wallet?.balance || 0);
+    if (!amount || amount <= 0) { showToast('Montant invalide', 'error'); return; }
+    if (amount > balance) { showToast('Solde insuffisant', 'error'); return; }
+    if (!payoutForm.recipient_phone.trim()) { showToast('Renseignez un numéro / RIB de réception', 'error'); return; }
+    const sb = getSupabase();
+    const { error } = await sb.from('payouts').insert({
+      user_id: seller.id,
+      shop_id: shop?.id || null,
+      amount,
+      currency: wallet?.currency || 'MAD',
+      payment_method_code: payoutForm.payment_method_code,
+      recipient_phone: payoutForm.recipient_phone.trim(),
+      status: 'PENDING',
+    });
+    if (error) { showToast("Erreur lors de la demande de retrait", 'error'); return; }
+    showToast('Demande de retrait envoyée', 'success');
+    setPayoutModalOpen(false);
+    await loadWalletSection(sb);
   }
 
   async function requestRecharge() {
@@ -873,7 +908,22 @@ export default function VendeurPage() {
             <div className={styles.walletCard}>
               <div className={styles.walletLabel}>Solde Crédits Boost</div>
               <div className={styles.walletAmount}>{fmt(wallet?.balance, wallet?.currency)}</div>
-              <button className={styles.btnPrimary} style={{ marginTop: 14 }} onClick={() => setRechargeOpen(true)}><i className="ph ph-plus-circle" /> Recharger / Activer un boost</button>
+              <div className={styles.walletActions}>
+                <button className={styles.btnPrimary} onClick={() => setRechargeOpen(true)}><i className="ph ph-plus-circle" /> Recharger</button>
+                <button className={styles.btnGhost} onClick={openPayoutModal}><i className="ph ph-bank" /> Retrait</button>
+              </div>
+            </div>
+            <div className={styles.card}>
+              <div className={styles.cardHead}><div className={styles.cardTitle}>Retraits</div></div>
+              {payouts.length === 0 ? <div className={styles.empty}>Aucune demande de retrait.</div> : payouts.map((p) => (
+                <div key={p.id} className={styles.boostRow}>
+                  <div>
+                    <div style={{ fontSize: 12, fontWeight: 700 }}>{fmt(p.amount, p.currency)} — {PAYOUT_METHOD_LABEL[p.payment_method_code] || p.payment_method_code}</div>
+                    <div style={{ fontSize: 10, color: 'var(--text-faint)' }}>{p.recipient_phone} · {fmtDate(p.requested_at)}</div>
+                  </div>
+                  <span className={styles.badge} style={{ background: `${STATUS_COLOR[p.status?.toLowerCase()] || '#555'}20`, color: STATUS_COLOR[p.status?.toLowerCase()] || 'var(--text-faint)' }}>{STATUS_LABEL[p.status?.toLowerCase()] || p.status}</span>
+                </div>
+              ))}
             </div>
             <div className={styles.card}>
               <div className={styles.cardHead}><div className={styles.cardTitle}>Boosts</div></div>
@@ -888,6 +938,37 @@ export default function VendeurPage() {
               ))}
             </div>
           </>
+        )}
+
+        {/* ─────────── MODAL RETRAIT ─────────── */}
+        {payoutModalOpen && (
+          <div className={styles.modalOv} onClick={() => setPayoutModalOpen(false)}>
+            <div className={styles.modalBox} style={{ maxWidth: 460 }} onClick={(e) => e.stopPropagation()}>
+              <div className={styles.modalHead}>
+                <span>Demander un retrait</span>
+                <button className={styles.modalClose} onClick={() => setPayoutModalOpen(false)}><i className="ph ph-x" /></button>
+              </div>
+              <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>Solde disponible : <strong style={{ color: 'var(--text)' }}>{fmt(wallet?.balance, wallet?.currency)}</strong></div>
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Montant *</label>
+                  <input className={styles.input} type="number" min="0" step="0.01" value={payoutForm.amount} onChange={(e) => setPayoutForm({ ...payoutForm, amount: e.target.value })} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Méthode *</label>
+                  <select className={styles.input} value={payoutForm.payment_method_code} onChange={(e) => setPayoutForm({ ...payoutForm, payment_method_code: e.target.value })}>
+                    <option value="mobile_money">Mobile Money</option>
+                    <option value="bank_transfer">Virement bancaire</option>
+                  </select>
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>{payoutForm.payment_method_code === 'bank_transfer' ? 'RIB / IBAN *' : 'Numéro Mobile Money *'}</label>
+                  <input className={styles.input} value={payoutForm.recipient_phone} onChange={(e) => setPayoutForm({ ...payoutForm, recipient_phone: e.target.value })} />
+                </div>
+                <button className={styles.btnPrimary} style={{ justifyContent: 'center' }} onClick={submitPayoutRequest}>Envoyer la demande</button>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* ─────────── REVIEWS ─────────── */}

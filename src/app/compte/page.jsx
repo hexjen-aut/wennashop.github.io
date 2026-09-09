@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getSupabase } from '@/lib/supabase';
 import Nav from '@/components/Nav';
+import Footer from '@/components/Footer';
 import CartSidebar from '@/components/CartSidebar';
 import styles from './compte.module.css';
 
@@ -52,7 +53,9 @@ export default function ComptePage() {
   const [sales, setSales] = useState([]);
   const [payments, setPayments] = useState([]);
   const [wallet, setWallet] = useState(0);
-  const [upgradeForm, setUpgradeForm] = useState({ shopName: '', specialty: '', country: '', bio: '' });
+  const [upgradeForm, setUpgradeForm] = useState({ shopName: '', specialty: '', country: '', bio: '', docType: '', address: '' });
+  const [rectoFile, setRectoFile] = useState(null);
+  const [versoFile, setVersoFile] = useState(null);
   const [upgrading, setUpgrading] = useState(false);
   const [vendeurTab, setVendeurTab] = useState('produits');
 
@@ -231,20 +234,40 @@ export default function ComptePage() {
   }
 
   // ── Vendeur ──
+  async function uploadKycFile(sb, authUserId, file, label) {
+    const ext = (file.name.split('.').pop() || 'bin').toLowerCase();
+    const path = `${authUserId}/${label}-${Date.now()}.${ext}`;
+    const { error } = await sb.storage.from('kyc-documents').upload(path, file, { upsert: true });
+    if (error) throw error;
+    return path;
+  }
+
   async function upgradeToVendeur() {
     if (!upgradeForm.shopName.trim() || !upgradeForm.specialty.trim() || !upgradeForm.country) { alert('Remplis tous les champs obligatoires (*)'); return; }
+    if (!upgradeForm.docType) { alert("Sélectionne le type de document d'identité"); return; }
+    if (!rectoFile) { alert('Ajoute le recto de ton document'); return; }
+    if (upgradeForm.docType === 'cni' && !versoFile) { alert('Ajoute le verso de ta CNI'); return; }
+    if (!upgradeForm.address.trim()) { alert('Indique ton adresse exacte'); return; }
     setUpgrading(true);
     const sb = getSupabase();
     try {
       const slug = upgradeForm.shopName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + Date.now().toString(36);
       const { data: { session } } = await sb.auth.getSession();
-      const { error: userErr } = await sb.from('users').update({ role: 'artisan', country: upgradeForm.country, updated_at: new Date().toISOString() }).eq('auth_id', session.user.id);
+      const idCardFrontUrl = await uploadKycFile(sb, session.user.id, rectoFile, 'recto');
+      const idCardBackUrl = versoFile ? await uploadKycFile(sb, session.user.id, versoFile, 'verso') : null;
+      const { error: userErr } = await sb.from('users').update({
+        role: 'artisan', status: 'pending', country: upgradeForm.country,
+        document_type: upgradeForm.docType, address: upgradeForm.address.trim(),
+        id_card_front_url: idCardFrontUrl, id_card_back_url: idCardBackUrl,
+        updated_at: new Date().toISOString(),
+      }).eq('auth_id', session.user.id);
       if (userErr) throw userErr;
-      const { error: shopErr } = await sb.from('shops').upsert({ user_id: profile.id, name: upgradeForm.shopName, slug, bio: upgradeForm.bio || upgradeForm.specialty, country: upgradeForm.country, status: 'active', commission_rate: 8, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
+      const { error: shopErr } = await sb.from('shops').upsert({ user_id: profile.id, name: upgradeForm.shopName, slug, bio: upgradeForm.bio || upgradeForm.specialty, country: upgradeForm.country, status: 'pending', commission_rate: 8, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
       if (shopErr) throw shopErr;
-      setProfile({ ...profile, role: 'artisan', country: upgradeForm.country });
+      setProfile({ ...profile, role: 'artisan', status: 'pending', country: upgradeForm.country });
       setMode('vendeur');
       await loadVendeurData(sb, profile.id);
+      alert('Dossier envoyé — ta boutique sera visible dès validation par notre équipe (24 à 48h).');
     } catch (err) {
       alert('Erreur : ' + err.message);
     } finally {
@@ -528,17 +551,48 @@ export default function ComptePage() {
               {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
             <textarea value={upgradeForm.bio} onChange={(e) => setUpgradeForm({ ...upgradeForm, bio: e.target.value })} placeholder="Description courte" rows={3} style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)', padding: '10px 12px', fontSize: 13, marginBottom: 14, resize: 'vertical' }} />
-            <button onClick={upgradeToVendeur} disabled={upgrading} style={{ width: '100%', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 999, padding: 14, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>{upgrading ? 'Création…' : 'Devenir vendeur — c\'est gratuit'}</button>
+
+            <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 8 }}>Vérification d'identité</div>
+            <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: -4, marginBottom: 12, lineHeight: 1.6 }}>Obligatoire pour vendre sur WennaShop — ta boutique reste masquée tant que le dossier n'est pas validé (24 à 48h).</p>
+            <select value={upgradeForm.docType} onChange={(e) => setUpgradeForm({ ...upgradeForm, docType: e.target.value })} style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)', padding: '10px 12px', fontSize: 13, marginBottom: 10 }}>
+              <option value="">Type de document *</option>
+              <option value="cni">Carte d'identité (CNI)</option>
+              <option value="passeport">Passeport</option>
+            </select>
+            <label style={{ display: 'block', fontSize: 11, color: 'var(--text-faint)', marginBottom: 4 }}>Recto du document *</label>
+            <input type="file" accept="image/*,.pdf" onChange={(e) => setRectoFile(e.target.files?.[0] || null)} style={{ width: '100%', color: 'var(--text-muted)', fontSize: 12, marginBottom: 10 }} />
+            {upgradeForm.docType === 'cni' && (
+              <>
+                <label style={{ display: 'block', fontSize: 11, color: 'var(--text-faint)', marginBottom: 4 }}>Verso de la CNI *</label>
+                <input type="file" accept="image/*,.pdf" onChange={(e) => setVersoFile(e.target.files?.[0] || null)} style={{ width: '100%', color: 'var(--text-muted)', fontSize: 12, marginBottom: 10 }} />
+              </>
+            )}
+            <input value={upgradeForm.address} onChange={(e) => setUpgradeForm({ ...upgradeForm, address: e.target.value })} placeholder="Adresse exacte *" style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)', padding: '10px 12px', fontSize: 13, marginBottom: 14 }} />
+
+            <button onClick={upgradeToVendeur} disabled={upgrading} style={{ width: '100%', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 999, padding: 14, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>{upgrading ? 'Envoi…' : 'Devenir vendeur — c\'est gratuit'}</button>
           </div>
         )}
 
         {mode === 'vendeur' && isVendeur && (
           <>
-            <div className={styles.card} style={{ background: 'var(--accent-light)', borderColor: 'var(--border-accent)' }}>
-              <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--accent)', marginBottom: 4 }}>Espace vendeur actif</div>
-              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 10 }}>Gère tes produits, commandes et revenus.</div>
-              <Link href="/vendeur" style={{ display: 'inline-block', background: 'var(--accent)', color: '#fff', padding: '10px 20px', borderRadius: 999, fontWeight: 700, fontSize: 13, textDecoration: 'none' }}>Ouvrir le Dashboard</Link>
-            </div>
+            {profile?.status === 'pending' ? (
+              <div className={styles.card} style={{ background: 'var(--gold-light)', borderColor: 'rgba(245,158,11,.3)' }}>
+                <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--gold)', marginBottom: 4 }}>Dossier en cours de vérification</div>
+                <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 10 }}>Ta boutique n'est pas encore visible des acheteurs — nos équipes valident les dossiers sous 24 à 48h.</div>
+                <Link href="/vendeur" style={{ display: 'inline-block', background: 'transparent', border: '1.5px solid var(--gold)', color: 'var(--gold)', padding: '10px 20px', borderRadius: 999, fontWeight: 700, fontSize: 13, textDecoration: 'none' }}>Préparer ma boutique</Link>
+              </div>
+            ) : profile?.status === 'rejected' ? (
+              <div className={styles.card} style={{ background: 'rgba(239,68,68,.1)', borderColor: 'rgba(239,68,68,.3)' }}>
+                <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--error)', marginBottom: 4 }}>Dossier refusé</div>
+                <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{profile?.vendor_reject_reason || "Contacte le support pour plus d'informations."}</div>
+              </div>
+            ) : (
+              <div className={styles.card} style={{ background: 'var(--accent-light)', borderColor: 'var(--border-accent)' }}>
+                <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--accent)', marginBottom: 4 }}>Espace vendeur actif</div>
+                <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 10 }}>Gère tes produits, commandes et revenus.</div>
+                <Link href="/vendeur" style={{ display: 'inline-block', background: 'var(--accent)', color: '#fff', padding: '10px 20px', borderRadius: 999, fontWeight: 700, fontSize: 13, textDecoration: 'none' }}>Ouvrir le Dashboard</Link>
+              </div>
+            )}
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 14 }}>
               <div className={styles.card} style={{ textAlign: 'center', margin: 0 }}><div style={{ fontSize: 22, fontWeight: 900, color: 'var(--accent)' }}>{fmt(revMonth)}</div><div style={{ fontSize: 10, color: 'var(--text-faint)', marginTop: 4 }}>Revenus ce mois</div></div>
@@ -609,6 +663,8 @@ export default function ComptePage() {
           </>
         )}
       </div>
+
+      <Footer />
 
       {/* ── MODAL ADRESSE ── */}
       {addrModalOpen && (
