@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
+import { uploadFileWithProgress } from '@/lib/storageUpload';
 import styles from './vendeur.module.css';
 
 // ─────────────────────────────────────────────────────────
@@ -156,6 +157,7 @@ export default function VendeurPage() {
   const [kycRectoFile, setKycRectoFile] = useState(null);
   const [kycVersoFile, setKycVersoFile] = useState(null);
   const [kycSubmitting, setKycSubmitting] = useState(false);
+  const [kycUploadProgress, setKycUploadProgress] = useState(0);
 
   function showToast(msg, type = '') { setToast({ msg, type }); setTimeout(() => setToast(null), 3200); }
 
@@ -605,19 +607,22 @@ export default function VendeurPage() {
     if (kycDocType === 'cni' && !kycVersoFile) { showToast('Ajoute le verso de ta CNI', 'error'); return; }
     if (!kycAddress.trim()) { showToast('Indique ton adresse exacte', 'error'); return; }
     setKycSubmitting(true);
+    setKycUploadProgress(0);
     const sb = getSupabase();
     try {
       const { data: { session } } = await sb.auth.getSession();
       const authUserId = session.user.id;
-      const uploadFile = async (file, label) => {
+      const accessToken = session.access_token;
+      const totalBytes = kycRectoFile.size + (kycVersoFile ? kycVersoFile.size : 0);
+      let rectoLoaded = 0, versoLoaded = 0;
+      const reportProgress = () => setKycUploadProgress(Math.round(((rectoLoaded + versoLoaded) / totalBytes) * 100));
+      const uploadFile = (file, label, onLoaded) => {
         const ext = (file.name.split('.').pop() || 'bin').toLowerCase();
         const path = `${authUserId}/${label}-${Date.now()}.${ext}`;
-        const { error } = await sb.storage.from('kyc-documents').upload(path, file, { upsert: true });
-        if (error) throw error;
-        return path;
+        return uploadFileWithProgress('kyc-documents', path, file, accessToken, onLoaded);
       };
-      const idCardFrontUrl = await uploadFile(kycRectoFile, 'recto');
-      const idCardBackUrl = kycVersoFile ? await uploadFile(kycVersoFile, 'verso') : null;
+      const idCardFrontUrl = await uploadFile(kycRectoFile, 'recto', (loaded) => { rectoLoaded = loaded; reportProgress(); });
+      const idCardBackUrl = kycVersoFile ? await uploadFile(kycVersoFile, 'verso', (loaded) => { versoLoaded = loaded; reportProgress(); }) : null;
       const { error: updErr } = await sb.from('users').update({
         document_type: kycDocType, address: kycAddress.trim(),
         id_card_front_url: idCardFrontUrl, id_card_back_url: idCardBackUrl,
@@ -630,6 +635,7 @@ export default function VendeurPage() {
       showToast('Erreur : ' + err.message, 'error');
     } finally {
       setKycSubmitting(false);
+      setKycUploadProgress(0);
     }
   }
 
@@ -665,9 +671,17 @@ export default function VendeurPage() {
             <label className={styles.formLabel}>Adresse exacte *</label>
             <input className={styles.input} value={kycAddress} onChange={(e) => setKycAddress(e.target.value)} />
           </div>
+          {kycSubmitting && (
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ height: 6, background: 'var(--surface-2)', borderRadius: 4, overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${kycUploadProgress}%`, background: 'var(--accent)', borderRadius: 4, transition: 'width 0.2s ease' }} />
+              </div>
+              <div style={{ fontSize: 10, color: 'var(--text-faint)', marginTop: 4, textAlign: 'right' }}>{kycUploadProgress}%</div>
+            </div>
+          )}
           <button className={styles.btnPrimary} style={{ width: '100%', justifyContent: 'center', display: 'inline-flex', alignItems: 'center', gap: 8, opacity: kycSubmitting ? 0.7 : 1 }} disabled={kycSubmitting} onClick={submitKyc}>
             {kycSubmitting && <i className="ph ph-spinner" style={{ animation: 'spin 0.8s linear infinite' }} />}
-            {kycSubmitting ? 'Envoi en cours…' : 'Envoyer mon dossier'}
+            {kycSubmitting ? `Envoi… ${kycUploadProgress}%` : 'Envoyer mon dossier'}
           </button>
         </div>
         {toast && <div className={`${styles.toast} ${toast.type === 'error' ? styles.toastError : ''}`}>{toast.msg}</div>}

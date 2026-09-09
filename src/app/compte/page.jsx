@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getSupabase } from '@/lib/supabase';
+import { uploadFileWithProgress } from '@/lib/storageUpload';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import CartSidebar from '@/components/CartSidebar';
@@ -57,6 +58,7 @@ export default function ComptePage() {
   const [rectoFile, setRectoFile] = useState(null);
   const [versoFile, setVersoFile] = useState(null);
   const [upgrading, setUpgrading] = useState(false);
+  const [upgradeUploadProgress, setUpgradeUploadProgress] = useState(0);
   const [vendeurTab, setVendeurTab] = useState('produits');
 
   // 2FA
@@ -234,14 +236,6 @@ export default function ComptePage() {
   }
 
   // ── Vendeur ──
-  async function uploadKycFile(sb, authUserId, file, label) {
-    const ext = (file.name.split('.').pop() || 'bin').toLowerCase();
-    const path = `${authUserId}/${label}-${Date.now()}.${ext}`;
-    const { error } = await sb.storage.from('kyc-documents').upload(path, file, { upsert: true });
-    if (error) throw error;
-    return path;
-  }
-
   async function upgradeToVendeur() {
     if (!upgradeForm.shopName.trim() || !upgradeForm.specialty.trim() || !upgradeForm.country) { alert('Remplis tous les champs obligatoires (*)'); return; }
     if (!upgradeForm.docType) { alert("Sélectionne le type de document d'identité"); return; }
@@ -249,12 +243,22 @@ export default function ComptePage() {
     if (upgradeForm.docType === 'cni' && !versoFile) { alert('Ajoute le verso de ta CNI'); return; }
     if (!upgradeForm.address.trim()) { alert('Indique ton adresse exacte'); return; }
     setUpgrading(true);
+    setUpgradeUploadProgress(0);
     const sb = getSupabase();
     try {
       const slug = upgradeForm.shopName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + Date.now().toString(36);
       const { data: { session } } = await sb.auth.getSession();
-      const idCardFrontUrl = await uploadKycFile(sb, session.user.id, rectoFile, 'recto');
-      const idCardBackUrl = versoFile ? await uploadKycFile(sb, session.user.id, versoFile, 'verso') : null;
+      const accessToken = session.access_token;
+      const totalBytes = rectoFile.size + (versoFile ? versoFile.size : 0);
+      let rectoLoaded = 0, versoLoaded = 0;
+      const reportProgress = () => setUpgradeUploadProgress(Math.round(((rectoLoaded + versoLoaded) / totalBytes) * 100));
+      const uploadFile = (file, label, onLoaded) => {
+        const ext = (file.name.split('.').pop() || 'bin').toLowerCase();
+        const path = `${session.user.id}/${label}-${Date.now()}.${ext}`;
+        return uploadFileWithProgress('kyc-documents', path, file, accessToken, onLoaded);
+      };
+      const idCardFrontUrl = await uploadFile(rectoFile, 'recto', (loaded) => { rectoLoaded = loaded; reportProgress(); });
+      const idCardBackUrl = versoFile ? await uploadFile(versoFile, 'verso', (loaded) => { versoLoaded = loaded; reportProgress(); }) : null;
       const { error: userErr } = await sb.from('users').update({
         role: 'artisan', status: 'pending', country: upgradeForm.country,
         document_type: upgradeForm.docType, address: upgradeForm.address.trim(),
@@ -272,6 +276,7 @@ export default function ComptePage() {
       alert('Erreur : ' + err.message);
     } finally {
       setUpgrading(false);
+      setUpgradeUploadProgress(0);
     }
   }
   async function saveShop(name, bio, country) {
@@ -569,7 +574,15 @@ export default function ComptePage() {
             )}
             <input value={upgradeForm.address} onChange={(e) => setUpgradeForm({ ...upgradeForm, address: e.target.value })} placeholder="Adresse exacte *" style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)', padding: '10px 12px', fontSize: 13, marginBottom: 14 }} />
 
-            <button onClick={upgradeToVendeur} disabled={upgrading} style={{ width: '100%', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 999, padding: 14, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>{upgrading ? 'Envoi…' : 'Devenir vendeur — c\'est gratuit'}</button>
+            {upgrading && (
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ height: 6, background: 'var(--surface-2)', borderRadius: 4, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${upgradeUploadProgress}%`, background: 'var(--accent)', borderRadius: 4, transition: 'width 0.2s ease' }} />
+                </div>
+                <div style={{ fontSize: 10, color: 'var(--text-faint)', marginTop: 4, textAlign: 'right' }}>{upgradeUploadProgress}%</div>
+              </div>
+            )}
+            <button onClick={upgradeToVendeur} disabled={upgrading} style={{ width: '100%', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 999, padding: 14, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>{upgrading ? `Envoi… ${upgradeUploadProgress}%` : 'Devenir vendeur — c\'est gratuit'}</button>
           </div>
         )}
 
