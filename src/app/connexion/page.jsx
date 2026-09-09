@@ -298,8 +298,8 @@ export default function ConnexionPage() {
         <div className={styles.leftContent}>
           <div className={styles.leftLogo}><img src="/wenna_icon.png" alt="" className={styles.leftLogoIcon} /><span>Wenna</span>Shop</div>
           <p className={styles.leftTagline}>
-            L'écosystème qui permet à tout commerçant africain de créer, développer et gérer
-            son activité — sans chercher séparément ses clients, ses outils et ses partenaires.
+            Achète des produits authentiques, vends dans ta boutique en ligne, ou deviens chasseur
+            et sois payé pour livrer — WennaShop connecte le Gabon et le Maroc, à toi de choisir ton rôle.
           </p>
           {slides[slideIndex]?.shopSlug && (
             <Link href={`/boutique-vendeur?slug=${slides[slideIndex].shopSlug}`} className={styles.shopBadge}>
