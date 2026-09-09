@@ -58,14 +58,6 @@ function downloadDoc(text, filename) {
   URL.revokeObjectURL(url);
 }
 
-async function uploadKycFile(sb, userId, file, label) {
-  const ext = (file.name.split('.').pop() || 'bin').toLowerCase();
-  const path = `${userId}/${label}-${Date.now()}.${ext}`;
-  const { error } = await sb.storage.from('kyc-documents').upload(path, file, { upsert: true });
-  if (error) throw error;
-  return path;
-}
-
 
 export default function ConnexionPage() {
   const router = useRouter();
@@ -127,10 +119,6 @@ export default function ConnexionPage() {
   const [genre, setGenre] = useState(null);
   const [pays, setPays] = useState('');
   const [role, setRole] = useState(null);
-  const [docType, setDocType] = useState(null);
-  const [rectoFile, setRectoFile] = useState(null);
-  const [versoFile, setVersoFile] = useState(null);
-  const [kycAddress, setKycAddress] = useState('');
   const [cgu, setCgu] = useState(false);
 
   // Modales
@@ -188,9 +176,6 @@ export default function ConnexionPage() {
   // ── INSCRIPTION ──
   function selectRole(val) {
     setRole(val);
-    if (val !== 'artisan') {
-      setDocType(null); setRectoFile(null); setVersoFile(null); setKycAddress('');
-    }
   }
 
   async function handleInscription() {
@@ -198,19 +183,16 @@ export default function ConnexionPage() {
     if (pwd.length < 8) return showToast('Mot de passe : 8 caractères minimum', 'ko');
     if (!pays) return showToast('Sélectionne ton pays', 'ko');
     if (!role) return showToast('Sélectionne ton rôle', 'ko');
-
-    if (role === 'artisan') {
-      if (!docType) return showToast('Sélectionne le type de document', 'ko');
-      if (!rectoFile) return showToast('Ajoute le recto de ton document', 'ko');
-      if (docType === 'cni' && !versoFile) return showToast('Ajoute le verso de ta CNI', 'ko');
-      if (!kycAddress.trim()) return showToast('Indique ton adresse exacte', 'ko');
-    }
     if (!cgu) return showToast('Accepte les CGU pour continuer', 'ko');
 
     setLoading(true);
     const sb = getSupabase();
     const finalGenre = genre || 'non_precise';
 
+    // Le rôle, le statut et le genre sont enregistrés côté serveur (trigger
+    // handle_new_user, SECURITY DEFINER) à partir des métadonnées ci-dessous —
+    // aucune mise à jour côté client requise, la session n'étant pas encore
+    // active avant confirmation de l'email.
     const { data: authData, error: authErr } = await sb.auth.signUp({
       email: email.trim(),
       password: pwd,
@@ -230,29 +212,10 @@ export default function ConnexionPage() {
       return;
     }
 
-    if (authData?.user?.id) {
-      await new Promise((r) => setTimeout(r, 600));
-      const userId = authData.user.id;
-      const updatePayload = { gender: finalGenre };
-
-      if (role === 'artisan') {
-        updatePayload.status = 'pending';
-        updatePayload.document_type = docType;
-        updatePayload.address = kycAddress.trim();
-        try {
-          updatePayload.id_card_front_url = await uploadKycFile(sb, userId, rectoFile, 'recto');
-          if (versoFile) updatePayload.id_card_back_url = await uploadKycFile(sb, userId, versoFile, 'verso');
-        } catch {
-          showToast("Compte créé, mais l'envoi du document a échoué. Réessaie depuis ton profil vendeur.", 'ko');
-        }
-      }
-      await sb.from('users').update(updatePayload).eq('auth_id', userId);
-    }
-
     setLoading(false);
     showToast(
       role === 'artisan'
-        ? 'Compte créé ! Vérifiez votre email. Votre dossier vendeur est en cours de vérification — réponse sous 24 à 48h.'
+        ? 'Compte créé ! Vérifiez votre email, puis connectez-vous pour envoyer votre pièce d\'identité (nécessaire pour activer votre boutique).'
         : 'Compte créé ! Vérifiez votre email.',
       'ok'
     );
@@ -418,38 +381,7 @@ export default function ConnexionPage() {
               {role === 'artisan' && (
                 <div className={styles.kycBlock}>
                   <div className={styles.kycIntro}>
-                    <strong>Vérification vendeur requise.</strong> Ton compte sera activé par l'administration WennaShop après validation de ton document et de ton adresse — cela sert aussi à sécuriser l'envoi et la réception de tes fonds. Délai habituel : 24 à 48h.
-                  </div>
-
-                  <div className={styles.field}>
-                    <label className={styles.label}>Type de document</label>
-                    <div className={styles.choiceGroup}>
-                      <button className={`${styles.choiceBtn} ${docType === 'cni' ? styles.choiceBtnActive : ''}`} onClick={() => setDocType('cni')}>Carte d'identité (CNI)</button>
-                      <button className={`${styles.choiceBtn} ${docType === 'passeport' ? styles.choiceBtnActive : ''}`} onClick={() => setDocType('passeport')}>Passeport</button>
-                    </div>
-                  </div>
-
-                  <div className={styles.field}>
-                    <label className={styles.label}>Document — Recto</label>
-                    <div className={styles.fileWrap}>
-                      <input type="file" accept="image/*,.pdf" onChange={(e) => setRectoFile(e.target.files?.[0] || null)} />
-                      <div className={`${styles.fileLabel} ${rectoFile ? styles.fileLabelActive : ''}`}>{rectoFile ? rectoFile.name : 'Choisir un fichier (image ou PDF)'}</div>
-                    </div>
-                  </div>
-
-                  {docType === 'cni' && (
-                    <div className={styles.field}>
-                      <label className={styles.label}>Document — Verso</label>
-                      <div className={styles.fileWrap}>
-                        <input type="file" accept="image/*,.pdf" onChange={(e) => setVersoFile(e.target.files?.[0] || null)} />
-                        <div className={`${styles.fileLabel} ${versoFile ? styles.fileLabelActive : ''}`}>{versoFile ? versoFile.name : 'Choisir un fichier (image ou PDF)'}</div>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className={styles.field} style={{ marginBottom: 0 }}>
-                    <label className={styles.label}>Adresse exacte</label>
-                    <input className={styles.input} placeholder="Numéro, rue, quartier, ville" value={kycAddress} onChange={(e) => setKycAddress(e.target.value)} />
+                    <strong>Vérification vendeur requise.</strong> Une fois ton email confirmé, connecte-toi : ton dashboard vendeur te demandera une pièce d'identité et ton adresse avant d'activer ta boutique — cela sert aussi à sécuriser l'envoi et la réception de tes fonds. Délai habituel : 24 à 48h après envoi du document.
                   </div>
                 </div>
               )}
