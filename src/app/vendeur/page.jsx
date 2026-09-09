@@ -150,6 +150,13 @@ export default function VendeurPage() {
   const [deleteAccountOpen, setDeleteAccountOpen] = useState(false);
   const [deleteAccountText, setDeleteAccountText] = useState('');
 
+  // Vérification d'identité (KYC) manquante
+  const [kycDocType, setKycDocType] = useState('');
+  const [kycAddress, setKycAddress] = useState('');
+  const [kycRectoFile, setKycRectoFile] = useState(null);
+  const [kycVersoFile, setKycVersoFile] = useState(null);
+  const [kycSubmitting, setKycSubmitting] = useState(false);
+
   function showToast(msg, type = '') { setToast({ msg, type }); setTimeout(() => setToast(null), 3200); }
 
   // ── Auth + chargement initial ──
@@ -592,7 +599,79 @@ export default function VendeurPage() {
     else endTour();
   }
 
+  async function submitKyc() {
+    if (!kycDocType) { showToast('Sélectionne le type de document', 'error'); return; }
+    if (!kycRectoFile) { showToast('Ajoute le recto de ton document', 'error'); return; }
+    if (kycDocType === 'cni' && !kycVersoFile) { showToast('Ajoute le verso de ta CNI', 'error'); return; }
+    if (!kycAddress.trim()) { showToast('Indique ton adresse exacte', 'error'); return; }
+    setKycSubmitting(true);
+    const sb = getSupabase();
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      const authUserId = session.user.id;
+      const uploadFile = async (file, label) => {
+        const ext = (file.name.split('.').pop() || 'bin').toLowerCase();
+        const path = `${authUserId}/${label}-${Date.now()}.${ext}`;
+        const { error } = await sb.storage.from('kyc-documents').upload(path, file, { upsert: true });
+        if (error) throw error;
+        return path;
+      };
+      const idCardFrontUrl = await uploadFile(kycRectoFile, 'recto');
+      const idCardBackUrl = kycVersoFile ? await uploadFile(kycVersoFile, 'verso') : null;
+      const { error: updErr } = await sb.from('users').update({
+        document_type: kycDocType, address: kycAddress.trim(),
+        id_card_front_url: idCardFrontUrl, id_card_back_url: idCardBackUrl,
+        updated_at: new Date().toISOString(),
+      }).eq('id', seller.id);
+      if (updErr) throw updErr;
+      setSeller((prev) => ({ ...prev, document_type: kycDocType, address: kycAddress.trim(), id_card_front_url: idCardFrontUrl, id_card_back_url: idCardBackUrl }));
+      showToast('Dossier envoyé — vérification sous 24 à 48h', 'success');
+    } catch (err) {
+      showToast('Erreur : ' + err.message, 'error');
+    } finally {
+      setKycSubmitting(false);
+    }
+  }
+
   if (checking) return <div style={{ padding: 60, textAlign: 'center', color: 'var(--text-faint)', minHeight: '100vh' }}>Vérification du compte…</div>;
+
+  if (seller.status === 'pending' && !seller.id_card_front_url) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+        <div className={styles.card} style={{ maxWidth: 440, width: '100%', padding: 28 }}>
+          <div style={{ fontSize: 16, fontWeight: 900, marginBottom: 6 }}>Vérification d'identité requise</div>
+          <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 18, lineHeight: 1.6 }}>
+            Pour activer ta boutique, envoie une pièce d'identité — ta boutique reste masquée tant que le dossier n'est pas validé (24 à 48h).
+          </p>
+          <div className={styles.formGroup} style={{ marginBottom: 10 }}>
+            <label className={styles.formLabel}>Type de document *</label>
+            <select className={styles.input} value={kycDocType} onChange={(e) => setKycDocType(e.target.value)}>
+              <option value="">Choisir</option>
+              <option value="cni">Carte d'identité (CNI)</option>
+              <option value="passeport">Passeport</option>
+            </select>
+          </div>
+          <div className={styles.formGroup} style={{ marginBottom: 10 }}>
+            <label className={styles.formLabel}>Recto du document *</label>
+            <input type="file" accept="image/*,.pdf" onChange={(e) => setKycRectoFile(e.target.files?.[0] || null)} className={styles.input} style={{ padding: 8 }} />
+          </div>
+          {kycDocType === 'cni' && (
+            <div className={styles.formGroup} style={{ marginBottom: 10 }}>
+              <label className={styles.formLabel}>Verso de la CNI *</label>
+              <input type="file" accept="image/*,.pdf" onChange={(e) => setKycVersoFile(e.target.files?.[0] || null)} className={styles.input} style={{ padding: 8 }} />
+            </div>
+          )}
+          <div className={styles.formGroup} style={{ marginBottom: 18 }}>
+            <label className={styles.formLabel}>Adresse exacte *</label>
+            <input className={styles.input} value={kycAddress} onChange={(e) => setKycAddress(e.target.value)} />
+          </div>
+          <button className={styles.btnPrimary} style={{ width: '100%', justifyContent: 'center' }} disabled={kycSubmitting} onClick={submitKyc}>
+            {kycSubmitting ? 'Envoi…' : 'Envoyer mon dossier'}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const maxChart = Math.max(1, ...chartData.map((m) => m.total));
 
