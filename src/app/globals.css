@@ -58,3 +58,5 @@ button { font-family: var(--font); }
 @media (max-width: 768px) {
   body { padding-bottom: 72px; }
 }
+
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }

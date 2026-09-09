@@ -27,6 +27,12 @@ export default function AdminPage() {
   const [pwd, setPwd] = useState('');
   const [loginError, setLoginError] = useState('');
 
+  const [toast, setToast] = useState(null);
+  function showToast(message, type = 'ok') {
+    setToast({ message, type });
+    setTimeout(() => setToast((t) => (t?.message === message ? null : t)), 3000);
+  }
+
   const [section, setSection] = useState('dashboard');
   const [kpis, setKpis] = useState({ revenue: 0, orders: 0, users: 0, products: 0, pending: 0 });
   const [pendingProducts, setPendingProducts] = useState([]);
@@ -43,6 +49,7 @@ export default function AdminPage() {
 
   // ── Artisans / Avis / Paiements / Analytiques ──
   const [artisans, setArtisans] = useState([]);
+  const [vendorActionId, setVendorActionId] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [payments, setPayments] = useState([]);
   const [payouts, setPayouts] = useState([]);
@@ -172,19 +179,39 @@ export default function AdminPage() {
 
   async function approveVendor(u) {
     if (!confirm(`Valider le dossier vendeur de ${u.full_name || u.email} ? Sa boutique deviendra visible publiquement.`)) return;
-    const sb = getSupabase();
-    await sb.from('users').update({ status: 'active', vendor_validated_at: new Date().toISOString(), vendor_reject_reason: null }).eq('id', u.id);
-    await sb.from('shops').update({ status: 'active', updated_at: new Date().toISOString() }).eq('user_id', u.id);
-    await loadArtisans();
+    setVendorActionId(u.id);
+    try {
+      const sb = getSupabase();
+      const { error: uErr } = await sb.from('users').update({ status: 'active', vendor_validated_at: new Date().toISOString(), vendor_reject_reason: null }).eq('id', u.id);
+      if (uErr) throw uErr;
+      const { error: sErr } = await sb.from('shops').update({ status: 'active', updated_at: new Date().toISOString() }).eq('user_id', u.id);
+      if (sErr) throw sErr;
+      await loadArtisans();
+      showToast('Vendeur validé — sa boutique est active', 'ok');
+    } catch (err) {
+      showToast('Erreur lors de la validation : ' + err.message, 'error');
+    } finally {
+      setVendorActionId(null);
+    }
   }
 
   async function rejectVendor(u) {
     const reason = prompt('Motif du refus (visible par le vendeur) :');
     if (reason === null) return;
-    const sb = getSupabase();
-    await sb.from('users').update({ status: 'rejected', vendor_reject_reason: reason || null }).eq('id', u.id);
-    await sb.from('shops').update({ status: 'rejected', updated_at: new Date().toISOString() }).eq('user_id', u.id);
-    await loadArtisans();
+    setVendorActionId(u.id);
+    try {
+      const sb = getSupabase();
+      const { error: uErr } = await sb.from('users').update({ status: 'rejected', vendor_reject_reason: reason || null }).eq('id', u.id);
+      if (uErr) throw uErr;
+      const { error: sErr } = await sb.from('shops').update({ status: 'rejected', updated_at: new Date().toISOString() }).eq('user_id', u.id);
+      if (sErr) throw sErr;
+      await loadArtisans();
+      showToast('Dossier rejeté', 'ok');
+    } catch (err) {
+      showToast('Erreur lors du rejet : ' + err.message, 'error');
+    } finally {
+      setVendorActionId(null);
+    }
   }
 
   // ── Retraits ──
@@ -682,8 +709,12 @@ export default function AdminPage() {
                           </div>
                           <div style={{ fontSize: 10, color: 'var(--text-faint)', marginBottom: 10 }}>{u.document_type === 'cni' ? 'CNI' : 'Passeport'} · {u.address || 'Adresse non renseignée'}</div>
                           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                            <button className={styles.btnPrimary} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5, flex: 1, padding: '7px 10px', fontSize: 11 }} onClick={() => approveVendor(u)}><i className="ph ph-check" /> Valider</button>
-                            <button className={styles.btnDanger} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5, flex: 1, padding: '7px 10px', fontSize: 11 }} onClick={() => rejectVendor(u)}><i className="ph ph-x" /> Rejeter</button>
+                            <button className={styles.btnPrimary} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5, flex: 1, padding: '7px 10px', fontSize: 11, opacity: vendorActionId === u.id ? 0.6 : 1 }} disabled={vendorActionId === u.id} onClick={() => approveVendor(u)}>
+                              {vendorActionId === u.id ? <><i className="ph ph-spinner" style={{ animation: 'spin 0.8s linear infinite' }} /> Validation…</> : <><i className="ph ph-check" /> Valider</>}
+                            </button>
+                            <button className={styles.btnDanger} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5, flex: 1, padding: '7px 10px', fontSize: 11, opacity: vendorActionId === u.id ? 0.6 : 1 }} disabled={vendorActionId === u.id} onClick={() => rejectVendor(u)}>
+                              {vendorActionId === u.id ? <><i className="ph ph-spinner" style={{ animation: 'spin 0.8s linear infinite' }} /> Rejet…</> : <><i className="ph ph-x" /> Rejeter</>}
+                            </button>
                           </div>
                         </>
                       )}
@@ -1134,6 +1165,10 @@ export default function AdminPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {toast && (
+        <div className={`${styles.toast} ${toast.type === 'error' ? styles.toastError : ''}`}>{toast.message}</div>
       )}
     </div>
   );

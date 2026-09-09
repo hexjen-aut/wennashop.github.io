@@ -665,10 +665,12 @@ export default function VendeurPage() {
             <label className={styles.formLabel}>Adresse exacte *</label>
             <input className={styles.input} value={kycAddress} onChange={(e) => setKycAddress(e.target.value)} />
           </div>
-          <button className={styles.btnPrimary} style={{ width: '100%', justifyContent: 'center' }} disabled={kycSubmitting} onClick={submitKyc}>
-            {kycSubmitting ? 'Envoi…' : 'Envoyer mon dossier'}
+          <button className={styles.btnPrimary} style={{ width: '100%', justifyContent: 'center', display: 'inline-flex', alignItems: 'center', gap: 8, opacity: kycSubmitting ? 0.7 : 1 }} disabled={kycSubmitting} onClick={submitKyc}>
+            {kycSubmitting && <i className="ph ph-spinner" style={{ animation: 'spin 0.8s linear infinite' }} />}
+            {kycSubmitting ? 'Envoi en cours…' : 'Envoyer mon dossier'}
           </button>
         </div>
+        {toast && <div className={`${styles.toast} ${toast.type === 'error' ? styles.toastError : ''}`}>{toast.msg}</div>}
       </div>
     );
   }
