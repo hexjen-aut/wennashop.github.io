@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
+import { CGU_TEXT, PRIVACY_TEXT } from '@/lib/legalTexts';
 import styles from './connexion.module.css';
 
 const PAYS_GROUPS = [
@@ -65,50 +66,6 @@ async function uploadKycFile(sb, userId, file, label) {
   return path;
 }
 
-const CGU_TEXT = `Dernière mise à jour : juillet 2026
-
-1. Objet
-WennaShop est un écosystème numérique qui permet à tout commerçant africain de créer, développer et gérer son activité, sans avoir à chercher séparément ses clients, ses outils et ses partenaires.
-
-2. Inscription et compte
-L'inscription est gratuite. L'utilisateur s'engage à fournir des informations exactes et à maintenir la confidentialité de ses identifiants.
-
-3. Rôles utilisateurs
-Acheteur : peut parcourir les boutiques, passer commande et suivre ses livraisons.
-Vendeur : peut créer une boutique, lister des produits et gérer ses commandes après validation par l'administration WennaShop.
-La validation d'un compte vendeur est requise avant toute mise en ligne. Un document d'identité valide (CNI ou passeport) ainsi qu'une adresse exacte doivent être fournis à l'inscription.
-
-4. Commissions et paiements
-WennaShop prélève une commission de 8% sur chaque vente. Les paiements sont traités via CinetPay et PayDunia.
-
-5. Responsabilités
-WennaShop agit en qualité d'intermédiaire technique. Les vendeurs assument l'entière responsabilité de la conformité de leurs articles.
-
-6. Propriété intellectuelle
-Le nom, le logo et les éléments graphiques de WennaShop sont la propriété exclusive de Hexjen Conceptions.
-
-7. Loi applicable
-Les présentes CGU sont soumises au droit marocain. Tout litige sera soumis aux tribunaux de Casablanca, Maroc.`;
-
-const PRIVACY_TEXT = `Dernière mise à jour : juillet 2026
-
-1. Responsable du traitement
-Hexjen Conceptions, société basée à Casablanca, Maroc.
-
-2. Données collectées
-Données d'identité : prénom, nom, email, genre (optionnel).
-Données de localisation : pays de résidence, adresse exacte (vendeurs).
-Données de vérification vendeur : document d'identité (CNI ou passeport) requis pour la validation du compte.
-Données de transaction : historique de commandes, montants, statuts.
-
-3. Partage des données
-Vos données ne sont jamais vendues à des tiers. Elles peuvent être partagées avec nos prestataires de paiement et Supabase. Les documents d'identité vendeurs sont stockés dans un espace privé, accessible uniquement à l'administration WennaShop.
-
-4. Vos droits
-Accès, rectification, suppression : privacy@wennashop.com
-
-5. Sécurité
-Données chiffrées en transit (HTTPS) et au repos. Aucune donnée bancaire stockée sur nos serveurs.`;
 
 export default function ConnexionPage() {
   const router = useRouter();

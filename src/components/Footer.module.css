@@ -1,0 +1,31 @@
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 24px 20px;
+  margin-top: 40px;
+}
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--text-faint);
+}
+.brand {
+  font-weight: 800;
+  color: var(--text-muted);
+}
+.links {
+  display: flex;
+  gap: 16px;
+}
+.links a {
+  color: var(--text-faint);
+  text-decoration: none;
+}
+.links a:hover {
+  color: var(--accent);
+}

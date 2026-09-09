@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { getSupabase } from '@/lib/supabase';
 import { useCart } from '@/context/CartContext';
 import Nav from '@/components/Nav';
+import Footer from '@/components/Footer';
 import CartSidebar from '@/components/CartSidebar';
 import styles from './produit.module.css';
 
@@ -198,6 +199,8 @@ function ProduitContent() {
           ))}
         </div>
       </main>
+
+      <Footer />
 
       <div className={styles.bottomBar}>
         <div className={styles.bottomBarInner}>

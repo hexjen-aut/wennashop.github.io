@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import Nav from '@/components/Nav';
+import Footer from '@/components/Footer';
 import CartSidebar from '@/components/CartSidebar';
 import styles from './panier.module.css';
 function formatPrice(amount, currency = 'MAD') {
@@ -73,6 +74,7 @@ export default function PanierPage() {
           </div>
         )}
       </div>
+      <Footer />
     </>
   );
 }
