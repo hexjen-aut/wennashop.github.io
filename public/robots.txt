@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /vendeur
+Disallow: /compte
+Disallow: /panier
+Disallow: /paiement
+Disallow: /suivi
+
+Sitemap: https://wennashop.com/sitemap.xml
