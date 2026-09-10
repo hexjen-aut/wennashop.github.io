@@ -11,6 +11,9 @@ import styles from './vendeur.module.css';
 // Constantes
 // ─────────────────────────────────────────────────────────
 const COUNTRIES = ['Maroc', 'Gabon', 'Sénégal', "Côte d'Ivoire", 'Cameroun', 'RDC', 'Congo', 'Mali', 'Burkina Faso', 'Niger', 'Guinée', 'Bénin', 'Togo', 'Tchad', 'Madagascar', 'Mauritanie', 'Comores', 'Djibouti', 'Autre'];
+// Pays que les acheteurs peuvent choisir sur la boutique (voir boutique/page.jsx) —
+// c'est cette liste-ci, pas COUNTRIES ci-dessus, qui détermine "ships_to" utile.
+const SHIP_COUNTRIES = ['Gabon', 'Maroc', 'Bénin', 'Sénégal', "Côte d'Ivoire", 'Cameroun', 'Mali'];
 
 const STATUS_LABEL = { pending: 'En attente', active: 'Actif', inactive: 'Inactif', processing: 'En traitement', shipped: 'Expédiée', delivered: 'Livrée', cancelled: 'Annulée', approved: 'Approuvé', paid: 'Payé', rejected: 'Rejeté' };
 const STATUS_COLOR = { pending: '#f59e0b', active: '#22c55e', inactive: '#555', processing: '#3b82f6', shipped: '#3b82f6', delivered: '#22c55e', cancelled: '#ef4444', approved: '#22c55e', paid: '#22c55e', rejected: '#ef4444' };
@@ -111,7 +114,7 @@ export default function VendeurPage() {
   const [deleteTarget, setDeleteTarget] = useState(null);
 
   function emptyProduct() {
-    return { id: null, name: '', description: '', price: '', stock: '', country: 'Maroc', origin_city: '', category_id: '', status: 'pending', brand: '', sku: '', compare_price: '', delivery_days: '', material: '', color: '', weight: '', dimensions: '' };
+    return { id: null, name: '', description: '', price: '', stock: '', country: 'Maroc', origin_city: '', category_id: '', status: 'pending', brand: '', sku: '', compare_price: '', delivery_days: '', material: '', color: '', weight: '', dimensions: '', ships_to: [] };
   }
 
   // Orders
@@ -145,7 +148,7 @@ export default function VendeurPage() {
   const [reviewStats, setReviewStats] = useState({ avg: 0, total: 0, approved: 0 });
 
   // Shop form
-  const [shopForm, setShopForm] = useState({ name: '', slug: '', bio: '', city: '', country: 'Maroc', logo_url: '', banner_url: '', whatsapp: '', instagram: '', facebook: '', tiktok: '', shop_policies: '' });
+  const [shopForm, setShopForm] = useState({ name: '', slug: '', bio: '', city: '', country: 'Maroc', logo_url: '', banner_url: '', whatsapp: '', instagram: '', facebook: '', tiktok: '', shop_policies: '', ships_to: [] });
 
   // Profile form
   const [profileForm, setProfileForm] = useState({ first_name: '', last_name: '', specialty: '', country: 'Maroc' });
@@ -183,7 +186,7 @@ export default function VendeurPage() {
         name: shopRow.name || '', slug: shopRow.slug || '', bio: shopRow.bio || '', city: shopRow.city || '',
         country: shopRow.country || 'Maroc', logo_url: shopRow.logo_url || '', banner_url: shopRow.banner_url || '',
         whatsapp: shopRow.whatsapp || '', instagram: shopRow.instagram || '', facebook: shopRow.facebook || '', tiktok: shopRow.tiktok || '',
-        shop_policies: shopRow.shop_policies || '',
+        shop_policies: shopRow.shop_policies || '', ships_to: shopRow.ships_to || [],
       });
       setWallet(walletRow || { balance: 0, currency: 'MAD' });
       setCategories(cats || []);
@@ -323,11 +326,13 @@ export default function VendeurPage() {
         country: p.country || 'Maroc', origin_city: p.origin_city || '', category_id: p.category_id || '', status: p.status || 'pending',
         brand: p.brand || '', sku: p.sku || '', compare_price: p.compare_price ?? '', delivery_days: p.delivery_days ?? '',
         material: p.material || '', color: p.color || '', weight: p.weight || '', dimensions: p.dimensions || '',
+        ships_to: Array.isArray(p.ships_to) ? p.ships_to : [],
       });
       setProductImages(Array.isArray(p.images) && p.images.length ? p.images : (p.image_url ? [p.image_url] : []));
       setCaracs(p.characteristics ? Object.entries(p.characteristics).map(([k, v]) => ({ k, v })) : []);
     } else {
-      setProductForm(emptyProduct());
+      // Pré-rempli avec le réglage par défaut de la boutique — modifiable ensuite pour ce produit.
+      setProductForm({ ...emptyProduct(), ships_to: shop?.ships_to || [] });
       setProductImages([]);
       setCaracs([]);
     }
@@ -379,6 +384,7 @@ export default function VendeurPage() {
       weight: productForm.weight || null, dimensions: productForm.dimensions || null,
       images: productImages, image_url: productImages[0] || null,
       characteristics, shop_id: shop?.id || null, seller_id: seller.id,
+      ships_to: productForm.ships_to || [],
     };
     let error;
     if (productForm.id) {
@@ -1140,6 +1146,24 @@ export default function VendeurPage() {
               <div className={styles.formGroup}><label className={styles.formLabel}>TikTok</label><input className={styles.input} value={shopForm.tiktok} onChange={(e) => setShopForm({ ...shopForm, tiktok: e.target.value })} /></div>
             </div>
             <div className={styles.formGroup}><label className={styles.formLabel}>Politique (retours, délais…)</label><textarea className={styles.input} rows={3} value={shopForm.shop_policies} onChange={(e) => setShopForm({ ...shopForm, shop_policies: e.target.value })} /></div>
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Pays vers lesquels tu expédies</label>
+              <p style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 8 }}>
+                Par défaut tes produits ne sont visibles que par les acheteurs de {shopForm.country || 'ton pays'}. Coche les autres pays si tu peux y expédier — ça devient le réglage par défaut pour tes nouveaux produits (modifiable produit par produit).
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {SHIP_COUNTRIES.map((c) => (
+                  <label key={c} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '6px 10px', borderRadius: 999, border: '1px solid var(--border)', background: shopForm.ships_to.includes(c) ? 'var(--accent-light)' : 'transparent', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={shopForm.ships_to.includes(c)}
+                      onChange={() => setShopForm({ ...shopForm, ships_to: shopForm.ships_to.includes(c) ? shopForm.ships_to.filter((x) => x !== c) : [...shopForm.ships_to, c] })}
+                    />
+                    {c}
+                  </label>
+                ))}
+              </div>
+            </div>
             <button type="submit" className={styles.btnPrimary} style={{ alignSelf: 'flex-start' }}><i className="ph ph-floppy-disk" /> Enregistrer</button>
           </form>
           </>
@@ -1248,6 +1272,24 @@ export default function VendeurPage() {
                       </select>
                     </div>
                     <div className={styles.formGroup}><label className={styles.formLabel}>Ville d'origine</label><input className={styles.input} value={productForm.origin_city} onChange={(e) => setProductForm({ ...productForm, origin_city: e.target.value })} /></div>
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Visible aussi pour les acheteurs de…</label>
+                    <p style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 8 }}>
+                      Toujours visible par les acheteurs de {productForm.country} (pays d'origine). Coche les autres pays où tu peux livrer ce produit.
+                    </p>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                      {SHIP_COUNTRIES.filter((c) => c !== productForm.country).map((c) => (
+                        <label key={c} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '6px 10px', borderRadius: 999, border: '1px solid var(--border)', background: productForm.ships_to.includes(c) ? 'var(--accent-light)' : 'transparent', cursor: 'pointer' }}>
+                          <input
+                            type="checkbox"
+                            checked={productForm.ships_to.includes(c)}
+                            onChange={() => setProductForm({ ...productForm, ships_to: productForm.ships_to.includes(c) ? productForm.ships_to.filter((x) => x !== c) : [...productForm.ships_to, c] })}
+                          />
+                          {c}
+                        </label>
+                      ))}
+                    </div>
                   </div>
                   <div className={styles.formGrid}>
                     <div className={styles.formGroup}><label className={styles.formLabel}>Catégorie</label>

@@ -132,7 +132,7 @@ export default function BoutiquePage() {
       const [col, dir] = sort.split(':');
       const offset = (page - 1) * PAGE_SIZE;
       let q = sb.from('products')
-        .select('id,name,price,currency,country,origin_city,stock,images,image_url,category_id,categories(name)', { count: 'exact' })
+        .select('id,name,price,currency,country,origin_city,stock,images,image_url,category_id,categories(name),ships_to', { count: 'exact' })
         .eq('status', 'active')
         .range(offset, offset + PAGE_SIZE - 1)
         .order(col, { ascending: dir === 'asc' });
@@ -144,7 +144,13 @@ export default function BoutiquePage() {
       if (searchTerm.trim()) q = q.ilike('name', `%${searchTerm.trim()}%`);
 
       const { data, count } = await q;
-      const list = data || [];
+      let list = data || [];
+      // Mode "International" sans filtre d'origine manuel : un produit d'un
+      // autre pays ne reste visible que si le vendeur a coché ce pays comme
+      // livrable (ships_to) — sinon le voir ici n'aide personne.
+      if (!countries.length && buyerCountry) {
+        list = list.filter((p) => p.country === buyerCountry || (p.ships_to || []).includes(buyerCountry));
+      }
       const withPrices = await Promise.all(list.map(async (p) => {
         const conv = await convertPrice(p.price, p.currency || 'MAD', displayCurrency, sb);
         return { ...p, displayPrice: formatSmartPrice(conv.amount, conv.currency) };
@@ -153,7 +159,7 @@ export default function BoutiquePage() {
       setTotal(count || 0);
       setLoading(false);
     })();
-  }, [catId, sort, page, countries, stockOnly, priceMin, priceMax, searchTerm, displayCurrency]);
+  }, [catId, sort, page, countries, buyerCountry, stockOnly, priceMin, priceMax, searchTerm, displayCurrency]);
 
   // ── Boutiques boostées ──
   // Une boutique est "boostée" si elle a un boost actif (table boosts,
