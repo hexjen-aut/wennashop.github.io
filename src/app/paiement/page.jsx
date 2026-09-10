@@ -20,8 +20,12 @@ function PaiementContent() {
   const [sending, setSending] = useState(false);
 
   const [form, setForm] = useState({ first: '', last: '', address: '', city: '', country: 'Maroc', notes: '' });
-  const [method, setMethod] = useState('cash_on_delivery');
+  const [method, setMethod] = useState(params.get('error') === 'payment_failed' ? 'mobile_money' : 'cash_on_delivery');
   const [bankAccounts, setBankAccounts] = useState([]);
+  const [mobileProvider, setMobileProvider] = useState('airtel_money');
+  const [mobilePhone, setMobilePhone] = useState('');
+  const [awaitingMobileConfirm, setAwaitingMobileConfirm] = useState(false);
+  const [mobileError, setMobileError] = useState(params.get('error') === 'payment_failed' ? 'Le paiement mobile money a échoué ou a été annulé. Réessaie ci-dessous.' : null);
 
   useEffect(() => {
     (async () => {
@@ -65,13 +69,39 @@ function PaiementContent() {
 
   async function submit() {
     if (!form.first || !form.last || !form.address || !form.city) { alert('Complète tous les champs requis.'); return; }
+    if (method === 'mobile_money' && !mobilePhone.trim()) { alert('Indique ton numéro de téléphone Mobile Money.'); return; }
     setSending(true);
+    setMobileError(null);
     const sb = getSupabase();
     const { data: { user } } = await sb.auth.getUser();
     let row = null;
     const { data: byAuth } = await sb.from('users').select('id').eq('auth_id', user.id).maybeSingle();
     row = byAuth || (await sb.from('users').select('id').ilike('email', user.email).maybeSingle()).data;
     if (row?.id !== order.user_id) { alert("Cette commande ne t'appartient pas."); setSending(false); return; }
+
+    if (method === 'mobile_money') {
+      // Ne pas marquer la commande "processing" ni insérer de paiement ici :
+      // process-payment crée le paiement lui-même (avec transaction_id/metadata
+      // SingPay), et c'est le webhook singpay-webhook qui confirme la commande
+      // une fois le paiement réellement validé par l'acheteur sur son téléphone.
+      await sb.from('orders').update({
+        shipping_name: `${form.first} ${form.last}`, shipping_address: form.address, shipping_city: form.city,
+        shipping_country: form.country, notes: form.notes || null, updated_at: new Date().toISOString(),
+      }).eq('id', orderId);
+      const { data, error: fnError } = await sb.functions.invoke('process-payment', {
+        body: { order_id: orderId, amount: order.total_amount, client_msisdn: mobilePhone.trim(), payment_method: mobileProvider },
+      });
+      if (fnError || data?.error) {
+        setMobileError(data?.error || fnError?.message || 'Erreur lors du paiement mobile money.');
+        setSending(false);
+        return;
+      }
+      if (row) await sb.from('cart_items').delete().eq('user_id', row.id);
+      setSending(false);
+      setAwaitingMobileConfirm(true);
+      return;
+    }
+
     await sb.from('orders').update({
       shipping_name: `${form.first} ${form.last}`, shipping_address: form.address, shipping_city: form.city,
       shipping_country: form.country, notes: form.notes || null, status: 'processing', updated_at: new Date().toISOString(),
@@ -88,6 +118,19 @@ function PaiementContent() {
 
   if (loading) return <><Nav /><div style={{ padding: 60, textAlign: 'center', color: 'var(--text-faint)' }}>Chargement…</div></>;
   if (error) return <><Nav /><div style={{ padding: 60, textAlign: 'center' }}><p>{error}</p><Link href="/panier" style={{ color: 'var(--accent)' }}>Retour au panier</Link></div></>;
+  if (awaitingMobileConfirm) return (
+    <>
+      <Nav />
+      <div style={{ padding: 80, textAlign: 'center' }}>
+        <div style={{ fontSize: 40, marginBottom: 16 }}>📱</div>
+        <h1 style={{ fontSize: 26, fontWeight: 900, marginBottom: 8 }}>Valide le paiement sur ton téléphone</h1>
+        <p style={{ color: 'var(--text-muted)', marginBottom: 24, maxWidth: 420, marginLeft: 'auto', marginRight: 'auto' }}>
+          Un code de confirmation {mobileProvider === 'airtel_money' ? 'Airtel Money' : 'Moov Money'} a été envoyé au {mobilePhone}. Valide-le pour finaliser ta commande — le statut se mettra à jour automatiquement.
+        </p>
+        <Link href={`/suivi?order=${orderId}`} style={{ background: 'var(--accent)', color: '#fff', padding: '12px 28px', borderRadius: 999, fontWeight: 700, textDecoration: 'none' }}>Suivre ma commande</Link>
+      </div>
+    </>
+  );
   if (success) return (
     <>
       <Nav />
@@ -137,6 +180,12 @@ function PaiementContent() {
                     <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{bankAccounts.map((a) => a.bank_name).join(' · ')}</div>
                   </button>
                 )}
+                {order?.currency === 'XAF' && (
+                  <button className={`${styles.methodCard} ${method === 'mobile_money' ? styles.methodActive : ''}`} onClick={() => setMethod('mobile_money')}>
+                    <div style={{ fontWeight: 700, fontSize: 13 }}>Mobile Money</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Airtel Money · Moov Money</div>
+                  </button>
+                )}
               </div>
               {method === 'virement' && (() => {
                 const account = bankAccounts.find((a) => a.country_name === form.country)
@@ -152,6 +201,19 @@ function PaiementContent() {
                   </div>
                 );
               })()}
+              {method === 'mobile_money' && (
+                <div style={{ marginTop: 14 }}>
+                  <div className={styles.grid2}>
+                    <select className={styles.input} value={mobileProvider} onChange={(e) => setMobileProvider(e.target.value)}>
+                      <option value="airtel_money">Airtel Money</option>
+                      <option value="moov_money">Moov Money</option>
+                    </select>
+                    <input className={styles.input} placeholder="Numéro (ex: 074123456)" value={mobilePhone} onChange={(e) => setMobilePhone(e.target.value)} />
+                  </div>
+                  <p style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 8 }}>Tu recevras une demande de confirmation directement sur ce numéro.</p>
+                  {mobileError && <p style={{ fontSize: 12, color: 'var(--error)', marginTop: 8 }}>{mobileError}</p>}
+                </div>
+              )}
             </div>
           </div>
 
@@ -173,7 +235,9 @@ function PaiementContent() {
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 18, fontWeight: 900, marginTop: 14 }}>
                 <span>Total</span><span style={{ color: 'var(--accent)' }}>{fmt(order?.total_amount, order?.currency)}</span>
               </div>
-              <button className={styles.btnSubmit} onClick={submit} disabled={sending}>{sending ? 'Traitement…' : 'Confirmer la commande'}</button>
+              <button className={styles.btnSubmit} onClick={submit} disabled={sending}>
+                {sending ? 'Traitement…' : method === 'mobile_money' ? 'Envoyer la demande de paiement' : 'Confirmer la commande'}
+              </button>
             </div>
           </div>
         </div>
