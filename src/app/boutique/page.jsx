@@ -13,6 +13,8 @@ import styles from './boutique.module.css';
 
 const PAGE_SIZE = 24;
 const COUNTRIES = ['Gabon', 'Maroc', 'Bénin', 'Sénégal', "Côte d'Ivoire", 'Cameroun', 'Mali'];
+const COUNTRY_FLAG = { Gabon: '🇬🇦', Maroc: '🇲🇦', Bénin: '🇧🇯', Sénégal: '🇸🇳', "Côte d'Ivoire": '🇨🇮', Cameroun: '🇨🇲', Mali: '🇲🇱' };
+const BUYER_COUNTRY_KEY = 'wenna_buyer_country';
 const DISPLAY_CURRENCIES = [
   { value: 'MAD', label: 'MAD (Maroc)' },
   { value: 'XOF', label: 'FCFA — UEMOA' },
@@ -43,6 +45,8 @@ export default function BoutiquePage() {
 
   // Filtres barre latérale
   const [countries, setCountries] = useState([]);
+  const [buyerCountry, setBuyerCountry] = useState(null);
+  const [countryModalOpen, setCountryModalOpen] = useState(false);
   const [priceMin, setPriceMin] = useState(0);
   const [priceMax, setPriceMax] = useState(100000);
   const [stockOnly, setStockOnly] = useState(false);
@@ -90,6 +94,35 @@ export default function BoutiquePage() {
       setCategories(data || []);
     })();
   }, []);
+
+  // ── Pays de l'acheteur : on ne montre que ses produits nationaux par
+  // défaut (voir tout le catalogue mélangé dès l'arrivée décourage) ; à la
+  // première visite on lui demande son pays, mémorisé ensuite.
+  useEffect(() => {
+    const stored = localStorage.getItem(BUYER_COUNTRY_KEY);
+    if (stored && COUNTRIES.includes(stored)) {
+      setBuyerCountry(stored);
+      setCountries([stored]);
+    } else {
+      setCountryModalOpen(true);
+    }
+  }, []);
+
+  function chooseBuyerCountry(c) {
+    localStorage.setItem(BUYER_COUNTRY_KEY, c);
+    setBuyerCountry(c);
+    setCountries([c]);
+    setCountryModalOpen(false);
+    setPage(1);
+  }
+
+  const isNationalScope = !!buyerCountry && countries.length === 1 && countries[0] === buyerCountry;
+
+  function toggleScope() {
+    if (isNationalScope) setCountries([]);
+    else if (buyerCountry) setCountries([buyerCountry]);
+    setPage(1);
+  }
 
   // ── Produits (filtres + tri + pagination + prix protégés) ──
   useEffect(() => {
@@ -279,6 +312,50 @@ export default function BoutiquePage() {
         )}
         {siteConfig.flash_sale_ends_at && <UrgencyTimer endsAt={siteConfig.flash_sale_ends_at} />}
       </section>
+
+      {buyerCountry && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, flexWrap: 'wrap', padding: '0 20px 18px' }}>
+          <div style={{ display: 'inline-flex', background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-pill)', padding: 4 }}>
+            <button
+              onClick={() => { if (!isNationalScope) toggleScope(); }}
+              style={{ border: 'none', cursor: 'pointer', padding: '8px 16px', borderRadius: 'var(--radius-pill)', fontSize: 12, fontWeight: 800, background: isNationalScope ? 'var(--accent)' : 'transparent', color: isNationalScope ? '#fff' : 'var(--text-muted)' }}
+            >
+              {COUNTRY_FLAG[buyerCountry]} National ({buyerCountry})
+            </button>
+            <button
+              onClick={() => { if (isNationalScope) toggleScope(); }}
+              style={{ border: 'none', cursor: 'pointer', padding: '8px 16px', borderRadius: 'var(--radius-pill)', fontSize: 12, fontWeight: 800, background: !isNationalScope ? 'var(--accent)' : 'transparent', color: !isNationalScope ? '#fff' : 'var(--text-muted)' }}
+            >
+              🌍 International
+            </button>
+          </div>
+          <button onClick={() => setCountryModalOpen(true)} style={{ background: 'none', border: 'none', color: 'var(--text-faint)', fontSize: 11, cursor: 'pointer', textDecoration: 'underline' }}>
+            Changer de pays
+          </button>
+        </div>
+      )}
+
+      {countryModalOpen && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.75)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+          <div style={{ maxWidth: 380, width: '100%', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: 28, boxShadow: 'var(--shadow-md)' }}>
+            <div style={{ fontSize: 16, fontWeight: 900, marginBottom: 6 }}>D'où visites-tu WennaShop ?</div>
+            <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 18, lineHeight: 1.6 }}>
+              On te montre d'abord les produits de ton pays — tu pourras voir tout le catalogue international en un clic.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              {COUNTRIES.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => chooseBuyerCountry(c)}
+                  style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', background: 'var(--surface-2)', color: 'var(--text)', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+                >
+                  {COUNTRY_FLAG[c]} {c}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {(catId || countries.length > 0 || stockOnly || priceMin > 0 || priceMax < 100000) && (
         <div className={styles.activeFilters}>

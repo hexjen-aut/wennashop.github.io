@@ -36,6 +36,7 @@ const TOUR_STEPS = [
   { navKey: 'orders', title: 'Commandes', text: 'Suis chaque commande et marque-la comme expédiée avec un numéro de suivi.' },
   { navKey: 'revenue', title: 'Revenus', text: "Ton chiffre d'affaires et l'historique détaillé de tes paiements." },
   { navKey: 'shop', title: 'Ma boutique', text: 'Personnalise ta vitrine publique : logo, bannière, réseaux sociaux.' },
+  { navKey: 'visibility', title: 'National vs international', text: "Sur la boutique, un acheteur ne voit d'abord que les produits de son propre pays — il doit basculer sur \"International\" pour voir aussi les tiens si tu vends depuis un autre pays. C'est normal si tes ventes hors de ton pays démarrent plus lentement : ce sont des acheteurs qui ont fait la démarche de regarder plus loin." },
   { navKey: 'new-product', title: 'Nouveau produit', text: 'Ce bouton reste accessible partout pour ajouter rapidement un produit.' },
 ];
 
