@@ -8,7 +8,7 @@ import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import CartSidebar from '@/components/CartSidebar';
 import UrgencyTimer from '@/components/UrgencyTimer';
-import { convertPrice, formatSmartPrice } from '@/lib/currency';
+import { convertPrice, formatSmartPrice, currencyForCountry } from '@/lib/currency';
 import styles from './boutique.module.css';
 
 const PAGE_SIZE = 24;
@@ -103,6 +103,7 @@ export default function BoutiqueClient() {
     if (stored && COUNTRIES.includes(stored)) {
       setBuyerCountry(stored);
       setCountries([stored]);
+      setDisplayCurrency(currencyForCountry(stored) || 'MAD');
     } else {
       setCountryModalOpen(true);
     }
@@ -112,6 +113,7 @@ export default function BoutiqueClient() {
     localStorage.setItem(BUYER_COUNTRY_KEY, c);
     setBuyerCountry(c);
     setCountries([c]);
+    setDisplayCurrency(currencyForCountry(c) || 'MAD');
     setCountryModalOpen(false);
     setPage(1);
   }

@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { getSupabase } from '@/lib/supabase';
 import Nav from '@/components/Nav';
+import { convertPrice, formatSmartPrice } from '@/lib/currency';
+import { getBuyerCurrency } from '@/lib/buyerCurrency';
 import styles from '@/app/boutique/boutique.module.css';
-
-function fmt(n, c = 'MAD') { try { return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: c, minimumFractionDigits: 0 }).format(n); } catch { return `${n} ${c}`; } }
 
 export default function RecherchePage() {
   const [term, setTerm] = useState('');
@@ -21,7 +21,12 @@ export default function RecherchePage() {
       const { data } = await sb.from('products')
         .select('id,name,price,currency,country,image_url,images')
         .eq('status', 'active').ilike('name', `%${term}%`).limit(48);
-      setProducts(data || []);
+      const buyerCurrency = getBuyerCurrency();
+      const withPrices = await Promise.all((data || []).map(async (p) => {
+        const conv = await convertPrice(p.price, p.currency || 'MAD', buyerCurrency, sb);
+        return { ...p, displayPrice: formatSmartPrice(conv.amount, conv.currency) };
+      }));
+      setProducts(withPrices);
       setLoading(false);
     }, 350);
     return () => clearTimeout(t);
@@ -57,7 +62,7 @@ export default function RecherchePage() {
                   <div className={styles.prodImg}><img src={img} alt={p.name} loading="lazy" /></div>
                   <div className={styles.prodInfo}>
                     <div className={styles.prodName}>{p.name}</div>
-                    <div className={styles.prodPrice}>{fmt(p.price, p.currency)}</div>
+                    <div className={styles.prodPrice}>{p.displayPrice}</div>
                   </div>
                 </Link>
               );

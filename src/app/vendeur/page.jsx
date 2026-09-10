@@ -564,7 +564,7 @@ export default function VendeurPage() {
     const payload = { ...shopForm, user_id: seller.id };
     let error;
     if (shop?.id) ({ error } = await sb.from('shops').update(payload).eq('id', shop.id));
-    else ({ error } = await sb.from('shops').insert(payload));
+    else ({ error } = await sb.from('shops').insert({ ...payload, commission_rate: 8 }));
     if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
     showToast('Boutique enregistrée', 'success');
     const { data: refreshed } = await sb.from('shops').select('*').eq('user_id', seller.id).maybeSingle();
