@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { getSupabase } from '@/lib/supabase';
 import { useCart } from '@/context/CartContext';
 import Nav from '@/components/Nav';
+import { convertPrice, formatSmartPrice } from '@/lib/currency';
+import { getBuyerCurrency } from '@/lib/buyerCurrency';
 import styles from './boutique-vendeur.module.css';
 
 function fmt(n, c = 'MAD') {
@@ -64,7 +66,18 @@ export default function Content() {
         .eq('seller_id', data.user_id)
         .eq('status', 'active')
         .order('created_at', { ascending: false });
-      setProducts(prods || []);
+      const buyerCurrency = getBuyerCurrency();
+      const withPrices = await Promise.all((prods || []).map(async (p) => {
+        const conv = await convertPrice(p.price, p.currency || 'MAD', buyerCurrency, sb);
+        const displayPrice = formatSmartPrice(conv.amount, conv.currency);
+        let displayComparePrice = null;
+        if (p.compare_price > p.price) {
+          const convCompare = await convertPrice(p.compare_price, p.currency || 'MAD', buyerCurrency, sb);
+          displayComparePrice = formatSmartPrice(convCompare.amount, convCompare.currency);
+        }
+        return { ...p, displayPrice, displayComparePrice };
+      }));
+      setProducts(withPrices);
 
       const { data: revs } = await sb
         .from('reviews')
@@ -253,8 +266,8 @@ export default function Content() {
                   <div className={styles.info2}>
                     <div className={styles.pname}>{p.name}</div>
                     <div className={styles.priceRow}>
-                      <span className={styles.price}>{fmt(p.price, p.currency)}</span>
-                      {hasPromo && <span className={styles.comparePrice}>{fmt(p.compare_price, p.currency)}</span>}
+                      <span className={styles.price}>{p.displayPrice || fmt(p.price, p.currency)}</span>
+                      {hasPromo && <span className={styles.comparePrice}>{p.displayComparePrice || fmt(p.compare_price, p.currency)}</span>}
                     </div>
                     <div className={styles.meta}>
                       <span>{p.country || ''}</span>

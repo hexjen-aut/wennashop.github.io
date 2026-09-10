@@ -8,12 +8,9 @@ import { useCart } from '@/context/CartContext';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import CartSidebar from '@/components/CartSidebar';
+import { convertPrice, formatSmartPrice } from '@/lib/currency';
+import { getBuyerCurrency } from '@/lib/buyerCurrency';
 import styles from './produit.module.css';
-
-function formatPrice(amount, currency = 'MAD') {
-  try { return new Intl.NumberFormat('fr-FR', { style: 'currency', currency }).format(amount); }
-  catch { return `${amount} ${currency}`; }
-}
 
 export default function ProduitContent() {
   const searchParams = useSearchParams();
@@ -21,6 +18,8 @@ export default function ProduitContent() {
   const { add } = useCart();
 
   const [product, setProduct] = useState(null);
+  const [displayPrice, setDisplayPrice] = useState('');
+  const [displayComparePrice, setDisplayComparePrice] = useState('');
   const [seller, setSeller] = useState(null);
   const [shop, setShop] = useState(null);
   const [reviews, setReviews] = useState([]);
@@ -42,6 +41,14 @@ export default function ProduitContent() {
       const { data: imgs } = await sb.from('product_images').select('url,position').eq('product_id', id).order('position');
       data._images = imgs || [];
       setProduct(data);
+
+      const buyerCurrency = getBuyerCurrency();
+      const conv = await convertPrice(data.price, data.currency || 'MAD', buyerCurrency, sb);
+      setDisplayPrice(formatSmartPrice(conv.amount, conv.currency));
+      if (data.compare_price > data.price) {
+        const convCompare = await convertPrice(data.compare_price, data.currency || 'MAD', buyerCurrency, sb);
+        setDisplayComparePrice(formatSmartPrice(convCompare.amount, convCompare.currency));
+      }
 
       if (data.seller_id) {
         const [{ data: user }, { data: shopRow }] = await Promise.all([
@@ -127,9 +134,9 @@ export default function ProduitContent() {
           <div className={styles.eyebrow}>{product.categories?.name || product.category || ''}</div>
           <h1 className={styles.title}>{product.name}</h1>
           <div className={styles.priceRow}>
-            <div className={styles.price}>{formatPrice(product.price, product.currency || 'MAD')}</div>
+            <div className={styles.price}>{displayPrice}</div>
             {product.compare_price > product.price && (
-              <div className={styles.comparePrice}>{formatPrice(product.compare_price, product.currency || 'MAD')}</div>
+              <div className={styles.comparePrice}>{displayComparePrice}</div>
             )}
           </div>
 
