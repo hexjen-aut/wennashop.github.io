@@ -1,10 +1,6 @@
-import { createClient } from '@supabase/supabase-js';
+import { getServerSupabase } from '@/lib/supabaseServer';
 
 const SITE_URL = 'https://wennashop.com';
-
-function getServerSupabase() {
-  return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-}
 
 const STATIC_ROUTES = [
   { path: '/', priority: 1, changeFrequency: 'daily' },
