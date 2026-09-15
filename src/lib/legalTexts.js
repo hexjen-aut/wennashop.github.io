@@ -44,7 +44,7 @@ Données de transaction : historique de commandes, montants, statuts, demandes d
 Vos données ne sont jamais vendues à des tiers. Elles peuvent être partagées avec nos prestataires de paiement et Supabase. Les documents d'identité vendeurs sont stockés dans un espace privé, accessible uniquement à l'administration WennaShop.
 
 4. Conservation
-Les données sont conservées le temps de l'utilisation du compte. En cas de suppression de compte, un délai de 30 jours est appliqué avant suppression définitive.
+Les données sont conservées le temps de l'utilisation du compte. En cas de suppression de compte, ton compte et tes identifiants de connexion sont supprimés immédiatement et définitivement. Les données liées à des commandes passées peuvent être conservées à des fins comptables et légales, conformément à la réglementation en vigueur.
 
 5. Vos droits
 Accès, rectification, suppression : privacy@wennashop.com

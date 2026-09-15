@@ -222,11 +222,8 @@ export default function ComptePage() {
     setDeletingAccount(true);
     const sb = getSupabase();
     try {
-      if (profile.role === 'artisan') {
-        await sb.from('products').update({ status: 'inactive' }).eq('seller_id', profile.id);
-        await sb.from('shops').delete().eq('user_id', profile.id);
-      }
-      await sb.from('users').update({ status: 'deleted', email: `deleted_${Date.now()}_${profile.email}`, updated_at: new Date().toISOString() }).eq('id', profile.id);
+      const { error } = await sb.functions.invoke('delete-account');
+      if (error) throw error;
       await sb.auth.signOut();
       router.push('/');
     } catch (err) {
@@ -715,7 +712,7 @@ export default function ComptePage() {
           <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, width: '100%', maxWidth: 420, padding: 20 }} onClick={(e) => e.stopPropagation()}>
             <div style={{ textAlign: 'center', marginBottom: 16 }}>
               <div style={{ fontSize: 18, fontWeight: 900, marginBottom: 8 }}>Supprimer mon compte ?</div>
-              <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>Action <strong style={{ color: 'var(--error)' }}>permanente et irréversible</strong>.</p>
+              <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>Action <strong style={{ color: 'var(--error)' }}>permanente et irréversible</strong>. Toutes tes données seront supprimées conformément à notre <Link href="/confidentialite" target="_blank" style={{ color: 'var(--accent)' }}>politique de confidentialité</Link>.</p>
             </div>
             <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, padding: 12, marginBottom: 16 }}>
               <label style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 6, display: 'block' }}>Tapez <strong style={{ color: 'var(--error)' }}>SUPPRIMER</strong></label>
