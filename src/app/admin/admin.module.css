@@ -38,6 +38,11 @@
 .table td { padding: 12px 14px; font-size: 12px; border-top: 1px solid var(--border); }
 .empty { text-align: center; padding: 32px; color: var(--text-faint); font-size: 12px; }
 
+@media (max-width: 640px) {
+  .table { min-width: 0; font-size: 11px; }
+  .table th, .table td { padding: 8px; }
+}
+
 /* ── BUTTONS ── */
 .btnPrimary { background: var(--accent); color: #fff; border: none; padding: 9px 18px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 700; cursor: pointer; font-family: var(--font); }
 .btnPrimary:hover { background: var(--accent-dark); }
