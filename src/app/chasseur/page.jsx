@@ -8,7 +8,6 @@ import styles from './chasseur.module.css';
 const MAX_IMAGES = 5;
 const BUCKET = 'products';
 const STORAGE_PREFIX = 'quests';
-const WENNA_EXPRESS_URL = 'https://express.wennashop.com';
 
 const STATUS_MAP = {
   pending: { label: 'En attente', cls: '' },
@@ -224,6 +223,22 @@ export default function ChasseurPage() {
     if (error) return showToast('Erreur : ' + error.message, 'error');
     showToast('Proposition envoyée !', 'ok');
     closeModal();
+    await loadMyProposals(sb, internalUser.id);
+  }
+
+  async function markInDelivery(id) {
+    const sb = getSupabase();
+    const { error } = await sb.from('quest_proposals').update({ status: 'in_delivery' }).eq('id', id);
+    if (error) return showToast('Erreur : ' + error.message, 'error');
+    showToast('Marqué comme envoyé.', 'ok');
+    await loadMyProposals(sb, internalUser.id);
+  }
+
+  async function markDelivered(id) {
+    const sb = getSupabase();
+    const { error } = await sb.from('quest_proposals').update({ status: 'delivered' }).eq('id', id);
+    if (error) return showToast('Erreur : ' + error.message, 'error');
+    showToast('Marqué comme livré. En attente de confirmation de l\'acheteur.', 'ok');
     await loadMyProposals(sb, internalUser.id);
   }
 
@@ -458,14 +473,22 @@ export default function ChasseurPage() {
                               <div className={styles.acceptedText}>L'acheteur doit confirmer la réception. Ta récompense de <strong style={{ color: 'var(--gold)' }}>{fmt(reward)} {currency}</strong> sera versée dès confirmation.</div>
                               <div className={styles.pendingNote}>Récompense en attente de confirmation</div>
                             </>
+                          ) : p.status === 'in_delivery' ? (
+                            <>
+                              <div className={styles.acceptedTitle}>Colis en cours d'envoi</div>
+                              <div className={styles.acceptedText}>
+                                Une fois le colis remis à l'acheteur, marque-le comme livré. Sa récompense de {fmt(reward)} {currency} sera versée dès que l'acheteur confirme la réception.
+                              </div>
+                              <button className={styles.expressBtn} onClick={() => markDelivered(p.id)}>Marquer comme livré</button>
+                            </>
                           ) : (
                             <>
                               <div className={styles.acceptedTitle}>Proposition acceptée — passe à l'étape suivante</div>
                               <div className={styles.acceptedText}>
-                                Ta proposition a été retenue par l'acheteur. Procède maintenant à l'envoi via <strong style={{ color: 'var(--accent)' }}>{isIntl ? 'Wenna Express International (Gabon ↔ Maroc)' : 'Wenna Express Local'}</strong>.
+                                Ta proposition a été retenue par l'acheteur{isIntl ? " (envoi entre le Gabon et le Maroc)" : ''}. Organise l'envoi du colis, puis marque-le comme envoyé.
                                 <br /><span style={{ color: 'var(--text-faint)', fontSize: 11 }}>Aucun paiement en liquide. La récompense de {fmt(reward)} {currency} sera versée automatiquement à la réception du colis.</span>
                               </div>
-                              <a className={styles.expressBtn} href={`${WENNA_EXPRESS_URL}?proposal=${p.id}&type=${isIntl ? 'international' : 'local'}`} target="_blank" rel="noreferrer">Utiliser Wenna Express</a>
+                              <button className={styles.expressBtn} onClick={() => markInDelivery(p.id)}>Marquer comme envoyé</button>
                             </>
                           )}
                         </div>

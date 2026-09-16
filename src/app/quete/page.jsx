@@ -8,6 +8,15 @@ import styles from '@/app/quetes/quetes.module.css';
 
 function fmt(n) { return Number(n).toLocaleString('fr-FR'); }
 
+const PROPOSAL_STATUS_LABEL = {
+  pending: 'En attente',
+  selected: 'Acceptée, en attente d\'envoi',
+  in_delivery: 'En cours de livraison',
+  delivered: 'Livrée, en attente de ta confirmation',
+  reward_paid: 'Réceptionnée, récompense versée',
+  rejected: 'Non retenue',
+};
+
 function Content() {
   const params = useSearchParams();
   const id = params.get('id');
@@ -45,6 +54,14 @@ function Content() {
     location.reload();
   }
 
+  async function confirmReceipt(propId) {
+    if (!confirm('Confirmer que tu as bien reçu le colis ? La récompense sera versée au chasseur.')) return;
+    const sb = getSupabase();
+    const { error } = await sb.from('quest_proposals').update({ status: 'reward_paid', reward_paid_at: new Date().toISOString() }).eq('id', propId);
+    if (error) { alert('Erreur : ' + error.message); return; }
+    location.reload();
+  }
+
   if (loading) return <><Nav /><div style={{ padding: 60, textAlign: 'center', color: 'var(--text-faint)' }}>Chargement…</div></>;
   if (!quest) return <><Nav /><div style={{ padding: 60, textAlign: 'center' }}>Quête introuvable.</div></>;
 
@@ -68,10 +85,13 @@ function Content() {
           <div className={styles.card} key={p.id}>
             <div>
               <div className={styles.cardDesc}>{p.description}</div>
-              <div className={styles.meta}>Prix proposé : {fmt(p.proposed_price)} {quest.currency} · {p.status}</div>
+              <div className={styles.meta}>Prix proposé : {fmt(p.proposed_price)} {quest.currency} · {PROPOSAL_STATUS_LABEL[p.status] || p.status}</div>
             </div>
             {isBuyer && quest.status === 'open' && p.status === 'pending' && (
               <button className={styles.btnPrimary} onClick={() => selectProposal(p.id)}>Choisir cette offre</button>
+            )}
+            {isBuyer && p.status === 'delivered' && (
+              <button className={styles.btnPrimary} onClick={() => confirmReceipt(p.id)}>Confirmer la réception</button>
             )}
           </div>
         ))}

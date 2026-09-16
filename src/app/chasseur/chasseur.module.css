@@ -104,7 +104,7 @@
 .acceptedTitle { font-size: 10px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: var(--success); margin-bottom: 8px; }
 .acceptedTitleGold { color: var(--gold); }
 .acceptedText { font-size: 12px; color: var(--text-muted); line-height: 1.7; margin-bottom: 10px; }
-.expressBtn { display: inline-block; background: var(--accent); color: #fff; border-radius: var(--radius-md); padding: 9px 16px; font-size: 12px; font-weight: 700; text-decoration: none; }
+.expressBtn { display: inline-block; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-md); padding: 9px 16px; font-size: 12px; font-weight: 700; font-family: var(--font); text-decoration: none; cursor: pointer; }
 .expressBtn:hover { background: var(--accent-dark); }
 .pendingNote { display: inline-block; font-size: 11px; font-weight: 600; color: var(--gold); background: var(--gold-light); border: 1px solid rgba(245,158,11,.3); border-radius: var(--radius-md); padding: 5px 12px; margin-top: 8px; }
 
