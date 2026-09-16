@@ -173,5 +173,6 @@ textarea.input { resize: vertical; min-height: 90px; }
 .bnav { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; background: rgba(10,10,10,.97); backdrop-filter: blur(16px); border-top: 1px solid var(--border); padding: 8px 0 18px; }
 .bnavInner { display: flex; justify-content: space-around; }
 .bnavItem { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--text-faint); text-decoration: none; font-size: 10px; font-weight: 700; }
+.bnavItem i { font-size: 20px; }
 .bnavItemActive { color: var(--accent); }
 @media (max-width: 768px) { .bnav { display: block; } .body { padding-bottom: 80px; } }
