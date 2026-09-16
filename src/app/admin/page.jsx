@@ -531,19 +531,25 @@ export default function AdminPage() {
           <span style={{ fontSize: 18, fontWeight: 900 }}><span style={{ color: 'var(--accent)' }}>Wenna</span>Shop</span>
           <span style={{ fontSize: 9, fontWeight: 900, color: 'var(--accent)' }}>ADMIN</span>
         </div>
-        <button className={`${styles.navItem} ${section === 'dashboard' ? styles.navItemActive : ''}`} onClick={() => goTo('dashboard')}>Dashboard</button>
-        <button className={`${styles.navItem} ${section === 'validation' ? styles.navItemActive : ''}`} onClick={() => goTo('validation')}>Validation ({kpis.pending})</button>
-        <button className={`${styles.navItem} ${section === 'orders' ? styles.navItemActive : ''}`} onClick={() => goTo('orders')}>Commandes</button>
-        <button className={`${styles.navItem} ${section === 'categories' ? styles.navItemActive : ''}`} onClick={() => goTo('categories')}>Catégories</button>
-        <button className={`${styles.navItem} ${section === 'artisans' ? styles.navItemActive : ''}`} onClick={() => goTo('artisans')}>Artisans</button>
-        <button className={`${styles.navItem} ${section === 'payouts' ? styles.navItemActive : ''}`} onClick={() => goTo('payouts')}>Retraits</button>
-        <button className={`${styles.navItem} ${section === 'users' ? styles.navItemActive : ''}`} onClick={() => goTo('users')}>Utilisateurs</button>
-        <button className={`${styles.navItem} ${section === 'reviews' ? styles.navItemActive : ''}`} onClick={() => goTo('reviews')}>Avis</button>
-        <button className={`${styles.navItem} ${section === 'payments' ? styles.navItemActive : ''}`} onClick={() => goTo('payments')}>Paiements</button>
-        <button className={`${styles.navItem} ${section === 'analytics' ? styles.navItemActive : ''}`} onClick={() => goTo('analytics')}>Analytiques</button>
-        <button className={`${styles.navItem} ${section === 'showcase' ? styles.navItemActive : ''}`} onClick={() => goTo('showcase')}>Vitrine</button>
-        <button className={`${styles.navItem} ${section === 'goals' ? styles.navItemActive : ''}`} onClick={() => goTo('goals')}>Objectifs</button>
-        <button className={`${styles.navItem} ${section === 'settings' ? styles.navItemActive : ''}`} onClick={() => goTo('settings')}>Paramètres</button>
+        {[
+          ['dashboard', 'ph-squares-four', 'Dashboard'],
+          ['validation', 'ph-check-circle', `Validation (${kpis.pending})`],
+          ['orders', 'ph-shopping-bag', 'Commandes'],
+          ['categories', 'ph-tag', 'Catégories'],
+          ['artisans', 'ph-storefront', 'Artisans'],
+          ['payouts', 'ph-bank', 'Retraits'],
+          ['users', 'ph-users', 'Utilisateurs'],
+          ['reviews', 'ph-star', 'Avis'],
+          ['payments', 'ph-credit-card', 'Paiements'],
+          ['analytics', 'ph-chart-line', 'Analytiques'],
+          ['showcase', 'ph-image', 'Vitrine'],
+          ['goals', 'ph-target', 'Objectifs'],
+          ['settings', 'ph-gear', 'Paramètres'],
+        ].map(([key, icon, label]) => (
+          <button key={key} className={`${styles.navItem} ${section === key ? styles.navItemActive : ''}`} onClick={() => goTo(key)}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}><i className={`ph ${icon}`} />{label}</span>
+          </button>
+        ))}
       </aside>
 
       <main className={styles.main}>

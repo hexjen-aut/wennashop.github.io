@@ -637,11 +637,11 @@ export default function BoutiqueClient() {
       {/* Barre mobile */}
       <nav className={styles.bnav}>
         <div className={styles.bnavInner}>
-          <Link href="/boutique" className={`${styles.bnavItem} ${styles.bnavItemActive}`}>Shop</Link>
-          <Link href="/chasseur" className={styles.bnavItem}>Chasse</Link>
-          <Link href="/vendeur" className={styles.bnavItem}>Vendre</Link>
-          <Link href="/quetes" className={`${styles.bnavItem} ${styles.bnavItemGold}`}>Quêtes</Link>
-          <Link href="/compte" className={styles.bnavItem}>Profil</Link>
+          <Link href="/boutique" className={`${styles.bnavItem} ${styles.bnavItemActive}`}><i className="ph ph-storefront" />Shop</Link>
+          <Link href="/chasseur" className={styles.bnavItem}><i className="ph ph-binoculars" />Chasse</Link>
+          <Link href="/vendeur" className={styles.bnavItem}><i className="ph ph-plus-circle" />Vendre</Link>
+          <Link href="/quetes" className={`${styles.bnavItem} ${styles.bnavItemGold}`}><i className="ph ph-trophy" />Quêtes</Link>
+          <Link href="/compte" className={styles.bnavItem}><i className="ph ph-user-circle" />Profil</Link>
         </div>
       </nav>
     </>

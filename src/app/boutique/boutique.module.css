@@ -191,6 +191,7 @@
 .bnav { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; background: rgba(10,10,10,.97); border-top: 1px solid var(--border); padding: 10px 0 20px; }
 .bnavInner { display: flex; justify-content: space-around; }
 .bnavItem { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-faint); text-decoration: none; font-size: 10px; font-weight: 700; }
+.bnavItem i { font-size: 20px; }
 .bnavItemActive { color: var(--accent); }
 .bnavItemGold { color: var(--gold); }
 
