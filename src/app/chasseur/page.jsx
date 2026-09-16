@@ -617,11 +617,11 @@ export default function ChasseurPage() {
       {/* NAV MOBILE */}
       <nav className={styles.bnav}>
         <div className={styles.bnavInner}>
-          <Link href="/boutique" className={styles.bnavItem}>Boutique</Link>
-          <Link href="/chasseur" className={`${styles.bnavItem} ${styles.bnavItemActive}`}>Chasse</Link>
-          <Link href="/vendeur" className={styles.bnavItem}>Vendre</Link>
-          <Link href="/quetes" className={styles.bnavItem}>Quêtes</Link>
-          <Link href="/compte" className={styles.bnavItem}>Profil</Link>
+          <Link href="/boutique" className={styles.bnavItem}><i className="ph ph-storefront" />Boutique</Link>
+          <Link href="/chasseur" className={`${styles.bnavItem} ${styles.bnavItemActive}`}><i className="ph ph-binoculars" />Chasse</Link>
+          <Link href="/vendeur" className={styles.bnavItem}><i className="ph ph-plus-circle" />Vendre</Link>
+          <Link href="/quetes" className={styles.bnavItem}><i className="ph ph-trophy" />Quêtes</Link>
+          <Link href="/compte" className={styles.bnavItem}><i className="ph ph-user-circle" />Profil</Link>
         </div>
       </nav>
 
