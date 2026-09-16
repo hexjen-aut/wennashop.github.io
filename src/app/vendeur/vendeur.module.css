@@ -42,6 +42,18 @@
 .table th { text-align: left; padding: 10px 14px; font-size: 9px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-faint); border-bottom: 1px solid var(--border); }
 .table td { padding: 12px 14px; font-size: 12px; border-top: 1px solid var(--border); }
 .empty { text-align: center; padding: 32px; color: var(--text-faint); font-size: 12px; }
+
+@media (max-width: 640px) {
+  .tableWrap { overflow-x: visible; }
+  .table { min-width: 0; }
+  .table thead { display: none; }
+  .table, .table tbody, .table tr { display: block; width: 100%; }
+  .table tr { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-md); margin: 10px; padding: 2px 14px; }
+  .table td { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 9px 0; border-top: 1px solid var(--border); text-align: right; }
+  .table td:first-child { border-top: none; }
+  .table td[data-label]::before { content: attr(data-label); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-faint); text-align: left; }
+  .table td.empty { display: block; text-align: center; border-top: none; margin: 0; }
+}
 .orderRow { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--border); }
 .orderRow:last-child { border-bottom: none; }
 
