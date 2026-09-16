@@ -213,6 +213,7 @@
 @media (max-width: 768px) {
   .pageHero { padding: calc(var(--nav-height) + 40px) 20px 20px; }
   .toolbar { padding: 10px 16px; }
+  .toolbarRight { flex-wrap: wrap; flex-shrink: 1; justify-content: flex-end; }
   .activeFilters { padding: 0 16px 8px; }
   .productsArea { padding: 12px 8px; }
   .prodGrid, .cols3, .cols4 { grid-template-columns: repeat(2,1fr); }
