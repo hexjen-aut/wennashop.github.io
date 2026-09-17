@@ -69,6 +69,9 @@ function Content() {
     <>
       <Nav />
       <section className={styles.hero}>
+        {quest.image_url && (
+          <img src={quest.image_url} alt="" style={{ width: 96, height: 96, borderRadius: 12, objectFit: 'cover', margin: '0 auto 14px' }} />
+        )}
         <h1 className={styles.title}>{quest.title}</h1>
         <p className={styles.sub}>{quest.description}</p>
         <div className={styles.rewardBox} style={{ display: 'inline-block', textAlign: 'center' }}>
