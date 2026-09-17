@@ -8,6 +8,7 @@ import { uploadFileWithProgress } from '@/lib/storageUpload';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import CartSidebar from '@/components/CartSidebar';
+import ImageCropModal from '@/components/ImageCropModal';
 import styles from './compte.module.css';
 
 function fmt(n, currency = 'MAD') {
@@ -36,6 +37,7 @@ export default function ComptePage() {
   const [lastName, setLastName] = useState('');
   const [savingProfile, setSavingProfile] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarCropSrc, setAvatarCropSrc] = useState(null);
 
   // Adresses
   const [addresses, setAddresses] = useState([]);
@@ -152,16 +154,23 @@ export default function ComptePage() {
     else alert('Erreur : ' + error.message);
   }
 
-  async function handleAvatarChange(e) {
+  function handleAvatarChange(e) {
     const file = e.target.files[0];
     if (!file || !profile) return;
     if (file.size > 2 * 1024 * 1024) { alert('Image trop lourde — max 2 Mo'); return; }
+    setAvatarCropSrc(URL.createObjectURL(file));
+    e.target.value = '';
+  }
+
+  async function handleAvatarCropValidate(blob) {
+    if (avatarCropSrc) URL.revokeObjectURL(avatarCropSrc);
+    setAvatarCropSrc(null);
+    if (!profile) return;
     setUploadingAvatar(true);
     const sb = getSupabase();
-    const ext = file.name.split('.').pop().toLowerCase();
-    const filePath = `${profile.id}/avatar.${ext}`;
+    const filePath = `${profile.id}/avatar.jpg`;
     try {
-      const { error: upErr } = await sb.storage.from('avatars').upload(filePath, file, { upsert: true, contentType: file.type, cacheControl: '3600' });
+      const { error: upErr } = await sb.storage.from('avatars').upload(filePath, blob, { upsert: true, contentType: 'image/jpeg', cacheControl: '3600' });
       if (upErr) throw upErr;
       const { data: pub } = sb.storage.from('avatars').getPublicUrl(filePath);
       const avatarUrl = pub?.publicUrl;
@@ -172,7 +181,6 @@ export default function ComptePage() {
       alert('Erreur upload : ' + (err.message || 'réessaie'));
     } finally {
       setUploadingAvatar(false);
-      e.target.value = '';
     }
   }
 
@@ -384,6 +392,16 @@ export default function ComptePage() {
     <>
       <Nav onOpenCart={() => setCartOpen(true)} />
       <CartSidebar open={cartOpen} onClose={() => setCartOpen(false)} />
+
+      {avatarCropSrc && (
+        <ImageCropModal
+          imageSrc={avatarCropSrc}
+          aspect={1}
+          round
+          onCancel={() => { URL.revokeObjectURL(avatarCropSrc); setAvatarCropSrc(null); }}
+          onValidate={handleAvatarCropValidate}
+        />
+      )}
 
       <div className={styles.wrap} style={{ paddingTop: 'calc(var(--nav-height) + 32px)' }}>
         <div className={styles.header}>

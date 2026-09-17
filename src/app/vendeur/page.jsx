@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
 import { uploadFileWithProgress } from '@/lib/storageUpload';
+import ImageCropModal from '@/components/ImageCropModal';
 import styles from './vendeur.module.css';
 
 // ─────────────────────────────────────────────────────────
@@ -112,6 +113,8 @@ export default function VendeurPage() {
   const [caracs, setCaracs] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [cropQueue, setCropQueue] = useState([]);
+  const [cropSrc, setCropSrc] = useState(null);
 
   function emptyProduct() {
     return { id: null, name: '', description: '', price: '', stock: '', country: 'Maroc', origin_city: '', category_id: '', status: 'pending', brand: '', sku: '', compare_price: '', delivery_days: '', material: '', color: '', weight: '', dimensions: '', ships_to: [] };
@@ -559,6 +562,43 @@ export default function VendeurPage() {
     if (error) { showToast('Erreur upload', 'error'); return; }
     const { data } = sb.storage.from('products').getPublicUrl(path);
     setShopForm((prev) => ({ ...prev, [field === 'logo' ? 'logo_url' : 'banner_url']: data.publicUrl }));
+  }
+
+  // ── CADRAGE D'IMAGE (logo, bannière, produits) ──
+  const CROP_ASPECT = { logo: 1, banner: 3.5, product: 1 };
+
+  function startCrop(files, kind) {
+    const items = Array.from(files || []).map((file) => ({ file, kind }));
+    if (!items.length) return;
+    setCropQueue(items);
+    setCropSrc(URL.createObjectURL(items[0].file));
+  }
+
+  function advanceCropQueue(rest) {
+    if (cropSrc) URL.revokeObjectURL(cropSrc);
+    if (rest.length) {
+      setCropQueue(rest);
+      setCropSrc(URL.createObjectURL(rest[0].file));
+    } else {
+      setCropQueue([]);
+      setCropSrc(null);
+    }
+  }
+
+  async function handleCropValidate(blob) {
+    const current = cropQueue[0];
+    if (!current) return;
+    const croppedFile = new File([blob], current.file.name.replace(/\.\w+$/, '.jpg'), { type: 'image/jpeg' });
+    if (current.kind === 'logo' || current.kind === 'banner') {
+      await uploadShopImg(croppedFile, current.kind);
+    } else if (current.kind === 'product') {
+      await handleProductFiles([croppedFile]);
+    }
+    advanceCropQueue(cropQueue.slice(1));
+  }
+
+  function handleCropCancel() {
+    advanceCropQueue(cropQueue.slice(1));
   }
 
   async function saveShop(e) {
@@ -1136,12 +1176,12 @@ export default function VendeurPage() {
             <div className={styles.formGroup}>
               <label className={styles.formLabel}>Logo</label>
               {shopForm.logo_url && <img src={shopForm.logo_url} alt="" style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 12, marginBottom: 6 }} />}
-              <input type="file" accept="image/*" onChange={(e) => uploadShopImg(e.target.files[0], 'logo')} />
+              <input type="file" accept="image/*" onChange={(e) => { startCrop(e.target.files, 'logo'); e.target.value = ''; }} />
             </div>
             <div className={styles.formGroup}>
               <label className={styles.formLabel}>Bannière</label>
               {shopForm.banner_url && <img src={shopForm.banner_url} alt="" style={{ width: '100%', height: 90, objectFit: 'cover', borderRadius: 12, marginBottom: 6 }} />}
-              <input type="file" accept="image/*" onChange={(e) => uploadShopImg(e.target.files[0], 'banner')} />
+              <input type="file" accept="image/*" onChange={(e) => { startCrop(e.target.files, 'banner'); e.target.value = ''; }} />
             </div>
             <div className={styles.formGrid}>
               <div className={styles.formGroup}><label className={styles.formLabel}>WhatsApp</label><input className={styles.input} value={shopForm.whatsapp} onChange={(e) => setShopForm({ ...shopForm, whatsapp: e.target.value })} /></div>
@@ -1353,7 +1393,7 @@ export default function VendeurPage() {
                     ))}
                     <label className={styles.imgSlot}>
                       {uploading ? '…' : <><i className="ph ph-upload-simple" style={{ fontSize: 20 }} /><span style={{ fontSize: 9 }}>Ajouter</span></>}
-                      <input type="file" accept="image/*" multiple onChange={(e) => handleProductFiles(e.target.files)} />
+                      <input type="file" accept="image/*" multiple onChange={(e) => { startCrop(e.target.files, 'product'); e.target.value = ''; }} />
                     </label>
                   </div>
                   <div className={styles.formGroup} style={{ marginTop: 12 }}>
@@ -1413,6 +1453,15 @@ export default function VendeurPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {cropSrc && (
+        <ImageCropModal
+          imageSrc={cropSrc}
+          aspect={CROP_ASPECT[cropQueue[0]?.kind] || 1}
+          onCancel={handleCropCancel}
+          onValidate={handleCropValidate}
+        />
       )}
 
       {/* ── MODAL COMMANDE ── */}
