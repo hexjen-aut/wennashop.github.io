@@ -118,7 +118,21 @@ export default function Content() {
     showToast(`"${p.name}" ajouté au panier`);
   }
 
-  if (loading) return <><Nav /><div style={{ padding: 60, textAlign: 'center', color: 'var(--text-faint)' }}>Chargement…</div></>;
+  if (loading) {
+    return (
+      <>
+        <Nav />
+        <div className={styles.banner}><div className={styles.bannerPlaceholder} /></div>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '20px 16px' }}>
+          <div className={styles.grid}>
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div className={styles.card} key={i}><div className={`${styles.img} ${styles.skel}`} /></div>
+            ))}
+          </div>
+        </div>
+      </>
+    );
+  }
   if (notFound) {
     return (
       <>
@@ -254,7 +268,7 @@ export default function Content() {
               return (
                 <Link href={`/produit?id=${p.id}`} className={styles.card} key={p.id}>
                   <div className={styles.img}>
-                    {img && <img src={img} alt={p.name} />}
+                    {img && <img src={img} alt={p.name} loading="lazy" />}
                     {hasPromo ? (
                       <span className={`${styles.badge} ${styles.badgePromo}`}>-{Math.round((1 - p.price / p.compare_price) * 100)}%</span>
                     ) : isNew ? (
