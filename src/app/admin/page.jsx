@@ -10,6 +10,7 @@ function flag(c) { const m = { Gabon: '🇬🇦', Maroc: '🇲🇦', Morocco: '�
 function stars(r) { return r ? '★'.repeat(Math.round(r)) + '☆'.repeat(5 - Math.round(r)) : '—'; }
 
 const ORDER_STATUS_LABEL = { pending: 'En attente', processing: 'En cours', shipped: 'Expédié', delivered: 'Livré', cancelled: 'Annulé' };
+const CARRIER_COUNTRIES = ['Maroc', 'Gabon', 'Sénégal', "Côte d'Ivoire", 'Cameroun', 'Mali', 'Bénin', 'Togo', 'Burkina Faso', 'Niger', 'Autre'];
 const GOAL_METRIC_LABEL = { revenue: "Chiffre d'affaires", orders_count: 'Nombre de commandes', products_count: 'Nombre de produits', shop_completion: 'Complétion boutique', custom: 'Personnalisé (informatif)' };
 const GOAL_AUDIENCE_LABEL = { artisan: 'Vendeurs', buyer: 'Acheteurs', all: 'Tous' };
 const STATUS_COLOR = { pending: '#f59e0b', active: '#22c55e', inactive: '#555', processing: '#3b82f6', shipped: '#3b82f6', delivered: '#22c55e', cancelled: '#ef4444', approved: '#22c55e', rejected: '#ef4444', paid: '#22c55e', failed: '#ef4444' };
@@ -53,6 +54,11 @@ export default function AdminPage() {
   const [shopsByUserId, setShopsByUserId] = useState({});
   const [boostedShopIds, setBoostedShopIds] = useState(new Set());
   const [boostActionId, setBoostActionId] = useState(null);
+
+  // ── Transporteurs ──
+  const [carriers, setCarriers] = useState([]);
+  const [carrierModalOpen, setCarrierModalOpen] = useState(false);
+  const [carrierForm, setCarrierForm] = useState({ id: null, name: '', country: 'Maroc', scope: 'local', phone: '', notes: '', is_active: true });
   const [reviews, setReviews] = useState([]);
   const [payments, setPayments] = useState([]);
   const [payouts, setPayouts] = useState([]);
@@ -163,6 +169,41 @@ export default function AdminPage() {
   }
   function toggleCatOpen(id) {
     setOpenCatIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
+  }
+
+  // ── Transporteurs ──
+  async function loadCarriers() {
+    const sb = getSupabase();
+    const { data } = await sb.from('carriers').select('*').order('country').order('name');
+    setCarriers(data || []);
+  }
+  function openAddCarrier() {
+    setCarrierForm({ id: null, name: '', country: 'Maroc', scope: 'local', phone: '', notes: '', is_active: true });
+    setCarrierModalOpen(true);
+  }
+  function openEditCarrier(c) {
+    setCarrierForm({ id: c.id, name: c.name || '', country: c.country || 'Maroc', scope: c.scope || 'local', phone: c.phone || '', notes: c.notes || '', is_active: c.is_active !== false });
+    setCarrierModalOpen(true);
+  }
+  async function saveCarrier() {
+    if (!carrierForm.name.trim()) { alert('Nom requis'); return; }
+    const sb = getSupabase();
+    const payload = { name: carrierForm.name, country: carrierForm.country, scope: carrierForm.scope, phone: carrierForm.phone || null, notes: carrierForm.notes || null, is_active: carrierForm.is_active, updated_at: new Date().toISOString() };
+    const { error } = carrierForm.id ? await sb.from('carriers').update(payload).eq('id', carrierForm.id) : await sb.from('carriers').insert([payload]);
+    if (error) { alert('Erreur : ' + error.message); return; }
+    setCarrierModalOpen(false);
+    await loadCarriers();
+  }
+  async function deleteCarrier(id) {
+    if (!confirm('Supprimer ce transporteur ?')) return;
+    const sb = getSupabase();
+    await sb.from('carriers').delete().eq('id', id);
+    await loadCarriers();
+  }
+  async function toggleCarrierActive(c) {
+    const sb = getSupabase();
+    await sb.from('carriers').update({ is_active: !(c.is_active !== false) }).eq('id', c.id);
+    await loadCarriers();
   }
 
   // ── Artisans ──
@@ -510,6 +551,7 @@ export default function AdminPage() {
     if (s === 'users') loadUsers();
     if (s === 'categories') loadCategories();
     if (s === 'artisans') loadArtisans();
+    if (s === 'carriers') loadCarriers();
     if (s === 'payouts') loadPayouts();
     if (s === 'reviews') loadReviews();
     if (s === 'payments') loadPayments();
@@ -576,6 +618,7 @@ export default function AdminPage() {
           ['orders', 'ph-shopping-bag', 'Commandes'],
           ['categories', 'ph-tag', 'Catégories'],
           ['artisans', 'ph-storefront', 'Artisans'],
+          ['carriers', 'ph-truck', 'Transporteurs'],
           ['payouts', 'ph-bank', 'Retraits'],
           ['users', 'ph-users', 'Utilisateurs'],
           ['reviews', 'ph-star', 'Avis'],
@@ -776,6 +819,40 @@ export default function AdminPage() {
                     </div>
                   );
                 })}
+              </div>
+            )}
+          </>
+        )}
+
+        {section === 'carriers' && (
+          <>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+              <h1 style={{ fontSize: 22, fontWeight: 900 }}>Transporteurs</h1>
+              <button className={styles.btnPrimary} onClick={openAddCarrier}><i className="ph ph-plus" /> Ajouter</button>
+            </div>
+            {carriers.length === 0 ? (
+              <div className={styles.card}><div className={styles.empty}>Aucun transporteur configuré. Les vendeurs sans transporteur propre n'auront rien à choisir tant qu'il n'y en a pas ici.</div></div>
+            ) : (
+              <div className={styles.card} style={{ overflowX: 'auto' }}>
+                <table className={styles.table}>
+                  <thead><tr><th>Nom</th><th>Pays</th><th>Portée</th><th>Téléphone</th><th>Statut</th><th></th></tr></thead>
+                  <tbody>
+                    {carriers.map((c) => (
+                      <tr key={c.id}>
+                        <td>{c.name}</td>
+                        <td>{flag(c.country)}</td>
+                        <td>{c.scope === 'international' ? 'International' : 'Local'}</td>
+                        <td style={{ color: 'var(--text-faint)' }}>{c.phone || '—'}</td>
+                        <td><Badge status={c.is_active ? 'active' : 'inactive'} label={c.is_active ? 'Actif' : 'Inactif'} /></td>
+                        <td style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                          <button className={styles.linkBtn} onClick={() => openEditCarrier(c)}>Modifier</button>
+                          <button className={styles.linkBtn} onClick={() => toggleCarrierActive(c)}>{c.is_active ? 'Désactiver' : 'Activer'}</button>
+                          <button className={styles.btnDanger} onClick={() => deleteCarrier(c.id)}>Suppr.</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </>
@@ -1162,6 +1239,31 @@ export default function AdminPage() {
                 <input type="checkbox" checked={catForm.is_active} onChange={(e) => setCatForm({ ...catForm, is_active: e.target.checked })} />
               </div>
               <button className={styles.btnPrimary} onClick={saveCategory}>Enregistrer</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {carrierModalOpen && (
+        <div className={styles.modalOv} onClick={() => setCarrierModalOpen(false)}>
+          <div className={styles.modalBox} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHead}>{carrierForm.id ? 'Modifier le transporteur' : 'Nouveau transporteur'}</div>
+            <div className={styles.modalBody}>
+              <input className={styles.input} placeholder="Nom *" value={carrierForm.name} onChange={(e) => setCarrierForm({ ...carrierForm, name: e.target.value })} />
+              <select className={styles.input} value={carrierForm.country} onChange={(e) => setCarrierForm({ ...carrierForm, country: e.target.value })}>
+                {CARRIER_COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+              <select className={styles.input} value={carrierForm.scope} onChange={(e) => setCarrierForm({ ...carrierForm, scope: e.target.value })}>
+                <option value="local">Local (dans le pays)</option>
+                <option value="international">International</option>
+              </select>
+              <input className={styles.input} placeholder="Téléphone" value={carrierForm.phone} onChange={(e) => setCarrierForm({ ...carrierForm, phone: e.target.value })} />
+              <textarea className={styles.input} rows={2} placeholder="Notes (zones couvertes, tarifs...)" value={carrierForm.notes} onChange={(e) => setCarrierForm({ ...carrierForm, notes: e.target.value })} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderTop: '1px solid var(--border)' }}>
+                <span style={{ fontSize: 12, fontWeight: 700 }}>Actif (visible des vendeurs)</span>
+                <input type="checkbox" checked={carrierForm.is_active} onChange={(e) => setCarrierForm({ ...carrierForm, is_active: e.target.checked })} />
+              </div>
+              <button className={styles.btnPrimary} onClick={saveCarrier}>Enregistrer</button>
             </div>
           </div>
         </div>

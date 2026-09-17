@@ -148,7 +148,8 @@ export default function VendeurPage() {
   const [reviewStats, setReviewStats] = useState({ avg: 0, total: 0, approved: 0 });
 
   // Shop form
-  const [shopForm, setShopForm] = useState({ name: '', slug: '', bio: '', city: '', country: 'Maroc', logo_url: '', banner_url: '', whatsapp: '', instagram: '', facebook: '', tiktok: '', shop_policies: '', ships_to: [] });
+  const [shopForm, setShopForm] = useState({ name: '', slug: '', bio: '', city: '', country: 'Maroc', logo_url: '', banner_url: '', whatsapp: '', instagram: '', facebook: '', tiktok: '', shop_policies: '', ships_to: [], has_carrier: null, carrier_id: '' });
+  const [carriers, setCarriers] = useState([]);
 
   // Profile form
   const [profileForm, setProfileForm] = useState({ first_name: '', last_name: '', specialty: '', country: 'Maroc' });
@@ -187,7 +188,10 @@ export default function VendeurPage() {
         country: shopRow.country || 'Maroc', logo_url: shopRow.logo_url || '', banner_url: shopRow.banner_url || '',
         whatsapp: shopRow.whatsapp || '', instagram: shopRow.instagram || '', facebook: shopRow.facebook || '', tiktok: shopRow.tiktok || '',
         shop_policies: shopRow.shop_policies || '', ships_to: shopRow.ships_to || [],
+        has_carrier: shopRow.has_carrier, carrier_id: shopRow.carrier_id || '',
       });
+      const { data: carriersData } = await sb.from('carriers').select('*').eq('is_active', true).order('country').order('name');
+      setCarriers(carriersData || []);
       setWallet(walletRow || { balance: 0, currency: 'MAD' });
       setCategories(cats || []);
 
@@ -561,7 +565,7 @@ export default function VendeurPage() {
     e.preventDefault();
     if (!shopForm.name) { showToast('Le nom de la boutique est requis', 'error'); return; }
     const sb = getSupabase();
-    const payload = { ...shopForm, user_id: seller.id };
+    const payload = { ...shopForm, user_id: seller.id, carrier_id: shopForm.carrier_id || null };
     let error;
     if (shop?.id) ({ error } = await sb.from('shops').update(payload).eq('id', shop.id));
     else ({ error } = await sb.from('shops').insert({ ...payload, commission_rate: 8 }));
@@ -1163,6 +1167,26 @@ export default function VendeurPage() {
                   </label>
                 ))}
               </div>
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>As-tu ton propre transporteur pour livrer tes commandes ?</label>
+              <div style={{ display: 'flex', gap: 8, marginBottom: shopForm.has_carrier === false ? 10 : 0 }}>
+                <button type="button" className={shopForm.has_carrier === true ? styles.btnPrimary : styles.btnGhost} onClick={() => setShopForm({ ...shopForm, has_carrier: true, carrier_id: '' })}>Oui, je gère ma livraison</button>
+                <button type="button" className={shopForm.has_carrier === false ? styles.btnPrimary : styles.btnGhost} onClick={() => setShopForm({ ...shopForm, has_carrier: false })}>Non, j'ai besoin d'un transporteur</button>
+              </div>
+              {shopForm.has_carrier === false && (
+                <>
+                  <select className={styles.input} value={shopForm.carrier_id} onChange={(e) => setShopForm({ ...shopForm, carrier_id: e.target.value })}>
+                    <option value="">— Choisis un transporteur —</option>
+                    {carriers.filter((c) => c.country === shopForm.country || c.scope === 'international').map((c) => (
+                      <option key={c.id} value={c.id}>{c.name} · {c.country} · {c.scope === 'international' ? 'International' : 'Local'}</option>
+                    ))}
+                  </select>
+                  {carriers.filter((c) => c.country === shopForm.country || c.scope === 'international').length === 0 && (
+                    <p style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 6 }}>Aucun transporteur disponible pour ton pays pour l'instant — contacte l'administration WennaShop.</p>
+                  )}
+                </>
+              )}
             </div>
             <button type="submit" className={styles.btnPrimary} style={{ alignSelf: 'flex-start' }}><i className="ph ph-floppy-disk" /> Enregistrer</button>
           </form>
