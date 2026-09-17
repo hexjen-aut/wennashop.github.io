@@ -50,6 +50,9 @@ export default function AdminPage() {
   // ── Artisans / Avis / Paiements / Analytiques ──
   const [artisans, setArtisans] = useState([]);
   const [vendorActionId, setVendorActionId] = useState(null);
+  const [shopsByUserId, setShopsByUserId] = useState({});
+  const [boostedShopIds, setBoostedShopIds] = useState(new Set());
+  const [boostActionId, setBoostActionId] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [payments, setPayments] = useState([]);
   const [payouts, setPayouts] = useState([]);
@@ -167,6 +170,42 @@ export default function AdminPage() {
     const sb = getSupabase();
     const { data } = await sb.from('users').select('*').eq('role', 'artisan').order('created_at', { ascending: false });
     setArtisans(data || []);
+
+    const userIds = (data || []).map((u) => u.id);
+    if (userIds.length === 0) { setShopsByUserId({}); setBoostedShopIds(new Set()); return; }
+
+    const { data: shopsData } = await sb.from('shops').select('id,user_id,name').in('user_id', userIds);
+    const byUser = {};
+    (shopsData || []).forEach((s) => { byUser[s.user_id] = s; });
+    setShopsByUserId(byUser);
+
+    const shopIds = (shopsData || []).map((s) => s.id);
+    if (shopIds.length === 0) { setBoostedShopIds(new Set()); return; }
+    const { data: boostsData } = await sb.from('boosts').select('shop_id')
+      .eq('type', 'shop').eq('status', 'active').gt('expires_at', new Date().toISOString()).in('shop_id', shopIds);
+    setBoostedShopIds(new Set((boostsData || []).map((b) => b.shop_id)));
+  }
+
+  async function toggleBoost(shop) {
+    if (!shop) return;
+    setBoostActionId(shop.id);
+    const sb = getSupabase();
+    const isBoosted = boostedShopIds.has(shop.id);
+    if (isBoosted) {
+      const { error } = await sb.from('boosts').update({ status: 'inactive' }).eq('shop_id', shop.id).eq('type', 'shop').eq('status', 'active');
+      if (error) { alert('Erreur : ' + error.message); setBoostActionId(null); return; }
+    } else {
+      const { data: pack } = await sb.from('boost_packs').select('id,duration_days').eq('slug', 'admin-manuel').single();
+      if (!pack) { alert("Pack de mise en avant manuelle introuvable."); setBoostActionId(null); return; }
+      const expiresAt = new Date(Date.now() + pack.duration_days * 24 * 60 * 60 * 1000).toISOString();
+      const { error } = await sb.from('boosts').insert({
+        user_id: shop.user_id, shop_id: shop.id, pack_id: pack.id, type: 'shop', status: 'active',
+        expires_at: expiresAt, amount_paid: 0, currency: 'FCFA',
+      });
+      if (error) { alert('Erreur : ' + error.message); setBoostActionId(null); return; }
+    }
+    await loadArtisans();
+    setBoostActionId(null);
   }
 
   async function viewKycDoc(path) {
@@ -703,10 +742,20 @@ export default function AdminPage() {
                           <div style={{ fontSize: 10, color: 'var(--text-faint)' }}>{flag(u.country)}</div>
                         </div>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: u.status === 'pending' ? 12 : 0 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: u.status === 'pending' ? 12 : (shopsByUserId[u.id] ? 10 : 0) }}>
                         <Badge status={u.status || 'active'} label={u.status || 'actif'} />
                         <span style={{ fontSize: 10, color: 'var(--text-faint)' }}>{fdate(u.created_at)}</span>
                       </div>
+                      {u.status !== 'pending' && shopsByUserId[u.id] && (
+                        <button
+                          className={boostedShopIds.has(shopsByUserId[u.id].id) ? styles.btnDanger : styles.btnPrimary}
+                          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5, width: '100%', padding: '7px 10px', fontSize: 11, opacity: boostActionId === shopsByUserId[u.id].id ? 0.6 : 1 }}
+                          disabled={boostActionId === shopsByUserId[u.id].id}
+                          onClick={() => toggleBoost(shopsByUserId[u.id])}
+                        >
+                          {boostActionId === shopsByUserId[u.id].id ? <><i className="ph ph-spinner" style={{ animation: 'spin 0.8s linear infinite' }} /> …</> : boostedShopIds.has(shopsByUserId[u.id].id) ? <><i className="ph ph-lightning-slash" /> Retirer la mise en avant</> : <><i className="ph ph-lightning" /> Mettre en avant</>}
+                        </button>
+                      )}
                       {u.status === 'pending' && (
                         <>
                           <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
