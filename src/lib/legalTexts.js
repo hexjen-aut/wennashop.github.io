@@ -1,7 +1,7 @@
 export const CGU_TEXT = `Dernière mise à jour : juillet 2026
 
 1. Objet
-WennaShop est un écosystème numérique qui permet à tout commerçant africain de créer, développer et gérer son activité, sans avoir à chercher séparément ses clients, ses outils et ses partenaires.
+WennaShop est une marketplace qui met en relation des vendeurs (artisans et commerçants) et des acheteurs entre le Gabon et le Maroc. WennaShop a vocation à s'étendre progressivement à d'autres pays africains.
 
 2. Inscription et compte
 L'inscription est gratuite. L'utilisateur s'engage à fournir des informations exactes et à maintenir la confidentialité de ses identifiants.
