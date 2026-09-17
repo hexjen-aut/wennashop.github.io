@@ -1004,7 +1004,7 @@ export default function VendeurPage() {
                         <td data-label="Montant" style={{ color: 'var(--accent)', fontWeight: 700 }}>{fmt(o.total_amount, o.currency)}</td>
                         <td data-label="Statut"><span className={styles.badge} style={{ background: `${STATUS_COLOR[o.status]}22`, color: STATUS_COLOR[o.status] }}>{STATUS_LABEL[o.status] || o.status}</span></td>
                         <td data-label="Suivi">{o.tracking_number ? <span style={{ fontFamily: 'monospace', fontSize: 10 }}>{o.tracking_number}</span> : '—'}</td>
-                        <td><button className={styles.linkBtn} onClick={() => openOrderModal(o)}>Détail</button></td>
+                        <td data-label="Action"><button className={`${styles.btnGhost} ${styles.btnSm}`} onClick={() => openOrderModal(o)}>Détail</button></td>
                       </tr>
                     ))}
                   </tbody>
