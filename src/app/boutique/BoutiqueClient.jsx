@@ -9,11 +9,10 @@ import Footer from '@/components/Footer';
 import CartSidebar from '@/components/CartSidebar';
 import UrgencyTimer from '@/components/UrgencyTimer';
 import { convertPrice, formatSmartPrice, currencyForCountry } from '@/lib/currency';
+import { SHIP_COUNTRIES as COUNTRIES, COUNTRY_FLAG } from '@/lib/geo';
 import styles from './boutique.module.css';
 
 const PAGE_SIZE = 24;
-const COUNTRIES = ['Gabon', 'Maroc', 'Bénin', 'Sénégal', "Côte d'Ivoire", 'Cameroun', 'Mali'];
-const COUNTRY_FLAG = { Gabon: '🇬🇦', Maroc: '🇲🇦', Bénin: '🇧🇯', Sénégal: '🇸🇳', "Côte d'Ivoire": '🇨🇮', Cameroun: '🇨🇲', Mali: '🇲🇱' };
 const BUYER_COUNTRY_KEY = 'wenna_buyer_country';
 const DISPLAY_CURRENCIES = [
   { value: 'MAD', label: 'MAD (Maroc)' },

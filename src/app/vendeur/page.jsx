@@ -6,15 +6,8 @@ import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
 import { uploadFileWithProgress } from '@/lib/storageUpload';
 import ImageCropModal from '@/components/ImageCropModal';
+import { COUNTRIES_WITH_AUTRE as COUNTRIES, SHIP_COUNTRIES } from '@/lib/geo';
 import styles from './vendeur.module.css';
-
-// ─────────────────────────────────────────────────────────
-// Constantes
-// ─────────────────────────────────────────────────────────
-const COUNTRIES = ['Maroc', 'Gabon', 'Sénégal', "Côte d'Ivoire", 'Cameroun', 'RDC', 'Congo', 'Mali', 'Burkina Faso', 'Niger', 'Guinée', 'Bénin', 'Togo', 'Tchad', 'Madagascar', 'Mauritanie', 'Comores', 'Djibouti', 'Autre'];
-// Pays que les acheteurs peuvent choisir sur la boutique (voir boutique/page.jsx) —
-// c'est cette liste-ci, pas COUNTRIES ci-dessus, qui détermine "ships_to" utile.
-const SHIP_COUNTRIES = ['Gabon', 'Maroc', 'Bénin', 'Sénégal', "Côte d'Ivoire", 'Cameroun', 'Mali'];
 
 const STATUS_LABEL = { pending: 'En attente', active: 'Actif', inactive: 'Inactif', processing: 'En traitement', shipped: 'Expédiée', delivered: 'Livrée', cancelled: 'Annulée', approved: 'Approuvé', paid: 'Payé', rejected: 'Rejeté' };
 const STATUS_COLOR = { pending: '#f59e0b', active: '#22c55e', inactive: '#555', processing: '#3b82f6', shipped: '#3b82f6', delivered: '#22c55e', cancelled: '#ef4444', approved: '#22c55e', paid: '#22c55e', rejected: '#ef4444' };
