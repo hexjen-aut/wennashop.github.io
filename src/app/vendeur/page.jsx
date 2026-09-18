@@ -100,6 +100,7 @@ export default function VendeurPage() {
 
   // Tutoriel interactif
   const [tourStep, setTourStep] = useState(null); // null = pas en cours
+  const [tourProposalOpen, setTourProposalOpen] = useState(false);
 
   // Products
   const [products, setProducts] = useState([]);
@@ -215,7 +216,7 @@ export default function VendeurPage() {
       await loadOverview(sb, user, shopRow, prodIds, orderIds);
       await loadNotifications(sb, user.id);
       setChecking(false);
-      if (!user.onboarding_completed_at) setTourStep(0);
+      if (!user.onboarding_completed_at) setTourProposalOpen(true);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -664,6 +665,8 @@ export default function VendeurPage() {
     await sb.from('users').update({ onboarding_completed_at: new Date().toISOString() }).eq('id', seller.id);
     setSeller((prev) => ({ ...prev, onboarding_completed_at: new Date().toISOString() }));
   }
+  function acceptTourProposal() { setTourProposalOpen(false); setTourStep(0); }
+  function declineTourProposal() { setTourProposalOpen(false); endTour(); }
   function nextTourStep() {
     if (tourStep < TOUR_STEPS.length - 1) setTourStep(tourStep + 1);
     else endTour();
@@ -1579,6 +1582,25 @@ export default function VendeurPage() {
         <button className={styles.bnItem} onClick={() => setSidebarOpen(true)}><i className="ph ph-dots-three-outline" /><span>Plus</span></button>
       </nav>
       <button className={styles.fab} onClick={() => { showSection('products'); openProductModal(); }}><i className="ph ph-plus" /></button>
+
+      {/* ── PROPOSITION DE TUTORIEL (nouveaux vendeurs) ── */}
+      {tourProposalOpen && (
+        <div className={styles.modalOv} onClick={declineTourProposal}>
+          <div className={styles.modalBox} style={{ maxWidth: 420 }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ padding: 24, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+              <i className="ph ph-hand-waving" style={{ fontSize: 30, color: 'var(--accent)' }} />
+              <h3 style={{ fontSize: 16, fontWeight: 900 }}>Bienvenue sur WennaShop !</h3>
+              <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                On peut te guider pas à pas pour configurer ta boutique — nom, logo, bannière, réseaux sociaux, livraison. Ça prend 2 minutes.
+              </p>
+              <div style={{ display: 'flex', gap: 10, width: '100%' }}>
+                <button className={styles.btnGhost} style={{ flex: 1, justifyContent: 'center' }} onClick={declineTourProposal}>Plus tard</button>
+                <button className={styles.btnPrimary} style={{ flex: 1, justifyContent: 'center' }} onClick={acceptTourProposal}>Oui, guide-moi</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── TUTORIEL INTERACTIF ── */}
       {tourStep !== null && (
