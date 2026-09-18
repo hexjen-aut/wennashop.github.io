@@ -78,6 +78,11 @@ export default function AdminPage() {
   const [bankModalOpen, setBankModalOpen] = useState(false);
   const [bankForm, setBankForm] = useState({ idx: null, country_code: '', bank_name: '', holder: '', rib: '', swift: '' });
 
+  // ── Pays — moyens de paiement par pays ──
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [countryPaymentMethods, setCountryPaymentMethods] = useState({});
+  const [paysSaving, setPaysSaving] = useState(null);
+
   useEffect(() => { checkAuth(); }, []);
 
   async function checkAuth() {
@@ -544,6 +549,36 @@ export default function AdminPage() {
     await persistBankAccounts(bankAccounts.filter((_, i) => i !== idx));
   }
 
+  // ── Pays — moyens de paiement par pays ──
+  async function loadPays() {
+    const sb = getSupabase();
+    const [{ data: countryRows }, { data: methods }, { data: cpm }] = await Promise.all([
+      sb.from('countries').select('code,name,currency_code,flag_emoji').eq('status', 'ACTIVE').order('sort_order'),
+      sb.from('payment_methods').select('code,name,provider_code,status,payment_providers(name,status)').order('sort_order'),
+      sb.from('country_payment_methods').select('country_code,payment_method_code,is_enabled'),
+    ]);
+    setCountries(countryRows || []);
+    setPaymentMethods(methods || []);
+    const grid = {};
+    (cpm || []).forEach((r) => {
+      if (!grid[r.country_code]) grid[r.country_code] = {};
+      grid[r.country_code][r.payment_method_code] = r.is_enabled;
+    });
+    setCountryPaymentMethods(grid);
+  }
+  async function togglePaysMethod(countryCode, methodCode, current) {
+    const key = `${countryCode}:${methodCode}`;
+    setPaysSaving(key);
+    const sb = getSupabase();
+    const { error } = await sb.from('country_payment_methods').upsert(
+      { country_code: countryCode, payment_method_code: methodCode, is_enabled: !current },
+      { onConflict: 'country_code,payment_method_code' },
+    );
+    setPaysSaving(null);
+    if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+    setCountryPaymentMethods((prev) => ({ ...prev, [countryCode]: { ...prev[countryCode], [methodCode]: !current } }));
+  }
+
   function goTo(s) {
     setSection(s);
     if (s === 'validation') loadValidation();
@@ -559,6 +594,7 @@ export default function AdminPage() {
     if (s === 'showcase') loadShowcase();
     if (s === 'goals') loadGoals();
     if (s === 'settings') loadSettings();
+    if (s === 'pays') loadPays();
   }
 
   async function approveProduct(id) {
@@ -626,6 +662,7 @@ export default function AdminPage() {
           ['analytics', 'ph-chart-line', 'Analytiques'],
           ['showcase', 'ph-image', 'Vitrine'],
           ['goals', 'ph-target', 'Objectifs'],
+          ['pays', 'ph-globe', 'Pays'],
           ['settings', 'ph-gear', 'Paramètres'],
         ].map(([key, icon, label]) => (
           <button key={key} className={`${styles.navItem} ${section === key ? styles.navItemActive : ''}`} onClick={() => goTo(key)}>
@@ -1167,6 +1204,65 @@ export default function AdminPage() {
                   ))}
                 </tbody>
               </table>
+            </div>
+          </>
+        )}
+
+        {section === 'pays' && (
+          <>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+              <h1 style={{ fontSize: 22, fontWeight: 900 }}>Pays</h1>
+            </div>
+            <div className={styles.card}>
+              <div className={styles.cardTitle} style={{ marginBottom: 4 }}>Moyens de paiement par pays</div>
+              <p style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 14 }}>
+                Active ou désactive un moyen de paiement pour un pays. Réglage de configuration uniquement — le tunnel
+                de paiement (/paiement) ne consulte pas encore cette table, il faudra le brancher dessus pour qu'un
+                changement ici ait un effet réel. Un moyen marqué "Prévu" n'a aucune intégration en place : l'activer
+                ici ne le rend pas fonctionnel.
+              </p>
+              {paymentMethods.length === 0 ? (
+                <div className={styles.empty}>Chargement…</div>
+              ) : (
+                <div style={{ overflowX: 'auto' }}>
+                  <table className={styles.table}>
+                    <thead>
+                      <tr>
+                        <th>Pays</th>
+                        {paymentMethods.map((m) => (
+                          <th key={m.code} style={{ textAlign: 'center' }}>
+                            {m.name}
+                            <div style={{ marginTop: 4 }}>
+                              <Badge status={m.status === 'ACTIVE' ? 'active' : 'pending'} label={m.status === 'ACTIVE' ? 'Actif' : 'Prévu'} />
+                            </div>
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {countries.map((c) => (
+                        <tr key={c.code}>
+                          <td>{c.flag_emoji} {c.name}</td>
+                          {paymentMethods.map((m) => {
+                            const enabled = !!countryPaymentMethods[c.code]?.[m.code];
+                            const key = `${c.code}:${m.code}`;
+                            return (
+                              <td key={m.code} style={{ textAlign: 'center' }}>
+                                <input
+                                  type="checkbox"
+                                  checked={enabled}
+                                  disabled={paysSaving === key}
+                                  onChange={() => togglePaysMethod(c.code, m.code, enabled)}
+                                />
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </>
         )}
