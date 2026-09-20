@@ -165,14 +165,14 @@ export default function BoutiqueClient() {
 
   // ── Boutiques boostées ──
   // Une boutique est "boostée" si elle a un boost actif (table boosts,
-  // type='shop', status='active', pas encore expiré) — il n'y a pas de
+  // type='shop_homepage', status='active', pas encore expiré) — il n'y a pas de
   // colonne is_boosted directement sur shops.
   useEffect(() => {
     (async () => {
       const sb = getSupabase();
       const { data } = await sb.from('boosts')
         .select('shop_id, expires_at, shops(id,slug,name,banner_url,bio)')
-        .eq('type', 'shop')
+        .eq('type', 'shop_homepage')
         .eq('status', 'active')
         .gt('expires_at', new Date().toISOString())
         .order('expires_at', { ascending: false })

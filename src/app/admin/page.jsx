@@ -290,7 +290,7 @@ export default function AdminPage() {
     const shopIds = (shopsData || []).map((s) => s.id);
     if (shopIds.length === 0) { setBoostedShopIds(new Set()); return; }
     const { data: boostsData } = await sb.from('boosts').select('shop_id')
-      .eq('type', 'shop').eq('status', 'active').gt('expires_at', new Date().toISOString()).in('shop_id', shopIds);
+      .eq('type', 'shop_homepage').eq('status', 'active').gt('expires_at', new Date().toISOString()).in('shop_id', shopIds);
     setBoostedShopIds(new Set((boostsData || []).map((b) => b.shop_id)));
   }
 
@@ -300,14 +300,14 @@ export default function AdminPage() {
     const sb = getSupabase();
     const isBoosted = boostedShopIds.has(shop.id);
     if (isBoosted) {
-      const { error } = await sb.from('boosts').update({ status: 'inactive' }).eq('shop_id', shop.id).eq('type', 'shop').eq('status', 'active');
+      const { error } = await sb.from('boosts').update({ status: 'inactive' }).eq('shop_id', shop.id).eq('type', 'shop_homepage').eq('status', 'active');
       if (error) { alert('Erreur : ' + error.message); setBoostActionId(null); return; }
     } else {
       const { data: pack } = await sb.from('boost_packs').select('id,duration_days').eq('slug', 'admin-manuel').single();
       if (!pack) { alert("Pack de mise en avant manuelle introuvable."); setBoostActionId(null); return; }
       const expiresAt = new Date(Date.now() + pack.duration_days * 24 * 60 * 60 * 1000).toISOString();
       const { error } = await sb.from('boosts').insert({
-        user_id: shop.user_id, shop_id: shop.id, pack_id: pack.id, type: 'shop', status: 'active',
+        user_id: shop.user_id, shop_id: shop.id, pack_id: pack.id, type: 'shop_homepage', status: 'active',
         expires_at: expiresAt, amount_paid: 0, currency: 'FCFA',
       });
       if (error) { alert('Erreur : ' + error.message); setBoostActionId(null); return; }

@@ -526,7 +526,7 @@ export default function VendeurPage() {
     if (currentBalance < cost) { showToast('Solde insuffisant — rechargez votre wallet', 'error'); return; }
     const sb = getSupabase();
     const expiresAt = new Date(Date.now() + (selectedPack.duration_days || 7) * 86400000).toISOString();
-    await sb.from('boosts').insert({ user_id: seller.id, shop_id: shop?.id, product_id: target?.product_id || null, pack_id: selectedPack.id, type: target?.type || 'shop', status: 'active', started_at: new Date().toISOString(), expires_at: expiresAt, amount_paid: cost, currency: 'MAD' });
+    await sb.from('boosts').insert({ user_id: seller.id, shop_id: shop?.id, product_id: target?.product_id || null, pack_id: selectedPack.id, type: target?.type || 'shop_homepage', status: 'active', started_at: new Date().toISOString(), expires_at: expiresAt, amount_paid: cost, currency: 'MAD' });
     await sb.from('vendor_wallets').update({ balance: currentBalance - cost, updated_at: new Date().toISOString() }).eq('user_id', seller.id);
     await sb.from('wallet_transactions').insert({ user_id: seller.id, type: 'boost_purchase', amount: -cost, currency: 'MAD', description: `Boost ${selectedPack.name}`, status: 'completed' });
     setWallet((prev) => ({ ...prev, balance: currentBalance - cost }));
@@ -1525,7 +1525,7 @@ export default function VendeurPage() {
               ))}
             </div>
             <div className={styles.modalFooter}>
-              <button className={styles.btnGhost} style={{ flex: 1, justifyContent: 'center' }} onClick={() => activateBoost({ type: 'shop' })}>Activer avec mon solde</button>
+              <button className={styles.btnGhost} style={{ flex: 1, justifyContent: 'center' }} onClick={() => activateBoost({ type: 'shop_homepage' })}>Activer avec mon solde</button>
               <button className={styles.btnPrimary} style={{ flex: 1, justifyContent: 'center' }} onClick={requestRecharge}>Demander une recharge</button>
             </div>
           </div>
