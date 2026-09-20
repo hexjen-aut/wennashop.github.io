@@ -49,6 +49,7 @@ export default function AdminPage() {
   }
 
   const [section, setSection] = useState('dashboard');
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [kpis, setKpis] = useState({ revenue: 0, orders: 0, users: 0, products: 0, pending: 0 });
   const [pendingProducts, setPendingProducts] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -647,6 +648,7 @@ export default function AdminPage() {
 
   function goTo(s) {
     setSection(s);
+    setMobileNavOpen(false);
     if (s === 'validation') loadValidation();
     if (s === 'orders') loadOrders();
     if (s === 'users') loadUsers();
@@ -743,7 +745,8 @@ export default function AdminPage() {
 
   return (
     <div className={styles.wrap}>
-      <aside className={styles.sidebar}>
+      {mobileNavOpen && <div className={styles.sidebarBackdrop} onClick={() => setMobileNavOpen(false)} />}
+      <aside className={`${styles.sidebar} ${mobileNavOpen ? styles.sidebarOpen : ''}`}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, padding: '0 12px' }}>
           <img src="/wenna_icon.png" alt="" style={{ height: 24, width: 'auto' }} />
           <span style={{ fontSize: 18, fontWeight: 900 }}><span style={{ color: 'var(--accent)' }}>Wenna</span>Shop</span>
@@ -773,6 +776,12 @@ export default function AdminPage() {
       </aside>
 
       <main className={styles.main}>
+        <div className={styles.mobileTopBar}>
+          <button className={styles.mobileMenuBtn} onClick={() => setMobileNavOpen(true)} aria-label="Menu">
+            <i className="ph ph-list" />
+          </button>
+          <span style={{ fontSize: 15, fontWeight: 800 }}><span style={{ color: 'var(--accent)' }}>Wenna</span>Shop Admin</span>
+        </div>
 
         {section === 'dashboard' && (
           <>
