@@ -21,12 +21,26 @@ function Badge({ status, label }) {
   return <span className={styles.badge} style={{ background: `${c}22`, color: c }}>{label || status}</span>;
 }
 
+const DEVICE_TOKEN_KEY = 'wenna_admin_device_token';
+
+async function sha256Hex(text) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
 export default function AdminPage() {
   const [checking, setChecking] = useState(true);
   const [authorized, setAuthorized] = useState(false);
   const [email, setEmail] = useState('');
   const [pwd, setPwd] = useState('');
   const [loginError, setLoginError] = useState('');
+
+  // ── Vérification de l'appareil (appareil de confiance + code email) ──
+  const [pendingUserId, setPendingUserId] = useState(null);
+  const [deviceStep, setDeviceStep] = useState('none'); // none | code
+  const [otpCode, setOtpCode] = useState('');
+  const [otpError, setOtpError] = useState('');
+  const [otpSending, setOtpSending] = useState(false);
 
   const [toast, setToast] = useState(null);
   function showToast(message, type = 'ok') {
@@ -84,8 +98,9 @@ export default function AdminPage() {
     const sb = getSupabase();
     const { data: { session } } = await sb.auth.getSession();
     if (!session) { setChecking(false); return; }
-    const { data } = await sb.from('users').select('role').eq('auth_id', session.user.id).single();
-    if (data?.role === 'admin') { setAuthorized(true); await loadDashboard(); }
+    if (session.user.email) setEmail(session.user.email);
+    const { data } = await sb.from('users').select('id,role').eq('auth_id', session.user.id).single();
+    if (data?.role === 'admin') { await proceedAfterPasswordAuth(data.id); }
     setChecking(false);
   }
 
@@ -94,8 +109,59 @@ export default function AdminPage() {
     const sb = getSupabase();
     const { data, error } = await sb.auth.signInWithPassword({ email, password: pwd });
     if (error) { setLoginError('Email ou mot de passe incorrect.'); return; }
-    const { data: u } = await sb.from('users').select('role').eq('auth_id', data.user.id).single();
+    const { data: u } = await sb.from('users').select('id,role').eq('auth_id', data.user.id).single();
     if (u?.role !== 'admin') { setLoginError('Accès réservé aux administrateurs.'); await sb.auth.signOut(); return; }
+    await proceedAfterPasswordAuth(u.id);
+  }
+
+  // ── Vérification de l'appareil ──
+  async function proceedAfterPasswordAuth(userId) {
+    const trusted = await checkTrustedDevice(userId);
+    if (trusted) { setAuthorized(true); await loadDashboard(); return; }
+    setPendingUserId(userId);
+    await sendDeviceCode();
+  }
+
+  async function checkTrustedDevice(userId) {
+    const token = localStorage.getItem(DEVICE_TOKEN_KEY);
+    if (!token) return false;
+    const sb = getSupabase();
+    const tokenHash = await sha256Hex(token);
+    const { data } = await sb.from('admin_trusted_devices').select('id,expires_at')
+      .eq('user_id', userId).eq('token_hash', tokenHash).single();
+    if (!data || new Date(data.expires_at) < new Date()) return false;
+    await sb.from('admin_trusted_devices').update({
+      last_used_at: new Date().toISOString(),
+      expires_at: new Date(Date.now() + 90 * 24 * 3600 * 1000).toISOString(),
+    }).eq('id', data.id);
+    return true;
+  }
+
+  async function sendDeviceCode() {
+    setOtpError('');
+    setOtpSending(true);
+    const sb = getSupabase();
+    const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
+    setOtpSending(false);
+    if (error) { setOtpError("Impossible d'envoyer le code. Réessaie."); return; }
+    setDeviceStep('code');
+  }
+
+  async function verifyDeviceCode() {
+    setOtpError('');
+    const sb = getSupabase();
+    const { error } = await sb.auth.verifyOtp({ email, token: otpCode.trim(), type: 'email' });
+    if (error) { setOtpError('Code incorrect ou expiré.'); return; }
+    let token = localStorage.getItem(DEVICE_TOKEN_KEY);
+    if (!token) { token = crypto.randomUUID(); localStorage.setItem(DEVICE_TOKEN_KEY, token); }
+    const tokenHash = await sha256Hex(token);
+    await sb.from('admin_trusted_devices').insert({
+      user_id: pendingUserId,
+      token_hash: tokenHash,
+      label: navigator.userAgent.slice(0, 120),
+    });
+    setDeviceStep('none');
+    setOtpCode('');
     setAuthorized(true);
     await loadDashboard();
   }
@@ -582,6 +648,41 @@ export default function AdminPage() {
   if (checking) return <div style={{ padding: 60, textAlign: 'center', color: 'var(--text-faint)' }}>Vérification…</div>;
 
   if (!authorized) {
+    if (deviceStep === 'code') {
+      return (
+        <div className={styles.gate}>
+          <div className={styles.gateBox}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, fontSize: 22, fontWeight: 900, marginBottom: 4 }}>
+              <img src="/wenna_icon.png" alt="" style={{ height: 30, width: 'auto' }} />
+              <span style={{ color: 'var(--accent)' }}>Wenna</span>Shop
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--text-faint)', marginBottom: 20 }}>
+              Nouvel appareil détecté — code envoyé à {email}
+            </div>
+            {otpError && <div style={{ color: 'var(--error)', fontSize: 12, marginBottom: 12 }}>{otpError}</div>}
+            <input
+              className={styles.input}
+              type="text"
+              inputMode="numeric"
+              placeholder="Code à 6 chiffres"
+              value={otpCode}
+              onChange={(e) => setOtpCode(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && verifyDeviceCode()}
+              autoFocus
+            />
+            <button className={styles.btnPrimary} onClick={verifyDeviceCode}>Valider</button>
+            <button
+              className={styles.btnGhost}
+              style={{ marginTop: 10 }}
+              onClick={sendDeviceCode}
+              disabled={otpSending}
+            >
+              {otpSending ? 'Envoi…' : 'Renvoyer le code'}
+            </button>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className={styles.gate}>
         <div className={styles.gateBox}>
