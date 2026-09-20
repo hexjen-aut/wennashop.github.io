@@ -438,7 +438,7 @@ export default function AdminPage() {
       sb.from('shops').select('id,user_id,name,commission_rate'),
       sb.from('reviews').select('rating,status'),
       sb.from('categories').select('id,name'),
-      sb.from('order_items').select('quantity,unit_price,products(seller_id,category_id),orders(status,created_at)'),
+      sb.from('order_items').select('quantity,unit_price,commission_amount,products(seller_id,category_id),orders(status,created_at)'),
     ]);
 
     const ords = ordersData || [];
@@ -492,6 +492,7 @@ export default function AdminPage() {
     const shopByUser = new Map((shopsData || []).map((s) => [s.user_id, s.name]));
     const userById = new Map(users.map((u) => [u.id, u]));
     const items = itemsData || [];
+    const commission = items.filter((it) => it.orders?.status === 'delivered').reduce((s, it) => s + Number(it.commission_amount || 0), 0);
     const revenueBySeller = {};
     items.forEach((it) => {
       if (it.orders?.status !== 'delivered' || !it.products?.seller_id) return;
@@ -511,7 +512,7 @@ export default function AdminPage() {
       lowPct: approvedReviews.length ? Math.round((approvedReviews.filter((r) => r.rating <= 2).length / approvedReviews.length) * 100) : 0,
     };
 
-    setAnalytics({ orders: ords, statuses, countries, gmv, commission: gmv * 0.08, avgBasket: delivered.length ? gmv / delivered.length : 0, cancelRate, months, vendorsNoProducts, topCategories, topVendors, reviewStats });
+    setAnalytics({ orders: ords, statuses, countries, gmv, commission, avgBasket: delivered.length ? gmv / delivered.length : 0, cancelRate, months, vendorsNoProducts, topCategories, topVendors, reviewStats });
   }
 
   // ── Vitrine ──
@@ -1090,7 +1091,7 @@ export default function AdminPage() {
 
             <div className={styles.statGrid} style={{ marginBottom: 16 }}>
               <div className={styles.statCard}><div className={styles.statNum} style={{ color: 'var(--accent)' }}>{fmt(analytics.gmv)}</div><div className={styles.statLabel}>GMV livrée</div></div>
-              <div className={styles.statCard}><div className={styles.statNum} style={{ color: 'var(--gold)' }}>{fmt(analytics.commission)}</div><div className={styles.statLabel}>Commission (8%)</div></div>
+              <div className={styles.statCard}><div className={styles.statNum} style={{ color: 'var(--gold)' }}>{fmt(analytics.commission)}</div><div className={styles.statLabel}>Commission WennaShop</div></div>
               <div className={styles.statCard}><div className={styles.statNum}>{fmt(analytics.avgBasket)}</div><div className={styles.statLabel}>Panier moyen</div></div>
               <div className={styles.statCard}><div className={styles.statNum} style={{ color: analytics.cancelRate > 10 ? 'var(--error)' : 'var(--success)' }}>{analytics.cancelRate}%</div><div className={styles.statLabel}>Taux d'annulation</div></div>
             </div>

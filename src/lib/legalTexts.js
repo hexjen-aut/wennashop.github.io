@@ -10,23 +10,27 @@ L'inscription est gratuite. L'utilisateur s'engage à fournir des informations e
 Acheteur : peut parcourir les boutiques, passer commande et suivre ses livraisons.
 Vendeur : peut créer une boutique, lister des produits et gérer ses commandes après validation par l'administration WennaShop.
 La validation d'un compte vendeur est requise avant toute mise en ligne. Un document d'identité valide (CNI ou passeport) ainsi qu'une adresse exacte doivent être fournis à l'inscription.
+Chasseur : profil vérifié pouvant répondre aux quêtes postées par les acheteurs et recruter de nouveaux vendeurs via un code de parrainage personnel. La vérification d'identité est requise avant toute activité de chasseur.
 
 4. Commissions et paiements
-WennaShop prélève une commission de 8% sur chaque vente. Les paiements sont traités via CinetPay et PayDunia.
+WennaShop prélève une commission sur chaque vente, dont le taux dépend de la catégorie du produit vendu (à partir de 6%, grille disponible publiquement sur le site). Un taux dérogatoire peut être appliqué à une boutique par l'administration. Les paiements sont traités via CinetPay et PayDunia.
 
-5. Retraits vendeurs
+5. Programme de parrainage chasseurs
+Un chasseur vérifié dispose d'un code de parrainage unique qu'il peut transmettre à un vendeur. Le vendeur recruté doit saisir ce code dans les 7 jours suivant la création de sa boutique. Le chasseur perçoit alors une prime unique lorsque la boutique recrutée atteint un nombre minimal de commandes livrées, ainsi qu'un pourcentage de la commission WennaShop perçue sur les ventes de cette boutique pendant une durée limitée après le recrutement. Les gains sont bloqués quelques jours après chaque livraison avant de devenir disponibles, et sont annulés en cas d'annulation ou de retour de la commande concernée. Les montants et durées exacts de ce programme sont consultables dans l'espace chasseur et peuvent évoluer ; toute évolution s'applique aux recrutements futurs.
+
+6. Retraits vendeurs
 Un vendeur peut demander le retrait de son solde disponible depuis son tableau de bord. Chaque demande est examinée par l'administration WennaShop avant versement.
 
-6. Commandes, livraison et retours
+7. Commandes, livraison et retours
 Les délais de livraison sont indiqués par chaque vendeur sur sa fiche produit. Toute réclamation (produit non conforme, non reçu) doit être signalée sous 7 jours après réception via la page de suivi de commande. Les modalités de retour et de remboursement sont propres à chaque vendeur et précisées sur sa boutique ; à défaut d'accord, WennaShop peut intervenir en médiation entre l'acheteur et le vendeur.
 
-7. Responsabilités
+8. Responsabilités
 WennaShop agit en qualité d'intermédiaire technique. Les vendeurs assument l'entière responsabilité de la conformité de leurs articles.
 
-8. Propriété intellectuelle
+9. Propriété intellectuelle
 Le nom, le logo et les éléments graphiques de WennaShop sont la propriété exclusive de Hexjen Conceptions.
 
-9. Loi applicable
+10. Loi applicable
 Les présentes CGU sont soumises au droit marocain. Tout litige sera soumis aux tribunaux de Casablanca, Maroc.`;
 
 export const PRIVACY_TEXT = `Dernière mise à jour : juillet 2026

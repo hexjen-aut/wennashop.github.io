@@ -57,6 +57,9 @@ export default function ChasseurPage() {
   const [rewardMin, setRewardMin] = useState('');
   const [sort, setSort] = useState('created_at_desc');
 
+  const [recruitedShops, setRecruitedShops] = useState([]);
+  const [hunterBalance, setHunterBalance] = useState({ en_attente: 0, disponible: 0, verse: 0 });
+
   const [notifications, setNotifications] = useState([]);
   const [notifOpen, setNotifOpen] = useState(false);
 
@@ -85,7 +88,7 @@ export default function ChasseurPage() {
 
       let internal = null;
       if (session) {
-        const { data } = await sb.from('users').select('id, role, full_name, first_name, last_name, country, avatar_url').eq('auth_id', session.user.id).single();
+        const { data } = await sb.from('users').select('id, role, full_name, first_name, last_name, country, avatar_url, hunter_referral_code, hunter_status').eq('auth_id', session.user.id).single();
         internal = data;
         setInternalUser(data);
       }
@@ -110,6 +113,7 @@ export default function ChasseurPage() {
 
       if (internal?.id) await loadMyProposals(sb, internal.id);
       if (internal?.id) await loadNotifications(sb, internal.id);
+      if (internal?.id) await loadRecruitedShops(sb, internal.id);
 
       setLoading(false);
     })();
@@ -129,6 +133,23 @@ export default function ChasseurPage() {
       .eq('hunter_id', hunterId)
       .order('created_at', { ascending: false });
     setMyProposals(data || []);
+  }
+
+  async function loadRecruitedShops(sb, hunterId) {
+    const { data: shops } = await sb
+      .from('shops')
+      .select('id,name,status,created_at,activated_at')
+      .eq('recruited_by', hunterId)
+      .order('created_at', { ascending: false });
+    setRecruitedShops(shops || []);
+
+    const { data: bal } = await sb.from('hunter_balances').select('*').eq('hunter_id', hunterId);
+    const totals = (bal || []).reduce((acc, r) => ({
+      en_attente: acc.en_attente + Number(r.en_attente || 0),
+      disponible: acc.disponible + Number(r.disponible || 0),
+      verse: acc.verse + Number(r.verse || 0),
+    }), { en_attente: 0, disponible: 0, verse: 0 });
+    setHunterBalance(totals);
   }
 
   async function loadNotifications(sb, userId) {
@@ -329,6 +350,7 @@ export default function ChasseurPage() {
               Mes propositions <span className={styles.htabBadge}>{myProposals.filter((p) => p.status === 'pending').length}</span>
             </button>
             <button className={`${styles.htab} ${tab === 'gains' ? styles.htabActive : ''}`} onClick={() => setTab('gains')}>Gains</button>
+            <button className={`${styles.htab} ${tab === 'vendeurs' ? styles.htabActive : ''}`} onClick={() => setTab('vendeurs')}>Mes vendeurs</button>
           </div>
         </div>
       </div>
@@ -562,6 +584,54 @@ export default function ChasseurPage() {
                     </div>
                   ))}
                 </>
+              )}
+            </div>
+          </div>
+        )}
+
+        {tab === 'vendeurs' && (
+          <div className={styles.gainsLayout}>
+            <div>
+              <div className={styles.gainsCard}>
+                <div className={styles.gainsCardTitle}>Ton code de parrainage</div>
+                {internalUser?.hunter_status === 'verified' && internalUser?.hunter_referral_code ? (
+                  <>
+                    <div style={{ fontSize: 26, fontWeight: 900, color: 'var(--accent)', letterSpacing: 2, marginBottom: 10 }}>{internalUser.hunter_referral_code}</div>
+                    <button
+                      className={styles.htab}
+                      style={{ border: '1.5px solid var(--border)' }}
+                      onClick={() => { navigator.clipboard.writeText(internalUser.hunter_referral_code); showToast('Code copié', 'success'); }}
+                    >
+                      Copier le code
+                    </button>
+                    <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 12, lineHeight: 1.7 }}>
+                      Donne ce code à un vendeur que tu recrutes. Il doit le saisir dans les 7 jours suivant la création de sa boutique, depuis son espace vendeur. Tu touches 3 000 FCFA quand sa boutique atteint 3 commandes livrées, puis 20 % de la commission WennaShop sur ses ventes pendant 6 mois.
+                    </p>
+                  </>
+                ) : (
+                  <p style={{ fontSize: 12, color: 'var(--text-faint)' }}>Ton code de parrainage sera généré automatiquement une fois ton profil chasseur vérifié.</p>
+                )}
+              </div>
+              <div className={styles.gainsCard}>
+                <div className={styles.gainsCardTitle}>Solde parrainage</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>En attente (bloqué 7j)</span><strong>{fmt(hunterBalance.en_attente)} FCFA</strong></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Disponible</span><strong style={{ color: 'var(--success)' }}>{fmt(hunterBalance.disponible)} FCFA</strong></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Déjà versé</span><strong>{fmt(hunterBalance.verse)} FCFA</strong></div>
+                </div>
+              </div>
+            </div>
+            <div className={styles.gainsCard}>
+              <div className={styles.gainsCardTitle}>Vendeurs recrutés ({recruitedShops.length})</div>
+              {recruitedShops.length === 0 ? (
+                <div className={styles.emptyState} style={{ padding: 28 }}><div className={styles.emptyTitle}>Aucun vendeur recruté</div><div className={styles.emptySub}>Partage ton code pour commencer à gagner.</div></div>
+              ) : (
+                recruitedShops.map((s) => (
+                  <div key={s.id} className={styles.txItem}>
+                    <div><div className={styles.txTitle}>{s.name}</div><div className={styles.txDate}>Recruté le {fmtDate(s.created_at)}</div></div>
+                    <div className={styles.txAmount} style={{ color: s.activated_at ? 'var(--success)' : 'var(--gold, #f59e0b)' }}>{s.activated_at ? 'Actif' : 'En attente (3 commandes)'}</div>
+                  </div>
+                ))
               )}
             </div>
           </div>

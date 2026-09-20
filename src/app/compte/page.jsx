@@ -52,6 +52,7 @@ export default function ComptePage() {
 
   // Vendeur
   const [shop, setShop] = useState(null);
+  const [hunterClaimMsg, setHunterClaimMsg] = useState(null);
   const [products, setProducts] = useState([]);
   const [sales, setSales] = useState([]);
   const [payments, setPayments] = useState([]);
@@ -271,7 +272,7 @@ export default function ComptePage() {
         updated_at: new Date().toISOString(),
       }).eq('auth_id', session.user.id);
       if (userErr) throw userErr;
-      const { error: shopErr } = await sb.from('shops').upsert({ user_id: profile.id, name: upgradeForm.shopName, slug, bio: upgradeForm.bio || upgradeForm.specialty, country: upgradeForm.country, status: 'pending', commission_rate: 8, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
+      const { error: shopErr } = await sb.from('shops').upsert({ user_id: profile.id, name: upgradeForm.shopName, slug, bio: upgradeForm.bio || upgradeForm.specialty, country: upgradeForm.country, status: 'pending', updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
       if (shopErr) throw shopErr;
       setProfile({ ...profile, role: 'artisan', status: 'pending', country: upgradeForm.country });
       setMode('vendeur');
@@ -289,6 +290,26 @@ export default function ComptePage() {
     const { error } = await sb.from('shops').update({ name, bio, country, updated_at: new Date().toISOString() }).eq('user_id', profile.id);
     if (error) alert('Erreur : ' + error.message);
     else { alert('Boutique mise à jour ✓'); setShop({ ...shop, name, bio, country }); }
+  }
+
+  async function claimHunterCode(code) {
+    if (!shop?.id || !code?.trim()) return;
+    setHunterClaimMsg(null);
+    const sb = getSupabase();
+    const { data, error } = await sb.rpc('claim_hunter_referral', { p_shop_id: shop.id, p_code: code.trim() });
+    if (error) {
+      const known = {
+        deja_parraine: 'Cette boutique a déjà un chasseur associé.',
+        delai_depasse: 'Le délai de 7 jours après création de la boutique est dépassé.',
+        code_invalide: 'Code chasseur invalide.',
+        auto_parrainage_interdit: 'Tu ne peux pas utiliser ton propre code.',
+      };
+      setHunterClaimMsg({ type: 'error', text: known[error.message] || ('Erreur : ' + error.message) });
+      return;
+    }
+    setHunterClaimMsg({ type: 'success', text: `Chasseur associé : ${data.hunter}` });
+    const { data: refreshed } = await sb.from('shops').select('*').eq('user_id', profile.id).maybeSingle();
+    setShop(refreshed);
   }
 
   // ── 2FA ──
@@ -563,7 +584,7 @@ export default function ComptePage() {
         {mode === 'vendeur' && !isVendeur && (
           <div className={styles.card}>
             <div className={styles.cardTitle}>Devenir vendeur</div>
-            <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: -8, marginBottom: 16, lineHeight: 1.7 }}>Inscription gratuite — WennaShop prend uniquement <strong style={{ color: 'var(--accent)' }}>8% de commission</strong> sur les ventes réalisées.</p>
+            <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: -8, marginBottom: 16, lineHeight: 1.7 }}>Inscription gratuite — WennaShop prend une commission <strong style={{ color: 'var(--accent)' }}>à partir de 6%</strong> selon la catégorie de tes produits.</p>
             <input value={upgradeForm.shopName} onChange={(e) => setUpgradeForm({ ...upgradeForm, shopName: e.target.value })} placeholder="Nom de la boutique *" style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)', padding: '10px 12px', fontSize: 13, marginBottom: 10 }} />
             <input value={upgradeForm.specialty} onChange={(e) => setUpgradeForm({ ...upgradeForm, specialty: e.target.value })} placeholder="Spécialité *" style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)', padding: '10px 12px', fontSize: 13, marginBottom: 10 }} />
             <select value={upgradeForm.country} onChange={(e) => setUpgradeForm({ ...upgradeForm, country: e.target.value })} style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)', padding: '10px 12px', fontSize: 13, marginBottom: 10 }}>
@@ -625,7 +646,7 @@ export default function ComptePage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 14 }}>
               <div className={styles.card} style={{ textAlign: 'center', margin: 0 }}><div style={{ fontSize: 22, fontWeight: 900, color: 'var(--accent)' }}>{fmt(revMonth)}</div><div style={{ fontSize: 10, color: 'var(--text-faint)', marginTop: 4 }}>Revenus ce mois</div></div>
               <div className={styles.card} style={{ textAlign: 'center', margin: 0 }}><div style={{ fontSize: 22, fontWeight: 900 }}>{products.length}</div><div style={{ fontSize: 10, color: 'var(--text-faint)', marginTop: 4 }}>Produits</div></div>
-              <div className={styles.card} style={{ textAlign: 'center', margin: 0 }}><div style={{ fontSize: 22, fontWeight: 900, color: 'var(--gold, #f59e0b)' }}>8%</div><div style={{ fontSize: 10, color: 'var(--text-faint)', marginTop: 4 }}>Commission</div></div>
+              <div className={styles.card} style={{ textAlign: 'center', margin: 0 }}><div style={{ fontSize: shop?.commission_rate ? 22 : 13, fontWeight: 900, color: 'var(--gold, #f59e0b)' }}>{shop?.commission_rate ? `${shop.commission_rate}%` : 'Selon catégorie'}</div><div style={{ fontSize: 10, color: 'var(--text-faint)', marginTop: 4 }}>Commission</div></div>
             </div>
 
             <div className={styles.tabs}>
@@ -686,6 +707,28 @@ export default function ComptePage() {
                   {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
                 </select>
                 <button onClick={() => saveShop(document.getElementById('shop-name-input').value, document.getElementById('shop-bio-input').value, document.getElementById('shop-country-input').value)} style={{ width: '100%', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 999, padding: 14, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>Mettre à jour</button>
+              </div>
+            )}
+
+            {vendeurTab === 'boutique' && shop && (
+              <div className={styles.card}>
+                <div className={styles.cardTitle}>Code chasseur</div>
+                {shop.recruited_by ? (
+                  <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>Cette boutique est parrainée par un chasseur WennaShop.</p>
+                ) : new Date(shop.created_at) < new Date(Date.now() - 7 * 86400000) ? (
+                  <p style={{ fontSize: 12, color: 'var(--text-faint)' }}>Le délai de 7 jours après création de la boutique pour saisir un code chasseur est dépassé.</p>
+                ) : (
+                  <>
+                    <p style={{ fontSize: 12, color: 'var(--text-faint)', marginBottom: 10 }}>
+                      Un chasseur t'a aidé à démarrer sur WennaShop ? Saisis son code dans les 7 jours suivant la création de ta boutique.
+                    </p>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <input id="hunter-code-input" placeholder="ex: WS-A3F9K2" style={{ flex: 1, background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)', padding: '10px 12px', fontSize: 13 }} />
+                      <button onClick={() => claimHunterCode(document.getElementById('hunter-code-input').value)} style={{ background: 'transparent', border: '1.5px solid var(--border)', color: 'var(--text-muted)', padding: '8px 16px', borderRadius: 999, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>Valider</button>
+                    </div>
+                    {hunterClaimMsg && <div style={{ fontSize: 12, marginTop: 8, color: hunterClaimMsg.type === 'error' ? 'var(--error)' : 'var(--success)' }}>{hunterClaimMsg.text}</div>}
+                  </>
+                )}
               </div>
             )}
           </>

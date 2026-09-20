@@ -75,6 +75,9 @@ export default function VendeurPage() {
   const [checking, setChecking] = useState(true);
   const [seller, setSeller] = useState(null);
   const [shop, setShop] = useState(null);
+  const [hunterCode, setHunterCode] = useState('');
+  const [hunterClaimBusy, setHunterClaimBusy] = useState(false);
+  const [hunterClaimMsg, setHunterClaimMsg] = useState(null);
   const [wallet, setWallet] = useState(null);
   const [categories, setCategories] = useState([]);
 
@@ -456,17 +459,24 @@ export default function VendeurPage() {
   // ── REVENUE ──
   async function loadRevenue(sb) {
     if (!myOrderIds.length) { setRevenue({ total: 0, month: 0, commission: 0, avg: 0 }); setPayments([]); return; }
-    const { data: pays } = await sb.from('payments').select('id,order_id,amount,currency,status,type,created_at').in('order_id', myOrderIds).order('created_at', { ascending: false });
+    const [{ data: pays }, { data: items }] = await Promise.all([
+      sb.from('payments').select('id,order_id,amount,currency,status,type,created_at').in('order_id', myOrderIds).order('created_at', { ascending: false }),
+      shop?.id ? sb.from('order_items').select('order_id,commission_amount').eq('shop_id', shop.id).in('order_id', myOrderIds) : Promise.resolve({ data: [] }),
+    ]);
     const list = pays || [];
-    const rate = shop?.commission_rate ? Number(shop.commission_rate) / 100 : 0.08;
+    const commissionByOrder = {};
+    (items || []).forEach((i) => { commissionByOrder[i.order_id] = (commissionByOrder[i.order_id] || 0) + Number(i.commission_amount || 0); });
+    const fallbackRate = shop?.commission_rate ? Number(shop.commission_rate) / 100 : 0.08;
+    const commissionFor = (p) => commissionByOrder[p.order_id] ?? Number(p.amount) * fallbackRate;
     const now = new Date();
     const thisMonth = list.filter((p) => { const d = new Date(p.created_at); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); });
     const total = list.reduce((s, p) => s + Number(p.amount || 0), 0);
+    const totalCommission = list.reduce((s, p) => s + commissionFor(p), 0);
     setRevenue({
       total, month: thisMonth.reduce((s, p) => s + Number(p.amount || 0), 0),
-      commission: total * rate, avg: list.length ? total / list.length : 0,
+      commission: totalCommission, avg: list.length ? total / list.length : 0,
     });
-    setPayments(list.map((p) => ({ ...p, commission: Number(p.amount) * rate, net: Number(p.amount) * (1 - rate) })));
+    setPayments(list.map((p) => ({ ...p, commission: commissionFor(p), net: Number(p.amount) - commissionFor(p) })));
   }
 
   // ── WALLET ──
@@ -608,9 +618,31 @@ export default function VendeurPage() {
     const payload = { ...shopForm, user_id: seller.id, carrier_id: shopForm.carrier_id || null };
     let error;
     if (shop?.id) ({ error } = await sb.from('shops').update(payload).eq('id', shop.id));
-    else ({ error } = await sb.from('shops').insert({ ...payload, commission_rate: 8 }));
+    else ({ error } = await sb.from('shops').insert(payload));
     if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
     showToast('Boutique enregistrée', 'success');
+    const { data: refreshed } = await sb.from('shops').select('*').eq('user_id', seller.id).maybeSingle();
+    setShop(refreshed);
+  }
+
+  async function claimHunterCode() {
+    if (!shop?.id || !hunterCode.trim()) return;
+    setHunterClaimBusy(true);
+    setHunterClaimMsg(null);
+    const sb = getSupabase();
+    const { data, error } = await sb.rpc('claim_hunter_referral', { p_shop_id: shop.id, p_code: hunterCode.trim() });
+    setHunterClaimBusy(false);
+    if (error) {
+      const known = {
+        deja_parraine: 'Cette boutique a déjà un chasseur associé.',
+        delai_depasse: 'Le délai de 7 jours après création de la boutique est dépassé.',
+        code_invalide: 'Code chasseur invalide.',
+        auto_parrainage_interdit: 'Tu ne peux pas utiliser ton propre code.',
+      };
+      setHunterClaimMsg({ type: 'error', text: known[error.message] || ('Erreur : ' + error.message) });
+      return;
+    }
+    setHunterClaimMsg({ type: 'success', text: `Chasseur associé : ${data.hunter}` });
     const { data: refreshed } = await sb.from('shops').select('*').eq('user_id', seller.id).maybeSingle();
     setShop(refreshed);
   }
@@ -806,7 +838,7 @@ export default function VendeurPage() {
           <>
             <div className={styles.card} style={{ padding: '12px 18px', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 12, background: 'var(--accent-light)', border: '1px solid var(--border-accent)' }}>
               <i className="ph ph-percent" style={{ fontSize: 20, color: 'var(--accent)' }} />
-              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>Commission WennaShop : <strong style={{ color: 'var(--text)' }}>{shop?.commission_rate || 8}%</strong> par vente.</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>Commission WennaShop : <strong style={{ color: 'var(--text)' }}>{shop?.commission_rate ? `${shop.commission_rate}%` : 'selon catégorie du produit'}</strong> par vente.</span>
             </div>
 
             {overview.shopCompletion < 100 && (
@@ -1230,6 +1262,28 @@ export default function VendeurPage() {
             </div>
             <button type="submit" className={styles.btnPrimary} style={{ alignSelf: 'flex-start' }}><i className="ph ph-floppy-disk" /> Enregistrer</button>
           </form>
+
+          {shop?.id && (
+            <div className={styles.card} style={{ maxWidth: 640, padding: 20, marginTop: 14 }}>
+              <h3 style={{ fontSize: 14, fontWeight: 800, marginBottom: 8 }}>Code chasseur</h3>
+              {shop.recruited_by ? (
+                <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>Cette boutique est parrainée par un chasseur WennaShop.</p>
+              ) : new Date(shop.created_at) < new Date(Date.now() - 7 * 86400000) ? (
+                <p style={{ fontSize: 12, color: 'var(--text-faint)' }}>Le délai de 7 jours après création de la boutique pour saisir un code chasseur est dépassé.</p>
+              ) : (
+                <>
+                  <p style={{ fontSize: 12, color: 'var(--text-faint)', marginBottom: 10 }}>
+                    Un chasseur t'a aidé à démarrer sur WennaShop ? Saisis son code dans les 7 jours suivant la création de ta boutique.
+                  </p>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <input className={styles.input} style={{ maxWidth: 200 }} placeholder="ex: WS-A3F9K2" value={hunterCode} onChange={(e) => setHunterCode(e.target.value)} />
+                    <button type="button" className={styles.btnGhost} disabled={hunterClaimBusy} onClick={claimHunterCode}>{hunterClaimBusy ? 'Validation…' : 'Valider le code'}</button>
+                  </div>
+                  {hunterClaimMsg && <div style={{ fontSize: 12, marginTop: 8, color: hunterClaimMsg.type === 'error' ? 'var(--error)' : 'var(--success)' }}>{hunterClaimMsg.text}</div>}
+                </>
+              )}
+            </div>
+          )}
           </>
         )}
 
