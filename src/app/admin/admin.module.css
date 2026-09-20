@@ -105,8 +105,24 @@ textarea.input { resize: vertical; min-height: 70px; }
 .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--surface); border: 1.5px solid var(--border-accent); border-radius: var(--radius-pill); color: var(--text); padding: 10px 20px; font-size: 13px; font-weight: 700; z-index: 900; box-shadow: var(--shadow-orange); }
 .toastError { border-color: rgba(239,68,68,.4); }
 
+.mobileTopBar { display: none; }
+
 @media (max-width: 900px) {
-  .sidebar { display: none; }
+  .sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: -100%;
+    z-index: 480;
+    width: 260px;
+    max-width: 82vw;
+    box-shadow: var(--shadow-md);
+    transition: left .2s ease;
+  }
+  .sidebarOpen { left: 0; }
+  .sidebarBackdrop { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 470; }
+  .mobileTopBar { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .mobileMenuBtn { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; color: var(--text); cursor: pointer; flex-shrink: 0; font-size: 17px; }
   .statGrid { grid-template-columns: repeat(2,1fr); }
   .formGrid { grid-template-columns: 1fr; }
   .main { padding: 18px; }
