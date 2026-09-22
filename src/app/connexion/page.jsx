@@ -228,6 +228,10 @@ export default function ConnexionPage() {
   async function confirmGoogleRole() {
     if (!googleRole) return;
     setModalGoogleRole(false);
+    // Google ne permet pas de transmettre un rôle personnalisé dans les
+    // métadonnées OAuth : on le mémorise localement pour l'appliquer au
+    // retour sur /bienvenue (uniquement lors de la toute première connexion).
+    try { localStorage.setItem('wenna_signup_role', googleRole); } catch {}
     const sb = getSupabase();
     const { error } = await sb.auth.signInWithOAuth({
       provider: 'google',

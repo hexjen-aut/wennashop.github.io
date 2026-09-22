@@ -76,14 +76,30 @@ export default function BienvenuePage() {
         .eq('auth_id', session.user.id)
         .maybeSingle();
 
-      const dest = row?.role === 'artisan' ? '/vendeur' : '/boutique';
+      let effectiveRole = row?.role || 'buyer';
+
+      // Cas Google : le rôle choisi avant la redirection OAuth n'a pas pu
+      // être transmis à Supabase, on le rattrape ici — mais seulement à la
+      // toute première connexion, pour ne jamais changer le rôle d'un
+      // compte existant qui se reconnecte.
+      if (row && !row.onboarding_completed_at) {
+        let pendingRole = null;
+        try { pendingRole = localStorage.getItem('wenna_signup_role'); } catch {}
+        if (pendingRole && pendingRole !== row.role) {
+          await sb.from('users').update({ role: pendingRole }).eq('id', row.id);
+          effectiveRole = pendingRole;
+        }
+      }
+      try { localStorage.removeItem('wenna_signup_role'); } catch {}
+
+      const dest = effectiveRole === 'artisan' ? '/vendeur' : '/boutique';
       setDestination(dest);
 
       if (row?.onboarding_completed_at) { router.replace(dest); return; }
 
       userRowId.current = row?.id || null;
       setFirstName(row?.first_name || '');
-      setRole(row?.role || 'buyer');
+      setRole(effectiveRole);
       setReady(true);
     })();
   }, [router]);
