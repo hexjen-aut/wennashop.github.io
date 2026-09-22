@@ -7,9 +7,53 @@
   padding: 32px 20px;
   position: relative;
   overflow: hidden;
-  background: radial-gradient(circle at 20% 15%, rgba(255,104,0,.16), transparent 45%),
-              radial-gradient(circle at 85% 85%, rgba(255,104,0,.1), transparent 50%),
-              var(--bg);
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255,104,0,.18), transparent 45%),
+    radial-gradient(circle at 85% 85%, rgba(255,104,0,.12), transparent 50%),
+    var(--bg);
+}
+
+/* Motif géométrique inspiré des tissages africains (bogolan/kente) — en CSS
+   pur, sans dépendance externe. Deux grilles de losanges superposées à
+   angles opposés, très atténuées, qui dérivent lentement. */
+.wrap::before,
+.wrap::after {
+  content: '';
+  position: absolute;
+  inset: -20%;
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255,104,0,.05) 0px,
+    rgba(255,104,0,.05) 1.5px,
+    transparent 1.5px,
+    transparent 46px
+  );
+  background-size: 64px 64px;
+  animation: driftA 90s linear infinite;
+  pointer-events: none;
+}
+.wrap::after {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(255,104,0,.04) 0px,
+    rgba(255,104,0,.04) 1.5px,
+    transparent 1.5px,
+    transparent 46px
+  );
+  animation: driftB 110s linear infinite;
+}
+
+@keyframes driftA {
+  from { transform: translate(0, 0); }
+  to { transform: translate(64px, 64px); }
+}
+@keyframes driftB {
+  from { transform: translate(0, 0); }
+  to { transform: translate(-64px, 64px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wrap::before, .wrap::after { animation: none; }
 }
 
 .skip {
@@ -23,11 +67,13 @@
   border: none;
   cursor: pointer;
   padding: 8px 10px;
-  z-index: 5;
+  z-index: 3;
 }
 .skip:hover { color: var(--text-muted); }
 
 .dots {
+  position: relative;
+  z-index: 2;
   display: flex;
   gap: 6px;
   margin-bottom: 36px;
@@ -48,6 +94,8 @@
 }
 
 .card {
+  position: relative;
+  z-index: 2;
   width: 100%;
   max-width: 460px;
   text-align: center;
