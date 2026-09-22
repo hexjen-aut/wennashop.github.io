@@ -1,0 +1,9 @@
+ALTER FUNCTION public.get_my_role() SET search_path = public;
+ALTER FUNCTION public.update_updated_at() SET search_path = public;
+ALTER FUNCTION public.set_quest_expires_at() SET search_path = public;
+ALTER FUNCTION public.expire_quests() SET search_path = public;
+ALTER FUNCTION public.products_search_vector_update() SET search_path = public;
+ALTER FUNCTION public.search_products(term text, country_filter text, category_filter text, price_min numeric, price_max numeric) SET search_path = public;
+ALTER FUNCTION public.generate_tracking_number() SET search_path = public;
+ALTER FUNCTION public.set_updated_at() SET search_path = public;
+ALTER FUNCTION public.sync_order_status_from_delivery() SET search_path = public;

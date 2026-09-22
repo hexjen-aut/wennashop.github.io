@@ -1,0 +1,12 @@
+-- ÉTAPE 8 : Ajouter les index manquants sur les FK
+
+CREATE INDEX IF NOT EXISTS idx_cart_items_product_id ON public.cart_items(product_id);
+CREATE INDEX IF NOT EXISTS idx_order_items_product_id ON public.order_items(product_id);
+CREATE INDEX IF NOT EXISTS idx_product_images_product_id ON public.product_images(product_id);
+CREATE INDEX IF NOT EXISTS idx_products_category_id ON public.products(category_id);
+CREATE INDEX IF NOT EXISTS idx_quest_disputes_quest_id ON public.quest_disputes(quest_id);
+CREATE INDEX IF NOT EXISTS idx_quest_disputes_raised_by ON public.quest_disputes(raised_by);
+CREATE INDEX IF NOT EXISTS idx_quests_winning_proposal_id ON public.quests(winning_proposal_id);
+CREATE INDEX IF NOT EXISTS idx_quests_category_id ON public.quests(category_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_user_id ON public.reviews(user_id);
+CREATE INDEX IF NOT EXISTS idx_users_auth_id ON public.users(auth_id);
