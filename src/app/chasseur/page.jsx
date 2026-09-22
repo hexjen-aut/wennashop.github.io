@@ -517,7 +517,7 @@ export default function ChasseurPage() {
                       )}
                       <div className={styles.proposalFooter}>
                         <div className={styles.proposalMeta}>
-                          <span className={styles.metaItem}>Prix estimé : {p.proposed_price ? fmt(p.proposed_price) + ' FCFA' : 'N/A'}</span>
+                          <span className={styles.metaItem}>Prix estimé : {p.proposed_price ? fmt(p.proposed_price) + ' ' + (p.quests?.currency || 'FCFA') : 'N/A'}</span>
                           {p.product_url && <a href={p.product_url} target="_blank" rel="noreferrer" style={{ color: 'var(--accent)', fontSize: 12, fontWeight: 600 }}>Référence</a>}
                           <span className={styles.metaItem}>{fmtDate(p.created_at)}</span>
                         </div>
@@ -660,7 +660,7 @@ export default function ChasseurPage() {
                 <textarea className={styles.input} placeholder="Comment tu vas trouver ce produit, où, délai estimé…" value={propMessage} onChange={(e) => setPropMessage(e.target.value)} />
               </div>
               <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Prix estimé (FCFA) *</label>
+                <label className={styles.formLabel}>Prix estimé ({modalQuest?.currency || 'FCFA'}) *</label>
                 <input className={styles.input} type="number" placeholder="ex : 28000" value={propPrice} onChange={(e) => setPropPrice(e.target.value)} />
               </div>
               <div className={styles.formGroup}>
