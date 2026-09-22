@@ -13,7 +13,7 @@ const ORDER_STATUS_LABEL = { pending: 'En attente', processing: 'En cours', ship
 const CARRIER_COUNTRIES = ['Maroc', 'Gabon', 'Sénégal', "Côte d'Ivoire", 'Cameroun', 'Mali', 'Bénin', 'Togo', 'Burkina Faso', 'Niger', 'Autre'];
 const GOAL_METRIC_LABEL = { revenue: "Chiffre d'affaires", orders_count: 'Nombre de commandes', products_count: 'Nombre de produits', shop_completion: 'Complétion boutique', custom: 'Personnalisé (informatif)' };
 const GOAL_AUDIENCE_LABEL = { artisan: 'Vendeurs', buyer: 'Acheteurs', all: 'Tous' };
-const STATUS_COLOR = { pending: '#f59e0b', active: '#22c55e', inactive: '#555', processing: '#3b82f6', shipped: '#3b82f6', delivered: '#22c55e', cancelled: '#ef4444', approved: '#22c55e', rejected: '#ef4444', paid: '#22c55e', failed: '#ef4444' };
+const STATUS_COLOR = { pending: '#f59e0b', active: '#22c55e', inactive: '#555', processing: '#3b82f6', shipped: '#3b82f6', delivered: '#22c55e', cancelled: '#ef4444', approved: '#22c55e', rejected: '#ef4444', paid: '#22c55e', failed: '#ef4444', verified: '#22c55e', pending_verification: '#f59e0b' };
 const ICONS = ['🛍️','👗','👠','👜','👒','🧣','🧢','💍','📿','🛒','🍽️','🫙','🌿','🫚','🧴','🪴','🎨','🪵','🏺','🧺','🧶','🪡','✂️','🔨','🪚','🧲','💎','🌍','🇬🇦','🇲🇦','🎁','📦','🏠','🚗','📱','💻','🎵','📚','⚽','🌺','🌾','☕','🍵','🥘','🧁','🍊','🥭','🌴','🐘','🦁','🦅','🎭','🎪','🏆','⭐','✨','🔥','💫','🌟','💚','🌱','🍃'];
 
 function Badge({ status, label }) {
@@ -66,6 +66,10 @@ export default function AdminPage() {
   // ── Artisans / Avis / Paiements / Analytiques ──
   const [artisans, setArtisans] = useState([]);
   const [vendorActionId, setVendorActionId] = useState(null);
+
+  // ── Chasseurs ──
+  const [chasseurs, setChasseurs] = useState([]);
+  const [chasseurActionId, setChasseurActionId] = useState(null);
   const [shopsByUserId, setShopsByUserId] = useState({});
   const [boostedShopIds, setBoostedShopIds] = useState(new Set());
   const [boostActionId, setBoostActionId] = useState(null);
@@ -361,6 +365,46 @@ export default function AdminPage() {
     }
   }
 
+  // ── Chasseurs ──
+  async function loadChasseurs() {
+    const sb = getSupabase();
+    const { data } = await sb.from('users').select('*').not('hunter_status', 'is', null).order('hunter_applied_at', { ascending: false });
+    setChasseurs(data || []);
+  }
+
+  async function approveChasseur(u) {
+    if (!confirm(`Valider le dossier chasseur de ${u.full_name || u.email} ?`)) return;
+    setChasseurActionId(u.id);
+    try {
+      const sb = getSupabase();
+      const { error } = await sb.from('users').update({ hunter_status: 'verified', hunter_verified_at: new Date().toISOString(), hunter_reject_reason: null }).eq('id', u.id);
+      if (error) throw error;
+      await loadChasseurs();
+      showToast('Chasseur validé', 'ok');
+    } catch (err) {
+      showToast('Erreur lors de la validation : ' + err.message, 'error');
+    } finally {
+      setChasseurActionId(null);
+    }
+  }
+
+  async function rejectChasseur(u) {
+    const reason = prompt('Motif du refus (visible par le chasseur) :');
+    if (reason === null) return;
+    setChasseurActionId(u.id);
+    try {
+      const sb = getSupabase();
+      const { error } = await sb.from('users').update({ hunter_status: 'rejected', hunter_reject_reason: reason || null }).eq('id', u.id);
+      if (error) throw error;
+      await loadChasseurs();
+      showToast('Dossier rejeté', 'ok');
+    } catch (err) {
+      showToast('Erreur lors du rejet : ' + err.message, 'error');
+    } finally {
+      setChasseurActionId(null);
+    }
+  }
+
   // ── Retraits ──
   async function loadPayouts() {
     const sb = getSupabase();
@@ -620,6 +664,7 @@ export default function AdminPage() {
     if (s === 'users') loadUsers();
     if (s === 'categories') loadCategories();
     if (s === 'artisans') loadArtisans();
+    if (s === 'chasseurs') loadChasseurs();
     if (s === 'carriers') loadCarriers();
     if (s === 'payouts') loadPayouts();
     if (s === 'reviews') loadReviews();
@@ -723,6 +768,7 @@ export default function AdminPage() {
           ['orders', 'ph-shopping-bag', 'Commandes'],
           ['categories', 'ph-tag', 'Catégories'],
           ['artisans', 'ph-storefront', 'Artisans'],
+          ['chasseurs', 'ph-binoculars', 'Chasseurs'],
           ['carriers', 'ph-truck', 'Transporteurs'],
           ['payouts', 'ph-bank', 'Retraits'],
           ['users', 'ph-users', 'Utilisateurs'],
@@ -926,6 +972,58 @@ export default function AdminPage() {
                             </button>
                           </div>
                         </>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </>
+        )}
+
+        {section === 'chasseurs' && (
+          <>
+            <h1 style={{ fontSize: 22, fontWeight: 900, marginBottom: 18 }}>Chasseurs</h1>
+            {chasseurs.length === 0 ? (
+              <div className={styles.card}><div className={styles.empty}>Aucun dossier chasseur</div></div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 }}>
+                {[...chasseurs].sort((a, b) => (a.hunter_status === 'pending_verification' ? -1 : 1) - (b.hunter_status === 'pending_verification' ? -1 : 1)).map((u) => {
+                  const name = u.full_name || `${u.first_name || ''} ${u.last_name || ''}`.trim() || '—';
+                  return (
+                    <div className={styles.card} key={u.id}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+                        <div style={{ width: 44, height: 44, background: 'var(--accent-light)', border: '1px solid var(--border-accent)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 18, color: 'var(--accent)' }}>{name[0]?.toUpperCase()}</div>
+                        <div>
+                          <div style={{ fontWeight: 700, fontSize: 13 }}>{name}</div>
+                          <div style={{ fontSize: 10, color: 'var(--text-faint)' }}>{u.email}</div>
+                          <div style={{ fontSize: 10, color: 'var(--text-faint)' }}>{flag(u.country)}</div>
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                        <Badge status={u.hunter_status} label={u.hunter_status === 'verified' ? 'Vérifié' : u.hunter_status === 'rejected' ? 'Rejeté' : 'En attente'} />
+                        <span style={{ fontSize: 10, color: 'var(--text-faint)' }}>{fdate(u.hunter_applied_at)}</span>
+                      </div>
+                      {u.hunter_referral_code && <div style={{ fontSize: 10, color: 'var(--text-faint)', marginBottom: 10 }}>Code : <strong style={{ color: 'var(--accent)' }}>{u.hunter_referral_code}</strong></div>}
+                      {u.hunter_status === 'pending_verification' && (
+                        <>
+                          <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
+                            <button className={styles.btnGhost} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 10px', fontSize: 10 }} onClick={() => viewKycDoc(u.id_card_front_url)}><i className="ph ph-file-text" /> Recto</button>
+                            {u.id_card_back_url && <button className={styles.btnGhost} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 10px', fontSize: 10 }} onClick={() => viewKycDoc(u.id_card_back_url)}><i className="ph ph-file-text" /> Verso</button>}
+                          </div>
+                          <div style={{ fontSize: 10, color: 'var(--text-faint)', marginBottom: 10 }}>{u.document_type === 'cni' ? 'CNI' : 'Passeport'} · {u.address || 'Adresse non renseignée'}</div>
+                          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                            <button className={styles.btnPrimary} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5, flex: 1, padding: '7px 10px', fontSize: 11, opacity: chasseurActionId === u.id ? 0.6 : 1 }} disabled={chasseurActionId === u.id} onClick={() => approveChasseur(u)}>
+                              {chasseurActionId === u.id ? <><i className="ph ph-spinner" style={{ animation: 'spin 0.8s linear infinite' }} /> Validation…</> : <><i className="ph ph-check" /> Valider</>}
+                            </button>
+                            <button className={styles.btnDanger} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5, flex: 1, padding: '7px 10px', fontSize: 11, opacity: chasseurActionId === u.id ? 0.6 : 1 }} disabled={chasseurActionId === u.id} onClick={() => rejectChasseur(u)}>
+                              {chasseurActionId === u.id ? <><i className="ph ph-spinner" style={{ animation: 'spin 0.8s linear infinite' }} /> Rejet…</> : <><i className="ph ph-x" /> Rejeter</>}
+                            </button>
+                          </div>
+                        </>
+                      )}
+                      {u.hunter_status === 'rejected' && u.hunter_reject_reason && (
+                        <div style={{ fontSize: 10, color: 'var(--error)' }}>{u.hunter_reject_reason}</div>
                       )}
                     </div>
                   );
