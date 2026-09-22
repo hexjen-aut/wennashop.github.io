@@ -9,6 +9,7 @@ import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import CartSidebar from '@/components/CartSidebar';
 import ImageCropModal from '@/components/ImageCropModal';
+import { COUNTRIES_WITH_AUTRE as COUNTRIES } from '@/lib/geo';
 import styles from './compte.module.css';
 
 function fmt(n, currency = 'MAD') {
@@ -18,7 +19,6 @@ function fmt(n, currency = 'MAD') {
 function fmtDate(d) { return d ? new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : ''; }
 
 const STATUS_LABEL = { pending: 'En attente', processing: 'En préparation', shipped: 'En transit', delivered: 'Livré', cancelled: 'Annulée' };
-const COUNTRIES = ['Maroc', 'Gabon', 'Sénégal', "Côte d'Ivoire", 'Cameroun', 'Congo', 'RD Congo', 'Bénin', 'Togo', 'Mali', 'Burkina Faso', 'Guinée', 'Algérie', 'Tunisie', 'Niger', 'Tchad', 'Autre'];
 
 export default function ComptePage() {
   const router = useRouter();

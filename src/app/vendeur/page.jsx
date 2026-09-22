@@ -6,15 +6,8 @@ import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
 import { uploadFileWithProgress } from '@/lib/storageUpload';
 import ImageCropModal from '@/components/ImageCropModal';
+import { COUNTRIES_WITH_AUTRE as COUNTRIES, SHIP_COUNTRIES } from '@/lib/geo';
 import styles from './vendeur.module.css';
-
-// ─────────────────────────────────────────────────────────
-// Constantes
-// ─────────────────────────────────────────────────────────
-const COUNTRIES = ['Maroc', 'Gabon', 'Sénégal', "Côte d'Ivoire", 'Cameroun', 'RDC', 'Congo', 'Mali', 'Burkina Faso', 'Niger', 'Guinée', 'Bénin', 'Togo', 'Tchad', 'Madagascar', 'Mauritanie', 'Comores', 'Djibouti', 'Autre'];
-// Pays que les acheteurs peuvent choisir sur la boutique (voir boutique/page.jsx) —
-// c'est cette liste-ci, pas COUNTRIES ci-dessus, qui détermine "ships_to" utile.
-const SHIP_COUNTRIES = ['Gabon', 'Maroc', 'Bénin', 'Sénégal', "Côte d'Ivoire", 'Cameroun', 'Mali'];
 
 const STATUS_LABEL = { pending: 'En attente', active: 'Actif', inactive: 'Inactif', processing: 'En traitement', shipped: 'Expédiée', delivered: 'Livrée', cancelled: 'Annulée', approved: 'Approuvé', paid: 'Payé', rejected: 'Rejeté' };
 const STATUS_COLOR = { pending: '#f59e0b', active: '#22c55e', inactive: '#555', processing: '#3b82f6', shipped: '#3b82f6', delivered: '#22c55e', cancelled: '#ef4444', approved: '#22c55e', paid: '#22c55e', rejected: '#ef4444' };
@@ -39,7 +32,15 @@ const TOUR_STEPS = [
   { navKey: 'products', title: 'Mes produits', text: "Ajoute et gère les produits que tu vends. C'est le cœur de ta boutique." },
   { navKey: 'orders', title: 'Commandes', text: 'Suis chaque commande et marque-la comme expédiée avec un numéro de suivi.' },
   { navKey: 'revenue', title: 'Revenus', text: "Ton chiffre d'affaires et l'historique détaillé de tes paiements." },
-  { navKey: 'shop', title: 'Ma boutique', text: 'Personnalise ta vitrine publique : logo, bannière, réseaux sociaux.' },
+  { navKey: 'shop', title: 'Ma boutique', text: "On va configurer ta vitrine publique ensemble, étape par étape — je t'amène directement sur chaque champ à remplir." },
+  { navKey: 'shop', fieldId: 'tour-shop-name', title: 'Nom de la boutique', text: 'Choisis le nom affiché sur ta vitrine publique — il sert aussi de base à ton slug (URL).' },
+  { navKey: 'shop', fieldId: 'tour-shop-bio', title: 'Description', text: "Présente ta boutique en quelques phrases : c'est ce qu'un acheteur lit avant de te faire confiance." },
+  { navKey: 'shop', fieldId: 'tour-shop-logo', title: 'Logo', text: 'Ajoute ton logo — il apparaît sur ta vitrine et dans les résultats de recherche.' },
+  { navKey: 'shop', fieldId: 'tour-shop-banner', title: 'Bannière', text: "Une bannière soignée donne confiance dès l'arrivée sur ta boutique." },
+  { navKey: 'shop', fieldId: 'tour-shop-social', title: 'Réseaux sociaux', text: 'WhatsApp, Instagram, Facebook, TikTok — un moyen de te suivre en dehors de WennaShop.' },
+  { navKey: 'shop', fieldId: 'tour-shop-ships', title: 'Pays de livraison', text: "Par défaut tes produits ne sont visibles que dans ton pays. Coche les autres pays où tu peux livrer pour élargir ton marché." },
+  { navKey: 'shop', fieldId: 'tour-shop-carrier', title: 'Transporteur', text: 'Indique si tu livres toi-même ou si tu as besoin d\'un transporteur partenaire WennaShop.' },
+  { navKey: 'shop', fieldId: 'tour-shop-save', title: 'Enregistrer', text: 'Une fois tes informations complétées, clique ici pour les enregistrer.' },
   { navKey: 'visibility', title: 'National vs international', text: "Sur la boutique, un acheteur ne voit d'abord que les produits de son propre pays — il doit basculer sur \"International\" pour voir aussi les tiens si tu vends depuis un autre pays. C'est normal si tes ventes hors de ton pays démarrent plus lentement : ce sont des acheteurs qui ont fait la démarche de regarder plus loin." },
   { navKey: 'new-product', title: 'Nouveau produit', text: 'Ce bouton reste accessible partout pour ajouter rapidement un produit.' },
 ];
@@ -102,6 +103,7 @@ export default function VendeurPage() {
 
   // Tutoriel interactif
   const [tourStep, setTourStep] = useState(null); // null = pas en cours
+  const [tourProposalOpen, setTourProposalOpen] = useState(false);
 
   // Products
   const [products, setProducts] = useState([]);
@@ -217,7 +219,7 @@ export default function VendeurPage() {
       await loadOverview(sb, user, shopRow, prodIds, orderIds);
       await loadNotifications(sb, user.id);
       setChecking(false);
-      if (!user.onboarding_completed_at) setTourStep(0);
+      if (!user.onboarding_completed_at) setTourProposalOpen(true);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -247,6 +249,21 @@ export default function VendeurPage() {
     if (section === 'reviews') loadReviews(sb);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [section, seller, prodPage, prodStatus, orderStatus, reviewFilter]);
+
+  // ── Tutoriel : sur les étapes qui ciblent un champ précis, on navigue
+  // vers la section automatiquement et on scrolle jusqu'au champ, plutôt
+  // que de laisser une simple info-bulle sans action. ──
+  useEffect(() => {
+    if (tourStep === null) return;
+    const step = TOUR_STEPS[tourStep];
+    if (!step?.fieldId) return;
+    showSection(step.navKey);
+    const t = setTimeout(() => {
+      document.getElementById(step.fieldId)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 60);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tourStep]);
 
   async function loadOverview(sb, user, shopRow, prodIds, orderIds) {
     const { data: activeProds } = await sb.from('products').select('id', { count: 'exact', head: true }).eq('seller_id', user.id).eq('status', 'active');
@@ -672,6 +689,7 @@ export default function VendeurPage() {
   }
 
   function showSection(s) { setSection(s); setSidebarOpen(false); }
+  function tourFieldClass(id) { return tourStep !== null && TOUR_STEPS[tourStep]?.fieldId === id ? styles.tourHighlight : ''; }
 
   async function endTour() {
     setTourStep(null);
@@ -679,6 +697,8 @@ export default function VendeurPage() {
     await sb.from('users').update({ onboarding_completed_at: new Date().toISOString() }).eq('id', seller.id);
     setSeller((prev) => ({ ...prev, onboarding_completed_at: new Date().toISOString() }));
   }
+  function acceptTourProposal() { setTourProposalOpen(false); setTourStep(0); }
+  function declineTourProposal() { setTourProposalOpen(false); endTour(); }
   function nextTourStep() {
     if (tourStep < TOUR_STEPS.length - 1) setTourStep(tourStep + 1);
     else endTour();
@@ -1193,10 +1213,10 @@ export default function VendeurPage() {
             )}
           <form className={styles.card} onSubmit={saveShop} style={{ maxWidth: 640, padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div className={styles.formGrid}>
-              <div className={styles.formGroup}><label className={styles.formLabel}>Nom de la boutique *</label><input className={styles.input} value={shopForm.name} onChange={(e) => setShopForm({ ...shopForm, name: e.target.value })} /></div>
+              <div id="tour-shop-name" className={`${styles.formGroup} ${tourFieldClass('tour-shop-name')}`}><label className={styles.formLabel}>Nom de la boutique *</label><input className={styles.input} value={shopForm.name} onChange={(e) => setShopForm({ ...shopForm, name: e.target.value })} /></div>
               <div className={styles.formGroup}><label className={styles.formLabel}>Slug (URL)</label><input className={styles.input} value={shopForm.slug} onChange={(e) => setShopForm({ ...shopForm, slug: e.target.value })} /></div>
             </div>
-            <div className={styles.formGroup}><label className={styles.formLabel}>Description / Bio</label><textarea className={styles.input} rows={3} value={shopForm.bio} onChange={(e) => setShopForm({ ...shopForm, bio: e.target.value })} /></div>
+            <div id="tour-shop-bio" className={`${styles.formGroup} ${tourFieldClass('tour-shop-bio')}`}><label className={styles.formLabel}>Description / Bio</label><textarea className={styles.input} rows={3} value={shopForm.bio} onChange={(e) => setShopForm({ ...shopForm, bio: e.target.value })} /></div>
             <div className={styles.formGrid}>
               <div className={styles.formGroup}><label className={styles.formLabel}>Ville</label><input className={styles.input} value={shopForm.city} onChange={(e) => setShopForm({ ...shopForm, city: e.target.value })} /></div>
               <div className={styles.formGroup}><label className={styles.formLabel}>Pays</label>
@@ -1205,24 +1225,24 @@ export default function VendeurPage() {
                 </select>
               </div>
             </div>
-            <div className={styles.formGroup}>
+            <div id="tour-shop-logo" className={`${styles.formGroup} ${tourFieldClass('tour-shop-logo')}`}>
               <label className={styles.formLabel}>Logo</label>
               {shopForm.logo_url && <img src={shopForm.logo_url} alt="" style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 12, marginBottom: 6 }} />}
               <input type="file" accept="image/*" onChange={(e) => { startCrop(e.target.files, 'logo'); e.target.value = ''; }} />
             </div>
-            <div className={styles.formGroup}>
+            <div id="tour-shop-banner" className={`${styles.formGroup} ${tourFieldClass('tour-shop-banner')}`}>
               <label className={styles.formLabel}>Bannière</label>
               {shopForm.banner_url && <img src={shopForm.banner_url} alt="" style={{ width: '100%', height: 90, objectFit: 'cover', borderRadius: 12, marginBottom: 6 }} />}
               <input type="file" accept="image/*" onChange={(e) => { startCrop(e.target.files, 'banner'); e.target.value = ''; }} />
             </div>
-            <div className={styles.formGrid}>
+            <div id="tour-shop-social" className={`${styles.formGrid} ${tourFieldClass('tour-shop-social')}`}>
               <div className={styles.formGroup}><label className={styles.formLabel}>WhatsApp</label><input className={styles.input} value={shopForm.whatsapp} onChange={(e) => setShopForm({ ...shopForm, whatsapp: e.target.value })} /></div>
               <div className={styles.formGroup}><label className={styles.formLabel}>Instagram</label><input className={styles.input} value={shopForm.instagram} onChange={(e) => setShopForm({ ...shopForm, instagram: e.target.value })} /></div>
               <div className={styles.formGroup}><label className={styles.formLabel}>Facebook</label><input className={styles.input} value={shopForm.facebook} onChange={(e) => setShopForm({ ...shopForm, facebook: e.target.value })} /></div>
               <div className={styles.formGroup}><label className={styles.formLabel}>TikTok</label><input className={styles.input} value={shopForm.tiktok} onChange={(e) => setShopForm({ ...shopForm, tiktok: e.target.value })} /></div>
             </div>
             <div className={styles.formGroup}><label className={styles.formLabel}>Politique (retours, délais…)</label><textarea className={styles.input} rows={3} value={shopForm.shop_policies} onChange={(e) => setShopForm({ ...shopForm, shop_policies: e.target.value })} /></div>
-            <div className={styles.formGroup}>
+            <div id="tour-shop-ships" className={`${styles.formGroup} ${tourFieldClass('tour-shop-ships')}`}>
               <label className={styles.formLabel}>Pays vers lesquels tu expédies</label>
               <p style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 8 }}>
                 Par défaut tes produits ne sont visibles que par les acheteurs de {shopForm.country || 'ton pays'}. Coche les autres pays si tu peux y expédier — ça devient le réglage par défaut pour tes nouveaux produits (modifiable produit par produit).
@@ -1240,7 +1260,7 @@ export default function VendeurPage() {
                 ))}
               </div>
             </div>
-            <div className={styles.formGroup}>
+            <div id="tour-shop-carrier" className={`${styles.formGroup} ${tourFieldClass('tour-shop-carrier')}`}>
               <label className={styles.formLabel}>As-tu ton propre transporteur pour livrer tes commandes ?</label>
               <div style={{ display: 'flex', gap: 8, marginBottom: shopForm.has_carrier === false ? 10 : 0 }}>
                 <button type="button" className={shopForm.has_carrier === true ? styles.btnPrimary : styles.btnGhost} onClick={() => setShopForm({ ...shopForm, has_carrier: true, carrier_id: '' })}>Oui, je gère ma livraison</button>
@@ -1260,7 +1280,7 @@ export default function VendeurPage() {
                 </>
               )}
             </div>
-            <button type="submit" className={styles.btnPrimary} style={{ alignSelf: 'flex-start' }}><i className="ph ph-floppy-disk" /> Enregistrer</button>
+            <button id="tour-shop-save" type="submit" className={`${styles.btnPrimary} ${tourFieldClass('tour-shop-save')}`} style={{ alignSelf: 'flex-start' }}><i className="ph ph-floppy-disk" /> Enregistrer</button>
           </form>
 
           {shop?.id && (
@@ -1616,6 +1636,25 @@ export default function VendeurPage() {
         <button className={styles.bnItem} onClick={() => setSidebarOpen(true)}><i className="ph ph-dots-three-outline" /><span>Plus</span></button>
       </nav>
       <button className={styles.fab} onClick={() => { showSection('products'); openProductModal(); }}><i className="ph ph-plus" /></button>
+
+      {/* ── PROPOSITION DE TUTORIEL (nouveaux vendeurs) ── */}
+      {tourProposalOpen && (
+        <div className={styles.modalOv} onClick={declineTourProposal}>
+          <div className={styles.modalBox} style={{ maxWidth: 420 }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ padding: 24, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+              <i className="ph ph-hand-waving" style={{ fontSize: 30, color: 'var(--accent)' }} />
+              <h3 style={{ fontSize: 16, fontWeight: 900 }}>Bienvenue sur WennaShop !</h3>
+              <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                On peut te guider pas à pas pour configurer ta boutique — nom, logo, bannière, réseaux sociaux, livraison. Ça prend 2 minutes.
+              </p>
+              <div style={{ display: 'flex', gap: 10, width: '100%' }}>
+                <button className={styles.btnGhost} style={{ flex: 1, justifyContent: 'center' }} onClick={declineTourProposal}>Plus tard</button>
+                <button className={styles.btnPrimary} style={{ flex: 1, justifyContent: 'center' }} onClick={acceptTourProposal}>Oui, guide-moi</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── TUTORIEL INTERACTIF ── */}
       {tourStep !== null && (
