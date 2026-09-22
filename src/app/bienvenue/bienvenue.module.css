@@ -56,6 +56,18 @@
   .wrap::before, .wrap::after { animation: none; }
 }
 
+.watermark {
+  position: absolute;
+  z-index: 0;
+  bottom: -8%;
+  right: -8%;
+  width: min(70vw, 640px);
+  height: auto;
+  opacity: .07;
+  pointer-events: none;
+  user-select: none;
+}
+
 .skip {
   position: absolute;
   top: 20px;
