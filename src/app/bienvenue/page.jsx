@@ -146,6 +146,7 @@ export default function BienvenuePage() {
 
   return (
     <div className={styles.wrap}>
+      <img src="/wenna_logo_watermark.png" alt="" aria-hidden="true" className={styles.watermark} />
       <button className={styles.skip} onClick={finishOnboarding}>Passer</button>
 
       <div className={styles.dots}>
