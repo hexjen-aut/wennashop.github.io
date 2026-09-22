@@ -15,7 +15,7 @@ import styles from './produit.module.css';
 export default function ProduitContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
-  const { add } = useCart();
+  const { add, clear } = useCart();
 
   const [product, setProduct] = useState(null);
   const [displayPrice, setDisplayPrice] = useState('');
@@ -75,7 +75,12 @@ export default function ProduitContent() {
 
   async function handleAddToCart() {
     if (!product) return;
-    await add(product, 1);
+    const res = await add(product, 1);
+    if (!res.success && res.error === 'different_shop') {
+      if (!confirm('Ton panier contient déjà des produits d\'une autre boutique. Le vider pour ajouter celui-ci ?')) return;
+      await clear();
+      await add(product, 1);
+    }
     setCartOpen(true);
   }
 

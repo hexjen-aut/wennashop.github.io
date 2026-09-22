@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { getSupabase } from '@/lib/supabase';
 import Nav from '@/components/Nav';
+import { convertPrice } from '@/lib/currency';
 import styles from './paiement.module.css';
 
 function fmt(n, c = 'MAD') { try { return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: c }).format(n); } catch { return `${n} ${c}`; } }
@@ -14,6 +15,7 @@ function PaiementContent() {
   const orderId = params.get('order_id');
   const [order, setOrder] = useState(null);
   const [items, setItems] = useState([]);
+  const [itemDisplayAmounts, setItemDisplayAmounts] = useState({});
   const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(null);
@@ -63,6 +65,17 @@ function PaiementContent() {
       setOrder(o);
       const { data: it } = await sb.from('order_items').select('id,quantity,unit_price,products(name,image_url)').eq('order_id', orderId);
       setItems(it || []);
+
+      // order_items.unit_price reste dans la devise du vendeur — converti
+      // ici uniquement pour l'affichage, dans la devise réellement facturée
+      // à l'acheteur (o.buyer_currency), pour rester cohérent avec le total.
+      if (o.buyer_currency && o.buyer_currency !== o.currency) {
+        const entries = await Promise.all((it || []).map(async (row) => {
+          const conv = await convertPrice(row.unit_price * row.quantity, o.currency, o.buyer_currency, sb);
+          return [row.id, conv.amount];
+        }));
+        setItemDisplayAmounts(Object.fromEntries(entries));
+      }
       setLoading(false);
     })();
   }, [orderId]);
@@ -89,7 +102,7 @@ function PaiementContent() {
         shipping_country: form.country, notes: form.notes || null, updated_at: new Date().toISOString(),
       }).eq('id', orderId);
       const { data, error: fnError } = await sb.functions.invoke('process-payment', {
-        body: { order_id: orderId, amount: order.total_amount, client_msisdn: mobilePhone.trim(), payment_method: mobileProvider },
+        body: { order_id: orderId, amount: order.buyer_total_amount ?? order.total_amount, client_msisdn: mobilePhone.trim(), payment_method: mobileProvider },
       });
       if (fnError || data?.error) {
         setMobileError(data?.error || fnError?.message || 'Erreur lors du paiement mobile money.');
@@ -109,7 +122,7 @@ function PaiementContent() {
     // Un seul paiement 'order_payment' par commande (contrainte unique en base).
     // Si ce paiement existe déjà (double clic, nouvelle tentative réseau),
     // on continue normalement plutôt que d'afficher une erreur.
-    const { error: payErr } = await sb.from('payments').insert({ order_id: orderId, user_id: row.id, amount: order.total_amount, currency: order.currency || 'MAD', method, status: 'pending', type: 'order_payment' });
+    const { error: payErr } = await sb.from('payments').insert({ order_id: orderId, user_id: row.id, amount: order.buyer_total_amount ?? order.total_amount, currency: order.buyer_currency || order.currency || 'MAD', method, status: 'pending', type: 'order_payment' });
     if (payErr && payErr.code !== '23505') { alert('Erreur lors de l\'enregistrement du paiement : ' + payErr.message); setSending(false); return; }
     if (row) await sb.from('cart_items').delete().eq('user_id', row.id);
     setSending(false);
@@ -180,7 +193,7 @@ function PaiementContent() {
                     <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{bankAccounts.map((a) => a.bank_name).join(' · ')}</div>
                   </button>
                 )}
-                {order?.currency === 'XAF' && (
+                {(order?.buyer_currency || order?.currency) === 'XAF' && (
                   <button className={`${styles.methodCard} ${method === 'mobile_money' ? styles.methodActive : ''}`} onClick={() => setMethod('mobile_money')}>
                     <div style={{ fontWeight: 700, fontSize: 13 }}>Mobile Money</div>
                     <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Airtel Money · Moov Money</div>
@@ -189,7 +202,7 @@ function PaiementContent() {
               </div>
               {method === 'virement' && (() => {
                 const account = bankAccounts.find((a) => a.country_name === form.country)
-                  || bankAccounts.find((a) => a.currency === order?.currency)
+                  || bankAccounts.find((a) => a.currency === (order?.buyer_currency || order?.currency))
                   || bankAccounts[0];
                 if (!account) return null;
                 return (
@@ -223,17 +236,17 @@ function PaiementContent() {
               {items.map((it) => (
                 <div key={it.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
                   <span>{it.products?.name} × {it.quantity}</span>
-                  <span style={{ fontWeight: 700, color: 'var(--accent)' }}>{fmt(it.unit_price * it.quantity, order?.currency)}</span>
+                  <span style={{ fontWeight: 700, color: 'var(--accent)' }}>{fmt(itemDisplayAmounts[it.id] ?? (it.unit_price * it.quantity), order?.buyer_currency || order?.currency)}</span>
                 </div>
               ))}
               {order?.discount_pct > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, padding: '8px 0', color: 'var(--success)' }}>
                   <span>Remise ({order.promo_code})</span>
-                  <span>−{fmt((order.subtotal || order.total_amount) * (order.discount_pct / 100), order.currency)}</span>
+                  <span>−{fmt((order.buyer_total_amount ?? order.subtotal ?? order.total_amount) * (order.discount_pct / 100), order.buyer_currency || order.currency)}</span>
                 </div>
               )}
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 18, fontWeight: 900, marginTop: 14 }}>
-                <span>Total</span><span style={{ color: 'var(--accent)' }}>{fmt(order?.total_amount, order?.currency)}</span>
+                <span>Total</span><span style={{ color: 'var(--accent)' }}>{fmt(order?.buyer_total_amount ?? order?.total_amount, order?.buyer_currency || order?.currency)}</span>
               </div>
               <button className={styles.btnSubmit} onClick={submit} disabled={sending}>
                 {sending ? 'Traitement…' : method === 'mobile_money' ? 'Envoyer la demande de paiement' : 'Confirmer la commande'}

@@ -85,7 +85,7 @@ export default function ComptePage() {
 
       if (p?.id) {
         const { data: o } = await sb.from('orders')
-          .select('id,status,total_amount,currency,created_at')
+          .select('id,status,total_amount,currency,buyer_total_amount,buyer_currency,created_at')
           .eq('user_id', p.id).order('created_at', { ascending: false }).limit(20);
         setOrders(o || []);
 
@@ -106,10 +106,10 @@ export default function ComptePage() {
 
         const [{ count: orderCount }, { data: deliveredOrders }, { data: goalRows }] = await Promise.all([
           sb.from('orders').select('id', { count: 'exact', head: true }).eq('user_id', p.id),
-          sb.from('orders').select('total_amount').eq('user_id', p.id).eq('status', 'delivered'),
+          sb.from('orders').select('total_amount,buyer_total_amount').eq('user_id', p.id).eq('status', 'delivered'),
           sb.from('platform_goals').select('*').eq('is_active', true).in('audience', ['buyer', 'all']),
         ]);
-        setBuyerStats({ orderCount: orderCount || 0, totalSpent: (deliveredOrders || []).reduce((s, o) => s + Number(o.total_amount || 0), 0) });
+        setBuyerStats({ orderCount: orderCount || 0, totalSpent: (deliveredOrders || []).reduce((s, o) => s + Number(o.buyer_total_amount ?? o.total_amount ?? 0), 0) });
         setBuyerGoals(goalRows || []);
 
         if (p.role === 'artisan' || p.role === 'admin') {
@@ -492,7 +492,7 @@ export default function ComptePage() {
                         <div className={styles.rowName}>Commande #{o.id.slice(0, 8).toUpperCase()}</div>
                         <div className={styles.rowMeta}>{fmtDate(o.created_at)} · {STATUS_LABEL[o.status] || o.status}</div>
                       </div>
-                      <div style={{ fontWeight: 900, color: 'var(--accent)' }}>{fmt(o.total_amount, o.currency)}</div>
+                      <div style={{ fontWeight: 900, color: 'var(--accent)' }}>{fmt(o.buyer_total_amount ?? o.total_amount, o.buyer_currency || o.currency)}</div>
                     </div>
                     {o.status === 'delivered' && reviewItems[o.id]?.length > 0 && (
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 0 14px' }}>
