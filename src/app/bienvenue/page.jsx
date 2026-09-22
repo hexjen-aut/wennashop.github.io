@@ -6,6 +6,7 @@ import { getSupabase } from '@/lib/supabase';
 import styles from './bienvenue.module.css';
 
 const SLIDE_SECONDS = 4;
+const MAX_ONBOARDING_VIEWS = 3;
 
 function buildSlides(firstName, role) {
   const isSeller = role === 'artisan';
@@ -64,6 +65,7 @@ export default function BienvenuePage() {
   const [countdown, setCountdown] = useState(SLIDE_SECONDS);
   const [btnReady, setBtnReady] = useState(false);
   const userRowId = useRef(null);
+  const viewsCount = useRef(0);
 
   useEffect(() => {
     (async () => {
@@ -72,7 +74,7 @@ export default function BienvenuePage() {
       if (!session) { router.replace('/connexion'); return; }
 
       const { data: row } = await sb.from('users')
-        .select('id, first_name, role, onboarding_completed_at')
+        .select('id, first_name, role, onboarding_completed_at, onboarding_views_count')
         .eq('auth_id', session.user.id)
         .maybeSingle();
 
@@ -98,6 +100,7 @@ export default function BienvenuePage() {
       if (row?.onboarding_completed_at) { router.replace(dest); return; }
 
       userRowId.current = row?.id || null;
+      viewsCount.current = row?.onboarding_views_count || 0;
       setFirstName(row?.first_name || '');
       setRole(effectiveRole);
       setReady(true);
@@ -123,7 +126,12 @@ export default function BienvenuePage() {
   async function finishOnboarding() {
     const sb = getSupabase();
     if (userRowId.current) {
-      await sb.from('users').update({ onboarding_completed_at: new Date().toISOString() }).eq('id', userRowId.current);
+      const newCount = viewsCount.current + 1;
+      const update = { onboarding_views_count: newCount };
+      // Affichée aux nouveaux à chaque connexion, jusqu'à 3 fois — au-delà,
+      // elle ne réapparaît plus.
+      if (newCount >= MAX_ONBOARDING_VIEWS) update.onboarding_completed_at = new Date().toISOString();
+      await sb.from('users').update(update).eq('id', userRowId.current);
     }
     router.replace(destination);
   }
