@@ -1,9 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
+import { convertPrice, formatSmartPrice } from '@/lib/currency';
+import { getBuyerCurrency } from '@/lib/buyerCurrency';
+import { getSupabase } from '@/lib/supabase';
 import styles from './CartSidebar.module.css';
 
 function formatPrice(amount, currency = 'MAD') {
@@ -17,6 +20,25 @@ export default function CartSidebar({ open, onClose }) {
   const router = useRouter();
   const currency = items[0]?.currency || 'MAD';
 
+  // Voir la note dans /panier : le panier stocke les prix en devise du
+  // vendeur, on les reconvertit seulement pour l'affichage.
+  const [displayPrices, setDisplayPrices] = useState({});
+  const [displayTotal, setDisplayTotal] = useState('');
+  useEffect(() => {
+    (async () => {
+      if (!items.length) { setDisplayPrices({}); setDisplayTotal(''); return; }
+      const sb = getSupabase();
+      const buyerCurrency = getBuyerCurrency();
+      const entries = await Promise.all(items.map(async (it) => {
+        const conv = await convertPrice(it.price * it.quantity, it.currency || 'MAD', buyerCurrency, sb);
+        return [it.cart_item_id, formatSmartPrice(conv.amount, conv.currency)];
+      }));
+      setDisplayPrices(Object.fromEntries(entries));
+      const totalConv = await convertPrice(subtotal, items[0]?.currency || 'MAD', buyerCurrency, sb);
+      setDisplayTotal(formatSmartPrice(totalConv.amount, totalConv.currency));
+    })();
+  }, [items, subtotal]);
+
   async function handleCheckout() {
     setCheckingOut(true);
     const res = await createOrder();
@@ -24,6 +46,7 @@ export default function CartSidebar({ open, onClose }) {
     if (!res.success) {
       if (res.error === 'not_authenticated') { router.push('/connexion'); return; }
       if (res.error === 'out_of_stock') { alert(`Stock insuffisant pour "${res.product}".`); return; }
+      if (res.error === 'mixed_shops') { alert("Ton panier contient des produits de plusieurs boutiques différentes, ce qui n'est plus permis. Vide-le et recommence avec une seule boutique à la fois."); return; }
       alert("Impossible de créer la commande. Réessaie.");
       return;
     }
@@ -57,7 +80,7 @@ export default function CartSidebar({ open, onClose }) {
               </div>
               <div className={styles.itemInfo}>
                 <div className={styles.itemName} title={item.name}>{item.name}</div>
-                <div className={styles.itemPrice}>{formatPrice(item.price * item.quantity, item.currency)}</div>
+                <div className={styles.itemPrice}>{displayPrices[item.cart_item_id] || formatPrice(item.price * item.quantity, item.currency)}</div>
                 <div className={styles.itemActions}>
                   <button className={styles.qtyBtn} onClick={() => updateQuantity(item.cart_item_id, item.quantity - 1)} aria-label="Diminuer"><i className="ph ph-minus" /></button>
                   <span className={styles.qty}>{item.quantity}</span>
@@ -71,9 +94,9 @@ export default function CartSidebar({ open, onClose }) {
 
         {items.length > 0 && (
           <div className={styles.footer}>
-            <div className={styles.summaryRow}><span>Sous-total</span><span>{formatPrice(subtotal, currency)}</span></div>
+            <div className={styles.summaryRow}><span>Sous-total</span><span>{displayTotal || formatPrice(subtotal, currency)}</span></div>
             <div className={styles.summaryRow} style={{ fontSize: 11, color: 'var(--text-faint)' }}>Livraison calculée à la commande</div>
-            <div className={styles.totalRow}><span>Total</span><span className={styles.totalAmount}>{formatPrice(subtotal, currency)}</span></div>
+            <div className={styles.totalRow}><span>Total</span><span className={styles.totalAmount}>{displayTotal || formatPrice(subtotal, currency)}</span></div>
             <button onClick={handleCheckout} disabled={checkingOut} className={styles.checkout}><i className="ph ph-lock-simple" style={{ fontSize: 16 }} /> {checkingOut ? 'Création…' : 'Commander'}</button>
             <Link href="/panier" className={styles.viewCart}>Voir le panier complet</Link>
           </div>

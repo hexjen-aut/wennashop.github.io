@@ -40,7 +40,7 @@ function resolveImg(raw) {
 async function fetchOrder(sb, identifier, userId) {
   let order = null;
   const { data: byTrack } = await sb.from('orders')
-    .select(`id, tracking_number, status, created_at, updated_at, total_amount, currency, shipping_name, shipping_address, shipping_city, shipping_country, delivery_address, user_id,
+    .select(`id, tracking_number, status, created_at, updated_at, total_amount, currency, buyer_total_amount, buyer_currency, shipping_name, shipping_address, shipping_city, shipping_country, delivery_address, user_id,
       order_items(id, quantity, unit_price, products(id, name, image_url, images, seller_id, origin_city, country)),
       deliveries(id, status, picked_up_at, in_transit_at, out_for_delivery_at, delivered_at, estimated_delivery, notes, users!deliveries_driver_id_fkey(full_name, phone, specialty))`)
     .ilike('tracking_number', identifier).maybeSingle();
@@ -49,7 +49,7 @@ async function fetchOrder(sb, identifier, userId) {
   if (!order) {
     const clean = identifier.replace(/^#/, '').toLowerCase();
     const { data: all } = await sb.from('orders')
-      .select(`id, tracking_number, status, created_at, updated_at, total_amount, currency, shipping_name, shipping_address, shipping_city, shipping_country, delivery_address, user_id,
+      .select(`id, tracking_number, status, created_at, updated_at, total_amount, currency, buyer_total_amount, buyer_currency, shipping_name, shipping_address, shipping_city, shipping_country, delivery_address, user_id,
         order_items(id, quantity, unit_price, products(id, name, image_url, images, seller_id, origin_city, country)),
         deliveries(id, status, picked_up_at, in_transit_at, out_for_delivery_at, delivered_at, estimated_delivery, notes, users!deliveries_driver_id_fkey(full_name, phone, specialty))`)
       .order('created_at', { ascending: false }).limit(200);
@@ -142,7 +142,7 @@ function SuiviContent() {
     setLoadingOrders(true);
     const sb = getSupabase();
     const { data } = await sb.from('orders')
-      .select('id, tracking_number, status, created_at, total_amount, currency, shipping_name, order_items(quantity, products(name, image_url, images))')
+      .select('id, tracking_number, status, created_at, total_amount, currency, buyer_total_amount, buyer_currency, shipping_name, order_items(quantity, products(name, image_url, images))')
       .eq('user_id', session.user.id).order('created_at', { ascending: false }).limit(20);
     setMyOrders(data || []);
     setLoadingOrders(false);
@@ -213,7 +213,7 @@ function SuiviContent() {
                   <div style={{ fontFamily: 'monospace', fontSize: 11, color: 'var(--text-faint)', marginBottom: 4 }}>{order.tracking_number || `#${order.id.slice(0, 8).toUpperCase()}`}</div>
                   <div style={{ fontSize: 16, fontWeight: 800, marginBottom: 10 }}>{items[0]?.products?.name ? (items.length > 1 ? `${items[0].products.name} + ${items.length - 1} article(s)` : items[0].products.name) : (order.shipping_name || 'Commande WennaShop')}</div>
                   <span className={styles.badge} style={{ background: badge.bg, color: badge.color }}>{badge.label}</span>
-                  <div style={{ marginTop: 10, fontSize: 12, color: 'var(--text-muted)' }}>{fmt(order.total_amount, order.currency)} · {fmtDateShort(order.created_at)} · Vendeur : {seller?.full_name || seller?.specialty || '—'}</div>
+                  <div style={{ marginTop: 10, fontSize: 12, color: 'var(--text-muted)' }}>{fmt(order.buyer_total_amount ?? order.total_amount, order.buyer_currency || order.currency)} · {fmtDateShort(order.created_at)} · Vendeur : {seller?.full_name || seller?.specialty || '—'}</div>
                 </div>
 
                 {showEta && (
@@ -338,7 +338,7 @@ function SuiviContent() {
                         </div>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <span style={{ fontSize: 15, fontWeight: 900, color: 'var(--accent)' }}>{fmt(o.total_amount, o.currency)}</span>
+                        <span style={{ fontSize: 15, fontWeight: 900, color: 'var(--accent)' }}>{fmt(o.buyer_total_amount ?? o.total_amount, o.buyer_currency || o.currency)}</span>
                         <span className={styles.badge} style={{ background: b.bg, color: b.color }}>{b.label}</span>
                       </div>
                     </div>

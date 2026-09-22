@@ -28,7 +28,7 @@ export default function Content() {
   const slug = params.get('slug');
   const id = params.get('id');
   const vendeur = params.get('vendeur');
-  const { add } = useCart();
+  const { add, clear } = useCart();
 
   const [shop, setShop] = useState(null);
   const [products, setProducts] = useState([]);
@@ -114,7 +114,13 @@ export default function Content() {
   async function handleAdd(e, p) {
     e.preventDefault();
     e.stopPropagation();
-    await add({ id: p.id, name: p.name, price: p.price, currency: p.currency, image_url: p.image_url });
+    const item = { id: p.id, name: p.name, price: p.price, currency: p.currency, image_url: p.image_url, shop_id: shop?.id };
+    const res = await add(item);
+    if (!res.success && res.error === 'different_shop') {
+      if (!confirm('Ton panier contient déjà des produits d\'une autre boutique. Le vider pour ajouter celui-ci ?')) return;
+      await clear();
+      await add(item);
+    }
     showToast(`"${p.name}" ajouté au panier`);
   }
 

@@ -2,6 +2,8 @@
 
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { getSupabase } from '@/lib/supabase';
+import { convertPrice } from '@/lib/currency';
+import { getBuyerCurrency } from '@/lib/buyerCurrency';
 
 const CartContext = createContext(null);
 const LOCAL_KEY = 'wenna_cart_guest';
@@ -77,7 +79,7 @@ export function CartProvider({ children }) {
 
     setUserId(row.id);
     const { data } = await sb.from('cart_items')
-      .select('id, quantity, product_id, products(id, name, price, currency, image_url, images, stock)')
+      .select('id, quantity, product_id, products(id, name, price, currency, image_url, images, stock, shop_id)')
       .eq('user_id', row.id);
 
     setItems((data || []).map(i => ({
@@ -87,6 +89,7 @@ export function CartProvider({ children }) {
       name: i.products?.name || '—',
       price: i.products?.price || 0,
       currency: i.products?.currency || 'MAD',
+      shop_id: i.products?.shop_id || null,
       image: Array.isArray(i.products?.images) && i.products.images.length ? i.products.images[0] : (i.products?.image_url || null),
       stock: i.products?.stock ?? null,
     })));
@@ -95,7 +98,15 @@ export function CartProvider({ children }) {
 
   useEffect(() => { refresh(); }, [refresh]);
 
+  // Un panier ne peut contenir des produits que d'une seule boutique à la
+  // fois : au-delà de mélanger les livraisons, des devises différentes
+  // additionnées donneraient un total de commande incohérent (voir
+  // createOrder). On bloque l'ajout plutôt que de produire un panier cassé.
   const add = useCallback(async (product, qty = 1) => {
+    const currentShopId = items[0]?.shop_id || null;
+    if (currentShopId && product.shop_id && product.shop_id !== currentShopId) {
+      return { success: false, error: 'different_shop' };
+    }
     const sb = getSupabase();
     if (!userId) {
       const guest = readLocalCart();
@@ -104,7 +115,7 @@ export function CartProvider({ children }) {
       else guest.push({
         product_id: product.id, name: product.name, price: product.price,
         image: product.image_url || product.image || null,
-        currency: product.currency || 'MAD', quantity: qty,
+        currency: product.currency || 'MAD', shop_id: product.shop_id || null, quantity: qty,
       });
       writeLocalCart(guest);
       setItems(guest.map(g => ({ ...g, cart_item_id: g.product_id })));
@@ -119,7 +130,7 @@ export function CartProvider({ children }) {
     }
     await refresh();
     return { success: true };
-  }, [userId, refresh]);
+  }, [userId, refresh, items]);
 
   const updateQuantity = useCallback(async (cartItemId, quantity) => {
     if (quantity <= 0) return remove(cartItemId);
@@ -179,7 +190,7 @@ export function CartProvider({ children }) {
     }
 
     const { data: cartRows, error: cartErr } = await sb.from('cart_items')
-      .select('quantity, product_id, products(price, currency, stock, name)')
+      .select('quantity, product_id, products(price, currency, stock, name, shop_id)')
       .eq('user_id', userId);
     if (cartErr) return { success: false, error: cartErr.message };
     if (!cartRows || cartRows.length === 0) return { success: false, error: 'empty_cart' };
@@ -187,11 +198,32 @@ export function CartProvider({ children }) {
     const outOfStock = cartRows.find((r) => r.products?.stock != null && r.products.stock < r.quantity);
     if (outOfStock) return { success: false, error: 'out_of_stock', product: outOfStock.products?.name };
 
-    const currency = cartRows[0]?.products?.currency || 'MAD';
-    const subtotalCalc = cartRows.reduce((s, r) => s + (r.products?.price || 0) * r.quantity, 0);
+    // Filet de sécurité : un panier ne devrait plus jamais mélanger deux
+    // boutiques (bloqué dès l'ajout dans `add`), mais un panier créé avant
+    // ce garde-fou pourrait encore en contenir un. Additionner des prix de
+    // devises différentes donnerait un total n'importe quoi — on préfère
+    // refuser plutôt que produire une commande fausse.
+    const distinctShops = new Set(cartRows.map((r) => r.products?.shop_id).filter(Boolean));
+    if (distinctShops.size > 1) return { success: false, error: 'mixed_shops' };
+
+    const vendorCurrency = cartRows[0]?.products?.currency || 'MAD';
+    const subtotalVendorCurrency = cartRows.reduce((s, r) => s + (r.products?.price || 0) * r.quantity, 0);
+
+    // total_amount/currency restent dans la devise du VENDEUR — c'est ce que
+    // lisent le tableau de bord vendeur, les commissions et les retraits.
+    // Le montant réellement facturé à l'acheteur (converti, avec la marge de
+    // sécurité anti-perte) est stocké à part, dans buyer_total_amount /
+    // buyer_currency, et ne sert qu'à la page de paiement.
+    const buyerCurrency = getBuyerCurrency();
+    const conv = await convertPrice(subtotalVendorCurrency, vendorCurrency, buyerCurrency, sb);
 
     const { data: order, error: orderErr } = await sb.from('orders')
-      .insert({ user_id: userId, status: 'pending', subtotal: subtotalCalc, total_amount: subtotalCalc, currency, idempotency_key: idempotencyKey })
+      .insert({
+        user_id: userId, status: 'pending',
+        subtotal: subtotalVendorCurrency, total_amount: subtotalVendorCurrency, currency: vendorCurrency,
+        buyer_total_amount: conv.amount, buyer_currency: conv.currency,
+        idempotency_key: idempotencyKey,
+      })
       .select('id').single();
 
     if (orderErr) {
