@@ -63,9 +63,10 @@ export default function QuetesPage() {
   }
 
   async function submit() {
+    const currency = form.country === 'Maroc' ? 'MAD' : 'FCFA';
     if (!form.title) return alert('Le titre est obligatoire.');
-    if (!form.budget || form.budget < 1000) return alert('Budget minimum : 1000 FCFA.');
-    if (!form.reward || form.reward < 500) return alert('Récompense minimum : 500 FCFA.');
+    if (!form.budget || form.budget < 1000) return alert(`Budget minimum : 1000 ${currency}.`);
+    if (!form.reward || form.reward < 500) return alert(`Récompense minimum : 500 ${currency}.`);
     const sb = getSupabase();
     const { data: { user } } = await sb.auth.getUser();
     if (!user) { alert('Connecte-toi pour poster une quête.'); return; }
@@ -73,7 +74,7 @@ export default function QuetesPage() {
     const { error } = await sb.from('quests').insert({
       buyer_id: row.id, title: form.title, description: form.description || null,
       country_target: form.country, product_budget: parseFloat(form.budget), reward_amount: parseFloat(form.reward),
-      duration_days: 7, currency: 'FCFA', image_url: form.image_url || null,
+      duration_days: 7, currency, image_url: form.image_url || null,
     });
     if (error) return alert('Erreur : ' + error.message);
     setModalOpen(false);
