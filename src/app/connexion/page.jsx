@@ -120,8 +120,7 @@ export default function ConnexionPage() {
       const sb = getSupabase();
       const { data: { session } } = await sb.auth.getSession();
       if (session) {
-        const role = session.user?.user_metadata?.role;
-        router.push(role === 'artisan' ? '/vendeur' : '/boutique');
+        router.push('/bienvenue');
       }
     })();
   }, [router]);
@@ -142,8 +141,7 @@ export default function ConnexionPage() {
       return;
     }
     showToast('Connexion réussie', 'ok');
-    const userRole = data.user?.user_metadata?.role;
-    setTimeout(() => router.push(userRole === 'artisan' ? '/vendeur' : '/boutique'), 700);
+    setTimeout(() => router.push('/bienvenue'), 700);
   }
 
   async function sendReset() {
@@ -212,11 +210,15 @@ export default function ConnexionPage() {
   async function confirmGoogleRole() {
     if (!googleRole) return;
     setModalGoogleRole(false);
+    // Google ne permet pas de transmettre un rôle personnalisé dans les
+    // métadonnées OAuth : on le mémorise localement pour l'appliquer au
+    // retour sur /bienvenue (uniquement lors de la toute première connexion).
+    try { localStorage.setItem('wenna_signup_role', googleRole); } catch {}
     const sb = getSupabase();
     const { error } = await sb.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin + (googleRole === 'artisan' ? '/vendeur' : '/boutique'),
+        redirectTo: window.location.origin + '/bienvenue',
         queryParams: { access_type: 'offline', prompt: 'select_account' },
         scopes: 'email profile',
       },

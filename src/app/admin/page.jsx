@@ -13,7 +13,7 @@ const ORDER_STATUS_LABEL = { pending: 'En attente', processing: 'En cours', ship
 const CARRIER_COUNTRIES = ['Maroc', 'Gabon', 'Sénégal', "Côte d'Ivoire", 'Cameroun', 'Mali', 'Bénin', 'Togo', 'Burkina Faso', 'Niger', 'Autre'];
 const GOAL_METRIC_LABEL = { revenue: "Chiffre d'affaires", orders_count: 'Nombre de commandes', products_count: 'Nombre de produits', shop_completion: 'Complétion boutique', custom: 'Personnalisé (informatif)' };
 const GOAL_AUDIENCE_LABEL = { artisan: 'Vendeurs', buyer: 'Acheteurs', all: 'Tous' };
-const STATUS_COLOR = { pending: '#f59e0b', active: '#22c55e', inactive: '#555', processing: '#3b82f6', shipped: '#3b82f6', delivered: '#22c55e', cancelled: '#ef4444', approved: '#22c55e', rejected: '#ef4444', paid: '#22c55e', failed: '#ef4444', verified: '#22c55e', pending_verification: '#f59e0b' };
+const STATUS_COLOR = { pending: '#f59e0b', active: '#22c55e', inactive: '#555', processing: '#3b82f6', shipped: '#3b82f6', delivered: '#22c55e', cancelled: '#ef4444', approved: '#22c55e', rejected: '#ef4444', paid: '#22c55e', failed: '#ef4444', verified: '#22c55e', pending_verification: '#f59e0b', open: '#f59e0b', resolved: '#22c55e' };
 const ICONS = ['🛍️','👗','👠','👜','👒','🧣','🧢','💍','📿','🛒','🍽️','🫙','🌿','🫚','🧴','🪴','🎨','🪵','🏺','🧺','🧶','🪡','✂️','🔨','🪚','🧲','💎','🌍','🇬🇦','🇲🇦','🎁','📦','🏠','🚗','📱','💻','🎵','📚','⚽','🌺','🌾','☕','🍵','🥘','🧁','🍊','🥭','🌴','🐘','🦁','🦅','🎭','🎪','🏆','⭐','✨','🔥','💫','🌟','💚','🌱','🍃'];
 
 function Badge({ status, label }) {
@@ -70,6 +70,10 @@ export default function AdminPage() {
   // ── Chasseurs ──
   const [chasseurs, setChasseurs] = useState([]);
   const [chasseurActionId, setChasseurActionId] = useState(null);
+
+  // ── Réclamations ──
+  const [tickets, setTickets] = useState([]);
+  const [ticketActionId, setTicketActionId] = useState(null);
   const [shopsByUserId, setShopsByUserId] = useState({});
   const [boostedShopIds, setBoostedShopIds] = useState(new Set());
   const [boostActionId, setBoostActionId] = useState(null);
@@ -410,6 +414,28 @@ export default function AdminPage() {
     }
   }
 
+  // ── Réclamations ──
+  async function loadTickets() {
+    const sb = getSupabase();
+    const { data } = await sb.from('support_tickets').select('*').order('created_at', { ascending: false });
+    setTickets(data || []);
+  }
+
+  async function resolveTicket(t) {
+    setTicketActionId(t.id);
+    try {
+      const sb = getSupabase();
+      const { error } = await sb.from('support_tickets').update({ status: t.status === 'resolved' ? 'open' : 'resolved' }).eq('id', t.id);
+      if (error) throw error;
+      await loadTickets();
+      showToast(t.status === 'resolved' ? 'Réclamation rouverte' : 'Réclamation traitée', 'ok');
+    } catch (err) {
+      showToast('Erreur : ' + err.message, 'error');
+    } finally {
+      setTicketActionId(null);
+    }
+  }
+
   // ── Retraits ──
   async function loadPayouts() {
     const sb = getSupabase();
@@ -700,6 +726,7 @@ export default function AdminPage() {
     if (s === 'categories') loadCategories();
     if (s === 'artisans') loadArtisans();
     if (s === 'chasseurs') loadChasseurs();
+    if (s === 'tickets') loadTickets();
     if (s === 'carriers') loadCarriers();
     if (s === 'payouts') loadPayouts();
     if (s === 'reviews') loadReviews();
@@ -805,6 +832,7 @@ export default function AdminPage() {
           ['categories', 'ph-tag', 'Catégories'],
           ['artisans', 'ph-storefront', 'Artisans'],
           ['chasseurs', 'ph-binoculars', 'Chasseurs'],
+          ['tickets', 'ph-lifebuoy', 'Réclamations'],
           ['carriers', 'ph-truck', 'Transporteurs'],
           ['payouts', 'ph-bank', 'Retraits'],
           ['users', 'ph-users', 'Utilisateurs'],
@@ -1065,6 +1093,43 @@ export default function AdminPage() {
                     </div>
                   );
                 })}
+              </div>
+            )}
+          </>
+        )}
+
+        {section === 'tickets' && (
+          <>
+            <h1 style={{ fontSize: 22, fontWeight: 900, marginBottom: 18 }}>Réclamations</h1>
+            {tickets.length === 0 ? (
+              <div className={styles.card}><div className={styles.empty}>Aucune réclamation</div></div>
+            ) : (
+              <div className={styles.card} style={{ overflowX: 'auto' }}>
+                <table className={styles.table}>
+                  <thead><tr><th>Date</th><th>Nom</th><th>Email</th><th>Page</th><th>Message</th><th>Statut</th><th></th></tr></thead>
+                  <tbody>
+                    {tickets.map((t) => (
+                      <tr key={t.id}>
+                        <td style={{ whiteSpace: 'nowrap' }}>{fdate(t.created_at)}</td>
+                        <td>{t.name || '—'}</td>
+                        <td>{t.email || '—'}</td>
+                        <td style={{ fontSize: 10, color: 'var(--text-faint)' }}>{t.page_url || '—'}</td>
+                        <td style={{ maxWidth: 320, whiteSpace: 'pre-wrap' }}>{t.message}</td>
+                        <td><Badge status={t.status} label={t.status === 'resolved' ? 'Traitée' : 'Ouverte'} /></td>
+                        <td>
+                          <button
+                            className={t.status === 'resolved' ? styles.btnGhost : styles.btnPrimary}
+                            style={{ padding: '5px 10px', fontSize: 10, opacity: ticketActionId === t.id ? 0.6 : 1 }}
+                            disabled={ticketActionId === t.id}
+                            onClick={() => resolveTicket(t)}
+                          >
+                            {t.status === 'resolved' ? 'Rouvrir' : 'Marquer traitée'}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </>

@@ -1,6 +1,7 @@
 import './globals.css';
 import { CartProvider } from '@/context/CartContext';
 import { Analytics } from '@vercel/analytics/next';
+import SupportButton from '@/components/SupportButton';
 
 const SITE_URL = 'https://wennashop.com';
 const SITE_DESCRIPTION = "WennaShop est la marketplace qui connecte les vendeurs et acheteurs entre le Gabon et le Maroc. Achetez et vendez des produits authentiques en toute sécurité.";
@@ -51,6 +52,7 @@ export default function RootLayout({ children }) {
           {children}
           <div id="toast" />
         </CartProvider>
+        <SupportButton />
         <Analytics />
       </body>
     </html>
