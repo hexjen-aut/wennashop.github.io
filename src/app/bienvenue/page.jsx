@@ -100,6 +100,24 @@ export default function BienvenuePage() {
       }
       try { localStorage.removeItem('wenna_signup_role'); } catch {}
 
+      // Lien de parrainage chasseur (?ref=... sur /connexion) : appliqué
+      // automatiquement ici, à la toute première connexion d'un nouveau
+      // vendeur — plutôt que de compter sur lui pour retrouver et taper un
+      // code à la main dans son tableau de bord. Échec silencieux (code
+      // invalide, expiré...) : ce n'est qu'un bonus, jamais un blocage à
+      // l'inscription. claim_hunter_referral revalide tout côté serveur.
+      if (row && !row.onboarding_completed_at && effectiveRole === 'artisan') {
+        let pendingRef = null;
+        try { pendingRef = localStorage.getItem('wenna_referral_code'); } catch {}
+        if (pendingRef) {
+          const { data: myShop } = await sb.from('shops').select('id').eq('user_id', row.id).maybeSingle();
+          if (myShop?.id) {
+            await sb.rpc('claim_hunter_referral', { p_shop_id: myShop.id, p_code: pendingRef });
+          }
+        }
+      }
+      try { localStorage.removeItem('wenna_referral_code'); } catch {}
+
       const dest = effectiveRole === 'artisan' ? '/vendeur' : '/boutique';
       setDestination(dest);
 

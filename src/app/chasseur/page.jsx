@@ -597,15 +597,28 @@ export default function ChasseurPage() {
                 {internalUser?.hunter_status === 'verified' && internalUser?.hunter_referral_code ? (
                   <>
                     <div style={{ fontSize: 26, fontWeight: 900, color: 'var(--accent)', letterSpacing: 2, marginBottom: 10 }}>{internalUser.hunter_referral_code}</div>
-                    <button
-                      className={styles.htab}
-                      style={{ border: '1.5px solid var(--border)' }}
-                      onClick={() => { navigator.clipboard.writeText(internalUser.hunter_referral_code); showToast('Code copié', 'success'); }}
-                    >
-                      Copier le code
-                    </button>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                      <button
+                        className={styles.htab}
+                        style={{ border: '1.5px solid var(--accent)', color: 'var(--accent)' }}
+                        onClick={() => {
+                          const link = `${window.location.origin}/connexion?ref=${internalUser.hunter_referral_code}`;
+                          navigator.clipboard.writeText(link);
+                          showToast('Lien copié — envoie-le directement, tout se fait automatiquement', 'success');
+                        }}
+                      >
+                        Copier le lien à partager
+                      </button>
+                      <button
+                        className={styles.htab}
+                        style={{ border: '1.5px solid var(--border)' }}
+                        onClick={() => { navigator.clipboard.writeText(internalUser.hunter_referral_code); showToast('Code copié', 'success'); }}
+                      >
+                        Copier le code
+                      </button>
+                    </div>
                     <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 12, lineHeight: 1.7 }}>
-                      Donne ce code à un vendeur que tu recrutes. Il doit le saisir dans les 7 jours suivant la création de sa boutique, depuis son espace vendeur. Tu touches 3 000 FCFA quand sa boutique atteint 3 commandes livrées, puis 20 % de la commission WennaShop sur ses ventes pendant 6 mois.
+                      Envoie ce lien à un futur vendeur : en s'inscrivant dessus, sa boutique t'est automatiquement rattachée — rien à taper de son côté. Tu touches 3 000 FCFA quand sa boutique atteint 3 commandes livrées, puis 20 % de la commission WennaShop sur ses ventes pendant 6 mois. Le code seul reste utilisable à la main, depuis son espace vendeur, dans les 7 jours suivant la création de sa boutique.
                     </p>
                   </>
                 ) : (
