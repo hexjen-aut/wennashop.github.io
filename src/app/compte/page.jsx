@@ -432,7 +432,7 @@ export default function ComptePage() {
             ) : (
               <div className={styles.avatar}>{initials}</div>
             )}
-            <label htmlFor="avatar-input" style={{ position: 'absolute', bottom: -2, right: -2, width: 24, height: 24, background: 'var(--accent)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: 11, color: '#fff' }}>{uploadingAvatar ? '…' : '📷'}</label>
+            <label htmlFor="avatar-input" style={{ position: 'absolute', bottom: -2, right: -2, width: 24, height: 24, background: 'var(--accent-btn)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: 11, color: '#fff' }}>{uploadingAvatar ? '…' : '📷'}</label>
             <input id="avatar-input" type="file" accept="image/jpeg,image/png,image/webp" style={{ display: 'none' }} onChange={handleAvatarChange} />
           </div>
           <div style={{ flex: 1 }}>
@@ -512,7 +512,7 @@ export default function ComptePage() {
               <div className={styles.card}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
                   <div className={styles.cardTitle} style={{ marginBottom: 0 }}>Mes adresses</div>
-                  <button onClick={openAddAddr} style={{ background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 999, padding: '8px 16px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>+ Ajouter</button>
+                  <button onClick={openAddAddr} style={{ background: 'var(--accent-btn)', color: '#fff', border: 'none', borderRadius: 999, padding: '8px 16px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>+ Ajouter</button>
                 </div>
                 {addresses.length === 0 ? (
                   <div className={styles.empty}>Aucune adresse enregistrée.</div>
@@ -541,7 +541,7 @@ export default function ComptePage() {
                   </div>
                   <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 6 }}>Email : {profile?.email}</p>
                   <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 14 }}>Pays : {profile?.country || '—'}</p>
-                  <button onClick={saveProfile} disabled={savingProfile} style={{ background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 999, padding: '10px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>{savingProfile ? 'Sauvegarde…' : 'Sauvegarder'}</button>
+                  <button onClick={saveProfile} disabled={savingProfile} style={{ background: 'var(--accent-btn)', color: '#fff', border: 'none', borderRadius: 999, padding: '10px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>{savingProfile ? 'Sauvegarde…' : 'Sauvegarder'}</button>
                 </div>
 
                 <div className={styles.card}>
@@ -618,7 +618,7 @@ export default function ComptePage() {
                 <div style={{ fontSize: 10, color: 'var(--text-faint)', marginTop: 4, textAlign: 'right' }}>{upgradeUploadProgress}%</div>
               </div>
             )}
-            <button onClick={upgradeToVendeur} disabled={upgrading} style={{ width: '100%', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 999, padding: 14, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>{upgrading ? `Envoi… ${upgradeUploadProgress}%` : 'Devenir vendeur — c\'est gratuit'}</button>
+            <button onClick={upgradeToVendeur} disabled={upgrading} style={{ width: '100%', background: 'var(--accent-btn)', color: '#fff', border: 'none', borderRadius: 999, padding: 14, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>{upgrading ? `Envoi… ${upgradeUploadProgress}%` : 'Devenir vendeur — c\'est gratuit'}</button>
           </div>
         )}
 
@@ -639,7 +639,7 @@ export default function ComptePage() {
               <div className={styles.card} style={{ background: 'var(--accent-light)', borderColor: 'var(--border-accent)' }}>
                 <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--accent)', marginBottom: 4 }}>Espace vendeur actif</div>
                 <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 10 }}>Gère tes produits, commandes et revenus.</div>
-                <Link href="/vendeur" style={{ display: 'inline-block', background: 'var(--accent)', color: '#fff', padding: '10px 20px', borderRadius: 999, fontWeight: 700, fontSize: 13, textDecoration: 'none' }}>Ouvrir le Dashboard</Link>
+                <Link href="/vendeur" style={{ display: 'inline-block', background: 'var(--accent-btn)', color: '#fff', padding: '10px 20px', borderRadius: 999, fontWeight: 700, fontSize: 13, textDecoration: 'none' }}>Ouvrir le Dashboard</Link>
               </div>
             )}
 
@@ -706,7 +706,7 @@ export default function ComptePage() {
                 <select defaultValue={shop.country} id="shop-country-input" style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)', padding: '10px 12px', fontSize: 13, marginBottom: 14 }}>
                   {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
                 </select>
-                <button onClick={() => saveShop(document.getElementById('shop-name-input').value, document.getElementById('shop-bio-input').value, document.getElementById('shop-country-input').value)} style={{ width: '100%', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 999, padding: 14, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>Mettre à jour</button>
+                <button onClick={() => saveShop(document.getElementById('shop-name-input').value, document.getElementById('shop-bio-input').value, document.getElementById('shop-country-input').value)} style={{ width: '100%', background: 'var(--accent-btn)', color: '#fff', border: 'none', borderRadius: 999, padding: 14, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>Mettre à jour</button>
               </div>
             )}
 
@@ -761,7 +761,7 @@ export default function ComptePage() {
             </div>
             <div style={{ padding: '0 20px 20px', display: 'flex', gap: 10 }}>
               <button onClick={() => setAddrModalOpen(false)} style={{ flex: 1, background: 'transparent', border: '1.5px solid var(--border)', borderRadius: 999, color: 'var(--text-muted)', padding: 11, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Annuler</button>
-              <button onClick={saveAddress} disabled={savingAddr} style={{ flex: 2, background: 'var(--accent)', border: 'none', borderRadius: 999, color: '#fff', padding: 11, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>{savingAddr ? '…' : 'Enregistrer'}</button>
+              <button onClick={saveAddress} disabled={savingAddr} style={{ flex: 2, background: 'var(--accent-btn)', border: 'none', borderRadius: 999, color: '#fff', padding: 11, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>{savingAddr ? '…' : 'Enregistrer'}</button>
             </div>
           </div>
         </div>
@@ -802,7 +802,7 @@ export default function ComptePage() {
                       <p style={{ fontSize: 10, color: 'var(--text-faint)', marginTop: 8, wordBreak: 'break-all' }}>{mfaStep.secret}</p>
                     </div>
                     <input value={mfaCode} onChange={(e) => setMfaCode(e.target.value)} placeholder="Code à 6 chiffres" maxLength={6} style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)', padding: '10px 12px', fontSize: 13, marginBottom: 12 }} />
-                    <button onClick={verifyTotp} disabled={mfaBusy} style={{ width: '100%', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 999, padding: 12, fontWeight: 700, cursor: 'pointer' }}>Confirmer et activer</button>
+                    <button onClick={verifyTotp} disabled={mfaBusy} style={{ width: '100%', background: 'var(--accent-btn)', color: '#fff', border: 'none', borderRadius: 999, padding: 12, fontWeight: 700, cursor: 'pointer' }}>Confirmer et activer</button>
                   </>
                 ) : <div style={{ textAlign: 'center', padding: 20 }}>…</div>}
               </>
@@ -813,13 +813,13 @@ export default function ComptePage() {
                 {!mfaStep.sent ? (
                   <>
                     <input value={mfaStep.phone || ''} onChange={(e) => setMfaStep({ ...mfaStep, phone: e.target.value })} placeholder="+212 6 12 34 56 78" style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)', padding: '10px 12px', fontSize: 13, marginBottom: 12 }} />
-                    <button onClick={enrollPhone} disabled={mfaBusy} style={{ width: '100%', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 999, padding: 12, fontWeight: 700, cursor: 'pointer' }}>Envoyer le code</button>
+                    <button onClick={enrollPhone} disabled={mfaBusy} style={{ width: '100%', background: 'var(--accent-btn)', color: '#fff', border: 'none', borderRadius: 999, padding: 12, fontWeight: 700, cursor: 'pointer' }}>Envoyer le code</button>
                   </>
                 ) : (
                   <>
                     <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 12 }}>Code envoyé au {mfaStep.phone}</p>
                     <input value={mfaCode} onChange={(e) => setMfaCode(e.target.value)} placeholder="Code reçu" maxLength={6} style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)', padding: '10px 12px', fontSize: 13, marginBottom: 12 }} />
-                    <button onClick={verifyPhone} disabled={mfaBusy} style={{ width: '100%', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 999, padding: 12, fontWeight: 700, cursor: 'pointer' }}>Confirmer et activer</button>
+                    <button onClick={verifyPhone} disabled={mfaBusy} style={{ width: '100%', background: 'var(--accent-btn)', color: '#fff', border: 'none', borderRadius: 999, padding: 12, fontWeight: 700, cursor: 'pointer' }}>Confirmer et activer</button>
                   </>
                 )}
               </>
@@ -830,12 +830,12 @@ export default function ComptePage() {
                 {!mfaStep.sent ? (
                   <>
                     <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 14 }}>Un code sera envoyé à <strong style={{ color: 'var(--text)' }}>{profile?.email}</strong></p>
-                    <button onClick={enrollEmail} disabled={mfaBusy} style={{ width: '100%', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 999, padding: 12, fontWeight: 700, cursor: 'pointer' }}>Envoyer le code</button>
+                    <button onClick={enrollEmail} disabled={mfaBusy} style={{ width: '100%', background: 'var(--accent-btn)', color: '#fff', border: 'none', borderRadius: 999, padding: 12, fontWeight: 700, cursor: 'pointer' }}>Envoyer le code</button>
                   </>
                 ) : (
                   <>
                     <input value={mfaCode} onChange={(e) => setMfaCode(e.target.value)} placeholder="Code reçu" maxLength={6} style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)', padding: '10px 12px', fontSize: 13, marginBottom: 12 }} />
-                    <button onClick={verifyEmail} disabled={mfaBusy} style={{ width: '100%', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 999, padding: 12, fontWeight: 700, cursor: 'pointer' }}>Confirmer et activer</button>
+                    <button onClick={verifyEmail} disabled={mfaBusy} style={{ width: '100%', background: 'var(--accent-btn)', color: '#fff', border: 'none', borderRadius: 999, padding: 12, fontWeight: 700, cursor: 'pointer' }}>Confirmer et activer</button>
                   </>
                 )}
               </>

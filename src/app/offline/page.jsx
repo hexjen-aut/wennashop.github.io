@@ -9,7 +9,7 @@ export default function OfflinePage() {
       <p style={{ fontSize: 14, color: 'var(--text-muted)', maxWidth: 420, lineHeight: 1.6, marginBottom: 28 }}>
         Pas d'inquiétude — ton panier est sauvegardé. Dès que la connexion revient, tout se resynchronise automatiquement.
       </p>
-      <a href="/boutique" style={{ background: 'var(--accent)', color: '#fff', padding: '13px 28px', borderRadius: 999, fontWeight: 700, textDecoration: 'none' }}>Réessayer</a>
+      <a href="/boutique" style={{ background: 'var(--accent-btn)', color: '#fff', padding: '13px 28px', borderRadius: 999, fontWeight: 700, textDecoration: 'none' }}>Réessayer</a>
     </div>
   );
 }

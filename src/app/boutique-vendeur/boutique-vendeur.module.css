@@ -16,7 +16,7 @@
 .statLabel { font-size: 10px; font-weight: 600; color: var(--text-faint); text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
 
 .actions { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; padding-bottom: 4px; }
-.btnContact { padding: 10px 18px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-pill); font-size: 13px; font-weight: 700; font-family: var(--font); cursor: pointer; text-decoration: none; }
+.btnContact { padding: 10px 18px; background: var(--accent-btn); color: #fff; border: none; border-radius: var(--radius-pill); font-size: 13px; font-weight: 700; font-family: var(--font); cursor: pointer; text-decoration: none; }
 .btnContact:hover { background: var(--accent-dark); }
 .btnFollow { padding: 10px 18px; background: transparent; color: var(--text-muted); border: 1.5px solid var(--border); border-radius: var(--radius-pill); font-size: 13px; font-weight: 700; font-family: var(--font); cursor: pointer; }
 .btnFollow:hover { border-color: var(--border-accent); color: var(--text); }
@@ -62,7 +62,7 @@
 .skel { background: linear-gradient(90deg,var(--surface) 25%,var(--surface-2) 50%,var(--surface) 75%); background-size: 600px 100%; animation: shim 1.5s infinite; }
 @keyframes shim { 0%{background-position:-600px 0} 100%{background-position:600px 0} }
 .badge { position: absolute; top: 8px; left: 8px; font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: var(--radius-pill); text-transform: uppercase; }
-.badgeNew { background: var(--accent); color: #fff; }
+.badgeNew { background: var(--accent-btn); color: #fff; }
 .badgePromo { background: var(--gold); color: #0a0a0a; }
 .badgeLow { background: rgba(239,68,68,.15); color: #fc6a6a; border: 1px solid rgba(239,68,68,.2); }
 .info2 { padding: 12px; }
@@ -72,7 +72,7 @@
 .comparePrice { font-size: 11px; color: var(--text-faint); text-decoration: line-through; }
 .meta { display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--text-faint); }
 .btnAdd { background: var(--accent-light); border: 1px solid var(--border-accent); color: var(--accent); border-radius: var(--radius-sm); padding: 4px 10px; font-size: 11px; font-weight: 800; cursor: pointer; font-family: var(--font); }
-.btnAdd:hover { background: var(--accent); color: #fff; }
+.btnAdd:hover { background: var(--accent-btn); color: #fff; }
 
 .empty { text-align: center; padding: 50px 20px; color: var(--text-faint); font-size: 13px; grid-column: 1/-1; }
 

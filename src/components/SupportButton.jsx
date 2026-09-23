@@ -60,7 +60,7 @@ export default function SupportButton() {
         style={{
           position: 'fixed', bottom: 20, right: 20, zIndex: 900,
           width: 52, height: 52, borderRadius: '50%',
-          background: 'var(--accent)', color: '#fff', border: 'none',
+          background: 'var(--accent-btn)', color: '#fff', border: 'none',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 22, fontWeight: 900, cursor: 'pointer',
           boxShadow: 'var(--shadow-orange)',
@@ -147,7 +147,7 @@ export default function SupportButton() {
                   <button
                     onClick={submitTicket}
                     disabled={sending}
-                    style={{ flex: 1, padding: '10px 12px', borderRadius: 10, background: 'var(--accent)', border: 'none', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', opacity: sending ? 0.6 : 1 }}
+                    style={{ flex: 1, padding: '10px 12px', borderRadius: 10, background: 'var(--accent-btn)', border: 'none', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', opacity: sending ? 0.6 : 1 }}
                   >
                     {sending ? 'Envoi…' : 'Envoyer'}
                   </button>
@@ -163,7 +163,7 @@ export default function SupportButton() {
                 </div>
                 <button
                   onClick={close}
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: 10, background: 'var(--accent)', border: 'none', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: 10, background: 'var(--accent-btn)', border: 'none', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
                 >
                   Fermer
                 </button>

@@ -2,7 +2,7 @@
 .title { font-size: clamp(28px,5vw,44px); font-weight: 900; margin-bottom: 12px; }
 .title span { color: var(--accent); }
 .sub { font-size: 14px; color: var(--text-muted); max-width: 480px; margin: 0 auto 24px; }
-.btnPrimary { background: var(--accent); color: #fff; border: none; padding: 13px 24px; border-radius: var(--radius-pill); font-weight: 700; cursor: pointer; }
+.btnPrimary { background: var(--accent-btn); color: #fff; border: none; padding: 13px 24px; border-radius: var(--radius-pill); font-weight: 700; cursor: pointer; }
 .list { max-width: 800px; margin: 0 auto; padding: 30px 20px; display: flex; flex-direction: column; gap: 8px; }
 .card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: var(--radius-lg); padding: 18px 20px; display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; align-items: center; }
 .cardTitle { font-size: 16px; font-weight: 800; margin-bottom: 6px; }

@@ -103,6 +103,24 @@ export default function ConnexionPage() {
   const [role, setRole] = useState(null);
   const [cgu, setCgu] = useState(false);
 
+  // Lien de parrainage chasseur (?ref=WS-XXXXXX) — mémorisé pour être appliqué
+  // automatiquement à la création du compte (voir /bienvenue), sans que le
+  // nouveau vendeur ait à retrouver et taper un code lui-même. Le code est
+  // toujours revalidé côté serveur (claim_hunter_referral) avant d'avoir le
+  // moindre effet — un paramètre d'URL ne peut donc jamais, à lui seul,
+  // rattacher une boutique à un chasseur.
+  useEffect(() => {
+    try {
+      const ref = new URLSearchParams(window.location.search).get('ref');
+      if (ref && /^[A-Za-z0-9-]{4,20}$/.test(ref)) {
+        localStorage.setItem('wenna_referral_code', ref.toUpperCase());
+        setMode('inscription');
+        setRole('artisan');
+      }
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Modales
   const [modalCgu, setModalCgu] = useState(false);
   const [modalPrivacy, setModalPrivacy] = useState(false);

@@ -4,6 +4,10 @@
   --accent:        #ff6800;
   --accent-dark:   #e65100;
   --accent-light:  rgba(255,104,0,.12);
+  /* Fond des boutons pleins à texte blanc — plus foncé que --accent, dont le
+     contraste (2.9:1) ne suffit pas pour du texte blanc dessus (min. 4.5:1).
+     --accent lui-même reste inchangé (texte/bordures/liens, déjà à 6.5:1). */
+  --accent-btn:    #c24c00;
   --bg:            #111111;
   --surface:       #1a1a1a;
   --surface-2:     #232323;
@@ -11,7 +15,9 @@
   --border-accent: rgba(255,104,0,.3);
   --text:          #ffffff;
   --text-muted:    #9ca3af;
-  --text-faint:    #6b7280;
+  /* #8a94a1 — plus clair que l'ancien #6b7280 (3.6-3.9:1) pour atteindre
+     4.5:1+ de contraste, le minimum lisibilité WCAG AA. */
+  --text-faint:    #8a94a1;
   --success:       #22c55e;
   --error:         #ef4444;
   --gold:          #f59e0b;

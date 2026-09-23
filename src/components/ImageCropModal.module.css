@@ -7,5 +7,5 @@
 .actions { display: flex; gap: 10px; padding: 14px 20px 20px; }
 .btnGhost, .btnPrimary { flex: 1; padding: 11px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; border: none; }
 .btnGhost { background: var(--surface-2); color: var(--text); }
-.btnPrimary { background: var(--accent); color: #fff; }
+.btnPrimary { background: var(--accent-btn); color: #fff; }
 .btnPrimary:disabled { opacity: .6; cursor: default; }

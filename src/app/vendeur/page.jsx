@@ -13,6 +13,14 @@ const STATUS_LABEL = { pending: 'En attente', active: 'Actif', inactive: 'Inacti
 const STATUS_COLOR = { pending: '#f59e0b', active: '#22c55e', inactive: '#555', processing: '#3b82f6', shipped: '#3b82f6', delivered: '#22c55e', cancelled: '#ef4444', approved: '#22c55e', paid: '#22c55e', rejected: '#ef4444' };
 const PAYOUT_METHOD_LABEL = { mobile_money: 'Mobile Money', bank_transfer: 'Virement bancaire' };
 
+function slugify(s) {
+  return (s || '')
+    .toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 const NOTIF_ICON = { order: 'ph-shopping-bag', money: 'ph-currency-circle-dollar', review: 'ph-star', stock: 'ph-warning', system: 'ph-bell' };
 
 function fmt(n, c = 'MAD') { try { return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: c, minimumFractionDigits: 0 }).format(n || 0); } catch { return `${n || 0} ${c}`; } }
@@ -632,14 +640,25 @@ export default function VendeurPage() {
     e.preventDefault();
     if (!shopForm.name) { showToast('Le nom de la boutique est requis', 'error'); return; }
     const sb = getSupabase();
-    const payload = { ...shopForm, user_id: seller.id, carrier_id: shopForm.carrier_id || null };
+    // Le slug alimente l'URL publique de la boutique (/boutique-vendeur?slug=...) —
+    // toujours dérivé automatiquement du nom (jamais saisi à la main : un champ
+    // technique sans guide ne parle à personne).
+    let slug = slugify(shopForm.name) || 'boutique';
+    const payload = { ...shopForm, slug, user_id: seller.id, carrier_id: shopForm.carrier_id || null };
     let error;
-    if (shop?.id) ({ error } = await sb.from('shops').update(payload).eq('id', shop.id));
-    else ({ error } = await sb.from('shops').insert(payload));
+    for (let attempt = 0; attempt < 5; attempt++) {
+      payload.slug = attempt === 0 ? slug : `${slug}-${attempt + 1}`;
+      const res = shop?.id
+        ? await sb.from('shops').update(payload).eq('id', shop.id)
+        : await sb.from('shops').insert(payload);
+      error = res.error;
+      if (!error || error.code !== '23505') break;
+    }
     if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
     showToast('Boutique enregistrée', 'success');
     const { data: refreshed } = await sb.from('shops').select('*').eq('user_id', seller.id).maybeSingle();
     setShop(refreshed);
+    setShopForm((prev) => ({ ...prev, slug: refreshed?.slug || prev.slug }));
   }
 
   async function claimHunterCode() {
@@ -1214,7 +1233,13 @@ export default function VendeurPage() {
           <form className={styles.card} onSubmit={saveShop} style={{ maxWidth: 640, padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div className={styles.formGrid}>
               <div id="tour-shop-name" className={`${styles.formGroup} ${tourFieldClass('tour-shop-name')}`}><label className={styles.formLabel}>Nom de la boutique *</label><input className={styles.input} value={shopForm.name} onChange={(e) => setShopForm({ ...shopForm, name: e.target.value })} /></div>
-              <div className={styles.formGroup}><label className={styles.formLabel}>Slug (URL)</label><input className={styles.input} value={shopForm.slug} onChange={(e) => setShopForm({ ...shopForm, slug: e.target.value })} /></div>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Adresse de ta boutique</label>
+                <div className={styles.input} style={{ display: 'flex', alignItems: 'center', color: 'var(--text-faint)', cursor: 'default', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  wennashop.com/boutique-vendeur?slug=<span style={{ color: 'var(--text)', fontWeight: 700 }}>{slugify(shopForm.name) || 'ma-boutique'}</span>
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 4 }}>Générée automatiquement à partir du nom — rien à faire.</div>
+              </div>
             </div>
             <div id="tour-shop-bio" className={`${styles.formGroup} ${tourFieldClass('tour-shop-bio')}`}><label className={styles.formLabel}>Description / Bio</label><textarea className={styles.input} rows={3} value={shopForm.bio} onChange={(e) => setShopForm({ ...shopForm, bio: e.target.value })} /></div>
             <div className={styles.formGrid}>
