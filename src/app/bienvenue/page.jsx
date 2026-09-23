@@ -15,12 +15,14 @@ function buildSlides(firstName, role) {
       eyebrow: 'Bienvenue',
       title: firstName ? `Ravis de te compter parmi nous, ${firstName}.` : 'Ravis de te compter parmi nous.',
       body: "WennaShop est la marketplace qui connecte l'Afrique, un échange à la fois — vendeurs et acheteurs, d'un pays à l'autre, sans frontière.",
+      image: '/bienvenue/hands.webp',
       next: 'Suivant',
     },
     {
       eyebrow: 'Notre mission',
       title: 'Faire circuler le savoir-faire africain, partout sur le continent.',
       body: "Chaque artisan, chaque commerçant mérite un marché plus grand que sa seule ville. WennaShop rapproche vendeurs et acheteurs à travers l'Afrique, pour que la distance ne soit plus un obstacle au commerce.",
+      image: '/bienvenue/hands.webp',
       next: 'Suivant',
     },
     isSeller
@@ -28,12 +30,14 @@ function buildSlides(firstName, role) {
           eyebrow: 'Ce que WennaShop change pour toi',
           title: 'Vends au-delà de tes frontières.',
           body: "Ouvre ta boutique en quelques minutes, touche des acheteurs dans plusieurs pays, et gère commandes, paiements et retraits depuis un seul tableau de bord — sans jamais avoir besoin d'un site à toi.",
+          image: '/bienvenue/market.webp',
           next: 'Suivant',
         }
       : {
           eyebrow: 'Ce que WennaShop change pour toi',
           title: 'Achète partout en Afrique, en toute confiance.',
           body: "Des produits authentiques, des vendeurs vérifiés, un suivi de commande de bout en bout. Et si tu ne trouves pas ce que tu cherches, poste une quête — un chasseur le dénichera pour toi.",
+          image: '/bienvenue/market.webp',
           next: 'Suivant',
         },
     {
@@ -41,6 +45,7 @@ function buildSlides(firstName, role) {
       title: 'Quatre principes, non négociables.',
       body: '',
       values: ['Confiance', 'Accessibilité', 'Panafricanisme', 'Transparence'],
+      image: '/bienvenue/door.webp',
       next: 'Suivant',
     },
     {
@@ -49,6 +54,7 @@ function buildSlides(firstName, role) {
       body: isSeller
         ? 'Ta boutique t’attend — quelques infos suffisent pour publier ton premier produit.'
         : 'Des milliers de produits, des vendeurs de tout le continent, à un clic de toi.',
+      image: '/bienvenue/door.webp',
       next: isSeller ? 'Ouvrir ma boutique' : 'Commencer mes achats',
       final: true,
     },
@@ -146,7 +152,6 @@ export default function BienvenuePage() {
 
   return (
     <div className={styles.wrap}>
-      <img src="/wenna_logo_watermark.png" alt="" aria-hidden="true" className={styles.watermark} />
       <button className={styles.skip} onClick={finishOnboarding}>Passer</button>
 
       <div className={styles.dots}>
@@ -156,6 +161,7 @@ export default function BienvenuePage() {
       </div>
 
       <div className={styles.card} key={slideIndex}>
+        {slide.image && <img src={slide.image} alt="" className={styles.illustration} />}
         <img src="/wenna_icon.png" alt="WennaShop" className={styles.logo} />
         <div className={styles.eyebrow}>{slide.eyebrow}</div>
         <div className={styles.title}>{slide.title}</div>
