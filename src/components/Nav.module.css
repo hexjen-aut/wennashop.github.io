@@ -22,7 +22,7 @@
 .logoIcon { height: 30px; width: auto; display: block; }
 .cartBadge {
   position: absolute; top: 4px; right: 4px;
-  background: var(--accent); color: #fff;
+  background: var(--accent-btn); color: #fff;
   font-size: 9px; font-weight: 800; width: 16px; height: 16px;
   border-radius: 50%; display: none; align-items: center;
   justify-content: center; font-family: var(--font);

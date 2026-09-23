@@ -140,7 +140,7 @@ function PaiementContent() {
         <p style={{ color: 'var(--text-muted)', marginBottom: 24, maxWidth: 420, marginLeft: 'auto', marginRight: 'auto' }}>
           Un code de confirmation {mobileProvider === 'airtel_money' ? 'Airtel Money' : 'Moov Money'} a été envoyé au {mobilePhone}. Valide-le pour finaliser ta commande — le statut se mettra à jour automatiquement.
         </p>
-        <Link href={`/suivi?order=${orderId}`} style={{ background: 'var(--accent)', color: '#fff', padding: '12px 28px', borderRadius: 999, fontWeight: 700, textDecoration: 'none' }}>Suivre ma commande</Link>
+        <Link href={`/suivi?order=${orderId}`} style={{ background: 'var(--accent-btn)', color: '#fff', padding: '12px 28px', borderRadius: 999, fontWeight: 700, textDecoration: 'none' }}>Suivre ma commande</Link>
       </div>
     </>
   );
@@ -151,7 +151,7 @@ function PaiementContent() {
         <div style={{ fontSize: 40, marginBottom: 16 }}>✅</div>
         <h1 style={{ fontSize: 30, fontWeight: 900, marginBottom: 8 }}>Commande confirmée !</h1>
         <p style={{ color: 'var(--text-muted)', marginBottom: 24 }}>Merci pour ta commande. Tu recevras une confirmation par email.</p>
-        <Link href="/boutique" style={{ background: 'var(--accent)', color: '#fff', padding: '12px 28px', borderRadius: 999, fontWeight: 700, textDecoration: 'none' }}>Continuer mes achats</Link>
+        <Link href="/boutique" style={{ background: 'var(--accent-btn)', color: '#fff', padding: '12px 28px', borderRadius: 999, fontWeight: 700, textDecoration: 'none' }}>Continuer mes achats</Link>
       </div>
     </>
   );

@@ -13,6 +13,14 @@ const STATUS_LABEL = { pending: 'En attente', active: 'Actif', inactive: 'Inacti
 const STATUS_COLOR = { pending: '#f59e0b', active: '#22c55e', inactive: '#555', processing: '#3b82f6', shipped: '#3b82f6', delivered: '#22c55e', cancelled: '#ef4444', approved: '#22c55e', paid: '#22c55e', rejected: '#ef4444' };
 const PAYOUT_METHOD_LABEL = { mobile_money: 'Mobile Money', bank_transfer: 'Virement bancaire' };
 
+function slugify(s) {
+  return (s || '')
+    .toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 const NOTIF_ICON = { order: 'ph-shopping-bag', money: 'ph-currency-circle-dollar', review: 'ph-star', stock: 'ph-warning', system: 'ph-bell' };
 
 function fmt(n, c = 'MAD') { try { return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: c, minimumFractionDigits: 0 }).format(n || 0); } catch { return `${n || 0} ${c}`; } }
@@ -632,14 +640,25 @@ export default function VendeurPage() {
     e.preventDefault();
     if (!shopForm.name) { showToast('Le nom de la boutique est requis', 'error'); return; }
     const sb = getSupabase();
-    const payload = { ...shopForm, user_id: seller.id, carrier_id: shopForm.carrier_id || null };
+    // Le slug alimente l'URL publique de la boutique (/boutique-vendeur?slug=...) —
+    // on le nettoie toujours (espaces, majuscules, accents cassent le lien) plutôt
+    // que d'enregistrer tel quel ce que le champ contient.
+    let slug = slugify(shopForm.slug) || slugify(shopForm.name) || 'boutique';
+    const payload = { ...shopForm, slug, user_id: seller.id, carrier_id: shopForm.carrier_id || null };
     let error;
-    if (shop?.id) ({ error } = await sb.from('shops').update(payload).eq('id', shop.id));
-    else ({ error } = await sb.from('shops').insert(payload));
+    for (let attempt = 0; attempt < 5; attempt++) {
+      payload.slug = attempt === 0 ? slug : `${slug}-${attempt + 1}`;
+      const res = shop?.id
+        ? await sb.from('shops').update(payload).eq('id', shop.id)
+        : await sb.from('shops').insert(payload);
+      error = res.error;
+      if (!error || error.code !== '23505') break;
+    }
     if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
     showToast('Boutique enregistrée', 'success');
     const { data: refreshed } = await sb.from('shops').select('*').eq('user_id', seller.id).maybeSingle();
     setShop(refreshed);
+    setShopForm((prev) => ({ ...prev, slug: refreshed?.slug || prev.slug }));
   }
 
   async function claimHunterCode() {

@@ -314,7 +314,7 @@ function SuiviContent() {
               <div className={styles.orderHeader} style={{ textAlign: 'center', padding: '40px 24px' }}>
                 <div style={{ fontSize: 16, fontWeight: 800, marginBottom: 6 }}>Connexion requise</div>
                 <div style={{ fontSize: 13, color: 'var(--text-faint)', marginBottom: 16 }}>Connectez-vous pour retrouver toutes vos commandes</div>
-                <button onClick={() => router.push('/connexion')} style={{ background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 999, padding: '9px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Se connecter</button>
+                <button onClick={() => router.push('/connexion')} style={{ background: 'var(--accent-btn)', color: '#fff', border: 'none', borderRadius: 999, padding: '9px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Se connecter</button>
               </div>
             ) : loadingOrders ? (
               <div style={{ textAlign: 'center', padding: 40, color: 'var(--text-faint)' }}>Chargement…</div>
