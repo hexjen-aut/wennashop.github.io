@@ -641,9 +641,9 @@ export default function VendeurPage() {
     if (!shopForm.name) { showToast('Le nom de la boutique est requis', 'error'); return; }
     const sb = getSupabase();
     // Le slug alimente l'URL publique de la boutique (/boutique-vendeur?slug=...) —
-    // on le nettoie toujours (espaces, majuscules, accents cassent le lien) plutôt
-    // que d'enregistrer tel quel ce que le champ contient.
-    let slug = slugify(shopForm.slug) || slugify(shopForm.name) || 'boutique';
+    // toujours dérivé automatiquement du nom (jamais saisi à la main : un champ
+    // technique sans guide ne parle à personne).
+    let slug = slugify(shopForm.name) || 'boutique';
     const payload = { ...shopForm, slug, user_id: seller.id, carrier_id: shopForm.carrier_id || null };
     let error;
     for (let attempt = 0; attempt < 5; attempt++) {
@@ -1233,7 +1233,13 @@ export default function VendeurPage() {
           <form className={styles.card} onSubmit={saveShop} style={{ maxWidth: 640, padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div className={styles.formGrid}>
               <div id="tour-shop-name" className={`${styles.formGroup} ${tourFieldClass('tour-shop-name')}`}><label className={styles.formLabel}>Nom de la boutique *</label><input className={styles.input} value={shopForm.name} onChange={(e) => setShopForm({ ...shopForm, name: e.target.value })} /></div>
-              <div className={styles.formGroup}><label className={styles.formLabel}>Slug (URL)</label><input className={styles.input} value={shopForm.slug} onChange={(e) => setShopForm({ ...shopForm, slug: e.target.value })} /></div>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Adresse de ta boutique</label>
+                <div className={styles.input} style={{ display: 'flex', alignItems: 'center', color: 'var(--text-faint)', cursor: 'default', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  wennashop.com/boutique-vendeur?slug=<span style={{ color: 'var(--text)', fontWeight: 700 }}>{slugify(shopForm.name) || 'ma-boutique'}</span>
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 4 }}>Générée automatiquement à partir du nom — rien à faire.</div>
+              </div>
             </div>
             <div id="tour-shop-bio" className={`${styles.formGroup} ${tourFieldClass('tour-shop-bio')}`}><label className={styles.formLabel}>Description / Bio</label><textarea className={styles.input} rows={3} value={shopForm.bio} onChange={(e) => setShopForm({ ...shopForm, bio: e.target.value })} /></div>
             <div className={styles.formGrid}>
