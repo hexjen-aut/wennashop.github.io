@@ -207,7 +207,7 @@ export default function VendeurPage() {
         shop_policies: shopRow.shop_policies || '', ships_to: shopRow.ships_to || [],
         has_carrier: shopRow.has_carrier, carrier_id: shopRow.carrier_id || '',
       });
-      const { data: carriersData } = await sb.from('carriers').select('*').eq('is_active', true).order('country').order('name');
+      const { data: carriersData } = await sb.from('carriers').select('*').eq('is_active', true).order('name');
       setCarriers(carriersData || []);
       setWallet(walletRow || { balance: 0, currency: 'MAD' });
       setCategories(cats || []);
@@ -1344,11 +1344,11 @@ export default function VendeurPage() {
                 <>
                   <select className={styles.input} value={shopForm.carrier_id} onChange={(e) => setShopForm({ ...shopForm, carrier_id: e.target.value })}>
                     <option value="">— Choisis un transporteur —</option>
-                    {carriers.filter((c) => c.country === shopForm.country || c.scope === 'international').map((c) => (
-                      <option key={c.id} value={c.id}>{c.name} · {c.country} · {c.scope === 'international' ? 'International' : 'Local'}</option>
+                    {carriers.filter((c) => c.scope === 'international' || (c.countries || []).includes(shopForm.country)).map((c) => (
+                      <option key={c.id} value={c.id}>{c.name} · {c.scope === 'international' ? 'International' : (c.countries || []).join(', ')}</option>
                     ))}
                   </select>
-                  {carriers.filter((c) => c.country === shopForm.country || c.scope === 'international').length === 0 && (
+                  {carriers.filter((c) => c.scope === 'international' || (c.countries || []).includes(shopForm.country)).length === 0 && (
                     <p style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 6 }}>Aucun transporteur disponible pour ton pays pour l'instant — contacte l'administration WennaShop.</p>
                   )}
                 </>

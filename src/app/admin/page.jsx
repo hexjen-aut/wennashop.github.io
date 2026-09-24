@@ -81,7 +81,7 @@ export default function AdminPage() {
   // ── Transporteurs ──
   const [carriers, setCarriers] = useState([]);
   const [carrierModalOpen, setCarrierModalOpen] = useState(false);
-  const [carrierForm, setCarrierForm] = useState({ id: null, name: '', country: 'Maroc', scope: 'local', phone: '', notes: '', is_active: true });
+  const [carrierForm, setCarrierForm] = useState({ id: null, name: '', countries: [], scope: 'local', phone: '', notes: '', is_active: true });
   const [reviews, setReviews] = useState([]);
   const [payments, setPayments] = useState([]);
   const [payouts, setPayouts] = useState([]);
@@ -254,21 +254,25 @@ export default function AdminPage() {
   // ── Transporteurs ──
   async function loadCarriers() {
     const sb = getSupabase();
-    const { data } = await sb.from('carriers').select('*').order('country').order('name');
+    const { data } = await sb.from('carriers').select('*').order('name');
     setCarriers(data || []);
   }
   function openAddCarrier() {
-    setCarrierForm({ id: null, name: '', country: 'Maroc', scope: 'local', phone: '', notes: '', is_active: true });
+    setCarrierForm({ id: null, name: '', countries: [], scope: 'local', phone: '', notes: '', is_active: true });
     setCarrierModalOpen(true);
   }
   function openEditCarrier(c) {
-    setCarrierForm({ id: c.id, name: c.name || '', country: c.country || 'Maroc', scope: c.scope || 'local', phone: c.phone || '', notes: c.notes || '', is_active: c.is_active !== false });
+    setCarrierForm({ id: c.id, name: c.name || '', countries: c.countries || [], scope: c.scope || 'local', phone: c.phone || '', notes: c.notes || '', is_active: c.is_active !== false });
     setCarrierModalOpen(true);
+  }
+  function toggleCarrierFormCountry(country) {
+    setCarrierForm((f) => ({ ...f, countries: f.countries.includes(country) ? f.countries.filter((c) => c !== country) : [...f.countries, country] }));
   }
   async function saveCarrier() {
     if (!carrierForm.name.trim()) { alert('Nom requis'); return; }
+    if (carrierForm.scope === 'local' && carrierForm.countries.length === 0) { alert('Coche au moins un pays'); return; }
     const sb = getSupabase();
-    const payload = { name: carrierForm.name, country: carrierForm.country, scope: carrierForm.scope, phone: carrierForm.phone || null, notes: carrierForm.notes || null, is_active: carrierForm.is_active, updated_at: new Date().toISOString() };
+    const payload = { name: carrierForm.name, countries: carrierForm.scope === 'international' ? [] : carrierForm.countries, scope: carrierForm.scope, phone: carrierForm.phone || null, notes: carrierForm.notes || null, is_active: carrierForm.is_active, updated_at: new Date().toISOString() };
     const { error } = carrierForm.id ? await sb.from('carriers').update(payload).eq('id', carrierForm.id) : await sb.from('carriers').insert([payload]);
     if (error) { alert('Erreur : ' + error.message); return; }
     setCarrierModalOpen(false);
@@ -1151,7 +1155,7 @@ export default function AdminPage() {
                     {carriers.map((c) => (
                       <tr key={c.id}>
                         <td>{c.name}</td>
-                        <td>{flag(c.country)}</td>
+                        <td>{c.scope === 'international' ? 'Tous pays' : (c.countries || []).map((cn) => flag(cn)).join(' ') || '—'}</td>
                         <td>{c.scope === 'international' ? 'International' : 'Local'}</td>
                         <td style={{ color: 'var(--text-faint)' }}>{c.phone || '—'}</td>
                         <td><Badge status={c.is_active ? 'active' : 'inactive'} label={c.is_active ? 'Actif' : 'Inactif'} /></td>
@@ -1620,13 +1624,20 @@ export default function AdminPage() {
             <div className={styles.modalHead}>{carrierForm.id ? 'Modifier le transporteur' : 'Nouveau transporteur'}</div>
             <div className={styles.modalBody}>
               <input className={styles.input} placeholder="Nom *" value={carrierForm.name} onChange={(e) => setCarrierForm({ ...carrierForm, name: e.target.value })} />
-              <select className={styles.input} value={carrierForm.country} onChange={(e) => setCarrierForm({ ...carrierForm, country: e.target.value })}>
-                {CARRIER_COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
               <select className={styles.input} value={carrierForm.scope} onChange={(e) => setCarrierForm({ ...carrierForm, scope: e.target.value })}>
-                <option value="local">Local (dans le pays)</option>
-                <option value="international">International</option>
+                <option value="local">Pays précis (un ou plusieurs)</option>
+                <option value="international">International (tous les pays)</option>
               </select>
+              {carrierForm.scope === 'local' && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '4px 0 8px' }}>
+                  {CARRIER_COUNTRIES.filter((c) => c !== 'Autre').map((c) => (
+                    <label key={c} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, background: 'var(--surface-2)', padding: '6px 10px', borderRadius: 999, cursor: 'pointer' }}>
+                      <input type="checkbox" checked={carrierForm.countries.includes(c)} onChange={() => toggleCarrierFormCountry(c)} />
+                      {flag(c)}
+                    </label>
+                  ))}
+                </div>
+              )}
               <input className={styles.input} placeholder="Téléphone" value={carrierForm.phone} onChange={(e) => setCarrierForm({ ...carrierForm, phone: e.target.value })} />
               <textarea className={styles.input} rows={2} placeholder="Notes (zones couvertes, tarifs...)" value={carrierForm.notes} onChange={(e) => setCarrierForm({ ...carrierForm, notes: e.target.value })} />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderTop: '1px solid var(--border)' }}>
