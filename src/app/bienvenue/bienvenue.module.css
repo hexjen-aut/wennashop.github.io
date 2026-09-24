@@ -56,12 +56,15 @@
   .wrap::before, .wrap::after { animation: none; }
 }
 
+/* Hauteur fixe (les 3 illustrations n'ont pas le même ratio une fois
+   recadrées à leur propre contenu) : sans ça, la carte change de taille
+   à chaque diapo et tout se recentre visiblement — effet de "saut". */
 .illustration {
   width: min(70%, 220px);
-  height: auto;
+  height: 184px;
+  object-fit: contain;
   margin: 0 auto 18px;
   display: block;
-  border-radius: var(--radius-lg);
 }
 
 .skip {
