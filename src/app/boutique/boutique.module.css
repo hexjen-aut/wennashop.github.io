@@ -196,11 +196,6 @@
 .bnavItemGold { color: var(--gold); }
 
 /* ── ÉCRAN DE MAINTENANCE ── */
-.maintenanceScreen { min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; text-align: center; padding: 40px; background: var(--bg); }
-.logo { font-family: var(--font); font-size: 22px; font-weight: 900; color: var(--text); letter-spacing: -1px; }
-.maintTitle { font-size: 24px; font-weight: 800; color: var(--text-muted); }
-.maintSub { font-size: 13px; color: var(--text-faint); max-width: 360px; line-height: 1.8; }
-
 /* ── VARIANTES DE GRILLE (bascule grille/liste) ── */
 .cols3 { grid-template-columns: repeat(4,1fr); }
 .cols4 { grid-template-columns: repeat(6,1fr); }

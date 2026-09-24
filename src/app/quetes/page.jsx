@@ -5,12 +5,14 @@ import Link from 'next/link';
 import { getSupabase } from '@/lib/supabase';
 import Nav from '@/components/Nav';
 import ImageCropModal from '@/components/ImageCropModal';
+import { useFeatureFlags } from '@/context/FeatureFlagsContext';
 import styles from './quetes.module.css';
 
 function fmt(n) { return Number(n).toLocaleString('fr-FR'); }
 function daysLeft(d) { return Math.max(0, Math.ceil((new Date(d) - new Date()) / 86400000)); }
 
 export default function QuetesPage() {
+  const { quests_enabled: questsEnabled } = useFeatureFlags();
   const [quests, setQuests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -80,6 +82,18 @@ export default function QuetesPage() {
     setModalOpen(false);
     setForm({ title: '', description: '', budget: '', reward: '', country: 'Les deux', image_url: '' });
     await load();
+  }
+
+  if (!questsEnabled) {
+    return (
+      <>
+        <Nav />
+        <div style={{ minHeight: '50vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10, padding: 40, textAlign: 'center' }}>
+          <div style={{ fontSize: 22, fontWeight: 900 }}>Quêtes temporairement indisponibles</div>
+          <p style={{ fontSize: 13, color: 'var(--text-faint)', maxWidth: 360 }}>Cette fonctionnalité est désactivée pour le moment.</p>
+        </div>
+      </>
+    );
   }
 
   return (

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { getSupabase } from '@/lib/supabase';
 import TourOverlay from '@/components/TourOverlay';
 import tourStyles from '@/components/TourOverlay.module.css';
+import { useFeatureFlags } from '@/context/FeatureFlagsContext';
 import styles from './chasseur.module.css';
 
 const MAX_IMAGES = 5;
@@ -60,7 +61,14 @@ export default function ChasseurPage() {
   const [proposalsCount, setProposalsCount] = useState({});
   const [myProposals, setMyProposals] = useState([]);
 
+  const { quests_enabled: questsEnabled } = useFeatureFlags();
   const [tab, setTab] = useState('quests');
+
+  // Si les quêtes sont désactivées, on ne laisse jamais l'onglet actif
+  // dessus — on bascule sur "Gains" qui reste toujours disponible.
+  useEffect(() => {
+    if (!questsEnabled && (tab === 'quests' || tab === 'proposals')) setTab('gains');
+  }, [questsEnabled, tab]);
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
   const [activeCountry, setActiveCountry] = useState('all');
@@ -348,7 +356,7 @@ export default function ChasseurPage() {
         </Link>
         <div className={styles.navLinks}>
           <Link href="/boutique">Boutique</Link>
-          <Link href="/quetes">Quêtes</Link>
+          {questsEnabled && <Link href="/quetes">Quêtes</Link>}
           <span className={styles.navLinkActive}>Espace Chasseur</span>
           <div className={styles.notifWrap}>
             <button className={styles.notifBell} onClick={() => setNotifOpen((v) => !v)}>
@@ -384,10 +392,12 @@ export default function ChasseurPage() {
             </div>
           </div>
           <div className={styles.tabsRow}>
-            <button id="tour-tab-quests" className={`${styles.htab} ${tab === 'quests' ? styles.htabActive : ''} ${tourHl('tour-tab-quests')}`} onClick={() => setTab('quests')}>Quêtes</button>
-            <button className={`${styles.htab} ${tab === 'proposals' ? styles.htabActive : ''}`} onClick={() => setTab('proposals')}>
-              Mes propositions <span className={styles.htabBadge}>{myProposals.filter((p) => p.status === 'pending').length}</span>
-            </button>
+            {questsEnabled && <button id="tour-tab-quests" className={`${styles.htab} ${tab === 'quests' ? styles.htabActive : ''} ${tourHl('tour-tab-quests')}`} onClick={() => setTab('quests')}>Quêtes</button>}
+            {questsEnabled && (
+              <button className={`${styles.htab} ${tab === 'proposals' ? styles.htabActive : ''}`} onClick={() => setTab('proposals')}>
+                Mes propositions <span className={styles.htabBadge}>{myProposals.filter((p) => p.status === 'pending').length}</span>
+              </button>
+            )}
             <button className={`${styles.htab} ${tab === 'gains' ? styles.htabActive : ''}`} onClick={() => setTab('gains')}>Gains</button>
             <button className={`${styles.htab} ${tab === 'vendeurs' ? styles.htabActive : ''}`} onClick={() => setTab('vendeurs')}>Mes vendeurs</button>
             <button onClick={() => setTourStep(0)} title="Revoir le tutoriel" style={{ background: 'none', border: 'none', color: 'var(--text-faint)', cursor: 'pointer', fontSize: 16, marginLeft: 4, display: 'flex', alignItems: 'center' }}>
@@ -769,7 +779,7 @@ export default function ChasseurPage() {
           <Link href="/boutique" className={styles.bnavItem}><i className="ph ph-storefront" />Boutique</Link>
           <Link href="/chasseur" className={`${styles.bnavItem} ${styles.bnavItemActive}`}><i className="ph ph-binoculars" />Chasse</Link>
           <Link href="/vendeur" className={styles.bnavItem}><i className="ph ph-plus-circle" />Vendre</Link>
-          <Link href="/quetes" className={styles.bnavItem}><i className="ph ph-trophy" />Quêtes</Link>
+          {questsEnabled && <Link href="/quetes" className={styles.bnavItem}><i className="ph ph-trophy" />Quêtes</Link>}
           <Link href="/compte" className={styles.bnavItem}><i className="ph ph-user-circle" />Profil</Link>
         </div>
       </nav>

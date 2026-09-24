@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
 import Nav from '@/components/Nav';
+import { useFeatureFlags } from '@/context/FeatureFlagsContext';
 import styles from '@/app/quetes/quetes.module.css';
 
 function fmt(n) { return Number(n).toLocaleString('fr-FR'); }
@@ -18,6 +19,7 @@ const PROPOSAL_STATUS_LABEL = {
 };
 
 function Content() {
+  const { quests_enabled: questsEnabled } = useFeatureFlags();
   const params = useSearchParams();
   const id = params.get('id');
   const [quest, setQuest] = useState(null);
@@ -62,6 +64,17 @@ function Content() {
     location.reload();
   }
 
+  if (!questsEnabled) {
+    return (
+      <>
+        <Nav />
+        <div style={{ minHeight: '50vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10, padding: 40, textAlign: 'center' }}>
+          <div style={{ fontSize: 22, fontWeight: 900 }}>Quêtes temporairement indisponibles</div>
+          <p style={{ fontSize: 13, color: 'var(--text-faint)', maxWidth: 360 }}>Cette fonctionnalité est désactivée pour le moment.</p>
+        </div>
+      </>
+    );
+  }
   if (loading) return <><Nav /><div style={{ padding: 60, textAlign: 'center', color: 'var(--text-faint)' }}>Chargement…</div></>;
   if (!quest) return <><Nav /><div style={{ padding: 60, textAlign: 'center' }}>Quête introuvable.</div></>;
 
