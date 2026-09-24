@@ -142,7 +142,9 @@ textarea.input { resize: vertical; min-height: 70px; }
 .bnItem { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; background: none; border: none; color: var(--text-faint); cursor: pointer; font-family: var(--font); padding: 4px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
 .bnItem i { font-size: 19px; }
 .bnItemActive { color: var(--accent); }
-.fab { position: fixed; bottom: 80px; right: 16px; width: 52px; height: 52px; background: var(--accent-btn); border: none; border-radius: 50%; color: #fff; font-size: 22px; display: none; align-items: center; justify-content: center; cursor: pointer; box-shadow: var(--shadow-orange); z-index: 300; }
+/* À gauche plutôt qu'à droite : le bouton d'aide flottant (site entier)
+   occupe déjà ce coin bas-droit sur mobile. */
+.fab { position: fixed; bottom: 80px; left: 16px; width: 52px; height: 52px; background: var(--accent-btn); border: none; border-radius: 50%; color: #fff; font-size: 22px; display: none; align-items: center; justify-content: center; cursor: pointer; box-shadow: var(--shadow-orange); z-index: 300; }
 
 @media (max-width: 900px) {
   .sidebar { position: fixed; top: 0; left: 0; height: 100vh; transform: translateX(-100%); transition: transform .3s cubic-bezier(.22,1,.36,1); }
