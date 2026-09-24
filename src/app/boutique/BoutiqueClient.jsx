@@ -8,12 +8,23 @@ import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import CartSidebar from '@/components/CartSidebar';
 import UrgencyTimer from '@/components/UrgencyTimer';
+import TourOverlay from '@/components/TourOverlay';
+import tourStyles from '@/components/TourOverlay.module.css';
 import { convertPrice, formatSmartPrice, currencyForCountry } from '@/lib/currency';
 import { SHIP_COUNTRIES as COUNTRIES, COUNTRY_FLAG } from '@/lib/geo';
 import styles from './boutique.module.css';
 
 const PAGE_SIZE = 24;
 const BUYER_COUNTRY_KEY = 'wenna_buyer_country';
+const BUYER_TOUR_SEEN_KEY = 'wenna_buyer_tour_seen';
+
+const BUYER_TOUR_STEPS = [
+  { targetId: 'tour-search-btn', title: 'Rechercher', text: 'Cherche un produit précis, ou parcours les catégories juste en dessous.' },
+  { targetId: 'tour-first-product', title: 'Ouvrir un produit', text: 'Clique sur un produit pour voir ses photos, son prix et sa boutique.' },
+  { targetId: 'tour-add-to-cart-btn', title: 'Ajouter au panier', text: 'Ajoute directement un produit au panier sans quitter la liste.' },
+  { targetId: 'tour-cart-btn', title: 'Ton panier', text: 'Retrouve ici tout ce que tu as ajouté, et passe commande quand tu es prêt.' },
+  { targetId: 'tour-suivi-btn', title: 'Suivre ta commande', text: 'Une fois ta commande passée, suis sa livraison ici à tout moment.' },
+];
 const DISPLAY_CURRENCIES = [
   { value: 'MAD', label: 'MAD (Maroc)' },
   { value: 'XOF', label: 'FCFA — UEMOA' },
@@ -71,6 +82,10 @@ export default function BoutiqueClient() {
 
   // Compteur "en ligne"
   const [onlineCount, setOnlineCount] = useState(0);
+
+  // Tutoriel interactif
+  const [tourStep, setTourStep] = useState(null); // null = pas en cours
+  const [tourProposalOpen, setTourProposalOpen] = useState(false);
 
   // ── Config du site ──
   useEffect(() => {
@@ -204,6 +219,29 @@ export default function BoutiqueClient() {
     else { setShowBoostFloat(false); sessionStorage.setItem('wenna_float_boost_dismissed', '1'); }
   }
 
+  // ── Tutoriel interactif : proposé une seule fois, dès que les produits
+  // sont chargés (le tuto pointe sur le premier produit réel de la grille). ──
+  useEffect(() => {
+    if (loading || products.length === 0) return;
+    let seen = null;
+    try { seen = localStorage.getItem(BUYER_TOUR_SEEN_KEY); } catch {}
+    if (seen) return;
+    const t = setTimeout(() => setTourProposalOpen(true), 2500);
+    return () => clearTimeout(t);
+  }, [loading, products.length]);
+
+  function endTour() {
+    setTourStep(null);
+    try { localStorage.setItem(BUYER_TOUR_SEEN_KEY, '1'); } catch {}
+  }
+  function acceptTourProposal() { setTourProposalOpen(false); setTourStep(0); }
+  function declineTourProposal() { setTourProposalOpen(false); endTour(); }
+  function nextTourStep() {
+    if (tourStep < BUYER_TOUR_STEPS.length - 1) setTourStep((s) => s + 1);
+    else endTour();
+  }
+  function tourHl(id) { return tourStep !== null && BUYER_TOUR_STEPS[tourStep]?.targetId === id ? tourStyles.tourHighlight : ''; }
+
   // ── Présence en ligne (Supabase Realtime) ──
   useEffect(() => {
     const sb = getSupabase();
@@ -281,7 +319,7 @@ export default function BoutiqueClient() {
 
   return (
     <>
-      <Nav onOpenCart={() => setCartOpen(true)} />
+      <Nav onOpenCart={() => setCartOpen(true)} highlightId={tourStep !== null ? BUYER_TOUR_STEPS[tourStep]?.targetId : null} />
       <CartSidebar open={cartOpen} onClose={() => setCartOpen(false)} />
 
       {siteConfig.boutique_banner_enabled === 'true' && siteConfig.boutique_banner_url && (
@@ -390,11 +428,14 @@ export default function BoutiqueClient() {
           ))}
         </div>
         <div className={styles.toolbarRight}>
-          <button className={styles.hdBtn} onClick={() => setSearchOpen(true)} aria-label="Rechercher" style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 18, display: 'flex' }}>
+          <button id="tour-search-btn" className={`${styles.hdBtn} ${tourHl('tour-search-btn')}`} onClick={() => setSearchOpen(true)} aria-label="Rechercher" style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 18, display: 'flex' }}>
             <i className="ph ph-magnifying-glass" />
           </button>
           <button className={styles.btnBoostToolbar} onClick={() => setBoostPanelOpen(true)}>Boostées</button>
           <Link href="/quetes" className={styles.btnQueteToolbar}>Quêtes</Link>
+          <button className={styles.hdBtn} onClick={() => setTourStep(0)} title="Revoir le tutoriel" style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 18, display: 'flex' }}>
+            <i className="ph ph-question" />
+          </button>
           <span className={styles.resultsCount}>{total > 0 ? `${total} produit${total > 1 ? 's' : ''}` : ''}</span>
           <select className={styles.sortSelect} value={displayCurrency} onChange={(e) => setDisplayCurrency(e.target.value)} title="Devise d'affichage">
             {DISPLAY_CURRENCIES.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
@@ -466,15 +507,21 @@ export default function BoutiqueClient() {
             </div>
           ) : (
             <div className={`${styles.prodGrid} ${gridClass}`}>
-              {products.map((p) => {
+              {products.map((p, i) => {
                 const img = Array.isArray(p.images) && p.images.length ? p.images[0] : (p.image_url || 'https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=400&q=80');
                 const paysLabel = (p.country || '').toLowerCase().includes('maroc') ? 'MA' : 'GA';
                 return (
-                  <Link href={`/produit?id=${p.id}`} className={styles.prodCard} key={p.id}>
+                  <Link href={`/produit?id=${p.id}`} id={i === 0 ? 'tour-first-product' : undefined} className={`${styles.prodCard} ${i === 0 ? tourHl('tour-first-product') : ''}`} key={p.id}>
                     <div className={styles.prodImg}>
                       <img src={img} alt={p.name} loading="lazy" />
                       <span className={styles.prodBadge}>{paysLabel}</span>
-                      <button className={styles.prodAdd} onClick={(e) => handleAdd(e, p)} aria-label="Ajouter au panier">
+                      <button
+                        id={i === 0 ? 'tour-add-to-cart-btn' : undefined}
+                        className={`${styles.prodAdd} ${i === 0 ? tourHl('tour-add-to-cart-btn') : ''}`}
+                        onClick={(e) => handleAdd(e, p)}
+                        aria-label="Ajouter au panier"
+                        style={i === 0 && tourHl('tour-add-to-cart-btn') ? { opacity: 1, transform: 'scale(1)' } : undefined}
+                      >
                         <i className="ph ph-plus" style={{ fontSize: 14 }} />
                       </button>
                     </div>
@@ -648,6 +695,22 @@ export default function BoutiqueClient() {
           <Link href="/compte" className={styles.bnavItem}><i className="ph ph-user-circle" />Profil</Link>
         </div>
       </nav>
+
+      {tourProposalOpen && (
+        <div onClick={declineTourProposal} style={{ position: 'fixed', inset: 0, zIndex: 6999, background: 'rgba(0,0,0,.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ maxWidth: 380, width: '100%', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: 24, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+            <i className="ph ph-hand-waving" style={{ fontSize: 30, color: 'var(--accent)' }} />
+            <h3 style={{ fontSize: 16, fontWeight: 900 }}>Bienvenue sur WennaShop !</h3>
+            <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>On te montre en 5 étapes comment chercher un produit, l'ajouter au panier et suivre ta commande. Ça prend une minute.</p>
+            <div style={{ display: 'flex', gap: 10, width: '100%' }}>
+              <button onClick={declineTourProposal} style={{ flex: 1, padding: '10px 12px', borderRadius: 10, background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-muted)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>Plus tard</button>
+              <button onClick={acceptTourProposal} style={{ flex: 1, padding: '10px 12px', borderRadius: 10, background: 'var(--accent-btn)', border: 'none', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>Oui, guide-moi</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <TourOverlay steps={BUYER_TOUR_STEPS} stepIndex={tourStep} onNext={nextTourStep} onSkip={endTour} />
     </>
   );
 }

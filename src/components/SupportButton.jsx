@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { getSupabase } from '@/lib/supabase';
+import styles from './SupportButton.module.css';
 
 const WHATSAPP_NUMBER = '212766237011';
 
@@ -57,8 +58,8 @@ export default function SupportButton() {
       <button
         onClick={() => setOpen((v) => !v)}
         aria-label="Aide"
+        className={styles.fab}
         style={{
-          position: 'fixed', bottom: 20, right: 20, zIndex: 900,
           width: 52, height: 52, borderRadius: '50%',
           background: 'var(--accent-btn)', color: '#fff', border: 'none',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -76,8 +77,8 @@ export default function SupportButton() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
+            className={styles.panel}
             style={{
-              position: 'fixed', bottom: 84, right: 20, zIndex: 900,
               width: 300, maxWidth: 'calc(100vw - 40px)',
               background: 'var(--surface)', border: '1px solid var(--border)',
               borderRadius: 'var(--radius-lg)', padding: 18,

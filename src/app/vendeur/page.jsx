@@ -112,6 +112,7 @@ export default function VendeurPage() {
   // Tutoriel interactif
   const [tourStep, setTourStep] = useState(null); // null = pas en cours
   const [tourProposalOpen, setTourProposalOpen] = useState(false);
+  const [tourRect, setTourRect] = useState(null); // rect de l'élément mis en avant, pour flouter le reste
 
   // Products
   const [products, setProducts] = useState([]);
@@ -227,7 +228,7 @@ export default function VendeurPage() {
       await loadOverview(sb, user, shopRow, prodIds, orderIds);
       await loadNotifications(sb, user.id);
       setChecking(false);
-      if (!user.onboarding_completed_at) setTourProposalOpen(true);
+      if (!user.vendor_tour_completed_at) setTourProposalOpen(true);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -271,6 +272,33 @@ export default function VendeurPage() {
     }, 60);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tourStep]);
+
+  // ── Tutoriel : flouter tout l'écran sauf l'élément mis en avant, pour que
+  // l'utilisateur se concentre sur ce dont on lui parle. On mesure sa
+  // position réelle (getBoundingClientRect) plutôt que de deviner, et on la
+  // recalcule au scroll/redimensionnement le temps que l'étape reste active. ──
+  useEffect(() => {
+    if (tourStep === null) { setTourRect(null); return; }
+    const step = TOUR_STEPS[tourStep];
+    function targetEl() {
+      if (step.fieldId) return document.getElementById(step.fieldId);
+      if (step.navKey === 'new-product') return document.getElementById('tour-new-product-btn');
+      return document.getElementById(`tour-nav-${step.navKey}`);
+    }
+    function update() {
+      const el = targetEl();
+      setTourRect(el ? el.getBoundingClientRect().toJSON() : null);
+    }
+    update();
+    const t = setTimeout(update, 350); // laisse le scroll/changement de section se stabiliser
+    window.addEventListener('resize', update);
+    window.addEventListener('scroll', update, true);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener('resize', update);
+      window.removeEventListener('scroll', update, true);
+    };
   }, [tourStep]);
 
   async function loadOverview(sb, user, shopRow, prodIds, orderIds) {
@@ -710,11 +738,32 @@ export default function VendeurPage() {
   function showSection(s) { setSection(s); setSidebarOpen(false); }
   function tourFieldClass(id) { return tourStep !== null && TOUR_STEPS[tourStep]?.fieldId === id ? styles.tourHighlight : ''; }
 
+  // Quatre bandes qui encadrent tourRect pour flouter/assombrir tout le
+  // reste de l'écran sans jamais toucher l'élément mis en avant (voir
+  // l'effet sur .tourHighlight, qui repasse au-dessus au z-index).
+  function renderTourVeils() {
+    const vw = window.innerWidth, vh = window.innerHeight;
+    if (!tourRect) return <div className={styles.tourVeil} style={{ top: 0, left: 0, width: vw, height: vh }} />;
+    const pad = 8;
+    const top = Math.max(0, tourRect.top - pad);
+    const left = Math.max(0, tourRect.left - pad);
+    const right = Math.min(vw, tourRect.left + tourRect.width + pad);
+    const bottom = Math.min(vh, tourRect.top + tourRect.height + pad);
+    return (
+      <>
+        <div className={styles.tourVeil} style={{ top: 0, left: 0, width: vw, height: top }} />
+        <div className={styles.tourVeil} style={{ top: bottom, left: 0, width: vw, height: Math.max(0, vh - bottom) }} />
+        <div className={styles.tourVeil} style={{ top, left: 0, width: left, height: Math.max(0, bottom - top) }} />
+        <div className={styles.tourVeil} style={{ top, left: right, width: Math.max(0, vw - right), height: Math.max(0, bottom - top) }} />
+      </>
+    );
+  }
+
   async function endTour() {
     setTourStep(null);
     const sb = getSupabase();
-    await sb.from('users').update({ onboarding_completed_at: new Date().toISOString() }).eq('id', seller.id);
-    setSeller((prev) => ({ ...prev, onboarding_completed_at: new Date().toISOString() }));
+    await sb.from('users').update({ vendor_tour_completed_at: new Date().toISOString() }).eq('id', seller.id);
+    setSeller((prev) => ({ ...prev, vendor_tour_completed_at: new Date().toISOString() }));
   }
   function acceptTourProposal() { setTourProposalOpen(false); setTourStep(0); }
   function declineTourProposal() { setTourProposalOpen(false); endTour(); }
@@ -846,7 +895,7 @@ export default function VendeurPage() {
           ['shop', 'ph-storefront', 'Ma boutique'],
           ['profile', 'ph-user', 'Mon profil'],
         ].map(([key, icon, label]) => (
-          <button key={key} className={`${styles.navItem} ${section === key ? styles.navItemActive : ''} ${tourStep !== null && TOUR_STEPS[tourStep]?.navKey === key ? styles.tourHighlight : ''}`} onClick={() => showSection(key)}>
+          <button key={key} id={`tour-nav-${key}`} className={`${styles.navItem} ${section === key ? styles.navItemActive : ''} ${tourStep !== null && TOUR_STEPS[tourStep]?.navKey === key ? styles.tourHighlight : ''}`} onClick={() => showSection(key)}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}><i className={`ph ${icon}`} />{label}</span>
             {key === 'orders' && orders.filter((o) => o.status === 'pending').length > 0 && <span className={styles.navBadge}>{orders.filter((o) => o.status === 'pending').length}</span>}
           </button>
@@ -867,7 +916,7 @@ export default function VendeurPage() {
               <i className="ph ph-bell" />
               {unreadCount > 0 && <span className={styles.notifDot}>{unreadCount}</span>}
             </button>
-            <button className={`${styles.btnPrimary} ${tourStep !== null && TOUR_STEPS[tourStep]?.navKey === 'new-product' ? styles.tourHighlight : ''}`} onClick={() => { showSection('products'); openProductModal(); }}><i className="ph ph-plus" /> Nouveau produit</button>
+            <button id="tour-new-product-btn" className={`${styles.btnPrimary} ${tourStep !== null && TOUR_STEPS[tourStep]?.navKey === 'new-product' ? styles.tourHighlight : ''}`} onClick={() => { showSection('products'); openProductModal(); }}><i className="ph ph-plus" /> Nouveau produit</button>
             <button className={styles.linkBtn} title="Revoir le tutoriel" onClick={() => setTourStep(0)}><i className="ph ph-question" /></button>
           </div>
         </div>
@@ -1683,7 +1732,9 @@ export default function VendeurPage() {
 
       {/* ── TUTORIEL INTERACTIF ── */}
       {tourStep !== null && (
-        <div className={styles.tourPanel}>
+        <>
+          {renderTourVeils()}
+          <div className={styles.tourPanel}>
           <div className={styles.tourStepLabel}>Étape {tourStep + 1}/{TOUR_STEPS.length}</div>
           <div className={styles.tourTitle}>{TOUR_STEPS[tourStep].title}</div>
           <p className={styles.tourText}>{TOUR_STEPS[tourStep].text}</p>
@@ -1691,7 +1742,8 @@ export default function VendeurPage() {
             <button className={styles.linkBtn} onClick={endTour}>Passer</button>
             <button className={styles.btnPrimary} onClick={nextTourStep}>{tourStep === TOUR_STEPS.length - 1 ? "C'est parti !" : 'Suivant'}</button>
           </div>
-        </div>
+          </div>
+        </>
       )}
     </div>
   );

@@ -158,8 +158,14 @@ textarea.input { resize: vertical; min-height: 70px; }
 }
 
 /* ── TUTORIEL INTERACTIF ── */
-.tourHighlight { box-shadow: 0 0 0 2px var(--accent), 0 0 0 6px var(--accent-light); border-radius: var(--radius-md); animation: tourPulse 1.6s ease-in-out infinite; }
+/* position + z-index : passe au-dessus des voiles (.tourVeil, 6980) pour
+   rester net et cliquable pendant que le reste de l'écran est flouté. */
+.tourHighlight { position: relative; z-index: 6985; box-shadow: 0 0 0 2px var(--accent), 0 0 0 6px var(--accent-light); border-radius: var(--radius-md); animation: tourPulse 1.6s ease-in-out infinite; }
 @keyframes tourPulse { 0%, 100% { box-shadow: 0 0 0 2px var(--accent), 0 0 0 6px var(--accent-light); } 50% { box-shadow: 0 0 0 2px var(--accent), 0 0 0 10px var(--accent-light); } }
+/* Bandes qui encadrent l'élément mis en avant (calculées en JS à partir de
+   son getBoundingClientRect) pour flouter/assombrir tout le reste de
+   l'écran sans jamais flouter l'élément lui-même. */
+.tourVeil { position: fixed; z-index: 6980; background: rgba(8,8,8,.62); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); pointer-events: none; transition: top .25s ease, left .25s ease, width .25s ease, height .25s ease; }
 .tourPanel { position: fixed; bottom: 24px; right: 24px; width: 300px; background: var(--surface); border: 1.5px solid var(--border-accent); border-radius: var(--radius-lg); box-shadow: 0 12px 32px rgba(0,0,0,.35); padding: 18px; z-index: 7000; }
 .tourStepLabel { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); margin-bottom: 6px; }
 .tourTitle { font-size: 15px; font-weight: 900; margin-bottom: 6px; }
