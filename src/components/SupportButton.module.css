@@ -1,0 +1,18 @@
+/* Décalé au-dessus de la bottom nav mobile (~72px, voir globals.css)
+   pour ne jamais cacher un de ses icônes. */
+.fab {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 900;
+}
+.panel {
+  position: fixed;
+  right: 20px;
+  bottom: 84px;
+  z-index: 900;
+}
+@media (max-width: 768px) {
+  .fab { bottom: 92px; }
+  .panel { bottom: 156px; }
+}
