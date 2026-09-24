@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { getSupabase } from '@/lib/supabase';
+import TourOverlay from '@/components/TourOverlay';
+import tourStyles from '@/components/TourOverlay.module.css';
 import styles from './chasseur.module.css';
 
 const MAX_IMAGES = 5;
@@ -40,6 +42,14 @@ function timeAgo(d) {
 }
 function daysUntil(d) { return Math.max(0, Math.ceil((new Date(d) - new Date()) / 86400000)); }
 
+const HUNTER_TOUR_STEPS = [
+  { tab: 'quests', targetId: 'tour-tab-quests', title: 'Quêtes à pourvoir', text: "Des acheteurs postent des quêtes pour des produits introuvables — propose ton aide ici et gagne la récompense s'ils te choisissent." },
+  { tab: 'vendeurs', targetId: 'tour-referral-card', title: 'Ton code de parrainage', text: "Chaque chasseur vérifié a son propre code. Un vendeur qui s'inscrit avec devient automatiquement ton filleul." },
+  { tab: 'vendeurs', targetId: 'tour-copy-link-btn', title: 'Le lien à partager', text: "Envoie ce lien plutôt que le code seul : tout se fait automatiquement à l'inscription, rien à taper de son côté." },
+  { tab: 'vendeurs', targetId: 'tour-recruited-card', title: 'Tes vendeurs recrutés', text: 'Suis ici chaque boutique parrainée, et si elle est déjà active (3 commandes livrées).' },
+  { tab: 'gains', targetId: 'tour-gains-total', title: 'Tes gains', text: 'Le total encaissé sur les quêtes et le parrainage, avec le détail de chaque paiement en dessous.' },
+];
+
 export default function ChasseurPage() {
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
@@ -74,6 +84,10 @@ export default function ChasseurPage() {
   const [lightbox, setLightbox] = useState(null);
   const [toast, setToast] = useState(null);
 
+  // Tutoriel interactif
+  const [tourStep, setTourStep] = useState(null); // null = pas en cours
+  const [tourProposalOpen, setTourProposalOpen] = useState(false);
+
   function showToast(text, type = 'ok') {
     setToast({ text, type });
     setTimeout(() => setToast(null), 3500);
@@ -88,7 +102,7 @@ export default function ChasseurPage() {
 
       let internal = null;
       if (session) {
-        const { data } = await sb.from('users').select('id, role, full_name, first_name, last_name, country, avatar_url, hunter_referral_code, hunter_status').eq('auth_id', session.user.id).single();
+        const { data } = await sb.from('users').select('id, role, full_name, first_name, last_name, country, avatar_url, hunter_referral_code, hunter_status, hunter_tour_completed_at').eq('auth_id', session.user.id).single();
         internal = data;
         setInternalUser(data);
       }
@@ -114,6 +128,7 @@ export default function ChasseurPage() {
       if (internal?.id) await loadMyProposals(sb, internal.id);
       if (internal?.id) await loadNotifications(sb, internal.id);
       if (internal?.id) await loadRecruitedShops(sb, internal.id);
+      if (internal?.id && !internal.hunter_tour_completed_at) setTourProposalOpen(true);
 
       setLoading(false);
     })();
@@ -125,6 +140,30 @@ export default function ChasseurPage() {
     const iv = setInterval(() => { loadNotifications(getSupabase(), internalUser.id); }, 30000);
     return () => clearInterval(iv);
   }, [internalUser]);
+
+  // ── Tutoriel : chaque étape peut viser un onglet différent, on y bascule
+  // automatiquement avant de mettre en avant l'élément concerné. ──
+  useEffect(() => {
+    if (tourStep === null) return;
+    const step = HUNTER_TOUR_STEPS[tourStep];
+    if (step?.tab) setTab(step.tab);
+  }, [tourStep]);
+
+  function endTour() {
+    setTourStep(null);
+    const sb = getSupabase();
+    if (internalUser?.id) {
+      sb.from('users').update({ hunter_tour_completed_at: new Date().toISOString() }).eq('id', internalUser.id);
+      setInternalUser((prev) => ({ ...prev, hunter_tour_completed_at: new Date().toISOString() }));
+    }
+  }
+  function acceptTourProposal() { setTourProposalOpen(false); setTourStep(0); }
+  function declineTourProposal() { setTourProposalOpen(false); endTour(); }
+  function nextTourStep() {
+    if (tourStep < HUNTER_TOUR_STEPS.length - 1) setTourStep((s) => s + 1);
+    else endTour();
+  }
+  function tourHl(id) { return tourStep !== null && HUNTER_TOUR_STEPS[tourStep]?.targetId === id ? tourStyles.tourHighlight : ''; }
 
   async function loadMyProposals(sb, hunterId) {
     const { data } = await sb
@@ -345,12 +384,15 @@ export default function ChasseurPage() {
             </div>
           </div>
           <div className={styles.tabsRow}>
-            <button className={`${styles.htab} ${tab === 'quests' ? styles.htabActive : ''}`} onClick={() => setTab('quests')}>Quêtes</button>
+            <button id="tour-tab-quests" className={`${styles.htab} ${tab === 'quests' ? styles.htabActive : ''} ${tourHl('tour-tab-quests')}`} onClick={() => setTab('quests')}>Quêtes</button>
             <button className={`${styles.htab} ${tab === 'proposals' ? styles.htabActive : ''}`} onClick={() => setTab('proposals')}>
               Mes propositions <span className={styles.htabBadge}>{myProposals.filter((p) => p.status === 'pending').length}</span>
             </button>
             <button className={`${styles.htab} ${tab === 'gains' ? styles.htabActive : ''}`} onClick={() => setTab('gains')}>Gains</button>
             <button className={`${styles.htab} ${tab === 'vendeurs' ? styles.htabActive : ''}`} onClick={() => setTab('vendeurs')}>Mes vendeurs</button>
+            <button onClick={() => setTourStep(0)} title="Revoir le tutoriel" style={{ background: 'none', border: 'none', color: 'var(--text-faint)', cursor: 'pointer', fontSize: 16, marginLeft: 4, display: 'flex', alignItems: 'center' }}>
+              <i className="ph ph-question" />
+            </button>
           </div>
         </div>
       </div>
@@ -541,7 +583,7 @@ export default function ChasseurPage() {
         {tab === 'gains' && (
           <div className={styles.gainsLayout}>
             <div>
-              <div className={styles.gainsTotal}>
+              <div id="tour-gains-total" className={`${styles.gainsTotal} ${tourHl('tour-gains-total')}`}>
                 <div className={styles.gainsTotalLbl}>Total encaissé</div>
                 <div className={styles.gainsTotalVal}>{fmt(kpis.gains)} FCFA</div>
               </div>
@@ -592,14 +634,15 @@ export default function ChasseurPage() {
         {tab === 'vendeurs' && (
           <div className={styles.gainsLayout}>
             <div>
-              <div className={styles.gainsCard}>
+              <div id="tour-referral-card" className={`${styles.gainsCard} ${tourHl('tour-referral-card')}`}>
                 <div className={styles.gainsCardTitle}>Ton code de parrainage</div>
                 {internalUser?.hunter_status === 'verified' && internalUser?.hunter_referral_code ? (
                   <>
                     <div style={{ fontSize: 26, fontWeight: 900, color: 'var(--accent)', letterSpacing: 2, marginBottom: 10 }}>{internalUser.hunter_referral_code}</div>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                       <button
-                        className={styles.htab}
+                        id="tour-copy-link-btn"
+                        className={`${styles.htab} ${tourHl('tour-copy-link-btn')}`}
                         style={{ border: '1.5px solid var(--accent)', color: 'var(--accent)' }}
                         onClick={() => {
                           const link = `${window.location.origin}/connexion?ref=${internalUser.hunter_referral_code}`;
@@ -634,7 +677,7 @@ export default function ChasseurPage() {
                 </div>
               </div>
             </div>
-            <div className={styles.gainsCard}>
+            <div id="tour-recruited-card" className={`${styles.gainsCard} ${tourHl('tour-recruited-card')}`}>
               <div className={styles.gainsCardTitle}>Vendeurs recrutés ({recruitedShops.length})</div>
               {recruitedShops.length === 0 ? (
                 <div className={styles.emptyState} style={{ padding: 28 }}><div className={styles.emptyTitle}>Aucun vendeur recruté</div><div className={styles.emptySub}>Partage ton code pour commencer à gagner.</div></div>
@@ -732,6 +775,22 @@ export default function ChasseurPage() {
       </nav>
 
       {toast && <div className={`${styles.toast} ${toast.type === 'error' ? styles.toastError : ''}`}>{toast.text}</div>}
+
+      {tourProposalOpen && (
+        <div onClick={declineTourProposal} style={{ position: 'fixed', inset: 0, zIndex: 6999, background: 'rgba(0,0,0,.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ maxWidth: 380, width: '100%', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: 24, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+            <i className="ph ph-hand-waving" style={{ fontSize: 30, color: 'var(--accent)' }} />
+            <h3 style={{ fontSize: 16, fontWeight: 900 }}>Bienvenue, chasseur !</h3>
+            <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>On te montre en 5 étapes les quêtes à pourvoir, ton lien de parrainage et où suivre tes gains. Ça prend une minute.</p>
+            <div style={{ display: 'flex', gap: 10, width: '100%' }}>
+              <button onClick={declineTourProposal} style={{ flex: 1, padding: '10px 12px', borderRadius: 10, background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-muted)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>Plus tard</button>
+              <button onClick={acceptTourProposal} style={{ flex: 1, padding: '10px 12px', borderRadius: 10, background: 'var(--accent-btn)', border: 'none', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>Oui, guide-moi</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <TourOverlay steps={HUNTER_TOUR_STEPS} stepIndex={tourStep} onNext={nextTourStep} onSkip={endTour} />
     </>
   );
 }
