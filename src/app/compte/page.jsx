@@ -17,6 +17,13 @@ function fmt(n, currency = 'MAD') {
   catch { return `${n} ${currency}`; }
 }
 function fmtDate(d) { return d ? new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : ''; }
+function timeAgo(d) {
+  const diff = Date.now() - new Date(d).getTime();
+  if (diff < 60000) return "À l'instant";
+  if (diff < 3600000) return `Il y a ${Math.floor(diff / 60000)} min`;
+  if (diff < 86400000) return `Il y a ${Math.floor(diff / 3600000)}h`;
+  return fmtDate(d);
+}
 
 const STATUS_LABEL = { pending: 'En attente', processing: 'En préparation', shipped: 'En transit', delivered: 'Livré', cancelled: 'Annulée' };
 
@@ -63,6 +70,10 @@ export default function ComptePage() {
   const [upgrading, setUpgrading] = useState(false);
   const [upgradeUploadProgress, setUpgradeUploadProgress] = useState(0);
   const [vendeurTab, setVendeurTab] = useState('produits');
+
+  // Notifications
+  const [notifications, setNotifications] = useState([]);
+  const [notifOpen, setNotifOpen] = useState(false);
 
   // 2FA
   const [mfaFactors, setMfaFactors] = useState({ totp: null, phone: null });
@@ -116,10 +127,37 @@ export default function ComptePage() {
           await loadVendeurData(sb, p.id);
         }
         await loadMfaStatus(sb);
+        await loadNotifications(sb, p.id);
       }
       setLoading(false);
     })();
   }, [router]);
+
+  // Notifications : sondage toutes les 30s (même schéma que /chasseur)
+  useEffect(() => {
+    if (!profile?.id) return;
+    const iv = setInterval(() => { loadNotifications(getSupabase(), profile.id); }, 30000);
+    return () => clearInterval(iv);
+  }, [profile]);
+
+  async function loadNotifications(sb, userId) {
+    const { data } = await sb.from('notifications').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(20);
+    setNotifications(data || []);
+  }
+  async function markAllRead() {
+    if (!profile) return;
+    const sb = getSupabase();
+    await sb.from('notifications').update({ is_read: true }).eq('user_id', profile.id).eq('is_read', false);
+    await loadNotifications(sb, profile.id);
+  }
+  async function readNotif(n) {
+    const sb = getSupabase();
+    await sb.from('notifications').update({ is_read: true }).eq('id', n.id);
+    setNotifOpen(false);
+    if (n.link) window.location.href = n.link;
+    else await loadNotifications(sb, profile.id);
+  }
+  const unreadNotifCount = notifications.filter((n) => !n.is_read).length;
 
   async function loadMfaStatus(sb) {
     try {
@@ -435,9 +473,27 @@ export default function ComptePage() {
             <label htmlFor="avatar-input" style={{ position: 'absolute', bottom: -2, right: -2, width: 24, height: 24, background: 'var(--accent-btn)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: 11, color: '#fff' }}>{uploadingAvatar ? '…' : '📷'}</label>
             <input id="avatar-input" type="file" accept="image/jpeg,image/png,image/webp" style={{ display: 'none' }} onChange={handleAvatarChange} />
           </div>
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: '1 1 160px', minWidth: 0 }}>
             <div className={styles.name}>{fullName}</div>
-            <div className={styles.email}>{profile?.email}</div>
+            <div className={styles.email} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{profile?.email}</div>
+          </div>
+          <div className={styles.notifWrap}>
+            <button className={styles.notifBell} onClick={() => setNotifOpen((v) => !v)} aria-label="Notifications">
+              <i className="ph ph-bell" />
+              {unreadNotifCount > 0 && <span className={styles.notifBadge}>{unreadNotifCount > 9 ? '9+' : unreadNotifCount}</span>}
+            </button>
+            {notifOpen && (
+              <div className={styles.notifPanel}>
+                <div className={styles.notifHead}><span>Notifications</span><button onClick={markAllRead}>Tout lire</button></div>
+                {notifications.length === 0 ? <div className={styles.notifEmpty}>Aucune notification</div> : notifications.map((n) => (
+                  <div key={n.id} className={`${styles.notifItem} ${!n.is_read ? styles.notifItemUnread : ''}`} onClick={() => readNotif(n)}>
+                    <div className={styles.notifItemTitle}>{n.title}</div>
+                    {n.body && <div className={styles.notifItemBody}>{n.body}</div>}
+                    <div style={{ fontSize: 10, color: 'var(--text-faint)', marginTop: 4 }}>{timeAgo(n.created_at)}</div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <button className={styles.btnLogout} onClick={handleLogout}>Déconnexion</button>
         </div>
