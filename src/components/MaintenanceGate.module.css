@@ -1,0 +1,6 @@
+.screen { min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; text-align: center; padding: 40px; background: var(--bg); }
+.logo { display: flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--font); font-size: 22px; font-weight: 900; color: var(--text); letter-spacing: -1px; }
+.logoIcon { height: 34px; width: auto; }
+.logoAccent { color: var(--accent); }
+.title { font-size: 24px; font-weight: 800; color: var(--text-muted); }
+.sub { font-size: 13px; color: var(--text-faint); max-width: 360px; line-height: 1.8; }

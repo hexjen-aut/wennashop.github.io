@@ -12,6 +12,7 @@ import TourOverlay from '@/components/TourOverlay';
 import tourStyles from '@/components/TourOverlay.module.css';
 import { convertPrice, formatSmartPrice, currencyForCountry } from '@/lib/currency';
 import { SHIP_COUNTRIES as COUNTRIES, COUNTRY_FLAG } from '@/lib/geo';
+import { useFeatureFlags } from '@/context/FeatureFlagsContext';
 import styles from './boutique.module.css';
 
 const PAGE_SIZE = 24;
@@ -34,10 +35,11 @@ const DISPLAY_CURRENCIES = [
 export default function BoutiqueClient() {
   const { add, clear } = useCart();
   const [cartOpen, setCartOpen] = useState(false);
+  const { quests_enabled: questsEnabled, boosters_enabled: boostersEnabled } = useFeatureFlags();
 
-  // Config du site (maintenance, ticker, bandeau, offre limitée)
+  // Config du site (ticker, bandeau, offre limitée) — le mode maintenance
+  // est géré globalement par MaintenanceGate dans le layout racine.
   const [siteConfig, setSiteConfig] = useState({});
-  const [maintenance, setMaintenance] = useState(false);
 
   // Catalogue
   const [categories, setCategories] = useState([]);
@@ -96,7 +98,6 @@ export default function BoutiqueClient() {
       const cfg = {};
       data.forEach((r) => { cfg[r.key] = r.value; });
       setSiteConfig(cfg);
-      setMaintenance(cfg.maintenance_mode === 'true');
     })();
   }, []);
 
@@ -304,19 +305,6 @@ export default function BoutiqueClient() {
 
   const gridClass = view === 'list' ? styles.listView : view === 'grid3' ? styles.cols3 : styles.cols4;
 
-  if (maintenance) {
-    return (
-      <div className={styles.maintenanceScreen}>
-        <div className={styles.logo} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-          <img src="/wenna_icon.png" alt="" style={{ height: 34, width: 'auto' }} />
-          <span style={{ color: 'var(--accent)' }}>Wenna</span>Shop
-        </div>
-        <div className={styles.maintTitle}>Site en maintenance</div>
-        <p className={styles.maintSub}>Nous effectuons des mises à jour. La boutique sera de retour très bientôt.</p>
-      </div>
-    );
-  }
-
   return (
     <>
       <Nav onOpenCart={() => setCartOpen(true)} highlightId={tourStep !== null ? BUYER_TOUR_STEPS[tourStep]?.targetId : null} />
@@ -431,8 +419,8 @@ export default function BoutiqueClient() {
           <button id="tour-search-btn" className={`${styles.hdBtn} ${tourHl('tour-search-btn')}`} onClick={() => setSearchOpen(true)} aria-label="Rechercher" style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 18, display: 'flex' }}>
             <i className="ph ph-magnifying-glass" />
           </button>
-          <button className={styles.btnBoostToolbar} onClick={() => setBoostPanelOpen(true)}>Boostées</button>
-          <Link href="/quetes" className={styles.btnQueteToolbar}>Quêtes</Link>
+          {boostersEnabled && <button className={styles.btnBoostToolbar} onClick={() => setBoostPanelOpen(true)}>Boostées</button>}
+          {questsEnabled && <Link href="/quetes" className={styles.btnQueteToolbar}>Quêtes</Link>}
           <button className={styles.hdBtn} onClick={() => setTourStep(0)} title="Revoir le tutoriel" style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 18, display: 'flex' }}>
             <i className="ph ph-question" />
           </button>
@@ -486,10 +474,12 @@ export default function BoutiqueClient() {
             <div className={styles.filterTitle}>Livraison</div>
             <div className={styles.shippingInfo}>La livraison est gérée directement par le vendeur. Contactez-le pour les délais et tarifs.</div>
           </div>
-          <div className={styles.filterSection}>
-            <div className={styles.filterTitle}>Produit introuvable ?</div>
-            <Link href="/quetes" className={styles.sidebarQueteLink}>Poster une quête</Link>
-          </div>
+          {questsEnabled && (
+            <div className={styles.filterSection}>
+              <div className={styles.filterTitle}>Produit introuvable ?</div>
+              <Link href="/quetes" className={styles.sidebarQueteLink}>Poster une quête</Link>
+            </div>
+          )}
           <button className={styles.btnReset} onClick={resetFilters}>Réinitialiser les filtres</button>
         </aside>
 
@@ -503,7 +493,7 @@ export default function BoutiqueClient() {
           ) : products.length === 0 ? (
             <div className={styles.noResults}>
               <div className={styles.noResultsTitle}>Aucun produit trouvé</div>
-              <div className={styles.noResultsSub}>Essayez d'autres filtres — ou <Link href="/quetes">postez une quête</Link> pour le trouver.</div>
+              <div className={styles.noResultsSub}>Essayez d'autres filtres{questsEnabled && <> — ou <Link href="/quetes">postez une quête</Link> pour le trouver</>}.</div>
             </div>
           ) : (
             <div className={`${styles.prodGrid} ${gridClass}`}>
@@ -587,28 +577,32 @@ export default function BoutiqueClient() {
       </div>
 
       {/* Panneau boutiques boostées */}
-      <div className={`${styles.boostPanelOverlay} ${boostPanelOpen ? styles.boostPanelOverlayOpen : ''}`} onClick={() => setBoostPanelOpen(false)} />
-      <div className={`${styles.boostPanel} ${boostPanelOpen ? styles.boostPanelOpen : ''}`}>
-        <div className={styles.bpHead}>
-          <div><div className={styles.bpEyebrow}>Visibilité premium</div><div className={styles.bpTitle}>Boutiques boostées</div></div>
-          <button className={styles.bpClose} onClick={() => setBoostPanelOpen(false)}><i className="ph ph-x" /></button>
-        </div>
-        <div className={styles.bpBody}>
-          {boostedShops.length === 0 ? (
-            <div className={styles.bpEmpty}>Aucune boutique boostée pour le moment.</div>
-          ) : boostedShops.map((s) => (
-            <Link href={`/boutique-vendeur?slug=${s.slug}`} className={styles.boostCard} key={s.id}>
-              {s.banner_url && <img src={s.banner_url} className={styles.boostCardBanner} alt={s.name} />}
-              <div className={styles.boostCardBody}>
-                <span className={styles.boostBadge}>En vedette</span>
-                <div className={styles.boostCardName}>{s.name}</div>
-                {s.bio && <div className={styles.boostCardDesc}>{s.bio}</div>}
-                <span className={styles.boostCardCta}>Visiter la boutique</span>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </div>
+      {boostersEnabled && (
+        <>
+          <div className={`${styles.boostPanelOverlay} ${boostPanelOpen ? styles.boostPanelOverlayOpen : ''}`} onClick={() => setBoostPanelOpen(false)} />
+          <div className={`${styles.boostPanel} ${boostPanelOpen ? styles.boostPanelOpen : ''}`}>
+            <div className={styles.bpHead}>
+              <div><div className={styles.bpEyebrow}>Visibilité premium</div><div className={styles.bpTitle}>Boutiques boostées</div></div>
+              <button className={styles.bpClose} onClick={() => setBoostPanelOpen(false)}><i className="ph ph-x" /></button>
+            </div>
+            <div className={styles.bpBody}>
+              {boostedShops.length === 0 ? (
+                <div className={styles.bpEmpty}>Aucune boutique boostée pour le moment.</div>
+              ) : boostedShops.map((s) => (
+                <Link href={`/boutique-vendeur?slug=${s.slug}`} className={styles.boostCard} key={s.id}>
+                  {s.banner_url && <img src={s.banner_url} className={styles.boostCardBanner} alt={s.name} />}
+                  <div className={styles.boostCardBody}>
+                    <span className={styles.boostBadge}>En vedette</span>
+                    <div className={styles.boostCardName}>{s.name}</div>
+                    {s.bio && <div className={styles.boostCardDesc}>{s.bio}</div>}
+                    <span className={styles.boostCardCta}>Visiter la boutique</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Recherche plein écran */}
       <div className={`${styles.srchOv} ${searchOpen ? styles.srchOvOpen : ''}`}>
@@ -650,7 +644,7 @@ export default function BoutiqueClient() {
       </div>
 
       {/* Panneaux flottants */}
-      {showQuetesFloat && floatQuests.length > 0 && (
+      {questsEnabled && showQuetesFloat && floatQuests.length > 0 && (
         <div className={`${styles.floatPanel} ${styles.floatQuetes} ${styles.floatPanelShow}`}>
           <button className={styles.floatClose} onClick={() => dismissFloat('quetes')}><i className="ph ph-x" /></button>
           <div className={styles.floatHead}>
@@ -669,7 +663,7 @@ export default function BoutiqueClient() {
         </div>
       )}
 
-      {showBoostFloat && boostedShops.length > 0 && (
+      {boostersEnabled && showBoostFloat && boostedShops.length > 0 && (
         <div className={`${styles.floatPanel} ${styles.floatBoost} ${styles.floatPanelShow}`}>
           <button className={styles.floatClose} onClick={() => dismissFloat('boost')}><i className="ph ph-x" /></button>
           <div className={styles.floatHead}>
@@ -691,7 +685,7 @@ export default function BoutiqueClient() {
           <Link href="/boutique" className={`${styles.bnavItem} ${styles.bnavItemActive}`}><i className="ph ph-storefront" />Shop</Link>
           <Link href="/chasseur" className={styles.bnavItem}><i className="ph ph-binoculars" />Chasse</Link>
           <Link href="/vendeur" className={styles.bnavItem}><i className="ph ph-plus-circle" />Vendre</Link>
-          <Link href="/quetes" className={`${styles.bnavItem} ${styles.bnavItemGold}`}><i className="ph ph-trophy" />Quêtes</Link>
+          {questsEnabled && <Link href="/quetes" className={`${styles.bnavItem} ${styles.bnavItemGold}`}><i className="ph ph-trophy" />Quêtes</Link>}
           <Link href="/compte" className={styles.bnavItem}><i className="ph ph-user-circle" />Profil</Link>
         </div>
       </nav>

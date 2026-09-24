@@ -7,6 +7,7 @@ import { getSupabase } from '@/lib/supabase';
 import { uploadFileWithProgress } from '@/lib/storageUpload';
 import ImageCropModal from '@/components/ImageCropModal';
 import { COUNTRIES_WITH_AUTRE as COUNTRIES, SHIP_COUNTRIES } from '@/lib/geo';
+import { useFeatureFlags } from '@/context/FeatureFlagsContext';
 import styles from './vendeur.module.css';
 
 const STATUS_LABEL = { pending: 'En attente', active: 'Actif', inactive: 'Inactif', processing: 'En traitement', shipped: 'Expédiée', delivered: 'Livrée', cancelled: 'Annulée', approved: 'Approuvé', paid: 'Payé', rejected: 'Rejeté' };
@@ -79,6 +80,7 @@ function goalProgress(goal, overview) {
 
 export default function VendeurPage() {
   const router = useRouter();
+  const { wallets_enabled: walletsEnabled, boosters_enabled: boostersEnabled } = useFeatureFlags();
 
   // Auth / seller
   const [checking, setChecking] = useState(true);
@@ -246,6 +248,11 @@ export default function VendeurPage() {
       .subscribe();
     return () => sb.removeChannel(channel);
   }, [seller]);
+
+  // Si le wallet est désactivé, on ne laisse jamais la section active dessus.
+  useEffect(() => {
+    if (!walletsEnabled && section === 'wallet') setSection('overview');
+  }, [walletsEnabled, section]);
 
   // ── Chargement par section (paresseux, comme dans l'admin) ──
   useEffect(() => {
@@ -878,19 +885,21 @@ export default function VendeurPage() {
             <div className={styles.sellerCountry}>{seller.country || '—'}</div>
           </div>
         </div>
-        <div className={styles.walletMini}>
-          <div>
-            <div className={styles.walletMiniLabel}>Crédits Boost</div>
-            <div className={styles.walletMiniAmount}>{fmt(wallet?.balance, wallet?.currency)}</div>
+        {walletsEnabled && (
+          <div className={styles.walletMini}>
+            <div>
+              <div className={styles.walletMiniLabel}>Crédits Boost</div>
+              <div className={styles.walletMiniAmount}>{fmt(wallet?.balance, wallet?.currency)}</div>
+            </div>
+            <button className={styles.linkBtn} onClick={() => showSection('wallet')}><i className="ph ph-arrow-right" /></button>
           </div>
-          <button className={styles.linkBtn} onClick={() => showSection('wallet')}><i className="ph ph-arrow-right" /></button>
-        </div>
+        )}
         {[
           ['overview', 'ph-squares-four', "Vue d'ensemble"],
           ['products', 'ph-package', 'Mes produits'],
           ['orders', 'ph-shopping-bag', 'Commandes'],
           ['revenue', 'ph-currency-circle-dollar', 'Revenus'],
-          ['wallet', 'ph-wallet', 'Wallet & Boosts'],
+          ...(walletsEnabled ? [['wallet', 'ph-wallet', 'Wallet & Boosts']] : []),
           ['reviews', 'ph-star', 'Avis clients'],
           ['shop', 'ph-storefront', 'Ma boutique'],
           ['profile', 'ph-user', 'Mon profil'],
@@ -1175,7 +1184,7 @@ export default function VendeurPage() {
               <div className={styles.walletLabel}>Solde Crédits Boost</div>
               <div className={styles.walletAmount}>{fmt(wallet?.balance, wallet?.currency)}</div>
               <div className={styles.walletActions}>
-                <button className={styles.btnPrimary} onClick={() => setRechargeOpen(true)}><i className="ph ph-plus-circle" /> Recharger</button>
+                {boostersEnabled && <button className={styles.btnPrimary} onClick={() => setRechargeOpen(true)}><i className="ph ph-plus-circle" /> Recharger</button>}
                 <button className={styles.btnGhost} onClick={openPayoutModal}><i className="ph ph-bank" /> Retrait</button>
               </div>
             </div>
@@ -1654,7 +1663,7 @@ export default function VendeurPage() {
       )}
 
       {/* ── MODAL RECHARGE / BOOST ── */}
-      {rechargeOpen && (
+      {boostersEnabled && rechargeOpen && (
         <div className={styles.modalOv} onClick={() => setRechargeOpen(false)}>
           <div className={styles.modalBox} style={{ maxWidth: 460 }} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHead}>

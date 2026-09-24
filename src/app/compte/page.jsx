@@ -10,6 +10,7 @@ import Footer from '@/components/Footer';
 import CartSidebar from '@/components/CartSidebar';
 import ImageCropModal from '@/components/ImageCropModal';
 import { COUNTRIES_WITH_AUTRE as COUNTRIES } from '@/lib/geo';
+import { useFeatureFlags } from '@/context/FeatureFlagsContext';
 import styles from './compte.module.css';
 
 function fmt(n, currency = 'MAD') {
@@ -29,6 +30,7 @@ const STATUS_LABEL = { pending: 'En attente', processing: 'En préparation', shi
 
 export default function ComptePage() {
   const router = useRouter();
+  const { wallets_enabled: walletsEnabled } = useFeatureFlags();
   const [cartOpen, setCartOpen] = useState(false);
   const [profile, setProfile] = useState(null);
   const [orders, setOrders] = useState([]);
@@ -70,6 +72,9 @@ export default function ComptePage() {
   const [upgrading, setUpgrading] = useState(false);
   const [upgradeUploadProgress, setUpgradeUploadProgress] = useState(0);
   const [vendeurTab, setVendeurTab] = useState('produits');
+  useEffect(() => {
+    if (!walletsEnabled && vendeurTab === 'paiements') setVendeurTab('produits');
+  }, [walletsEnabled, vendeurTab]);
 
   // Notifications
   const [notifications, setNotifications] = useState([]);
@@ -708,7 +713,7 @@ export default function ComptePage() {
             <div className={styles.tabs}>
               <button className={`${styles.tab} ${vendeurTab === 'produits' ? styles.tabActive : ''}`} onClick={() => setVendeurTab('produits')}>Produits</button>
               <button className={`${styles.tab} ${vendeurTab === 'ventes' ? styles.tabActive : ''}`} onClick={() => setVendeurTab('ventes')}>Ventes</button>
-              <button className={`${styles.tab} ${vendeurTab === 'paiements' ? styles.tabActive : ''}`} onClick={() => setVendeurTab('paiements')}>Paiements</button>
+              {walletsEnabled && <button className={`${styles.tab} ${vendeurTab === 'paiements' ? styles.tabActive : ''}`} onClick={() => setVendeurTab('paiements')}>Paiements</button>}
               <button className={`${styles.tab} ${vendeurTab === 'boutique' ? styles.tabActive : ''}`} onClick={() => setVendeurTab('boutique')}>Ma Boutique</button>
             </div>
 

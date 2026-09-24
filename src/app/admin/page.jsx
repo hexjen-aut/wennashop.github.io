@@ -95,6 +95,9 @@ export default function AdminPage() {
   const [goalModalOpen, setGoalModalOpen] = useState(false);
   const [goalForm, setGoalForm] = useState({ id: null, audience: 'artisan', metric: 'revenue', title: '', description: '', target_value: '', period: 'monthly', is_active: true });
 
+  // ── Paramètres — interrupteurs fonctionnalités ──
+  const [featureFlags, setFeatureFlags] = useState({ maintenance_mode: false, quests_enabled: true, wallets_enabled: true, boosters_enabled: true });
+
   // ── Paramètres — comptes bancaires ──
   const [bankAccounts, setBankAccounts] = useState([]);
   const [countries, setCountries] = useState([]);
@@ -652,14 +655,25 @@ export default function AdminPage() {
   // ── Paramètres — comptes bancaires ──
   async function loadSettings() {
     const sb = getSupabase();
-    const [{ data }, { data: countryRows }] = await Promise.all([
+    const [{ data }, { data: countryRows }, { data: flagRows }] = await Promise.all([
       sb.from('site_config').select('value').eq('key', 'bank_accounts').maybeSingle(),
       sb.from('countries').select('code,name,currency_code,flag_emoji').eq('status', 'ACTIVE').order('sort_order'),
+      sb.from('site_config').select('key,value').in('key', ['maintenance_mode', 'quests_enabled', 'wallets_enabled', 'boosters_enabled']),
     ]);
     let list = [];
     if (data?.value) { try { list = JSON.parse(data.value); } catch { list = []; } }
     setBankAccounts(Array.isArray(list) ? list : []);
     setCountries(countryRows || []);
+    const flags = {};
+    (flagRows || []).forEach((r) => { flags[r.key] = r.value === 'true'; });
+    setFeatureFlags((prev) => ({ ...prev, ...flags }));
+  }
+  async function toggleFeatureFlag(key) {
+    const sb = getSupabase();
+    const nextValue = !featureFlags[key];
+    const { error } = await sb.from('site_config').upsert({ key, value: String(nextValue), updated_at: new Date().toISOString() });
+    if (error) { alert('Erreur : ' + error.message); return; }
+    setFeatureFlags((prev) => ({ ...prev, [key]: nextValue }));
   }
   function openAddBankAccount() {
     setBankForm({ idx: null, country_code: countries[0]?.code || '', bank_name: '', holder: '', rib: '', swift: '' });
@@ -1549,6 +1563,27 @@ export default function AdminPage() {
           <>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
               <h1 style={{ fontSize: 22, fontWeight: 900 }}>Paramètres</h1>
+            </div>
+            <div className={styles.card}>
+              <div className={styles.cardTitle} style={{ marginBottom: 4 }}>Fonctionnalités du site</div>
+              <p style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 14 }}>Désactiver une fonctionnalité la rend entièrement invisible pour les acheteurs, vendeurs et chasseurs — pas juste grisée.</p>
+              {[
+                { key: 'maintenance_mode', label: 'Mode maintenance', desc: 'Ferme tout le site (sauf cette page admin) avec un écran "Site en maintenance".' },
+                { key: 'quests_enabled', label: 'Quêtes', desc: 'Poster une quête, y répondre, espace chasseur — liens et pages masqués si désactivé.' },
+                { key: 'wallets_enabled', label: 'Wallets', desc: 'Solde, recharge et retrait — masqués côté vendeur et acheteur si désactivé.' },
+                { key: 'boosters_enabled', label: 'Boosters', desc: 'Achat de boost et mise en avant "Boutiques boostées" — masqués si désactivé.' },
+              ].map((f) => (
+                <div key={f.key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 14, padding: '12px 0', borderBottom: '1px solid var(--border)' }}>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700 }}>{f.label}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 2 }}>{f.desc}</div>
+                  </div>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, cursor: 'pointer' }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: featureFlags[f.key] ? 'var(--success)' : 'var(--text-faint)' }}>{featureFlags[f.key] ? 'Actif' : 'Désactivé'}</span>
+                    <input type="checkbox" checked={!!featureFlags[f.key]} onChange={() => toggleFeatureFlag(f.key)} />
+                  </label>
+                </div>
+              ))}
             </div>
             <div className={styles.card}>
               <div className={styles.cardTitle} style={{ marginBottom: 4 }}>Comptes bancaires — virement</div>
