@@ -76,7 +76,10 @@ export default function ChasseurPage() {
   const [sort, setSort] = useState('created_at_desc');
 
   const [recruitedShops, setRecruitedShops] = useState([]);
-  const [hunterBalance, setHunterBalance] = useState({ en_attente: 0, disponible: 0, verse: 0 });
+  // Un tableau, pas un objet unique : hunter_balances a une ligne par devise
+  // (un chasseur qui parraine une boutique marocaine ET une gabonaise a un
+  // solde en MAD et un solde en XAF — jamais à additionner ensemble).
+  const [hunterBalances, setHunterBalances] = useState([]);
 
   const [notifications, setNotifications] = useState([]);
   const [notifOpen, setNotifOpen] = useState(false);
@@ -191,12 +194,7 @@ export default function ChasseurPage() {
     setRecruitedShops(shops || []);
 
     const { data: bal } = await sb.from('hunter_balances').select('*').eq('hunter_id', hunterId);
-    const totals = (bal || []).reduce((acc, r) => ({
-      en_attente: acc.en_attente + Number(r.en_attente || 0),
-      disponible: acc.disponible + Number(r.disponible || 0),
-      verse: acc.verse + Number(r.verse || 0),
-    }), { en_attente: 0, disponible: 0, verse: 0 });
-    setHunterBalance(totals);
+    setHunterBalances(bal || []);
   }
 
   async function loadNotifications(sb, userId) {
@@ -680,11 +678,23 @@ export default function ChasseurPage() {
               </div>
               <div className={styles.gainsCard}>
                 <div className={styles.gainsCardTitle}>Solde parrainage</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>En attente (bloqué 7j)</span><strong>{fmt(hunterBalance.en_attente)} FCFA</strong></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Disponible</span><strong style={{ color: 'var(--success)' }}>{fmt(hunterBalance.disponible)} FCFA</strong></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Déjà versé</span><strong>{fmt(hunterBalance.verse)} FCFA</strong></div>
-                </div>
+                {hunterBalances.length === 0 ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>En attente (bloqué 7j)</span><strong>{fmt(0)} XAF</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Disponible</span><strong style={{ color: 'var(--success)' }}>{fmt(0)} XAF</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Déjà versé</span><strong>{fmt(0)} XAF</strong></div>
+                  </div>
+                ) : hunterBalances.map((b) => (
+                  // Une carte par devise — un chasseur qui parraine à la fois
+                  // une boutique marocaine (MAD) et gabonaise (XAF) a deux
+                  // soldes distincts, jamais un seul total mélangé.
+                  <div key={b.currency} style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 14 }}>
+                    {hunterBalances.length > 1 && <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--accent)', textTransform: 'uppercase' }}>{b.currency}</div>}
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>En attente (bloqué 7j)</span><strong>{fmt(b.en_attente)} {b.currency}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Disponible</span><strong style={{ color: 'var(--success)' }}>{fmt(b.disponible)} {b.currency}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Déjà versé</span><strong>{fmt(b.verse)} {b.currency}</strong></div>
+                  </div>
+                ))}
               </div>
             </div>
             <div id="tour-recruited-card" className={`${styles.gainsCard} ${tourHl('tour-recruited-card')}`}>
