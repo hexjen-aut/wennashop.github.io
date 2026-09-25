@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { getSupabase } from '@/lib/supabase';
 import { useCart } from '@/context/CartContext';
@@ -105,10 +105,29 @@ export default function BoutiqueClient() {
   useEffect(() => {
     (async () => {
       const sb = getSupabase();
-      const { data } = await sb.from('categories').select('id,name').eq('is_active', true).order('sort_order', { ascending: true }).limit(30);
+      const { data } = await sb.from('categories').select('id,name,parent_id').eq('is_active', true).order('sort_order', { ascending: true });
       setCategories(data || []);
     })();
   }, []);
+
+  // Regroupe par catégorie principale : boutons rapides + panneau = les
+  // catégories principales, chacune dépliable sur ses sous-catégories.
+  const categoryGroups = useMemo(() => {
+    const roots = categories.filter((c) => !c.parent_id);
+    return roots.map((root) => ({ root, children: categories.filter((c) => c.parent_id === root.id) }));
+  }, [categories]);
+  const [expandedCatId, setExpandedCatId] = useState(null);
+
+  // category_id sélectionné → tous les ids à filtrer (lui-même, et s'il
+  // s'agit d'une catégorie principale, toutes ses sous-catégories aussi —
+  // sinon un produit rangé dans "Vêtements femme" n'apparaîtrait jamais
+  // quand on clique sur "Mode & accessoires").
+  const catFilterIds = useMemo(() => {
+    if (!catId) return null;
+    const group = categoryGroups.find((g) => String(g.root.id) === catId);
+    if (!group) return [catId];
+    return [catId, ...group.children.map((c) => String(c.id))];
+  }, [catId, categoryGroups]);
 
   // ── Pays de l'acheteur : on ne montre que ses produits nationaux par
   // défaut (voir tout le catalogue mélangé dès l'arrivée décourage) ; à la
@@ -153,7 +172,7 @@ export default function BoutiqueClient() {
         .eq('status', 'active')
         .range(offset, offset + PAGE_SIZE - 1)
         .order(col, { ascending: dir === 'asc' });
-      if (catId) q = q.eq('category_id', catId);
+      if (catFilterIds) q = q.in('category_id', catFilterIds);
       if (countries.length) q = q.in('country', countries);
       if (stockOnly) q = q.gt('stock', 0);
       if (priceMin > 0) q = q.gte('price', priceMin);
@@ -176,7 +195,7 @@ export default function BoutiqueClient() {
       setTotal(count || 0);
       setLoading(false);
     })();
-  }, [catId, sort, page, countries, buyerCountry, stockOnly, priceMin, priceMax, searchTerm, displayCurrency]);
+  }, [catId, categoryGroups, sort, page, countries, buyerCountry, stockOnly, priceMin, priceMax, searchTerm, displayCurrency]);
 
   // ── Boutiques boostées ──
   // Une boutique est "boostée" si elle a un boost actif (table boosts,
@@ -410,9 +429,9 @@ export default function BoutiqueClient() {
         </button>
         <div className={styles.catsScroll}>
           <button className={`${styles.catBtn} ${!catId ? styles.catBtnActive : ''}`} onClick={() => { setCatId(''); setPage(1); }}>Tout</button>
-          {categories.map((c) => (
-            <button key={c.id} className={`${styles.catBtn} ${catId === String(c.id) ? styles.catBtnActive : ''}`}
-              onClick={() => { setCatId(String(c.id)); setPage(1); }}>{c.name}</button>
+          {categoryGroups.map(({ root }) => (
+            <button key={root.id} className={`${styles.catBtn} ${catId === String(root.id) ? styles.catBtnActive : ''}`}
+              onClick={() => { setCatId(String(root.id)); setPage(1); }}>{root.name}</button>
           ))}
         </div>
         <div className={styles.toolbarRight}>
@@ -556,19 +575,47 @@ export default function BoutiqueClient() {
           <input type="search" placeholder="Filtrer les catégories…" value={catPanelFilter} onChange={(e) => setCatPanelFilter(e.target.value)} />
         </div>
         <div className={styles.cpStats}>
-          <div className={styles.cpStat}>Total : <b>{categories.length}</b></div>
+          <div className={styles.cpStat}>Catégories : <b>{categoryGroups.length}</b></div>
           <div className={styles.cpStat}>Sélection : <b style={{ color: 'var(--accent)' }}>{catId ? categories.find((c) => String(c.id) === catId)?.name : 'Toutes'}</b></div>
         </div>
         <div className={styles.cpBody}>
-          {categories.filter((c) => c.name.toLowerCase().includes(catPanelFilter.toLowerCase())).map((c) => (
-            <div className={styles.cpParent} key={c.id}>
-              <div className={styles.cpParentLeft}>
-                <div className={styles.cpParentIcon}>{c.name.charAt(0)}</div>
-                <div className={styles.cpParentName}>{c.name}</div>
-              </div>
-              <button className={styles.cpApplyBtn} onClick={() => { setCatId(String(c.id)); setPage(1); setCatPanelOpen(false); }}>Appliquer</button>
-            </div>
-          ))}
+          {categoryGroups
+            .map(({ root, children }) => {
+              const q = catPanelFilter.toLowerCase();
+              const rootMatches = root.name.toLowerCase().includes(q);
+              const matchingChildren = rootMatches ? children : children.filter((c) => c.name.toLowerCase().includes(q));
+              return { root, children, matchingChildren, visible: !q || rootMatches || matchingChildren.length > 0 };
+            })
+            .filter((g) => g.visible)
+            .map(({ root, children, matchingChildren }) => {
+              const isOpen = expandedCatId === root.id || (catPanelFilter && matchingChildren.length > 0);
+              return (
+                <div key={root.id}>
+                  <div className={styles.cpParent}>
+                    <div className={styles.cpParentLeft}>
+                      <div className={styles.cpParentIcon}>{root.name.charAt(0)}</div>
+                      <div className={styles.cpParentName}>{root.name}</div>
+                    </div>
+                    {children.length > 0 && (
+                      <button className={`${styles.cpToggle} ${isOpen ? styles.cpToggleOpen : ''}`} onClick={() => setExpandedCatId(isOpen ? null : root.id)} aria-label="Sous-catégories">
+                        <i className="ph ph-caret-down" />
+                      </button>
+                    )}
+                    <button className={styles.cpApplyBtn} onClick={() => { setCatId(String(root.id)); setPage(1); setCatPanelOpen(false); }}>Appliquer</button>
+                  </div>
+                  {isOpen && children.length > 0 && (
+                    <div className={styles.cpChildren}>
+                      {(catPanelFilter ? matchingChildren : children).map((c) => (
+                        <div className={styles.cpChild} key={c.id}>
+                          <div className={styles.cpChildName}>{c.name}</div>
+                          <button className={styles.cpChildApply} onClick={() => { setCatId(String(c.id)); setPage(1); setCatPanelOpen(false); }}>Appliquer</button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
         </div>
         <div className={styles.cpFooter}>
           <button className={styles.cpBtnAll} onClick={() => { setCatId(''); setPage(1); setCatPanelOpen(false); }}>Tout afficher</button>

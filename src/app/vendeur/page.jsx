@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
@@ -91,6 +91,12 @@ export default function VendeurPage() {
   const [hunterClaimMsg, setHunterClaimMsg] = useState(null);
   const [wallet, setWallet] = useState(null);
   const [categories, setCategories] = useState([]);
+  // Regroupe les catégories par catégorie principale pour le <select> du
+  // formulaire produit (root → ses sous-catégories, dans l'ordre du tri).
+  const categoryGroups = useMemo(() => {
+    const roots = categories.filter((c) => !c.parent_id);
+    return roots.map((root) => ({ root, children: categories.filter((c) => c.parent_id === root.id) }));
+  }, [categories]);
 
   // Layout
   const [section, setSection] = useState('overview');
@@ -199,7 +205,7 @@ export default function VendeurPage() {
       const [{ data: shopRow }, { data: walletRow }, { data: cats }] = await Promise.all([
         sb.from('shops').select('*').eq('user_id', user.id).maybeSingle(),
         sb.from('vendor_wallets').select('*').eq('user_id', user.id).maybeSingle(),
-        sb.from('categories').select('id,name').eq('is_active', true).order('sort_order', { ascending: true }),
+        sb.from('categories').select('id,name,parent_id').eq('is_active', true).order('sort_order', { ascending: true }),
       ]);
       setShop(shopRow || null);
       if (shopRow) setShopForm({
@@ -1516,7 +1522,12 @@ export default function VendeurPage() {
                     <div className={styles.formGroup}><label className={styles.formLabel}>Catégorie</label>
                       <select className={styles.input} value={productForm.category_id} onChange={(e) => setProductForm({ ...productForm, category_id: e.target.value })}>
                         <option value="">Sélectionner…</option>
-                        {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                        {categoryGroups.map(({ root, children }) => (
+                          <optgroup key={root.id} label={root.name}>
+                            <option value={root.id}>{root.name} (général)</option>
+                            {children.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                          </optgroup>
+                        ))}
                       </select>
                     </div>
                     <div className={styles.formGroup}><label className={styles.formLabel}>Statut</label>
