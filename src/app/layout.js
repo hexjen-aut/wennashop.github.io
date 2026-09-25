@@ -4,6 +4,7 @@ import { FeatureFlagsProvider } from '@/context/FeatureFlagsContext';
 import { Analytics } from '@vercel/analytics/next';
 import SupportButton from '@/components/SupportButton';
 import MaintenanceGate from '@/components/MaintenanceGate';
+import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 
 const SITE_URL = 'https://wennashop.com';
 const SITE_DESCRIPTION = "WennaShop est la marketplace qui connecte les vendeurs et acheteurs entre le Gabon et le Maroc. Achetez et vendez des produits authentiques en toute sécurité.";
@@ -17,6 +18,13 @@ export const metadata = {
   icons: {
     icon: '/icon-192.png',
     apple: '/icon-192.png',
+  },
+  // Sans ça, iOS Safari ouvre l'icône ajoutée à l'écran d'accueil dans un
+  // onglet Safari normal (barre d'adresse visible) au lieu du plein écran.
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'WennaShop',
   },
   robots: { index: true, follow: true },
   openGraph: {
@@ -57,6 +65,7 @@ export default function RootLayout({ children }) {
           </CartProvider>
           <SupportButton />
         </FeatureFlagsProvider>
+        <ServiceWorkerRegister />
         <Analytics />
       </body>
     </html>
