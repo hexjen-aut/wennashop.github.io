@@ -63,6 +63,16 @@ button { font-family: var(--font); }
 /* Padding bas mobile pour laisser la place à la bottom nav (boutique) */
 @media (max-width: 768px) {
   body { padding-bottom: 72px; }
+
+  /* Safari iOS zoome automatiquement sur tout champ dont la taille de
+     police calculée est < 16px au moment où il prend le focus, et ne
+     dézoome pas toujours proprement ensuite — visuellement ça "casse" la
+     page, tutoriel compris. Les champs du site sont pour la plupart en
+     13-14px (choix de densité voulu sur desktop) ; on les remonte à 16px
+     uniquement sous ce breakpoint mobile, jamais en touchant au zoom
+     utilisateur lui-même (jamais de maximum-scale/user-scalable=no, qui
+     casserait l'accessibilité). */
+  input, select, textarea { font-size: 16px !important; }
 }
 
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
