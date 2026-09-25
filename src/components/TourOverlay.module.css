@@ -7,6 +7,11 @@
 .tourVeil { position: fixed; z-index: 6980; background: rgba(8,8,8,.62); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); pointer-events: none; transition: top .25s ease, left .25s ease, width .25s ease, height .25s ease; }
 
 .tourPanel { position: fixed; bottom: 24px; right: 24px; width: 300px; max-width: calc(100vw - 40px); background: var(--surface); border: 1.5px solid var(--border-accent); border-radius: var(--radius-lg); box-shadow: 0 12px 32px rgba(0,0,0,.35); padding: 18px; z-index: 7000; }
+/* Quand l'élément mis en avant est dans la moitié basse de l'écran, le
+   panneau (normalement collé en bas) passe en haut pour ne jamais le
+   recouvrir — sélecteur combiné pour toujours l'emporter sur .tourPanel,
+   y compris sa variante mobile ci-dessous. */
+.tourPanel.tourPanelTop { bottom: auto; top: 24px; }
 .tourStepLabel { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); margin-bottom: 6px; }
 .tourTitle { font-size: 15px; font-weight: 900; margin-bottom: 6px; }
 .tourText { font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px; }
@@ -16,4 +21,5 @@
 
 @media (max-width: 768px) {
   .tourPanel { right: 12px; left: 12px; bottom: 88px; width: auto; }
+  .tourPanel.tourPanelTop { top: 12px; bottom: auto; }
 }

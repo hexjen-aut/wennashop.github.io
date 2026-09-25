@@ -55,7 +55,7 @@ export default function TourOverlay({ steps, stepIndex, onNext, onSkip }) {
       ) : (
         <div className={styles.tourVeil} style={{ top: 0, left: 0, width: vw, height: vh }} />
       )}
-      <div className={styles.tourPanel}>
+      <div className={`${styles.tourPanel} ${r && r.top + (r.bottom - r.top) / 2 > vh / 2 ? styles.tourPanelTop : ''}`}>
         <div className={styles.tourStepLabel}>Étape {stepIndex + 1}/{steps.length}</div>
         <div className={styles.tourTitle}>{step.title}</div>
         <p className={styles.tourText}>{step.text}</p>
