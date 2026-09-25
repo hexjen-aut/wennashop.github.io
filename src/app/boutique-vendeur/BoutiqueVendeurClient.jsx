@@ -50,13 +50,19 @@ export default function Content() {
   useEffect(() => {
     (async () => {
       const sb = getSupabase();
-      let q = sb.from('shops').select('*, users(full_name, specialty, city, country, created_at)');
+      // `users!shops_user_id_fkey` — shops a deux FK vers users (user_id et
+      // recruited_by, pour le parrainage chasseur) ; sans préciser laquelle,
+      // l'embed est ambigu pour PostgREST, qui renvoie une erreur silencieuse
+      // ici (seul `data` est lu) et fait passer une boutique bien réelle pour
+      // introuvable.
+      let q = sb.from('shops').select('*, users!shops_user_id_fkey(full_name, specialty, city, country, created_at)');
       if (slug) q = q.eq('slug', slug);
       else if (id) q = q.eq('id', id);
       else if (vendeur) q = q.eq('user_id', vendeur);
       else { setNotFound(true); setLoading(false); return; }
 
-      const { data } = await q.eq('status', 'active').maybeSingle();
+      const { data, error } = await q.eq('status', 'active').maybeSingle();
+      if (error) console.error('boutique-vendeur: shop fetch failed', error);
       if (!data) { setNotFound(true); setLoading(false); return; }
       setShop(data);
 
