@@ -1508,10 +1508,10 @@ export default function AdminPage() {
             <div className={styles.card}>
               <div className={styles.cardTitle} style={{ marginBottom: 4 }}>Moyens de paiement par pays</div>
               <p style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 14 }}>
-                Active ou désactive un moyen de paiement pour un pays. Réglage de configuration uniquement — le tunnel
-                de paiement (/paiement) ne consulte pas encore cette table, il faudra le brancher dessus pour qu'un
-                changement ici ait un effet réel. Un moyen marqué "Prévu" n'a aucune intégration en place : l'activer
-                ici ne le rend pas fonctionnel.
+                Active ou désactive un moyen de paiement pour un pays. Le tunnel de paiement (/paiement) applique ce
+                réglage directement pour le Maroc et le Gabon — les seuls pays où la commande peut être livrée pour
+                l'instant. Un moyen marqué "Prévu" (ex : carte bancaire) n'a aucune intégration en place : l'activer
+                ici ne le rend pas fonctionnel, même coché.
               </p>
               {paymentMethods.length === 0 ? (
                 <div className={styles.empty}>Chargement…</div>
