@@ -21,9 +21,12 @@ function PaiementContent() {
   const [error, setError] = useState(null);
   const [sending, setSending] = useState(false);
 
+  const COUNTRY_CODE = { Maroc: 'MA', Gabon: 'GA' };
+
   const [form, setForm] = useState({ first: '', last: '', address: '', city: '', country: 'Maroc', notes: '' });
   const [method, setMethod] = useState(params.get('error') === 'payment_failed' ? 'mobile_money' : 'cash_on_delivery');
   const [bankAccounts, setBankAccounts] = useState([]);
+  const [availableMethods, setAvailableMethods] = useState(null); // null = pas encore chargé
   const [mobileProvider, setMobileProvider] = useState('airtel_money');
   const [mobilePhone, setMobilePhone] = useState('');
   const [awaitingMobileConfirm, setAwaitingMobileConfirm] = useState(false);
@@ -36,6 +39,42 @@ function PaiementContent() {
       if (data?.value) { try { setBankAccounts(JSON.parse(data.value)); } catch { setBankAccounts([]); } }
     })();
   }, []);
+
+  // ── Moyens de paiement réellement activés pour le pays choisi — pilotés
+  // depuis l'admin (section Pays), pas codés en dur. Un moyen "PLANNED"
+  // (aucune intégration en place, ex: carte bancaire) n'apparaît jamais
+  // même s'il est coché dans la grille admin.
+  useEffect(() => {
+    (async () => {
+      const countryCode = COUNTRY_CODE[form.country];
+      if (!countryCode) { setAvailableMethods([]); return; }
+      const sb = getSupabase();
+      const [{ data: methods }, { data: cpm }] = await Promise.all([
+        sb.from('payment_methods').select('code,status'),
+        sb.from('country_payment_methods').select('payment_method_code,is_enabled').eq('country_code', countryCode).eq('is_enabled', true),
+      ]);
+      const activeCodes = new Set((methods || []).filter((m) => m.status === 'ACTIVE').map((m) => m.code));
+      const enabled = (cpm || []).map((r) => r.payment_method_code).filter((code) => activeCodes.has(code));
+      setAvailableMethods(enabled);
+    })();
+  }, [form.country]);
+
+  const hasCod = availableMethods?.includes('cash_on_delivery');
+  const hasVirement = availableMethods?.includes('virement') && bankAccounts.length > 0;
+  const mobileMoneyProviders = ['airtel_money', 'moov_money'].filter((p) => availableMethods?.includes(p));
+
+  // Si le pays change et que la méthode choisie n'est plus proposée, on
+  // retombe sur la première disponible plutôt que de laisser un mode
+  // sélectionné mais invisible.
+  useEffect(() => {
+    if (!availableMethods) return;
+    const stillValid = (method === 'cash_on_delivery' && hasCod) || (method === 'virement' && hasVirement) || (method === 'mobile_money' && mobileMoneyProviders.length > 0);
+    if (stillValid) return;
+    if (hasCod) setMethod('cash_on_delivery');
+    else if (hasVirement) setMethod('virement');
+    else if (mobileMoneyProviders.length > 0) { setMethod('mobile_money'); setMobileProvider(mobileMoneyProviders[0]); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [availableMethods, bankAccounts]);
 
   useEffect(() => {
     if (!orderId) { setError('Aucune commande spécifiée.'); setLoading(false); return; }
@@ -183,23 +222,30 @@ function PaiementContent() {
             <div className={styles.card}>
               <div className={styles.cardTitle}>Méthode de paiement</div>
               <div className={styles.methods}>
-                <button className={`${styles.methodCard} ${method === 'cash_on_delivery' ? styles.methodActive : ''}`} onClick={() => setMethod('cash_on_delivery')}>
-                  <div style={{ fontWeight: 700, fontSize: 13 }}>Paiement à la livraison</div>
-                  <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Espèces à la réception</div>
-                </button>
-                {bankAccounts.length > 0 && (
+                {hasCod && (
+                  <button className={`${styles.methodCard} ${method === 'cash_on_delivery' ? styles.methodActive : ''}`} onClick={() => setMethod('cash_on_delivery')}>
+                    <div style={{ fontWeight: 700, fontSize: 13 }}>Paiement à la livraison</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Espèces à la réception</div>
+                  </button>
+                )}
+                {hasVirement && (
                   <button className={`${styles.methodCard} ${method === 'virement' ? styles.methodActive : ''}`} onClick={() => setMethod('virement')}>
                     <div style={{ fontWeight: 700, fontSize: 13 }}>Virement bancaire</div>
                     <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{bankAccounts.map((a) => a.bank_name).join(' · ')}</div>
                   </button>
                 )}
-                {(order?.buyer_currency || order?.currency) === 'XAF' && (
+                {mobileMoneyProviders.length > 0 && (
                   <button className={`${styles.methodCard} ${method === 'mobile_money' ? styles.methodActive : ''}`} onClick={() => setMethod('mobile_money')}>
                     <div style={{ fontWeight: 700, fontSize: 13 }}>Mobile Money</div>
-                    <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Airtel Money · Moov Money</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{mobileMoneyProviders.map((p) => (p === 'airtel_money' ? 'Airtel Money' : 'Moov Money')).join(' · ')}</div>
                   </button>
                 )}
               </div>
+              {availableMethods && !hasCod && !hasVirement && mobileMoneyProviders.length === 0 && (
+                <p style={{ fontSize: 12, color: 'var(--error)', marginTop: 4 }}>
+                  Aucun moyen de paiement disponible pour {form.country} pour l'instant — contacte le support.
+                </p>
+              )}
               {method === 'virement' && (() => {
                 const account = bankAccounts.find((a) => a.country_name === form.country)
                   || bankAccounts.find((a) => a.currency === (order?.buyer_currency || order?.currency))
@@ -218,8 +264,8 @@ function PaiementContent() {
                 <div style={{ marginTop: 14 }}>
                   <div className={styles.grid2}>
                     <select className={styles.input} value={mobileProvider} onChange={(e) => setMobileProvider(e.target.value)}>
-                      <option value="airtel_money">Airtel Money</option>
-                      <option value="moov_money">Moov Money</option>
+                      {mobileMoneyProviders.includes('airtel_money') && <option value="airtel_money">Airtel Money</option>}
+                      {mobileMoneyProviders.includes('moov_money') && <option value="moov_money">Moov Money</option>}
                     </select>
                     <input className={styles.input} placeholder="Numéro (ex: 074123456)" value={mobilePhone} onChange={(e) => setMobilePhone(e.target.value)} />
                   </div>
@@ -248,7 +294,7 @@ function PaiementContent() {
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 18, fontWeight: 900, marginTop: 14 }}>
                 <span>Total</span><span style={{ color: 'var(--accent)' }}>{fmt(order?.buyer_total_amount ?? order?.total_amount, order?.buyer_currency || order?.currency)}</span>
               </div>
-              <button className={styles.btnSubmit} onClick={submit} disabled={sending}>
+              <button className={styles.btnSubmit} onClick={submit} disabled={sending || !(hasCod || hasVirement || mobileMoneyProviders.length > 0)}>
                 {sending ? 'Traitement…' : method === 'mobile_money' ? 'Envoyer la demande de paiement' : 'Confirmer la commande'}
               </button>
             </div>
