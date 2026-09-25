@@ -1307,7 +1307,7 @@ export default function VendeurPage() {
             {shop?.slug && (
               <div className={styles.card} style={{ maxWidth: 640, padding: '12px 16px', marginBottom: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
                 <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Voir la page publique de votre boutique.</span>
-                <Link href={`/boutique-vendeur?slug=${shop.slug}`} target="_blank" rel="noopener noreferrer" className={styles.btnGhost} style={{ textDecoration: 'none' }}>
+                <Link href={`/boutique-vendeur?slug=${shop.slug}`} className={styles.btnGhost} style={{ textDecoration: 'none' }}>
                   <i className="ph ph-storefront" /> Voir ma boutique
                 </Link>
               </div>
