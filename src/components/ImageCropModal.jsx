@@ -6,6 +6,11 @@ import { getCroppedImageBlob } from '@/lib/cropImage';
 import styles from './ImageCropModal.module.css';
 
 export default function ImageCropModal({ imageSrc, aspect = 1, round = false, onCancel, onValidate }) {
+  const hint = round
+    ? 'Centre ton visage dans le cercle — ce qui reste à l\'extérieur ne sera pas visible.'
+    : aspect >= 2
+      ? 'Cadre large : garde l\'essentiel au centre, les bords peuvent être coupés sur mobile.'
+      : 'Centre le produit et fais-le remplir le cadre — ce qui dépasse du carré sera coupé.';
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
@@ -30,6 +35,7 @@ export default function ImageCropModal({ imageSrc, aspect = 1, round = false, on
     <div className={styles.overlay} onClick={onCancel}>
       <div className={styles.box} onClick={(e) => e.stopPropagation()}>
         <div className={styles.head}>Cadrer l'image</div>
+        <p className={styles.hint}>{hint}</p>
         <div className={styles.cropArea}>
           <Cropper
             image={imageSrc}
