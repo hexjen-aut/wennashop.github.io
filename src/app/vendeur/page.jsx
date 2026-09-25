@@ -54,6 +54,17 @@ const TOUR_STEPS = [
   { navKey: 'new-product', title: 'Nouveau produit', text: 'Ce bouton reste accessible partout pour ajouter rapidement un produit.' },
 ];
 
+// Sur mobile, ces sections n'ont pas d'entrée dans la sidebar (hors écran)
+// mais un équivalent direct dans la barre du bas — "Ma boutique" n'y est
+// pas, on montre alors le bouton "Plus" qui permet d'y accéder.
+const MOBILE_NAV_FALLBACK = {
+  overview: 'tour-bnav-overview',
+  products: 'tour-bnav-products',
+  orders: 'tour-bnav-orders',
+  revenue: 'tour-bnav-revenue',
+  shop: 'tour-bnav-plus',
+};
+
 function shopCompletionScore(shop, activeProductCount) {
   const checks = [
     !!shop?.name,
@@ -297,7 +308,14 @@ export default function VendeurPage() {
     function targetEl() {
       if (step.fieldId) return document.getElementById(step.fieldId);
       if (step.navKey === 'new-product') return document.getElementById('tour-new-product-btn');
-      return document.getElementById(`tour-nav-${step.navKey}`);
+      // Sur mobile la sidebar (où vivent les #tour-nav-*) est hors écran
+      // (translateX(-100%)) — on retombe sur son équivalent dans la barre
+      // du bas quand elle est là plutôt que de flouter un élément invisible.
+      const desktop = document.getElementById(`tour-nav-${step.navKey}`);
+      const onScreen = (el) => { if (!el) return false; const r = el.getBoundingClientRect(); return r.width > 0 && r.right > 0 && r.left < window.innerWidth; };
+      if (onScreen(desktop)) return desktop;
+      const mobileId = MOBILE_NAV_FALLBACK[step.navKey];
+      return (mobileId && document.getElementById(mobileId)) || desktop;
     }
     function update() {
       const el = targetEl();
@@ -1729,11 +1747,11 @@ export default function VendeurPage() {
 
       {/* ── NAV MOBILE + FAB ── */}
       <nav className={styles.bottomNav}>
-        <button className={`${styles.bnItem} ${section === 'overview' ? styles.bnItemActive : ''}`} onClick={() => showSection('overview')}><i className="ph ph-squares-four" /><span>Accueil</span></button>
-        <button className={`${styles.bnItem} ${section === 'products' ? styles.bnItemActive : ''}`} onClick={() => showSection('products')}><i className="ph ph-package" /><span>Produits</span></button>
-        <button className={`${styles.bnItem} ${section === 'orders' ? styles.bnItemActive : ''}`} onClick={() => showSection('orders')}><i className="ph ph-shopping-bag" /><span>Commandes</span></button>
-        <button className={`${styles.bnItem} ${section === 'revenue' ? styles.bnItemActive : ''}`} onClick={() => showSection('revenue')}><i className="ph ph-currency-circle-dollar" /><span>Revenus</span></button>
-        <button className={styles.bnItem} onClick={() => setSidebarOpen(true)}><i className="ph ph-dots-three-outline" /><span>Plus</span></button>
+        <button id="tour-bnav-overview" className={`${styles.bnItem} ${section === 'overview' ? styles.bnItemActive : ''}`} onClick={() => showSection('overview')}><i className="ph ph-squares-four" /><span>Accueil</span></button>
+        <button id="tour-bnav-products" className={`${styles.bnItem} ${section === 'products' ? styles.bnItemActive : ''}`} onClick={() => showSection('products')}><i className="ph ph-package" /><span>Produits</span></button>
+        <button id="tour-bnav-orders" className={`${styles.bnItem} ${section === 'orders' ? styles.bnItemActive : ''}`} onClick={() => showSection('orders')}><i className="ph ph-shopping-bag" /><span>Commandes</span></button>
+        <button id="tour-bnav-revenue" className={`${styles.bnItem} ${section === 'revenue' ? styles.bnItemActive : ''}`} onClick={() => showSection('revenue')}><i className="ph ph-currency-circle-dollar" /><span>Revenus</span></button>
+        <button id="tour-bnav-plus" className={styles.bnItem} onClick={() => setSidebarOpen(true)}><i className="ph ph-dots-three-outline" /><span>Plus</span></button>
       </nav>
       <button className={styles.fab} onClick={() => { showSection('products'); openProductModal(); }}><i className="ph ph-plus" /></button>
 
@@ -1760,7 +1778,7 @@ export default function VendeurPage() {
       {tourStep !== null && (
         <>
           {renderTourVeils()}
-          <div className={styles.tourPanel}>
+          <div className={`${styles.tourPanel} ${tourRect && tourRect.top + tourRect.height / 2 > window.innerHeight / 2 ? styles.tourPanelTop : ''}`}>
           <div className={styles.tourStepLabel}>Étape {tourStep + 1}/{TOUR_STEPS.length}</div>
           <div className={styles.tourTitle}>{TOUR_STEPS[tourStep].title}</div>
           <p className={styles.tourText}>{TOUR_STEPS[tourStep].text}</p>
