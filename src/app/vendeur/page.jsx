@@ -1552,6 +1552,12 @@ export default function VendeurPage() {
               {productTab === 'photos' && (
                 <>
                   <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>La 1ère photo est l'image principale.</p>
+                  <div style={{ padding: '10px 12px', background: 'var(--accent-light)', border: '1px solid var(--border-accent)', borderRadius: 8, fontSize: 11, color: 'var(--text-faint)', lineHeight: 1.7, marginBottom: 4 }}>
+                    <strong style={{ color: 'var(--text)' }}>Pour de bonnes photos :</strong><br />
+                    Format carré (1:1), produit centré et qui remplit le cadre, fond neutre ou uni.<br />
+                    Résolution minimum conseillée : 1000 × 1000 px.<br />
+                    Lumière naturelle plutôt que flash, plusieurs angles (face, profil, détail, emballage).
+                  </div>
                   <div className={styles.imgGrid}>
                     {productImages.map((url, i) => (
                       <div key={i} className={styles.imgSlot} style={{ borderStyle: 'solid' }}>
