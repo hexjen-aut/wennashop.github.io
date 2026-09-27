@@ -507,6 +507,15 @@ export default function VendeurPage() {
     await loadProducts(sb);
   }
 
+  async function toggleProductStatus(p) {
+    const nextStatus = p.status === 'active' ? 'inactive' : 'active';
+    const sb = getSupabase();
+    const { error } = await sb.from('products').update({ status: nextStatus }).eq('id', p.id);
+    if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+    setProducts((prev) => prev.map((x) => (x.id === p.id ? { ...x, status: nextStatus } : x)));
+    showToast(nextStatus === 'active' ? 'Produit activé' : 'Produit désactivé', 'success');
+  }
+
   // ── ORDERS ──
   async function loadOrders(sb) {
     if (!myOrderIds.length) { setOrders([]); return; }
@@ -1117,6 +1126,7 @@ export default function VendeurPage() {
                         <td data-label="Statut"><span className={styles.badge} style={{ background: `${STATUS_COLOR[p.status]}22`, color: STATUS_COLOR[p.status] }}>{STATUS_LABEL[p.status] || p.status}</span></td>
                         <td style={{ display: 'flex', gap: 10 }}>
                           <button className={styles.linkBtn} onClick={() => openProductModal(p)}>Modifier</button>
+                          <button className={styles.linkBtn} onClick={() => toggleProductStatus(p)}>{p.status === 'active' ? 'Désactiver' : 'Activer'}</button>
                           <button className={styles.btnDanger} onClick={() => setDeleteTarget(p.id)}>Suppr.</button>
                         </td>
                       </tr>
