@@ -178,6 +178,7 @@ export default function Content() {
         <div className={styles.info}>
           <div className={styles.name}>{shop.name}</div>
           <div className={styles.tags}>
+            {shop.is_official && <span className={`${styles.tag} ${styles.tagOfficial}`}>Boutique officielle WennaShop</span>}
             {shop.is_verified && <span className={`${styles.tag} ${styles.tagVerified}`}>Boutique vérifiée</span>}
             {shop.country && <span className={styles.tag}>{shop.country}</span>}
             {shop.city && <span className={styles.tag}>{shop.city}</span>}

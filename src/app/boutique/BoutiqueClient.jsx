@@ -168,7 +168,7 @@ export default function BoutiqueClient() {
       const [col, dir] = sort.split(':');
       const offset = (page - 1) * PAGE_SIZE;
       let q = sb.from('products')
-        .select('id,name,price,currency,country,origin_city,stock,images,image_url,category_id,categories(name),ships_to,shop_id', { count: 'exact' })
+        .select('id,name,price,currency,country,origin_city,stock,images,image_url,category_id,categories(name),ships_to,shop_id,shops(is_official)', { count: 'exact' })
         .eq('status', 'active')
         .range(offset, offset + PAGE_SIZE - 1)
         .order(col, { ascending: dir === 'asc' });
@@ -535,6 +535,7 @@ export default function BoutiqueClient() {
                       </button>
                     </div>
                     <div className={styles.prodInfo}>
+                      {p.shops?.is_official && <div className={styles.prodOfficial}>Officiel WennaShop</div>}
                       <div className={styles.prodCat}>{p.categories?.name || ''}{p.origin_city ? ` · ${p.origin_city}` : ''}</div>
                       <div className={styles.prodName}>{p.name}</div>
                       <div className={styles.prodFt}>

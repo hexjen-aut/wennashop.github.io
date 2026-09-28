@@ -10,6 +10,7 @@
 .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
 .tag { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: var(--radius-pill); background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border); text-transform: uppercase; letter-spacing: .04em; }
 .tagVerified { background: var(--gold-light); color: var(--gold); border-color: rgba(245,158,11,.3); }
+.tagOfficial { background: var(--accent-light); color: var(--accent); border-color: rgba(255,104,0,.35); }
 .stats { display: flex; gap: 22px; flex-wrap: wrap; }
 .stat { text-align: center; }
 .statVal { font-size: 20px; font-weight: 900; display: block; line-height: 1; }
