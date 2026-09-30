@@ -21,8 +21,8 @@ const BUYER_TOUR_SEEN_KEY = 'wenna_buyer_tour_seen';
 
 const BUYER_TOUR_STEPS = [
   { targetId: 'tour-search-btn', title: 'Rechercher', text: 'Cherche un produit précis, ou parcours les catégories juste en dessous.' },
-  { targetId: 'tour-first-product', title: 'Ouvrir un produit', text: 'Clique sur un produit pour voir ses photos, son prix et sa boutique.' },
-  { targetId: 'tour-add-to-cart-btn', title: 'Ajouter au panier', text: 'Ajoute directement un produit au panier sans quitter la liste.' },
+  { targetId: 'tour-first-product', title: 'Ouvrir un produit', text: 'Clique sur un produit pour voir ses photos, son prix et sa boutique.', needsProducts: true },
+  { targetId: 'tour-add-to-cart-btn', title: 'Ajouter au panier', text: 'Ajoute directement un produit au panier sans quitter la liste.', needsProducts: true },
   { targetId: 'tour-cart-btn', title: 'Ton panier', text: 'Retrouve ici tout ce que tu as ajouté, et passe commande quand tu es prêt.' },
   { targetId: 'tour-suivi-btn', title: 'Suivre ta commande', text: 'Une fois ta commande passée, suis sa livraison ici à tout moment.' },
 ];
@@ -239,16 +239,21 @@ export default function BoutiqueClient() {
     else { setShowBoostFloat(false); sessionStorage.setItem('wenna_float_boost_dismissed', '1'); }
   }
 
-  // ── Tutoriel interactif : proposé une seule fois, dès que les produits
-  // sont chargés (le tuto pointe sur le premier produit réel de la grille). ──
+  // ── Tutoriel interactif : proposé une seule fois, une fois le catalogue
+  // chargé. Les étapes qui pointent sur un produit réel sont retirées quand
+  // la grille est vide, au lieu de ne jamais proposer le tuto. ──
+  const tourSteps = products.length ? BUYER_TOUR_STEPS : BUYER_TOUR_STEPS.filter((s) => !s.needsProducts);
+
+  // Attend que le choix du pays (première visite) soit fait, pour ne pas
+  // empiler deux fenêtres.
   useEffect(() => {
-    if (loading || products.length === 0) return;
+    if (loading || countryModalOpen) return;
     let seen = null;
     try { seen = localStorage.getItem(BUYER_TOUR_SEEN_KEY); } catch {}
     if (seen) return;
     const t = setTimeout(() => setTourProposalOpen(true), 2500);
     return () => clearTimeout(t);
-  }, [loading, products.length]);
+  }, [loading, countryModalOpen]);
 
   function endTour() {
     setTourStep(null);
@@ -257,10 +262,10 @@ export default function BoutiqueClient() {
   function acceptTourProposal() { setTourProposalOpen(false); setTourStep(0); }
   function declineTourProposal() { setTourProposalOpen(false); endTour(); }
   function nextTourStep() {
-    if (tourStep < BUYER_TOUR_STEPS.length - 1) setTourStep((s) => s + 1);
+    if (tourStep < tourSteps.length - 1) setTourStep((s) => s + 1);
     else endTour();
   }
-  function tourHl(id) { return tourStep !== null && BUYER_TOUR_STEPS[tourStep]?.targetId === id ? tourStyles.tourHighlight : ''; }
+  function tourHl(id) { return tourStep !== null && tourSteps[tourStep]?.targetId === id ? tourStyles.tourHighlight : ''; }
 
   // ── Présence en ligne (Supabase Realtime) ──
   useEffect(() => {
@@ -326,7 +331,7 @@ export default function BoutiqueClient() {
 
   return (
     <>
-      <Nav onOpenCart={() => setCartOpen(true)} highlightId={tourStep !== null ? BUYER_TOUR_STEPS[tourStep]?.targetId : null} />
+      <Nav onOpenCart={() => setCartOpen(true)} highlightId={tourStep !== null ? tourSteps[tourStep]?.targetId : null} />
       <CartSidebar open={cartOpen} onClose={() => setCartOpen(false)} />
 
       {siteConfig.boutique_banner_enabled === 'true' && siteConfig.boutique_banner_url && (
@@ -743,16 +748,16 @@ export default function BoutiqueClient() {
           <div onClick={(e) => e.stopPropagation()} style={{ maxWidth: 380, width: '100%', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: 24, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
             <i className="ph ph-hand-waving" style={{ fontSize: 30, color: 'var(--accent)' }} />
             <h3 style={{ fontSize: 16, fontWeight: 900 }}>Bienvenue sur WennaShop !</h3>
-            <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>On te montre en 5 étapes comment chercher un produit, l'ajouter au panier et suivre ta commande. Ça prend une minute.</p>
+            <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>On te montre en {tourSteps.length} étapes comment chercher un produit, l'ajouter au panier et suivre ta commande. Ça prend une minute. Tu pourras le revoir à tout moment avec le bouton « ? » en haut du catalogue.</p>
             <div style={{ display: 'flex', gap: 10, width: '100%' }}>
-              <button onClick={declineTourProposal} style={{ flex: 1, padding: '10px 12px', borderRadius: 10, background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-muted)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>Plus tard</button>
+              <button onClick={declineTourProposal} style={{ flex: 1, padding: '10px 12px', borderRadius: 10, background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-muted)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>Non merci</button>
               <button onClick={acceptTourProposal} style={{ flex: 1, padding: '10px 12px', borderRadius: 10, background: 'var(--accent-btn)', border: 'none', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>Oui, guide-moi</button>
             </div>
           </div>
         </div>
       )}
 
-      <TourOverlay steps={BUYER_TOUR_STEPS} stepIndex={tourStep} onNext={nextTourStep} onSkip={endTour} />
+      <TourOverlay steps={tourSteps} stepIndex={tourStep} onNext={nextTourStep} onSkip={endTour} />
     </>
   );
 }
