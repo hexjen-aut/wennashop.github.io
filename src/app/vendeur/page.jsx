@@ -103,6 +103,13 @@ export default function VendeurPage() {
   const [checking, setChecking] = useState(true);
   const [seller, setSeller] = useState(null);
   const [shop, setShop] = useState(null);
+  // Propriétaire des données affichées : le vendeur lui-même, ou le
+  // propriétaire de la boutique quand l'utilisateur en est membre d'équipe.
+  const [ownerId, setOwnerId] = useState(null);
+  const [isMember, setIsMember] = useState(false);
+  const [team, setTeam] = useState([]);
+  const [teamEmail, setTeamEmail] = useState('');
+  const [teamBusy, setTeamBusy] = useState(false);
   const [hunterCode, setHunterCode] = useState('');
   const [hunterClaimBusy, setHunterClaimBusy] = useState(false);
   const [hunterClaimMsg, setHunterClaimMsg] = useState(null);
@@ -216,13 +223,27 @@ export default function VendeurPage() {
       const { data: { session } } = await sb.auth.getSession();
       if (!session) { router.push('/connexion'); return; }
       const { data: user } = await sb.from('users').select('*').eq('auth_id', session.user.id).single();
-      if (!user || (user.role !== 'artisan' && user.role !== 'admin')) { router.push('/compte'); return; }
+      if (!user) { router.push('/compte'); return; }
+
+      let shopRow = null;
+      let owner = user.id;
+      let member = false;
+      if (user.role === 'artisan' || user.role === 'admin') {
+        ({ data: shopRow } = await sb.from('shops').select('*').eq('user_id', user.id).maybeSingle());
+      } else {
+        const { data: membership } = await sb.from('shop_members').select('shop_id').eq('user_id', user.id).limit(1).maybeSingle();
+        if (membership) ({ data: shopRow } = await sb.from('shops').select('*').eq('id', membership.shop_id).maybeSingle());
+        if (!shopRow) { router.push('/compte'); return; }
+        owner = shopRow.user_id;
+        member = true;
+      }
       setSeller(user);
+      setOwnerId(owner);
+      setIsMember(member);
       setProfileForm({ first_name: user.first_name || '', last_name: user.last_name || '', specialty: user.specialty || '', country: user.country || 'Maroc' });
 
-      const [{ data: shopRow }, { data: walletRow }, { data: cats }] = await Promise.all([
-        sb.from('shops').select('*').eq('user_id', user.id).maybeSingle(),
-        sb.from('vendor_wallets').select('*').eq('user_id', user.id).maybeSingle(),
+      const [{ data: walletRow }, { data: cats }] = await Promise.all([
+        sb.from('vendor_wallets').select('*').eq('user_id', owner).maybeSingle(),
         sb.from('categories').select('id,name,parent_id').eq('is_active', true).order('sort_order', { ascending: true }),
       ]);
       setShop(shopRow || null);
@@ -239,7 +260,7 @@ export default function VendeurPage() {
       setCategories(cats || []);
 
       // Ids des commandes contenant au moins un de mes produits (base pour Commandes + Revenus)
-      const { data: myProds } = await sb.from('products').select('id').eq('seller_id', user.id);
+      const { data: myProds } = await sb.from('products').select('id').eq('seller_id', owner);
       const prodIds = (myProds || []).map((p) => p.id);
       let orderIds = [];
       if (prodIds.length) {
@@ -251,7 +272,8 @@ export default function VendeurPage() {
       const { data: goalRows } = await sb.from('platform_goals').select('*').eq('is_active', true).in('audience', ['artisan', 'all']).order('created_at', { ascending: false });
       setGoals(goalRows || []);
 
-      await loadOverview(sb, user, shopRow, prodIds, orderIds);
+      await loadOverview(sb, owner, shopRow, prodIds, orderIds);
+      if (user.role === 'admin' && shopRow) await loadTeam(sb, shopRow.id);
       await loadNotifications(sb, user.id);
       setChecking(false);
       if (!user.vendor_tour_completed_at) setTourProposalOpen(true);
@@ -275,8 +297,8 @@ export default function VendeurPage() {
 
   // Si le wallet est désactivé, on ne laisse jamais la section active dessus.
   useEffect(() => {
-    if (!walletsEnabled && section === 'wallet') setSection('overview');
-  }, [walletsEnabled, section]);
+    if ((!walletsEnabled || isMember) && section === 'wallet') setSection('overview');
+  }, [walletsEnabled, isMember, section]);
 
   // ── Chargement par section (paresseux, comme dans l'admin) ──
   useEffect(() => {
@@ -339,8 +361,8 @@ export default function VendeurPage() {
     };
   }, [tourStep]);
 
-  async function loadOverview(sb, user, shopRow, prodIds, orderIds) {
-    const { data: activeProds } = await sb.from('products').select('id', { count: 'exact', head: true }).eq('seller_id', user.id).eq('status', 'active');
+  async function loadOverview(sb, sellerId, shopRow, prodIds, orderIds) {
+    const { data: activeProds } = await sb.from('products').select('id', { count: 'exact', head: true }).eq('seller_id', sellerId).eq('status', 'active');
     let ordersList = [];
     if (orderIds.length) {
       const { data: o } = await sb.from('orders').select('id,total_amount,status,created_at,shipping_name,currency').in('id', orderIds).order('created_at', { ascending: false });
@@ -363,7 +385,7 @@ export default function VendeurPage() {
     setRecentOrders(ordersList.slice(0, 5));
 
     if (prodIds.length) {
-      const { data: low } = await sb.from('products').select('id,name,stock,image_url').eq('seller_id', user.id).lte('stock', 3).eq('status', 'active').order('stock', { ascending: true }).limit(5);
+      const { data: low } = await sb.from('products').select('id,name,stock,image_url').eq('seller_id', sellerId).lte('stock', 3).eq('status', 'active').order('stock', { ascending: true }).limit(5);
       setLowStock(low || []);
     }
 
@@ -412,7 +434,7 @@ export default function VendeurPage() {
   // ── PRODUCTS ──
   async function loadProducts(sb) {
     const offset = (prodPage - 1) * PAGE_SIZE;
-    let q = sb.from('products').select('id,name,price,stock,status,image_url,images', { count: 'exact' }).eq('seller_id', seller.id).order('created_at', { ascending: false }).range(offset, offset + PAGE_SIZE - 1);
+    let q = sb.from('products').select('id,name,price,stock,status,image_url,images', { count: 'exact' }).eq('seller_id', ownerId).order('created_at', { ascending: false }).range(offset, offset + PAGE_SIZE - 1);
     if (prodStatus) q = q.eq('status', prodStatus);
     if (prodSearch.trim()) q = q.ilike('name', `%${prodSearch.trim()}%`);
     const { data, count } = await q;
@@ -484,7 +506,7 @@ export default function VendeurPage() {
       material: productForm.material || null, color: productForm.color || null,
       weight: productForm.weight || null, dimensions: productForm.dimensions || null,
       images: productImages, image_url: productImages[0] || null,
-      characteristics, shop_id: shop?.id || null, seller_id: seller.id,
+      characteristics, shop_id: shop?.id || null, seller_id: ownerId,
       ships_to: productForm.ships_to || [],
     };
     let error;
@@ -532,7 +554,7 @@ export default function VendeurPage() {
     setShipEta('');
     const sb = getSupabase();
     const { data } = await sb.from('order_items').select('quantity,unit_price,products(name,image_url,seller_id)').eq('order_id', o.id);
-    setOrderItemsDetail((data || []).filter((it) => it.products?.seller_id === seller.id));
+    setOrderItemsDetail((data || []).filter((it) => it.products?.seller_id === ownerId));
   }
 
   async function updateOrderStatus() {
@@ -648,7 +670,7 @@ export default function VendeurPage() {
 
   // ── REVIEWS ──
   async function loadReviews(sb) {
-    const { data: myProds } = await sb.from('products').select('id').eq('seller_id', seller.id);
+    const { data: myProds } = await sb.from('products').select('id').eq('seller_id', ownerId);
     const ids = (myProds || []).map((p) => p.id);
     if (!ids.length) { setReviews([]); return; }
     let q = sb.from('reviews').select('*, products(name)').in('product_id', ids).order('created_at', { ascending: false });
@@ -719,7 +741,7 @@ export default function VendeurPage() {
     // toujours dérivé automatiquement du nom (jamais saisi à la main : un champ
     // technique sans guide ne parle à personne).
     let slug = slugify(shopForm.name) || 'boutique';
-    const payload = { ...shopForm, slug, user_id: seller.id, carrier_id: shopForm.carrier_id || null };
+    const payload = { ...shopForm, slug, user_id: ownerId, carrier_id: shopForm.carrier_id || null };
     let error;
     for (let attempt = 0; attempt < 5; attempt++) {
       payload.slug = attempt === 0 ? slug : `${slug}-${attempt + 1}`;
@@ -731,7 +753,7 @@ export default function VendeurPage() {
     }
     if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
     showToast('Boutique enregistrée', 'success');
-    const { data: refreshed } = await sb.from('shops').select('*').eq('user_id', seller.id).maybeSingle();
+    const { data: refreshed } = await sb.from('shops').select('*').eq('user_id', ownerId).maybeSingle();
     setShop(refreshed);
     setShopForm((prev) => ({ ...prev, slug: refreshed?.slug || prev.slug }));
   }
@@ -754,8 +776,36 @@ export default function VendeurPage() {
       return;
     }
     setHunterClaimMsg({ type: 'success', text: `Chasseur associé : ${data.hunter}` });
-    const { data: refreshed } = await sb.from('shops').select('*').eq('user_id', seller.id).maybeSingle();
+    const { data: refreshed } = await sb.from('shops').select('*').eq('user_id', ownerId).maybeSingle();
     setShop(refreshed);
+  }
+
+  // ── ÉQUIPE (admin uniquement) ──
+  async function loadTeam(sb, shopId) {
+    const { data } = await sb.rpc('list_shop_members', { p_shop: shopId });
+    setTeam(data || []);
+  }
+
+  async function addTeamMember(e) {
+    e.preventDefault();
+    if (!teamEmail.trim() || !shop?.id) return;
+    setTeamBusy(true);
+    const sb = getSupabase();
+    const { error } = await sb.rpc('add_shop_member', { p_shop: shop.id, p_email: teamEmail.trim() });
+    setTeamBusy(false);
+    if (error) { showToast(error.message, 'error'); return; }
+    setTeamEmail('');
+    showToast('Membre ajouté', 'success');
+    await loadTeam(sb, shop.id);
+  }
+
+  async function removeTeamMember(userId) {
+    if (!shop?.id) return;
+    const sb = getSupabase();
+    const { error } = await sb.from('shop_members').delete().eq('shop_id', shop.id).eq('user_id', userId);
+    if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+    showToast('Membre retiré', 'success');
+    await loadTeam(sb, shop.id);
   }
 
   // ── PROFILE ──
@@ -922,10 +972,10 @@ export default function VendeurPage() {
           <div className={styles.sellerAv}>{(seller.full_name || seller.email || '?').charAt(0).toUpperCase()}</div>
           <div>
             <div className={styles.sellerName}>{seller.full_name || seller.email}</div>
-            <div className={styles.sellerCountry}>{seller.country || '—'}</div>
+            <div className={styles.sellerCountry}>{isMember ? `Équipe · ${shop?.name || ''}` : (seller.country || '—')}</div>
           </div>
         </div>
-        {walletsEnabled && (
+        {walletsEnabled && !isMember && (
           <div className={styles.walletMini}>
             <div>
               <div className={styles.walletMiniLabel}>Crédits Boost</div>
@@ -939,7 +989,7 @@ export default function VendeurPage() {
           ['products', 'ph-package', 'Mes produits'],
           ['orders', 'ph-shopping-bag', 'Commandes'],
           ['revenue', 'ph-currency-circle-dollar', 'Revenus'],
-          ...(walletsEnabled ? [['wallet', 'ph-wallet', 'Wallet & Boosts']] : []),
+          ...(walletsEnabled && !isMember ? [['wallet', 'ph-wallet', 'Wallet & Boosts']] : []),
           ['reviews', 'ph-star', 'Avis clients'],
           ['shop', 'ph-storefront', 'Ma boutique'],
           ['profile', 'ph-user', 'Mon profil'],
@@ -1329,6 +1379,29 @@ export default function VendeurPage() {
                 </Link>
               </div>
             )}
+            {seller.role === 'admin' && shop?.id && (
+              <div className={styles.card} style={{ maxWidth: 640, padding: 20, marginBottom: 14 }}>
+                <div style={{ fontSize: 14, fontWeight: 800, marginBottom: 4 }}>Équipe de la boutique</div>
+                <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 12, lineHeight: 1.6 }}>
+                  Les membres gèrent les produits, les commandes et la fiche boutique, et voient les revenus. Ils n'ont pas accès aux retraits ni à l'administration. La personne doit d'abord créer un compte WennaShop (un compte acheteur suffit).
+                </p>
+                <form onSubmit={addTeamMember} style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+                  <input className={styles.input} style={{ flex: 1, minWidth: 200 }} type="email" placeholder="E-mail du membre" value={teamEmail} onChange={(e) => setTeamEmail(e.target.value)} />
+                  <button type="submit" className={styles.btnPrimary} disabled={teamBusy || !teamEmail.trim()}>{teamBusy ? '…' : 'Ajouter'}</button>
+                </form>
+                {team.length === 0 ? (
+                  <div style={{ fontSize: 12, color: 'var(--text-faint)' }}>Aucun membre pour l'instant.</div>
+                ) : team.map((m) => (
+                  <div key={m.user_id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, padding: '8px 0', borderTop: '1px solid var(--border)' }}>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontSize: 13, fontWeight: 700 }}>{m.full_name || m.email}</div>
+                      <div style={{ fontSize: 11, color: 'var(--text-faint)', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.email}</div>
+                    </div>
+                    <button type="button" className={styles.btnDanger} onClick={() => removeTeamMember(m.user_id)}>Retirer</button>
+                  </div>
+                ))}
+              </div>
+            )}
           <form className={styles.card} onSubmit={saveShop} style={{ maxWidth: 640, padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div className={styles.formGrid}>
               <div id="tour-shop-name" className={`${styles.formGroup} ${tourFieldClass('tour-shop-name')}`}><label className={styles.formLabel}>Nom de la boutique *</label><input className={styles.input} value={shopForm.name} onChange={(e) => setShopForm({ ...shopForm, name: e.target.value })} /></div>
@@ -1480,7 +1553,7 @@ export default function VendeurPage() {
             </div>
           )}
 
-          {shop?.id && (
+          {shop?.id && !isMember && (
             <div className={styles.card} style={{ maxWidth: 640, padding: 20, marginTop: 14 }}>
               <h3 style={{ fontSize: 14, fontWeight: 800, marginBottom: 8 }}>Code chasseur</h3>
               {shop.recruited_by ? (

@@ -33,6 +33,7 @@ export default function ComptePage() {
   const { wallets_enabled: walletsEnabled } = useFeatureFlags();
   const [cartOpen, setCartOpen] = useState(false);
   const [profile, setProfile] = useState(null);
+  const [teamShops, setTeamShops] = useState([]);
   const [orders, setOrders] = useState([]);
   const [reviewItems, setReviewItems] = useState({}); // order_id -> [{product_id, name}]
   const [buyerStats, setBuyerStats] = useState({ orderCount: 0, totalSpent: 0 });
@@ -100,6 +101,9 @@ export default function ComptePage() {
       setLastName(p.last_name || '');
 
       if (p?.id) {
+        const { data: memberOf } = await sb.from('shop_members').select('shops(name)').eq('user_id', p.id);
+        setTeamShops((memberOf || []).map((m) => m.shops?.name).filter(Boolean));
+
         const { data: o } = await sb.from('orders')
           .select('id,status,total_amount,currency,buyer_total_amount,buyer_currency,created_at')
           .eq('user_id', p.id).order('created_at', { ascending: false }).limit(20);
@@ -502,6 +506,14 @@ export default function ComptePage() {
           </div>
           <button className={styles.btnLogout} onClick={handleLogout}>Déconnexion</button>
         </div>
+
+        {teamShops.length > 0 && (
+          <div className={styles.card} style={{ background: 'var(--accent-light)', borderColor: 'var(--border-accent)', marginBottom: 16 }}>
+            <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--accent)', marginBottom: 4 }}>Équipe · {teamShops.join(', ')}</div>
+            <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 10 }}>Tu fais partie de l'équipe de cette boutique : produits, commandes et revenus.</div>
+            <Link href="/vendeur" style={{ display: 'inline-block', background: 'var(--accent-btn)', color: '#fff', padding: '10px 20px', borderRadius: 999, fontWeight: 700, fontSize: 13, textDecoration: 'none' }}>Gérer la boutique</Link>
+          </div>
+        )}
 
         {/* ── Switch Client / Vendeur ── */}
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
