@@ -1,4 +1,6 @@
-const CACHE_NAME = 'wenna-shell-v1';
+// Enregistré en /sw.js?v=<id de déploiement> : chaque déploiement installe un
+// nouveau worker et renouvelle ce cache.
+const CACHE_NAME = `wenna-shell-${new URL(self.location.href).searchParams.get('v') || 'v1'}`;
 const OFFLINE_URL = '/offline';
 const SHELL_ASSETS = [OFFLINE_URL, '/manifest.json', '/icon-192.png', '/icon-512.png'];
 

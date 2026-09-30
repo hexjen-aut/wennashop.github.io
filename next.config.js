@@ -1,5 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Identifiant du déploiement, figé au build : sert à l'app installée (PWA)
+  // pour détecter qu'une nouvelle version est en ligne.
+  env: {
+    NEXT_PUBLIC_BUILD_ID: process.env.VERCEL_GIT_COMMIT_SHA || String(Date.now()),
+  },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'aakxoydznmybstfozjte.supabase.co' },
