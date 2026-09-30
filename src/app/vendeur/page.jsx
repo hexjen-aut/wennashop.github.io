@@ -273,7 +273,7 @@ export default function VendeurPage() {
       setGoals(goalRows || []);
 
       await loadOverview(sb, owner, shopRow, prodIds, orderIds);
-      if (user.role === 'admin' && shopRow) await loadTeam(sb, shopRow.id);
+      if (!member && shopRow && (user.role === 'admin' || user.status === 'active')) await loadTeam(sb, shopRow.id);
       await loadNotifications(sb, user.id);
       setChecking(false);
       if (!user.vendor_tour_completed_at) setTourProposalOpen(true);
@@ -780,7 +780,7 @@ export default function VendeurPage() {
     setShop(refreshed);
   }
 
-  // ── ÉQUIPE (admin uniquement) ──
+  // ── ÉQUIPE (propriétaire validé ou admin) ──
   async function loadTeam(sb, shopId) {
     const { data } = await sb.rpc('list_shop_members', { p_shop: shopId });
     setTeam(data || []);
@@ -802,8 +802,8 @@ export default function VendeurPage() {
   async function removeTeamMember(userId) {
     if (!shop?.id) return;
     const sb = getSupabase();
-    const { error } = await sb.from('shop_members').delete().eq('shop_id', shop.id).eq('user_id', userId);
-    if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+    const { error } = await sb.rpc('remove_shop_member', { p_shop: shop.id, p_user: userId });
+    if (error) { showToast(error.message, 'error'); return; }
     showToast('Membre retiré', 'success');
     await loadTeam(sb, shop.id);
   }
@@ -1379,11 +1379,11 @@ export default function VendeurPage() {
                 </Link>
               </div>
             )}
-            {seller.role === 'admin' && shop?.id && (
+            {!isMember && shop?.id && (seller.role === 'admin' || seller.status === 'active') && (
               <div className={styles.card} style={{ maxWidth: 640, padding: 20, marginBottom: 14 }}>
-                <div style={{ fontSize: 14, fontWeight: 800, marginBottom: 4 }}>Équipe de la boutique</div>
+                <div style={{ fontSize: 14, fontWeight: 800, marginBottom: 4 }}>Équipe de la boutique <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-faint)' }}>· facultatif</span></div>
                 <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 12, lineHeight: 1.6 }}>
-                  Les membres gèrent les produits, les commandes et la fiche boutique, et voient les revenus. Ils n'ont pas accès aux retraits ni à l'administration. La personne doit d'abord créer un compte WennaShop (un compte acheteur suffit).
+                  Tu travailles à plusieurs ? Ajoute jusqu'à 10 personnes pour t'aider : elles gèrent les produits, les commandes et la fiche boutique, et voient les revenus, sans accès aux retraits ni au wallet. Chaque personne doit d'abord créer un compte acheteur WennaShop.
                 </p>
                 <form onSubmit={addTeamMember} style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
                   <input className={styles.input} style={{ flex: 1, minWidth: 200 }} type="email" placeholder="E-mail du membre" value={teamEmail} onChange={(e) => setTeamEmail(e.target.value)} />
