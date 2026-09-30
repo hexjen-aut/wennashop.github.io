@@ -8,6 +8,10 @@ import { CGU_TEXT, PRIVACY_TEXT } from '@/lib/legalTexts';
 import { PAYS_GROUPS } from '@/lib/geo';
 import styles from './connexion.module.css';
 
+// Le fournisseur Google n'est pas encore activé dans Supabase Auth
+// (Authentication → Providers → Google) : passer à true une fois configuré.
+const GOOGLE_AUTH_ENABLED = false;
+
 const GENRE_HINTS = {
   homme: 'Vous verrez en priorité : bijoux hommes, accessoires, djellabas, art traditionnel masculin.',
   femme: 'Vous verrez en priorité : tissu, bijoux, maroquinerie, cosmétiques, art textile féminin.',
@@ -313,9 +317,12 @@ export default function ConnexionPage() {
 
               <button className={styles.btnPrimary} onClick={handleConnexion} disabled={loading}>{loading ? '…' : 'Se connecter'}</button>
 
-              <div className={styles.divider}><div className={styles.dividerLine} /><span className={styles.dividerLabel}>ou</span><div className={styles.dividerLine} /></div>
-
-              <button className={styles.btnGoogle} onClick={handleGoogle}>Continuer avec Google</button>
+              {GOOGLE_AUTH_ENABLED && (
+                <>
+                  <div className={styles.divider}><div className={styles.dividerLine} /><span className={styles.dividerLabel}>ou</span><div className={styles.dividerLine} /></div>
+                  <button className={styles.btnGoogle} onClick={handleGoogle}>Continuer avec Google</button>
+                </>
+              )}
 
               <div className={styles.switchLink}>Pas encore de compte ? <button onClick={() => setMode('inscription')}>S'inscrire gratuitement</button></div>
             </>
@@ -397,9 +404,12 @@ export default function ConnexionPage() {
 
               <button className={styles.btnPrimary} onClick={handleInscription} disabled={loading}>{loading ? '…' : 'Créer mon compte gratuitement'}</button>
 
-              <div className={styles.divider}><div className={styles.dividerLine} /><span className={styles.dividerLabel}>ou</span><div className={styles.dividerLine} /></div>
-
-              <button className={styles.btnGoogle} onClick={handleGoogle}>S'inscrire avec Google</button>
+              {GOOGLE_AUTH_ENABLED && (
+                <>
+                  <div className={styles.divider}><div className={styles.dividerLine} /><span className={styles.dividerLabel}>ou</span><div className={styles.dividerLine} /></div>
+                  <button className={styles.btnGoogle} onClick={handleGoogle}>S'inscrire avec Google</button>
+                </>
+              )}
 
               <div className={styles.switchLink}>Déjà un compte ? <button onClick={() => setMode('connexion')}>Se connecter</button></div>
             </>
