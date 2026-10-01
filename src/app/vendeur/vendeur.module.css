@@ -74,6 +74,7 @@
 .formGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .formGroup { display: flex; flex-direction: column; gap: 5px; }
 .formLabel { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--text-faint); }
+.fieldHint { font-size: 11px; line-height: 1.5; color: var(--text-faint); }
 .input { width: 100%; background: var(--surface-2); border: 1.5px solid var(--border); border-radius: var(--radius-md); color: var(--text); padding: 10px 12px; font-size: 13px; font-family: var(--font); outline: none; }
 .input:focus { border-color: var(--accent); }
 textarea.input { resize: vertical; min-height: 70px; }

@@ -1678,19 +1678,20 @@ export default function VendeurPage() {
             <div className={styles.modalBody}>
               {productTab === 'info' && (
                 <>
-                  <div className={styles.formGroup}><label className={styles.formLabel}>Nom du produit *</label><input className={styles.input} value={productForm.name} onChange={(e) => setProductForm({ ...productForm, name: e.target.value })} /></div>
-                  <div className={styles.formGroup}><label className={styles.formLabel}>Description</label><textarea className={styles.input} rows={3} value={productForm.description} onChange={(e) => setProductForm({ ...productForm, description: e.target.value })} /></div>
+                  <div className={styles.formGroup}><label className={styles.formLabel}>Nom du produit *</label><input className={styles.input} value={productForm.name} onChange={(e) => setProductForm({ ...productForm, name: e.target.value })} /><div className={styles.fieldHint}>Court et précis : le type de produit et le détail qui le distingue. Ex. « Wax hollandais bleu – 6 yards ».</div></div>
+                  <div className={styles.formGroup}><label className={styles.formLabel}>Description</label><textarea className={styles.input} rows={3} value={productForm.description} onChange={(e) => setProductForm({ ...productForm, description: e.target.value })} /><div className={styles.fieldHint}>Tout ce que l'acheteur doit savoir : matière, taille, usage, entretien. Plus c'est clair, moins on te pose de questions.</div></div>
                   <div className={styles.formGrid}>
-                    <div className={styles.formGroup}><label className={styles.formLabel}>Prix ({currencyLabel(productCurrency(productForm.country))}) *</label><input type="number" className={styles.input} value={productForm.price} onChange={(e) => setProductForm({ ...productForm, price: e.target.value })} /></div>
-                    <div className={styles.formGroup}><label className={styles.formLabel}>Stock *</label><input type="number" className={styles.input} value={productForm.stock} onChange={(e) => setProductForm({ ...productForm, stock: e.target.value })} /></div>
+                    <div className={styles.formGroup}><label className={styles.formLabel}>Prix ({currencyLabel(productCurrency(productForm.country))}) *</label><input type="number" className={styles.input} value={productForm.price} onChange={(e) => setProductForm({ ...productForm, price: e.target.value })} /><div className={styles.fieldHint}>Prix payé par l'acheteur, dans la devise du pays d'origine. Les acheteurs d'autres pays le voient converti dans leur devise. La commission WennaShop est déduite de ce montant.</div></div>
+                    <div className={styles.formGroup}><label className={styles.formLabel}>Stock *</label><input type="number" className={styles.input} value={productForm.stock} onChange={(e) => setProductForm({ ...productForm, stock: e.target.value })} /><div className={styles.fieldHint}>Nombre d'unités disponibles. À 0, la fiche affiche « Rupture de stock ».</div></div>
                   </div>
                   <div className={styles.formGrid}>
                     <div className={styles.formGroup}><label className={styles.formLabel}>Pays *</label>
                       <select className={styles.input} value={productForm.country} onChange={(e) => setProductForm({ ...productForm, country: e.target.value })}>
                         {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
                       </select>
+                      <div className={styles.fieldHint}>Pays d'où part le produit. Il fixe la devise du prix et les acheteurs qui le voient en premier.</div>
                     </div>
-                    <div className={styles.formGroup}><label className={styles.formLabel}>Ville d'origine</label><input className={styles.input} value={productForm.origin_city} onChange={(e) => setProductForm({ ...productForm, origin_city: e.target.value })} /></div>
+                    <div className={styles.formGroup}><label className={styles.formLabel}>Ville d'origine</label><input className={styles.input} value={productForm.origin_city} onChange={(e) => setProductForm({ ...productForm, origin_city: e.target.value })} /><div className={styles.fieldHint}>Facultatif. Affichée sur la fiche et dans le catalogue (ex. Casablanca, Libreville).</div></div>
                   </div>
                   <div className={styles.formGroup}>
                     <label className={styles.formLabel}>Visible aussi pour les acheteurs de…</label>
@@ -1721,6 +1722,7 @@ export default function VendeurPage() {
                           </optgroup>
                         ))}
                       </select>
+                      <div className={styles.fieldHint}>Permet aux acheteurs de trouver ton produit avec les filtres. La commission WennaShop dépend de la catégorie.</div>
                     </div>
                     <div className={styles.formGroup}><label className={styles.formLabel}>Statut</label>
                       <select className={styles.input} value={productForm.status} onChange={(e) => setProductForm({ ...productForm, status: e.target.value })}>
@@ -1728,15 +1730,16 @@ export default function VendeurPage() {
                         <option value="active">Actif</option>
                         <option value="inactive">Inactif</option>
                       </select>
+                      <div className={styles.fieldHint}>Actif : visible par les acheteurs. Inactif : caché mais conservé, à réactiver quand tu veux. En attente : caché tant que le produit n'est pas validé.</div>
                     </div>
                   </div>
                   <div className={styles.formGrid}>
-                    <div className={styles.formGroup}><label className={styles.formLabel}>Marque</label><input className={styles.input} value={productForm.brand} onChange={(e) => setProductForm({ ...productForm, brand: e.target.value })} /></div>
-                    <div className={styles.formGroup}><label className={styles.formLabel}>SKU</label><input className={styles.input} value={productForm.sku} onChange={(e) => setProductForm({ ...productForm, sku: e.target.value })} /></div>
+                    <div className={styles.formGroup}><label className={styles.formLabel}>Marque</label><input className={styles.input} value={productForm.brand} onChange={(e) => setProductForm({ ...productForm, brand: e.target.value })} /><div className={styles.fieldHint}>Facultatif. Le fabricant ou ta propre marque, affichée sur la fiche.</div></div>
+                    <div className={styles.formGroup}><label className={styles.formLabel}>SKU</label><input className={styles.input} value={productForm.sku} onChange={(e) => setProductForm({ ...productForm, sku: e.target.value })} /><div className={styles.fieldHint}>Facultatif. Ta référence interne pour retrouver l'article dans ton stock. Jamais montrée à l'acheteur.</div></div>
                   </div>
                   <div className={styles.formGrid}>
-                    <div className={styles.formGroup}><label className={styles.formLabel}>Prix barré ({currencyLabel(productCurrency(productForm.country))})</label><input type="number" className={styles.input} value={productForm.compare_price} onChange={(e) => setProductForm({ ...productForm, compare_price: e.target.value })} /></div>
-                    <div className={styles.formGroup}><label className={styles.formLabel}>Livraison (jours)</label><input type="number" className={styles.input} value={productForm.delivery_days} onChange={(e) => setProductForm({ ...productForm, delivery_days: e.target.value })} /></div>
+                    <div className={styles.formGroup}><label className={styles.formLabel}>Prix barré ({currencyLabel(productCurrency(productForm.country))})</label><input type="number" className={styles.input} value={productForm.compare_price} onChange={(e) => setProductForm({ ...productForm, compare_price: e.target.value })} /><div className={styles.fieldHint}>Facultatif. L'ancien prix, affiché barré à côté du prix pour montrer une promotion. Doit être plus élevé que le prix.</div></div>
+                    <div className={styles.formGroup}><label className={styles.formLabel}>Livraison (jours)</label><input type="number" className={styles.input} value={productForm.delivery_days} onChange={(e) => setProductForm({ ...productForm, delivery_days: e.target.value })} /><div className={styles.fieldHint}>Facultatif. Délai moyen avant que l'acheteur reçoive le produit, affiché sur la fiche.</div></div>
                   </div>
                 </>
               )}
@@ -1774,7 +1777,7 @@ export default function VendeurPage() {
 
               {productTab === 'carac' && (
                 <>
-                  <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 10 }}>Clé / valeur : matière, taille, couleur…</p>
+                  <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 10 }}>Détails affichés sur la fiche produit, une ligne par information. Ex. « Largeur » → « 1,15 m », « Origine du tissu » → « Côte d'Ivoire ».</p>
                   {caracs.map((c, i) => (
                     <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: 7, marginBottom: 7 }}>
                       <input className={styles.input} placeholder="Clé" value={c.k} onChange={(e) => updateCarac(i, 'k', e.target.value)} />
@@ -1789,7 +1792,7 @@ export default function VendeurPage() {
                       <div className={styles.formGroup}><label className={styles.formLabel}>Couleur</label><input className={styles.input} value={productForm.color} onChange={(e) => setProductForm({ ...productForm, color: e.target.value })} /></div>
                     </div>
                     <div className={styles.formGrid}>
-                      <div className={styles.formGroup}><label className={styles.formLabel}>Poids</label><input className={styles.input} placeholder="250g" value={productForm.weight} onChange={(e) => setProductForm({ ...productForm, weight: e.target.value })} /></div>
+                      <div className={styles.formGroup}><label className={styles.formLabel}>Poids</label><input className={styles.input} placeholder="250g" value={productForm.weight} onChange={(e) => setProductForm({ ...productForm, weight: e.target.value })} /><div className={styles.fieldHint}>Utile à l'acheteur pour estimer les frais d'envoi.</div></div>
                       <div className={styles.formGroup}><label className={styles.formLabel}>Dimensions</label><input className={styles.input} placeholder="30×20cm" value={productForm.dimensions} onChange={(e) => setProductForm({ ...productForm, dimensions: e.target.value })} /></div>
                     </div>
                   </div>
