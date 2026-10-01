@@ -118,6 +118,11 @@ export default function ProduitContent() {
   );
 
   const images = getImages(product);
+  const details = [
+    ['Marque', product.brand], ['Matière', product.material], ['Couleur', product.color],
+    ['Poids', product.weight], ['Dimensions', product.dimensions],
+    ...Object.entries(product.characteristics || {}),
+  ].filter(([, v]) => v !== null && v !== undefined && String(v).trim() !== '');
   const metaParts = [];
   if (shop?.is_official) metaParts.push('Boutique officielle WennaShop');
   else if (shop?.is_verified) metaParts.push('✓ Certifié');
@@ -154,6 +159,17 @@ export default function ProduitContent() {
           <div className={styles.sectionTitle}>À propos de ce produit</div>
           <p className={styles.description}>{product.description || 'Aucune description disponible.'}</p>
 
+          {details.length > 0 && (
+            <>
+              <div className={styles.sectionTitle}>Détails</div>
+              <dl className={styles.details}>
+                {details.map(([k, v]) => (
+                  <div className={styles.detailRow} key={k}><dt>{k}</dt><dd>{String(v)}</dd></div>
+                ))}
+              </dl>
+            </>
+          )}
+
           <div className={styles.divider} />
 
           <div className={styles.sectionTitle}>Vendeur</div>
@@ -176,7 +192,10 @@ export default function ProduitContent() {
 
           <div className={styles.deliveryInfo}>
             <i className="ph ph-truck" />
-            <span>La livraison est gérée directement par le vendeur. Contactez-le pour les délais et tarifs.</span>
+            <span>
+              La livraison est gérée directement par le vendeur.
+              {product.delivery_days ? ` Délai estimé : ${product.delivery_days} jour${product.delivery_days > 1 ? 's' : ''}.` : ' Contactez-le pour les délais et tarifs.'}
+            </span>
           </div>
 
           <div className={styles.divider} />
