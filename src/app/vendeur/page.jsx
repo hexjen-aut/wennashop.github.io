@@ -7,6 +7,7 @@ import { getSupabase } from '@/lib/supabase';
 import { uploadFileWithProgress } from '@/lib/storageUpload';
 import ImageCropModal from '@/components/ImageCropModal';
 import { COUNTRIES_WITH_AUTRE as COUNTRIES, SHIP_COUNTRIES } from '@/lib/geo';
+import { currencyForCountry } from '@/lib/currency';
 import { useFeatureFlags } from '@/context/FeatureFlagsContext';
 import styles from './vendeur.module.css';
 import bvStyles from '../boutique-vendeur/boutique-vendeur.module.css';
@@ -31,6 +32,10 @@ function slugify(s) {
 const NOTIF_ICON = { order: 'ph-shopping-bag', money: 'ph-currency-circle-dollar', review: 'ph-star', stock: 'ph-warning', system: 'ph-bell' };
 
 function fmt(n, c = 'MAD') { try { return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: c, minimumFractionDigits: 0 }).format(n || 0); } catch { return `${n || 0} ${c}`; } }
+// Devise d'un produit = devise de son pays d'origine (le prix saisi est
+// stocké tel quel dans cette devise, puis converti pour les acheteurs).
+function productCurrency(country) { return currencyForCountry(country) || 'MAD'; }
+function currencyLabel(c) { return c === 'XAF' || c === 'XOF' ? 'FCFA' : c; }
 function fmtDate(d) { return d ? new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) : ''; }
 function timeAgo(d) {
   if (!d) return '';
@@ -163,7 +168,8 @@ export default function VendeurPage() {
   const [cropSrc, setCropSrc] = useState(null);
 
   function emptyProduct() {
-    return { id: null, name: '', description: '', price: '', stock: '', country: 'Maroc', origin_city: '', category_id: '', status: 'pending', brand: '', sku: '', compare_price: '', delivery_days: '', material: '', color: '', weight: '', dimensions: '', ships_to: [] };
+    const defaultCountry = COUNTRIES.includes(seller?.country) ? seller.country : 'Maroc';
+    return { id: null, name: '', description: '', price: '', stock: '', country: defaultCountry, origin_city: '', category_id: '', status: 'pending', brand: '', sku: '', compare_price: '', delivery_days: '', material: '', color: '', weight: '', dimensions: '', ships_to: [] };
   }
 
   // Orders
@@ -434,7 +440,7 @@ export default function VendeurPage() {
   // ── PRODUCTS ──
   async function loadProducts(sb) {
     const offset = (prodPage - 1) * PAGE_SIZE;
-    let q = sb.from('products').select('id,name,price,stock,status,image_url,images', { count: 'exact' }).eq('seller_id', ownerId).order('created_at', { ascending: false }).range(offset, offset + PAGE_SIZE - 1);
+    let q = sb.from('products').select('id,name,price,currency,stock,status,image_url,images', { count: 'exact' }).eq('seller_id', ownerId).order('created_at', { ascending: false }).range(offset, offset + PAGE_SIZE - 1);
     if (prodStatus) q = q.eq('status', prodStatus);
     if (prodSearch.trim()) q = q.ilike('name', `%${prodSearch.trim()}%`);
     const { data, count } = await q;
@@ -442,8 +448,13 @@ export default function VendeurPage() {
     setProdTotal(count || 0);
   }
 
-  function openProductModal(p = null) {
-    if (p) {
+  async function openProductModal(row = null) {
+    if (row) {
+      // La liste ne charge que quelques colonnes : on relit la fiche complète,
+      // sinon l'enregistrement écraserait description, catégorie, pays…
+      const { data: full, error } = await getSupabase().from('products').select('*').eq('id', row.id).single();
+      if (error || !full) { showToast('Impossible de charger le produit', 'error'); return; }
+      const p = full;
       setProductForm({
         id: p.id, name: p.name || '', description: p.description || '', price: p.price ?? '', stock: p.stock ?? '',
         country: p.country || 'Maroc', origin_city: p.origin_city || '', category_id: p.category_id || '', status: p.status || 'pending',
@@ -498,7 +509,7 @@ export default function VendeurPage() {
     const payload = {
       name: productForm.name, description: productForm.description || null,
       price: parseFloat(productForm.price), stock: parseInt(productForm.stock) || 0,
-      country: productForm.country, origin_city: productForm.origin_city || null,
+      country: productForm.country, currency: productCurrency(productForm.country), origin_city: productForm.origin_city || null,
       category_id: productForm.category_id || null, status: productForm.status,
       brand: productForm.brand || null, sku: productForm.sku || null,
       compare_price: productForm.compare_price ? parseFloat(productForm.compare_price) : null,
@@ -1171,7 +1182,7 @@ export default function VendeurPage() {
                           {p.image_url ? <img src={p.image_url} alt="" style={{ width: 34, height: 34, objectFit: 'cover', borderRadius: 6 }} /> : <div style={{ width: 34, height: 34, background: 'var(--surface-2)', borderRadius: 6 }} />}
                           {p.name}
                         </td>
-                        <td data-label="Prix" style={{ color: 'var(--accent)', fontWeight: 700 }}>{fmt(p.price)}</td>
+                        <td data-label="Prix" style={{ color: 'var(--accent)', fontWeight: 700 }}>{fmt(p.price, p.currency || 'MAD')}</td>
                         <td data-label="Stock">{p.stock}</td>
                         <td data-label="Statut"><span className={styles.badge} style={{ background: `${STATUS_COLOR[p.status]}22`, color: STATUS_COLOR[p.status] }}>{STATUS_LABEL[p.status] || p.status}</span></td>
                         <td style={{ display: 'flex', gap: 10 }}>
@@ -1670,7 +1681,7 @@ export default function VendeurPage() {
                   <div className={styles.formGroup}><label className={styles.formLabel}>Nom du produit *</label><input className={styles.input} value={productForm.name} onChange={(e) => setProductForm({ ...productForm, name: e.target.value })} /></div>
                   <div className={styles.formGroup}><label className={styles.formLabel}>Description</label><textarea className={styles.input} rows={3} value={productForm.description} onChange={(e) => setProductForm({ ...productForm, description: e.target.value })} /></div>
                   <div className={styles.formGrid}>
-                    <div className={styles.formGroup}><label className={styles.formLabel}>Prix (MAD) *</label><input type="number" className={styles.input} value={productForm.price} onChange={(e) => setProductForm({ ...productForm, price: e.target.value })} /></div>
+                    <div className={styles.formGroup}><label className={styles.formLabel}>Prix ({currencyLabel(productCurrency(productForm.country))}) *</label><input type="number" className={styles.input} value={productForm.price} onChange={(e) => setProductForm({ ...productForm, price: e.target.value })} /></div>
                     <div className={styles.formGroup}><label className={styles.formLabel}>Stock *</label><input type="number" className={styles.input} value={productForm.stock} onChange={(e) => setProductForm({ ...productForm, stock: e.target.value })} /></div>
                   </div>
                   <div className={styles.formGrid}>
@@ -1724,7 +1735,7 @@ export default function VendeurPage() {
                     <div className={styles.formGroup}><label className={styles.formLabel}>SKU</label><input className={styles.input} value={productForm.sku} onChange={(e) => setProductForm({ ...productForm, sku: e.target.value })} /></div>
                   </div>
                   <div className={styles.formGrid}>
-                    <div className={styles.formGroup}><label className={styles.formLabel}>Prix barré (MAD)</label><input type="number" className={styles.input} value={productForm.compare_price} onChange={(e) => setProductForm({ ...productForm, compare_price: e.target.value })} /></div>
+                    <div className={styles.formGroup}><label className={styles.formLabel}>Prix barré ({currencyLabel(productCurrency(productForm.country))})</label><input type="number" className={styles.input} value={productForm.compare_price} onChange={(e) => setProductForm({ ...productForm, compare_price: e.target.value })} /></div>
                     <div className={styles.formGroup}><label className={styles.formLabel}>Livraison (jours)</label><input type="number" className={styles.input} value={productForm.delivery_days} onChange={(e) => setProductForm({ ...productForm, delivery_days: e.target.value })} /></div>
                   </div>
                 </>
