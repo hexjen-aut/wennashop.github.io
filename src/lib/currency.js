@@ -40,8 +40,8 @@ export function currencyForCountry(country) {
   if (c.includes('maroc')) return 'MAD';
   if (c.includes('tunisie')) return 'TND';
   if (c.includes('madagascar')) return 'MGA';
-  if (c.includes('rdc')) return 'CDF';
-  if (c.includes('gabon') || c.includes('cameroun') || (c.includes('congo') && !c.includes('rdc'))) return 'XAF';
+  if (c.includes('rdc') || c.includes('rd congo')) return 'CDF';
+  if (c.includes('gabon') || c.includes('cameroun') || c.includes('congo') || c.includes('tchad') || c.includes('centrafrique')) return 'XAF';
   if (
     c.includes('benin') || c.includes('bénin') || c.includes('senegal') || c.includes('sénégal') ||
     c.includes('cote d') || c.includes("côte d") || c.includes('mali') || c.includes('burkina') ||
