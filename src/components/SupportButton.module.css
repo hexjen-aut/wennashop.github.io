@@ -2,17 +2,57 @@
    pour ne jamais cacher un de ses icônes. */
 .fab {
   position: fixed;
-  right: 20px;
-  bottom: 20px;
+  right: 16px;
+  bottom: 16px;
   z-index: 900;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .35));
+  -webkit-tap-highlight-color: transparent;
 }
+.fab:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 12px; }
+
+.bubble {
+  position: fixed;
+  right: 80px;
+  bottom: 52px;
+  z-index: 900;
+  max-width: 210px;
+  padding: 10px 14px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1.5px solid var(--border-accent);
+  border-radius: 16px 16px 4px 16px;
+  box-shadow: var(--shadow-md);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  animation: bubbleIn .35s ease-out;
+}
+
+@keyframes bubbleIn {
+  from { opacity: 0; transform: translateY(6px) scale(.96); }
+  to { opacity: 1; transform: none; }
+}
+
 .panel {
   position: fixed;
   right: 20px;
-  bottom: 84px;
+  bottom: 92px;
   z-index: 900;
 }
+
 @media (max-width: 768px) {
-  .fab { bottom: 92px; }
-  .panel { bottom: 156px; }
+  .fab { bottom: 88px; }
+  .bubble { bottom: 124px; }
+  .panel { bottom: 164px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bubble { animation: none; }
 }

@@ -11,6 +11,7 @@ import { currencyForCountry } from '@/lib/currency';
 import { useFeatureFlags } from '@/context/FeatureFlagsContext';
 import styles from './vendeur.module.css';
 import bvStyles from '../boutique-vendeur/boutique-vendeur.module.css';
+import Mascot from '@/components/Mascot';
 
 function shopInitials(name) {
   if (!name) return 'W';
@@ -1937,7 +1938,7 @@ export default function VendeurPage() {
         <div className={styles.modalOv} onClick={declineTourProposal}>
           <div className={styles.modalBox} style={{ maxWidth: 420 }} onClick={(e) => e.stopPropagation()}>
             <div style={{ padding: 24, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-              <i className="ph ph-hand-waving" style={{ fontSize: 30, color: 'var(--accent)' }} />
+              <Mascot size={72} float />
               <h3 style={{ fontSize: 16, fontWeight: 900 }}>Bienvenue sur WennaShop !</h3>
               <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>
                 On peut te guider pas à pas pour configurer ta boutique — nom, logo, bannière, réseaux sociaux, livraison. Ça prend 2 minutes.
@@ -1956,8 +1957,13 @@ export default function VendeurPage() {
         <>
           {renderTourVeils()}
           <div className={`${styles.tourPanel} ${tourRect && tourRect.top + tourRect.height / 2 > window.innerHeight / 2 ? styles.tourPanelTop : ''}`}>
-          <div className={styles.tourStepLabel}>Étape {tourStep + 1}/{TOUR_STEPS.length}</div>
-          <div className={styles.tourTitle}>{TOUR_STEPS[tourStep].title}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Mascot size={36} />
+            <div>
+              <div className={styles.tourStepLabel}>Étape {tourStep + 1}/{TOUR_STEPS.length}</div>
+              <div className={styles.tourTitle}>{TOUR_STEPS[tourStep].title}</div>
+            </div>
+          </div>
           <p className={styles.tourText}>{TOUR_STEPS[tourStep].text}</p>
           <div className={styles.tourActions}>
             <button className={styles.linkBtn} onClick={endTour}>Passer</button>

@@ -1,8 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getSupabase } from '@/lib/supabase';
+import Mascot from './Mascot';
 import styles from './SupportButton.module.css';
+
+const GREETING_SEEN_KEY = 'wenna_mascot_greeted';
 
 const WHATSAPP_NUMBER = '212766237011';
 
@@ -12,6 +15,18 @@ export default function SupportButton() {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
+  const [greeting, setGreeting] = useState(false);
+
+  // Une bulle de bienvenue par session, puis Wenna se fait discrète.
+  useEffect(() => {
+    let seen = null;
+    try { seen = sessionStorage.getItem(GREETING_SEEN_KEY); } catch {}
+    if (seen) return undefined;
+    const show = setTimeout(() => setGreeting(true), 4000);
+    const hide = setTimeout(() => setGreeting(false), 11000);
+    try { sessionStorage.setItem(GREETING_SEEN_KEY, '1'); } catch {}
+    return () => { clearTimeout(show); clearTimeout(hide); };
+  }, []);
 
   function close() {
     setOpen(false);
@@ -55,19 +70,17 @@ export default function SupportButton() {
 
   return (
     <>
+      {greeting && !open && (
+        <button className={styles.bubble} onClick={() => { setGreeting(false); setOpen(true); }}>
+          Salut, moi c'est Wenna ! Besoin d'aide ?
+        </button>
+      )}
       <button
-        onClick={() => setOpen((v) => !v)}
-        aria-label="Aide"
+        onClick={() => { setGreeting(false); setOpen((v) => !v); }}
+        aria-label="Aide — Wenna"
         className={styles.fab}
-        style={{
-          width: 52, height: 52, borderRadius: '50%',
-          background: 'var(--accent-btn)', color: '#fff', border: 'none',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 22, fontWeight: 900, cursor: 'pointer',
-          boxShadow: 'var(--shadow-orange)',
-        }}
       >
-        <i className="ph ph-question" />
+        <Mascot size={54} float />
       </button>
 
       {open && (
@@ -87,7 +100,13 @@ export default function SupportButton() {
           >
             {mode === 'menu' && (
               <>
-                <div style={{ fontSize: 14, fontWeight: 800, marginBottom: 14 }}>Besoin d'aide ?</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                  <Mascot size={40} />
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 800 }}>Besoin d'aide ?</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>Wenna et l'équipe te répondent.</div>
+                  </div>
+                </div>
                 <button
                   onClick={openWhatsapp}
                   style={{
