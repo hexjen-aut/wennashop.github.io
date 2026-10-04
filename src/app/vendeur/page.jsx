@@ -21,6 +21,8 @@ function shopInitials(name) {
 
 const STATUS_LABEL = { pending: 'En attente', active: 'Actif', inactive: 'Inactif', processing: 'En traitement', shipped: 'Expédiée', delivered: 'Livrée', cancelled: 'Annulée', approved: 'Approuvé', paid: 'Payé', rejected: 'Rejeté' };
 const STATUS_COLOR = { pending: '#f59e0b', active: '#22c55e', inactive: '#555', processing: '#3b82f6', shipped: '#3b82f6', delivered: '#22c55e', cancelled: '#ef4444', approved: '#22c55e', paid: '#22c55e', rejected: '#ef4444' };
+// Taux appliqué à un produit sans catégorie (voir resolve_commission_rate).
+const DEFAULT_COMMISSION_RATE = 8;
 const PAYOUT_METHOD_LABEL = { mobile_money: 'Mobile Money', bank_transfer: 'Virement bancaire' };
 
 function slugify(s) {
@@ -127,6 +129,28 @@ export default function VendeurPage() {
   const categoryGroups = useMemo(() => {
     const roots = categories.filter((c) => !c.parent_id);
     return roots.map((root) => ({ root, children: categories.filter((c) => c.parent_id === root.id) }));
+  }, [categories]);
+  const [commissionGridOpen, setCommissionGridOpen] = useState(false);
+  // Même règle que resolve_commission_rate() côté base : taux de la boutique
+  // s'il existe, sinon celui de la catégorie, sinon de sa catégorie
+  // principale, sinon 8 %.
+  function commissionRateFor(categoryId) {
+    if (shop?.commission_rate != null) return Number(shop.commission_rate);
+    const cat = categories.find((c) => c.id === categoryId);
+    if (!cat) return DEFAULT_COMMISSION_RATE;
+    if (cat.commission_rate != null) return Number(cat.commission_rate);
+    const parent = categories.find((c) => c.id === cat.parent_id);
+    return parent?.commission_rate != null ? Number(parent.commission_rate) : DEFAULT_COMMISSION_RATE;
+  }
+  // Grille par taux : { rate, names[] }, catégories principales seulement
+  // (les sous-catégories suivent leur catégorie principale).
+  const commissionGrid = useMemo(() => {
+    const byRate = {};
+    categories.filter((c) => !c.parent_id).forEach((c) => {
+      const rate = c.commission_rate != null ? Number(c.commission_rate) : DEFAULT_COMMISSION_RATE;
+      (byRate[rate] = byRate[rate] || []).push(c.name);
+    });
+    return Object.keys(byRate).map(Number).sort((a, b) => a - b).map((rate) => ({ rate, names: byRate[rate].sort((a, b) => a.localeCompare(b, 'fr')) }));
   }, [categories]);
 
   // Layout
@@ -253,7 +277,7 @@ export default function VendeurPage() {
 
       const [{ data: walletRow }, { data: cats }] = await Promise.all([
         sb.from('vendor_wallets').select('*').eq('user_id', owner).maybeSingle(),
-        sb.from('categories').select('id,name,parent_id').eq('is_active', true).order('sort_order', { ascending: true }),
+        sb.from('categories').select('id,name,parent_id,commission_rate').eq('is_active', true).order('sort_order', { ascending: true }),
       ]);
       setShop(shopRow || null);
       if (shopRow) setShopForm({
@@ -1041,7 +1065,8 @@ export default function VendeurPage() {
           <>
             <div className={styles.card} style={{ padding: '12px 18px', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 12, background: 'var(--accent-light)', border: '1px solid var(--border-accent)' }}>
               <i className="ph ph-percent" style={{ fontSize: 20, color: 'var(--accent)' }} />
-              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>Commission WennaShop : <strong style={{ color: 'var(--text)' }}>{shop?.commission_rate ? `${shop.commission_rate}%` : 'selon catégorie du produit'}</strong> par vente.</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', flex: 1 }}>Commission WennaShop : <strong style={{ color: 'var(--text)' }}>{shop?.commission_rate ? `${shop.commission_rate}%` : 'selon catégorie du produit'}</strong> par vente.</span>
+              <button className={`${styles.btnGhost} ${styles.btnSm}`} onClick={() => setCommissionGridOpen(true)}>Voir la grille</button>
             </div>
 
             {overview.shopCompletion < 100 && (
@@ -1667,6 +1692,45 @@ export default function VendeurPage() {
       {/* ── TOAST ── */}
       {toast && <div className={`${styles.toast} ${toast.type === 'error' ? styles.toastError : ''}`}>{toast.msg}</div>}
 
+      {/* ── GRILLE DES COMMISSIONS ── */}
+      {commissionGridOpen && (
+        <div className={styles.modalOv} style={{ zIndex: 6100 }} onClick={() => setCommissionGridOpen(false)}>
+          <div className={styles.modalBox} style={{ maxWidth: 480 }} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHead}>
+              <span>Grille des commissions</span>
+              <button className={styles.modalClose} onClick={() => setCommissionGridOpen(false)}><i className="ph ph-x" /></button>
+            </div>
+            <div className={styles.modalBody}>
+              <p className={styles.gridIntro}>
+                WennaShop ne prend rien à l'inscription : une commission est prélevée uniquement sur chaque vente, selon la catégorie du produit. Elle est calculée sur le prix de vente.
+              </p>
+              {shop?.commission_rate != null && (
+                <div className={styles.gridShopRate}>
+                  Ta boutique bénéficie d'un taux de <strong>{Number(shop.commission_rate)} %</strong> sur toutes ses ventes, quelle que soit la catégorie.
+                </div>
+              )}
+              {commissionGrid.map(({ rate, names }) => (
+                <div key={rate} className={styles.gridRow}>
+                  <div className={styles.gridRate}>{rate} %</div>
+                  <div className={styles.gridNames}>{names.join(' · ')}</div>
+                </div>
+              ))}
+              <div className={styles.gridRow}>
+                <div className={styles.gridRate}>{DEFAULT_COMMISSION_RATE} %</div>
+                <div className={styles.gridNames}>Produit sans catégorie</div>
+              </div>
+              <p className={styles.gridFoot}>
+                Les sous-catégories suivent le taux de leur catégorie principale.
+                {commissionGrid.length > 0 && (() => {
+                  const ex = commissionGrid[commissionGrid.length - 1];
+                  return ` Exemple : un article à 200 vendu en « ${ex.names[0]} » (${ex.rate} %) te rapporte ${Math.round((200 - (200 * ex.rate) / 100) * 100) / 100} après commission.`;
+                })()}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── FÉLICITATIONS PREMIER PRODUIT ── */}
       {firstProductDone && (
         <div className={styles.modalOv} onClick={() => setFirstProductDone(null)}>
@@ -1750,7 +1814,10 @@ export default function VendeurPage() {
                           </optgroup>
                         ))}
                       </select>
-                      <div className={styles.fieldHint}>Permet aux acheteurs de trouver ton produit avec les filtres. La commission WennaShop dépend de la catégorie.</div>
+                      <div className={styles.fieldHint}>
+                        Permet aux acheteurs de trouver ton produit avec les filtres. Commission WennaShop{productForm.category_id || shop?.commission_rate != null ? '' : ' sans catégorie'} : <strong style={{ color: 'var(--text)' }}>{commissionRateFor(productForm.category_id)} %</strong> du prix de vente.{' '}
+                        <button type="button" className={styles.linkBtn} style={{ fontSize: 11 }} onClick={() => setCommissionGridOpen(true)}>Voir la grille</button>
+                      </div>
                     </div>
                     <div className={styles.formGroup}><label className={styles.formLabel}>Statut</label>
                       <select className={styles.input} value={productForm.status} onChange={(e) => setProductForm({ ...productForm, status: e.target.value })}>

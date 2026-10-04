@@ -65,3 +65,36 @@
 /* Page connexion/inscription : en haut à droite, défile avec la page. */
 .fab.fabTop { position: absolute; top: 16px; bottom: auto; right: 16px; }
 .panel.panelTop { position: absolute; top: 84px; bottom: auto; right: 16px; }
+
+/* Le menu d'aide (FAQ) peut être long : il défile dans l'écran. */
+.panel { max-height: calc(100dvh - 120px); overflow-y: auto; }
+.panel.panelTop { max-height: calc(100dvh - 100px); }
+@media (max-width: 768px) {
+  .panel { max-height: calc(100dvh - 190px); }
+}
+
+.head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.headTitle { font-size: 14px; font-weight: 800; }
+.headSub { font-size: 11px; color: var(--text-faint); }
+
+.search { width: 100%; padding: 10px 12px; margin-bottom: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 13px; font-family: inherit; outline: none; }
+.search:focus { border-color: var(--border-accent); }
+
+.faqList { display: flex; flex-direction: column; gap: 6px; }
+.faqItem { width: 100%; text-align: left; padding: 10px 12px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text); font-size: 12px; font-weight: 700; line-height: 1.4; cursor: pointer; font-family: inherit; }
+.faqItem:hover { border-color: var(--border-accent); }
+.moreBtn { background: none; border: none; color: var(--accent); font-size: 12px; font-weight: 700; padding: 6px 0; cursor: pointer; text-align: left; font-family: inherit; }
+.noResult { font-size: 12px; line-height: 1.5; color: var(--text-muted); padding: 10px 12px; border-radius: 10px; background: var(--surface-2); }
+.contactLink { width: 100%; margin-top: 12px; padding: 10px 12px; border-radius: 10px; background: transparent; border: 1px dashed var(--border); color: var(--text-muted); font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.contactLink:hover { color: var(--text); border-color: var(--border-accent); }
+
+.backBtn { background: none; border: none; color: var(--text-muted); font-size: 12px; font-weight: 700; padding: 0 0 10px; cursor: pointer; font-family: inherit; }
+.answerHead { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.answerTitle { font-size: 14px; font-weight: 800; line-height: 1.35; }
+.answerText { font-size: 13px; line-height: 1.6; color: var(--text-muted); margin: 0 0 12px; }
+.answerLink { display: inline-block; margin-bottom: 12px; padding: 9px 16px; border-radius: 999px; background: var(--accent-btn); color: #fff; font-size: 12px; font-weight: 700; text-decoration: none; }
+.helpful { font-size: 11px; font-weight: 700; color: var(--text-faint); margin: 4px 0 8px; }
+.helpfulRow { display: flex; gap: 8px; }
+.helpfulYes, .helpfulNo { flex: 1; padding: 10px 8px; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.helpfulYes { background: var(--surface-2); border: 1px solid var(--border); color: var(--text); }
+.helpfulNo { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
