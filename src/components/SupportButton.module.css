@@ -56,3 +56,8 @@
 @media (prefers-reduced-motion: reduce) {
   .bubble { animation: none; }
 }
+
+/* Pendant un tutoriel, Wenna quitte son coin pour pointer les éléments
+   (voir WennaPointer) : on cache le bouton pour ne pas l'afficher en double. */
+:global(html[data-wenna-tour]) .fab,
+:global(html[data-wenna-tour]) .bubble { display: none; }

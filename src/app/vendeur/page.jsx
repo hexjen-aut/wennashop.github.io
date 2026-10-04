@@ -12,6 +12,7 @@ import { useFeatureFlags } from '@/context/FeatureFlagsContext';
 import styles from './vendeur.module.css';
 import bvStyles from '../boutique-vendeur/boutique-vendeur.module.css';
 import Mascot from '@/components/Mascot';
+import WennaPointer from '@/components/WennaPointer';
 
 function shopInitials(name) {
   if (!name) return 'W';
@@ -1982,9 +1983,10 @@ export default function VendeurPage() {
       {tourStep !== null && (
         <>
           {renderTourVeils()}
+          <WennaPointer rect={tourRect} />
           <div className={`${styles.tourPanel} ${tourRect && tourRect.top + tourRect.height / 2 > window.innerHeight / 2 ? styles.tourPanelTop : ''}`}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Mascot size={36} />
+            {!tourRect && <Mascot size={36} />}
             <div>
               <div className={styles.tourStepLabel}>Étape {tourStep + 1}/{TOUR_STEPS.length}</div>
               <div className={styles.tourTitle}>{TOUR_STEPS[tourStep].title}</div>
