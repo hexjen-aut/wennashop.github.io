@@ -1,8 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
+import { WENNA_FAQ, searchFaq } from '@/lib/wennaFaq';
 import Mascot from './Mascot';
 import styles from './SupportButton.module.css';
 
@@ -14,10 +16,15 @@ const NO_GREETING_PATHS = ['/connexion', '/bienvenue'];
 const TOP_PATHS = ['/connexion'];
 
 const WHATSAPP_NUMBER = '212766237011';
+const POPULAR_FAQ = WENNA_FAQ.filter((f) => f.popular);
 
 export default function SupportButton() {
   const [open, setOpen] = useState(false);
-  const [mode, setMode] = useState('menu'); // menu | form | sent
+  // menu : questions fréquentes | answer : une réponse | contact : équipe
+  const [mode, setMode] = useState('menu'); // menu | answer | contact | form | sent
+  const [query, setQuery] = useState('');
+  const [showAll, setShowAll] = useState(false);
+  const [answer, setAnswer] = useState(null);
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
@@ -48,6 +55,14 @@ export default function SupportButton() {
     setOpen(false);
     setMode('menu');
     setError('');
+    setQuery('');
+    setShowAll(false);
+    setAnswer(null);
+  }
+
+  function openAnswer(faq) {
+    setAnswer(faq);
+    setMode('answer');
   }
 
   function openWhatsapp() {
@@ -108,19 +123,111 @@ export default function SupportButton() {
             onClick={(e) => e.stopPropagation()}
             className={`${styles.panel} ${atTop ? styles.panelTop : ''}`}
             style={{
-              width: 300, maxWidth: 'calc(100vw - 40px)',
+              width: 330, maxWidth: 'calc(100vw - 32px)',
               background: 'var(--surface)', border: '1px solid var(--border)',
               borderRadius: 'var(--radius-lg)', padding: 18,
               boxShadow: 'var(--shadow-md)',
             }}
           >
-            {mode === 'menu' && (
+            {mode === 'menu' && (() => {
+              const results = query.trim() ? searchFaq(query) : null;
+              const list = results || (showAll ? WENNA_FAQ : POPULAR_FAQ);
+              return (
+                <>
+                  <div className={styles.head}>
+                    <Mascot size={40} />
+                    <div>
+                      <div className={styles.headTitle}>Besoin d'aide ?</div>
+                      <div className={styles.headSub}>Pose ta question, Wenna te répond.</div>
+                    </div>
+                  </div>
+                  <input
+                    className={styles.search}
+                    placeholder="Ex. : paiement, livraison, retour…"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    aria-label="Rechercher dans l'aide"
+                  />
+                  {results && results.length === 0 ? (
+                    <div className={styles.noResult}>
+                      Wenna n'a pas encore la réponse à cette question. L'équipe va t'aider.
+                    </div>
+                  ) : (
+                    <div className={styles.faqList}>
+                      {list.map((f) => (
+                        <button key={f.id} className={styles.faqItem} onClick={() => openAnswer(f)}>{f.q}</button>
+                      ))}
+                      {!results && !showAll && (
+                        <button className={styles.moreBtn} onClick={() => setShowAll(true)}>Toutes les questions</button>
+                      )}
+                    </div>
+                  )}
+                  <button className={styles.contactLink} onClick={() => setMode('contact')}>
+                    Pas trouvé ? Contacter l'équipe
+                  </button>
+                </>
+              );
+            })()}
+
+            {mode === 'answer' && answer && (
               <>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                <button className={styles.backBtn} onClick={() => setMode('menu')}>‹ Questions</button>
+                <div className={styles.answerHead}>
+                  <Mascot size={36} />
+                  <div className={styles.answerTitle}>{answer.q}</div>
+                </div>
+                <p className={styles.answerText}>{answer.a}</p>
+                {answer.link && (
+                  <Link href={answer.link.href} className={styles.answerLink} onClick={close}>{answer.link.label}</Link>
+                )}
+                {answer.contact ? (
+                  <>
+                    <div className={styles.helpful}>Contacter l'équipe :</div>
+                    <button
+                      onClick={openWhatsapp}
+                      style={{
+                        width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+                        padding: '12px 14px', marginBottom: 8, borderRadius: 10,
+                        background: 'var(--surface-2)', border: '1px solid var(--border)',
+                        color: 'var(--text)', fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                      }}
+                    >
+                      <i className="ph ph-whatsapp-logo" style={{ fontSize: 18, color: '#25D366' }} />
+                      Nous écrire sur WhatsApp
+                    </button>
+                    <button
+                      onClick={() => setMode('form')}
+                      style={{
+                        width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+                        padding: '12px 14px', borderRadius: 10,
+                        background: 'var(--surface-2)', border: '1px solid var(--border)',
+                        color: 'var(--text)', fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                      }}
+                    >
+                      <i className="ph ph-flag" style={{ fontSize: 18, color: 'var(--accent)' }} />
+                      Envoyer une réclamation
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div className={styles.helpful}>Ça répond à ta question ?</div>
+                    <div className={styles.helpfulRow}>
+                      <button className={styles.helpfulYes} onClick={close}>Oui, merci</button>
+                      <button className={styles.helpfulNo} onClick={() => setMode('contact')}>Non, contacter l'équipe</button>
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+
+            {mode === 'contact' && (
+              <>
+                <button className={styles.backBtn} onClick={() => setMode('menu')}>‹ Questions</button>
+                <div className={styles.head}>
                   <Mascot size={40} />
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 800 }}>Besoin d'aide ?</div>
-                    <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>Wenna et l'équipe te répondent.</div>
+                    <div className={styles.headTitle}>Contacter l'équipe</div>
+                    <div className={styles.headSub}>Une vraie personne te répond.</div>
                   </div>
                 </div>
                 <button
@@ -175,7 +282,7 @@ export default function SupportButton() {
                 />
                 <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
                   <button
-                    onClick={() => setMode('menu')}
+                    onClick={() => setMode('contact')}
                     style={{ flex: 1, padding: '10px 12px', borderRadius: 10, background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-muted)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
                   >
                     Retour
