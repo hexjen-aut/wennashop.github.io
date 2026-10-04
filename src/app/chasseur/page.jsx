@@ -7,6 +7,7 @@ import TourOverlay from '@/components/TourOverlay';
 import tourStyles from '@/components/TourOverlay.module.css';
 import { useFeatureFlags } from '@/context/FeatureFlagsContext';
 import styles from './chasseur.module.css';
+import Mascot from '@/components/Mascot';
 
 const MAX_IMAGES = 5;
 const BUCKET = 'products';
@@ -799,7 +800,7 @@ export default function ChasseurPage() {
       {tourProposalOpen && (
         <div onClick={declineTourProposal} style={{ position: 'fixed', inset: 0, zIndex: 6999, background: 'rgba(0,0,0,.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
           <div onClick={(e) => e.stopPropagation()} style={{ maxWidth: 380, width: '100%', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: 24, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-            <i className="ph ph-hand-waving" style={{ fontSize: 30, color: 'var(--accent)' }} />
+            <Mascot size={72} float />
             <h3 style={{ fontSize: 16, fontWeight: 900 }}>Bienvenue, chasseur !</h3>
             <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>On te montre en 5 étapes les quêtes à pourvoir, ton lien de parrainage et où suivre tes gains. Ça prend une minute.</p>
             <div style={{ display: 'flex', gap: 10, width: '100%' }}>

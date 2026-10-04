@@ -31,6 +31,7 @@
 .prodPrice { font-size: 14px; font-weight: 800; color: var(--accent); }
 
 .noResults { padding: 48px 32px; text-align: center; grid-column: 1/-1; }
+.noResultsMascot { margin: 0 auto 14px; }
 .noResultsTitle { font-size: 20px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; }
 .noResultsSub { font-size: 13px; font-weight: 500; color: var(--text-faint); }
 

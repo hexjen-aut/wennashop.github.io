@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Mascot from './Mascot';
 import styles from './TourOverlay.module.css';
 
 // Tuto interactif générique : flou/assombrit tout l'écran sauf l'élément
@@ -56,8 +57,13 @@ export default function TourOverlay({ steps, stepIndex, onNext, onSkip }) {
         <div className={styles.tourVeil} style={{ top: 0, left: 0, width: vw, height: vh }} />
       )}
       <div className={`${styles.tourPanel} ${r && r.top + (r.bottom - r.top) / 2 > vh / 2 ? styles.tourPanelTop : ''}`}>
-        <div className={styles.tourStepLabel}>Étape {stepIndex + 1}/{steps.length}</div>
-        <div className={styles.tourTitle}>{step.title}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <Mascot size={36} />
+          <div>
+            <div className={styles.tourStepLabel}>Étape {stepIndex + 1}/{steps.length}</div>
+            <div className={styles.tourTitle}>{step.title}</div>
+          </div>
+        </div>
         <p className={styles.tourText}>{step.text}</p>
         <div className={styles.tourActions}>
           <button className={styles.tourSkip} onClick={onSkip}>Passer</button>

@@ -14,6 +14,7 @@ import { convertPrice, formatSmartPrice, currencyForCountry } from '@/lib/curren
 import { SHIP_COUNTRIES as COUNTRIES, COUNTRY_FLAG } from '@/lib/geo';
 import { useFeatureFlags } from '@/context/FeatureFlagsContext';
 import styles from './boutique.module.css';
+import Mascot from '@/components/Mascot';
 
 const PAGE_SIZE = 24;
 const BUYER_COUNTRY_KEY = 'wenna_buyer_country';
@@ -516,6 +517,7 @@ export default function BoutiqueClient() {
             </div>
           ) : products.length === 0 ? (
             <div className={styles.noResults}>
+              <Mascot size={96} float className={styles.noResultsMascot} />
               <div className={styles.noResultsTitle}>Aucun produit trouvé</div>
               <div className={styles.noResultsSub}>Essayez d'autres filtres{questsEnabled && <> — ou <Link href="/quetes">postez une quête</Link> pour le trouver</>}.</div>
             </div>
@@ -746,7 +748,7 @@ export default function BoutiqueClient() {
       {tourProposalOpen && (
         <div onClick={declineTourProposal} style={{ position: 'fixed', inset: 0, zIndex: 6999, background: 'rgba(0,0,0,.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
           <div onClick={(e) => e.stopPropagation()} style={{ maxWidth: 380, width: '100%', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: 24, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-            <i className="ph ph-hand-waving" style={{ fontSize: 30, color: 'var(--accent)' }} />
+            <Mascot size={72} float />
             <h3 style={{ fontSize: 16, fontWeight: 900 }}>Bienvenue sur WennaShop !</h3>
             <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>On te montre en {tourSteps.length} étapes comment chercher un produit, l'ajouter au panier et suivre ta commande. Ça prend une minute. Tu pourras le revoir à tout moment avec le bouton « ? » en haut du catalogue.</p>
             <div style={{ display: 'flex', gap: 10, width: '100%' }}>
