@@ -1,0 +1,12 @@
+.screen { min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 32px 16px; background: var(--bg); color: var(--text); }
+.logo { display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 900; margin-bottom: 32px; color: var(--text); text-decoration: none; }
+.logoIcon { height: 30px; width: auto; }
+.logoAccent { color: var(--accent); }
+.code { margin-top: 18px; font-size: 12px; font-weight: 800; letter-spacing: .12em; color: var(--accent); }
+.title { font-size: 22px; font-weight: 900; margin: 8px 0 10px; }
+.text { font-size: 14px; color: var(--text-muted); max-width: 420px; line-height: 1.6; margin: 0 0 28px; }
+.actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+
+/* Boutons d'action des pages d'erreur. */
+.btn { display: inline-block; background: var(--accent-btn); color: #fff; padding: 13px 28px; border-radius: 999px; font-weight: 700; font-size: 14px; text-decoration: none; border: none; cursor: pointer; font-family: inherit; }
+.btnGhost { display: inline-block; background: transparent; color: var(--text); padding: 12px 26px; border-radius: 999px; font-weight: 700; font-size: 14px; text-decoration: none; border: 1.5px solid var(--border); cursor: pointer; font-family: inherit; }

@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { useFeatureFlags } from '@/context/FeatureFlagsContext';
 import styles from './MaintenanceGate.module.css';
+import Mascot from './Mascot';
 
 // /admin reste toujours accessible, même en maintenance, pour pouvoir
 // désactiver le mode maintenance sans passer par la base de données.
@@ -18,6 +19,7 @@ export default function MaintenanceGate({ children }) {
         <img src="/wenna_icon.png" alt="" className={styles.logoIcon} />
         <span className={styles.logoAccent}>Wenna</span>Shop
       </div>
+      <Mascot size={130} float />
       <div className={styles.title}>Site en maintenance</div>
       <p className={styles.sub}>Nous effectuons des mises à jour. Le site sera de retour très bientôt.</p>
     </div>

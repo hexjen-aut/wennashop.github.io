@@ -2,7 +2,7 @@
 // nouveau worker et renouvelle ce cache.
 const CACHE_NAME = `wenna-shell-${new URL(self.location.href).searchParams.get('v') || 'v1'}`;
 const OFFLINE_URL = '/offline';
-const SHELL_ASSETS = [OFFLINE_URL, '/manifest.json', '/icon-192.png', '/icon-512.png'];
+const SHELL_ASSETS = [OFFLINE_URL, '/manifest.json', '/icon-192.png', '/icon-512.png', '/wenna_icon.png', '/wenna-mascotte.svg'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
