@@ -90,8 +90,8 @@ export const WENNA_FAQ = [
   {
     id: 'commission',
     q: 'Combien coûte WennaShop ?',
-    a: "L'inscription est gratuite pour tout le monde. Les vendeurs paient seulement une commission sur chaque vente, à partir de 6 % selon la catégorie du produit.",
-    keywords: 'coût prix gratuit commission frais pourcentage abonnement payer vendeur tarif',
+    a: "L'inscription est gratuite pour tout le monde. Les vendeurs paient seulement une commission sur chaque vente, de 6 à 13 % selon la catégorie du produit. La grille complète est dans le tableau de bord vendeur (« Voir la grille » sur la vue d'ensemble), et le taux s'affiche quand tu choisis la catégorie d'un produit.",
+    keywords: 'coût prix gratuit commission commissions grille taux frais pourcentage abonnement payer vendeur tarif',
   },
   {
     id: 'retrait',
