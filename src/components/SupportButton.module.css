@@ -61,3 +61,7 @@
    (voir WennaPointer) : on cache le bouton pour ne pas l'afficher en double. */
 :global(html[data-wenna-tour]) .fab,
 :global(html[data-wenna-tour]) .bubble { display: none; }
+
+/* Page connexion/inscription : en haut à droite, défile avec la page. */
+.fab.fabTop { position: absolute; top: 16px; bottom: auto; right: 16px; }
+.panel.panelTop { position: absolute; top: 84px; bottom: auto; right: 16px; }

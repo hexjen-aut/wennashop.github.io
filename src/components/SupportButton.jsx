@@ -9,6 +9,9 @@ import styles from './SupportButton.module.css';
 const GREETING_SEEN_KEY = 'wenna_mascot_greeted';
 // Pages où Wenna se présente déjà dans le contenu : pas de seconde bulle.
 const NO_GREETING_PATHS = ['/connexion', '/bienvenue'];
+// Sur le formulaire de connexion/inscription, le bouton flottant masquait les
+// champs : il est placé en haut de page et défile avec elle.
+const TOP_PATHS = ['/connexion'];
 
 const WHATSAPP_NUMBER = '212766237011';
 
@@ -20,6 +23,7 @@ export default function SupportButton() {
   const [error, setError] = useState('');
   const [greeting, setGreeting] = useState(false);
   const pathname = usePathname();
+  const atTop = TOP_PATHS.includes(pathname);
 
   // Une bulle de bienvenue par session, puis Wenna se fait discrète.
   useEffect(() => {
@@ -90,7 +94,7 @@ export default function SupportButton() {
       <button
         onClick={() => { setGreeting(false); setOpen((v) => !v); }}
         aria-label="Aide — Wenna"
-        className={styles.fab}
+        className={`${styles.fab} ${atTop ? styles.fabTop : ''}`}
       >
         <Mascot size={54} float />
       </button>
@@ -102,7 +106,7 @@ export default function SupportButton() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className={styles.panel}
+            className={`${styles.panel} ${atTop ? styles.panelTop : ''}`}
             style={{
               width: 300, maxWidth: 'calc(100vw - 40px)',
               background: 'var(--surface)', border: '1px solid var(--border)',
