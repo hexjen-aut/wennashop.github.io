@@ -1,11 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
 import Mascot from './Mascot';
 import styles from './SupportButton.module.css';
 
 const GREETING_SEEN_KEY = 'wenna_mascot_greeted';
+// Pages où Wenna se présente déjà dans le contenu : pas de seconde bulle.
+const NO_GREETING_PATHS = ['/connexion', '/bienvenue'];
 
 const WHATSAPP_NUMBER = '212766237011';
 
@@ -16,17 +19,26 @@ export default function SupportButton() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
   const [greeting, setGreeting] = useState(false);
+  const pathname = usePathname();
 
   // Une bulle de bienvenue par session, puis Wenna se fait discrète.
   useEffect(() => {
+    if (NO_GREETING_PATHS.includes(pathname)) { setGreeting(false); return undefined; }
     let seen = null;
     try { seen = sessionStorage.getItem(GREETING_SEEN_KEY); } catch {}
     if (seen) return undefined;
-    const show = setTimeout(() => setGreeting(true), 4000);
-    const hide = setTimeout(() => setGreeting(false), 11000);
-    try { sessionStorage.setItem(GREETING_SEEN_KEY, '1'); } catch {}
-    return () => { clearTimeout(show); clearTimeout(hide); };
-  }, []);
+    const show = setTimeout(() => {
+      try { sessionStorage.setItem(GREETING_SEEN_KEY, '1'); } catch {}
+      setGreeting(true);
+    }, 4000);
+    return () => clearTimeout(show);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!greeting) return undefined;
+    const hide = setTimeout(() => setGreeting(false), 7000);
+    return () => clearTimeout(hide);
+  }, [greeting]);
 
   function close() {
     setOpen(false);
