@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { getSupabase } from '@/lib/supabase';
 import Nav from '@/components/Nav';
+import Mascot from '@/components/Mascot';
 import { convertPrice } from '@/lib/currency';
 import styles from './paiement.module.css';
 
@@ -186,11 +187,12 @@ function PaiementContent() {
   if (success) return (
     <>
       <Nav />
-      <div style={{ padding: 80, textAlign: 'center' }}>
-        <div style={{ fontSize: 40, marginBottom: 16 }}>✅</div>
+      <div style={{ padding: '60px 20px', textAlign: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}><Mascot size={110} float /></div>
         <h1 style={{ fontSize: 30, fontWeight: 900, marginBottom: 8 }}>Commande confirmée !</h1>
-        <p style={{ color: 'var(--text-muted)', marginBottom: 24 }}>Merci pour ta commande. Tu recevras une confirmation par email.</p>
-        <Link href="/boutique" style={{ background: 'var(--accent-btn)', color: '#fff', padding: '12px 28px', borderRadius: 999, fontWeight: 700, textDecoration: 'none' }}>Continuer mes achats</Link>
+        <p style={{ color: 'var(--text-muted)', marginBottom: 24, maxWidth: 420, marginLeft: 'auto', marginRight: 'auto' }}>Merci pour ta commande ! Tu recevras une confirmation par email, et tu peux suivre chaque étape de ta livraison.</p>
+        <Link href={`/suivi?order=${orderId}`} style={{ display: 'inline-block', border: '1.5px solid var(--border)', color: 'var(--text)', padding: '11px 24px', borderRadius: 999, fontWeight: 700, textDecoration: 'none', margin: '0 6px 10px' }}>Suivre ma commande</Link>
+        <Link href="/boutique" style={{ display: 'inline-block', background: 'var(--accent-btn)', color: '#fff', padding: '12px 28px', borderRadius: 999, fontWeight: 700, textDecoration: 'none', margin: '0 6px 10px' }}>Continuer mes achats</Link>
       </div>
     </>
   );

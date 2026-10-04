@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
+import Mascot from '@/components/Mascot';
 import styles from './bienvenue.module.css';
 
 const SLIDE_SECONDS = 4;
@@ -14,8 +15,8 @@ function buildSlides(firstName, role) {
     {
       eyebrow: 'Bienvenue',
       title: firstName ? `Ravis de te compter parmi nous, ${firstName}.` : 'Ravis de te compter parmi nous.',
-      body: "WennaShop est la marketplace qui connecte l'Afrique, un échange à la fois — vendeurs et acheteurs, d'un pays à l'autre, sans frontière.",
-      image: '/bienvenue/hands.webp',
+      body: "Moi c'est Wenna, je t'accompagne sur WennaShop, la marketplace qui connecte l'Afrique. Une question ? Appuie sur moi, en bas de l'écran.",
+      mascot: true,
       next: 'Suivant',
     },
     {
@@ -179,7 +180,9 @@ export default function BienvenuePage() {
       </div>
 
       <div className={styles.card} key={slideIndex}>
-        {slide.image && <img src={slide.image} alt="" className={styles.illustration} />}
+        {slide.mascot
+          ? <div className={styles.mascotSlot}><Mascot size={158} float /></div>
+          : slide.image && <img src={slide.image} alt="" className={styles.illustration} />}
         <img src="/wenna_icon.png" alt="WennaShop" className={styles.logo} />
         <div className={styles.eyebrow}>{slide.eyebrow}</div>
         <div className={styles.title}>{slide.title}</div>

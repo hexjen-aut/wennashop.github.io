@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
 import { CGU_TEXT, PRIVACY_TEXT } from '@/lib/legalTexts';
 import { PAYS_GROUPS } from '@/lib/geo';
+import Mascot from '@/components/Mascot';
 import styles from './connexion.module.css';
 
 // Le fournisseur Google n'est pas encore activé dans Supabase Auth
@@ -288,6 +289,14 @@ export default function ConnexionPage() {
       {/* PANNEAU DROIT */}
       <div className={styles.rightPanel}>
         <div className={styles.wrap}>
+          <div className={styles.wennaGreet}>
+            <Mascot size={60} float />
+            <p className={styles.wennaBubble}>
+              {mode === 'connexion'
+                ? 'Content de te revoir ! Connecte-toi, je te retrouve dans la boutique.'
+                : "Salut, moi c'est Wenna ! Je t'accompagne pour tes premiers pas sur WennaShop."}
+            </p>
+          </div>
           <div className={styles.tabs}>
             <button className={`${styles.tab} ${mode === 'connexion' ? styles.tabActive : ''}`} onClick={() => setMode('connexion')}>Connexion</button>
             <button className={`${styles.tab} ${mode === 'inscription' ? styles.tabActive : ''}`} onClick={() => setMode('inscription')}>Inscription</button>

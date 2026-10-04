@@ -67,6 +67,14 @@
   display: block;
 }
 
+.mascotSlot {
+  height: 184px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 18px;
+}
+
 .skip {
   position: absolute;
   top: 20px;

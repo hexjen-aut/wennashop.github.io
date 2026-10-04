@@ -132,6 +132,7 @@ export default function VendeurPage() {
   const [section, setSection] = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [toast, setToast] = useState(null);
+  const [firstProductDone, setFirstProductDone] = useState(null); // null | { active: bool }
 
   // Notifications
   const [notifPanelOpen, setNotifPanelOpen] = useState(false);
@@ -521,6 +522,7 @@ export default function VendeurPage() {
       characteristics, shop_id: shop?.id || null, seller_id: ownerId,
       ships_to: productForm.ships_to || [],
     };
+    const isFirstProduct = !productForm.id && products.length === 0;
     let error;
     if (productForm.id) {
       ({ error } = await sb.from('products').update(payload).eq('id', productForm.id));
@@ -528,7 +530,8 @@ export default function VendeurPage() {
       ({ error } = await sb.from('products').insert(payload));
     }
     if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
-    showToast(productForm.id ? 'Produit mis à jour' : 'Produit créé', 'success');
+    if (isFirstProduct) setFirstProductDone({ active: payload.status === 'active' });
+    else showToast(productForm.id ? 'Produit mis à jour' : 'Produit créé', 'success');
     setProductModalOpen(false);
     await loadProducts(sb);
   }
@@ -1662,6 +1665,29 @@ export default function VendeurPage() {
 
       {/* ── TOAST ── */}
       {toast && <div className={`${styles.toast} ${toast.type === 'error' ? styles.toastError : ''}`}>{toast.msg}</div>}
+
+      {/* ── FÉLICITATIONS PREMIER PRODUIT ── */}
+      {firstProductDone && (
+        <div className={styles.modalOv} onClick={() => setFirstProductDone(null)}>
+          <div className={`${styles.modalBox} ${styles.celebrateBox}`} onClick={(e) => e.stopPropagation()}>
+            <Mascot size={96} float />
+            <div className={styles.celebrateTitle}>
+              {firstProductDone.active ? 'Bravo, ton premier produit est en ligne !' : 'Bravo, ton premier produit est enregistré !'}
+            </div>
+            <p className={styles.celebrateText}>
+              {firstProductDone.active
+                ? 'Les acheteurs peuvent déjà le voir dans la boutique. Plus tu ajoutes de produits avec de belles photos, plus ta boutique attire.'
+                : 'Il est encore inactif : active-le depuis la liste de tes produits quand tu es prêt à le vendre.'}
+            </p>
+            <div className={styles.celebrateActions}>
+              {firstProductDone.active && shop?.slug && (
+                <Link href={`/boutique-vendeur?slug=${shop.slug}`} className={styles.btnGhost} style={{ textDecoration: 'none' }}>Voir ma boutique</Link>
+              )}
+              <button className={styles.btnPrimary} onClick={() => { setFirstProductDone(null); openProductModal(); }}>Ajouter un autre produit</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── MODAL PRODUIT ── */}
       {productModalOpen && (
