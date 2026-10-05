@@ -51,7 +51,7 @@ export function CartProvider({ children }) {
       setUserId(null);
       setItems(readLocalCart());
       setLoading(false);
-      return;
+      return null;
     }
 
     const { data: row } = await sb.from('users').select('id').eq('auth_id', user.id).maybeSingle();
@@ -59,7 +59,7 @@ export function CartProvider({ children }) {
       setUserId(null);
       setItems(readLocalCart());
       setLoading(false);
-      return;
+      return null;
     }
 
     // Transférer le panier invité vers le compte, une seule fois
@@ -94,9 +94,26 @@ export function CartProvider({ children }) {
       stock: i.products?.stock ?? null,
     })));
     setLoading(false);
+    return row.id;
   }, []);
 
   useEffect(() => { refresh(); }, [refresh]);
+
+  // Le panier est monté une seule fois (layout racine) : sans ceci, un
+  // visiteur qui se connecte sans recharger la page restait « invité » —
+  // ses ajouts partaient dans le panier local et « Commander » le renvoyait
+  // vers la connexion en boucle. On recharge donc le panier à chaque
+  // connexion / déconnexion. Le setTimeout sort de la callback Supabase,
+  // dans laquelle un autre appel Supabase peut bloquer.
+  useEffect(() => {
+    const sb = getSupabase();
+    const { data: { subscription } } = sb.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'USER_UPDATED') {
+        setTimeout(() => { refresh(); }, 0);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [refresh]);
 
   // Un panier ne peut contenir des produits que d'une seule boutique à la
   // fois : au-delà de mélanger les livraisons, des devises différentes
@@ -176,7 +193,11 @@ export function CartProvider({ children }) {
   // Nécessite un compte (pas de panier invité) — les prix sont relus
   // en base au moment de la commande, jamais depuis le state client.
   const createOrder = useCallback(async () => {
-    if (!userId) return { success: false, error: 'not_authenticated' };
+    // Filet de sécurité : si le panier se croit encore invité, on revérifie
+    // la session (et on transfère le panier local) avant de conclure que
+    // l'acheteur n'est pas connecté.
+    const uid = userId || await refresh();
+    if (!uid) return { success: false, error: 'not_authenticated' };
     const sb = getSupabase();
     const idempotencyKey = getOrCreateIdempotencyKey();
 
@@ -185,13 +206,13 @@ export function CartProvider({ children }) {
     // recréer une deuxième.
     if (idempotencyKey) {
       const { data: existing } = await sb.from('orders')
-        .select('id').eq('user_id', userId).eq('idempotency_key', idempotencyKey).maybeSingle();
+        .select('id').eq('user_id', uid).eq('idempotency_key', idempotencyKey).maybeSingle();
       if (existing) { clearIdempotencyKey(); return { success: true, orderId: existing.id }; }
     }
 
     const { data: cartRows, error: cartErr } = await sb.from('cart_items')
       .select('quantity, product_id, products(price, currency, stock, name, shop_id)')
-      .eq('user_id', userId);
+      .eq('user_id', uid);
     if (cartErr) return { success: false, error: cartErr.message };
     if (!cartRows || cartRows.length === 0) return { success: false, error: 'empty_cart' };
 
@@ -219,7 +240,7 @@ export function CartProvider({ children }) {
 
     const { data: order, error: orderErr } = await sb.from('orders')
       .insert({
-        user_id: userId, status: 'pending',
+        user_id: uid, status: 'pending',
         subtotal: subtotalVendorCurrency, total_amount: subtotalVendorCurrency, currency: vendorCurrency,
         buyer_total_amount: conv.amount, buyer_currency: conv.currency,
         idempotency_key: idempotencyKey,
@@ -231,7 +252,7 @@ export function CartProvider({ children }) {
       // clé) a créé la commande entre-temps. On la récupère au lieu d'échouer.
       if (orderErr.code === '23505' && idempotencyKey) {
         const { data: raced } = await sb.from('orders')
-          .select('id').eq('user_id', userId).eq('idempotency_key', idempotencyKey).maybeSingle();
+          .select('id').eq('user_id', uid).eq('idempotency_key', idempotencyKey).maybeSingle();
         if (raced) { clearIdempotencyKey(); return { success: true, orderId: raced.id }; }
       }
       return { success: false, error: orderErr.message };
@@ -246,7 +267,7 @@ export function CartProvider({ children }) {
 
     clearIdempotencyKey();
     return { success: true, orderId: order.id };
-  }, [userId]);
+  }, [userId, refresh]);
 
   return (
     <CartContext.Provider value={{ items, count, subtotal, loading, add, updateQuantity, remove, clear, refresh, createOrder }}>

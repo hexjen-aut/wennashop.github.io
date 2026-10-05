@@ -7,6 +7,7 @@ import { getSupabase } from '@/lib/supabase';
 import { CGU_TEXT, PRIVACY_TEXT } from '@/lib/legalTexts';
 import { PAYS_GROUPS } from '@/lib/geo';
 import Mascot from '@/components/Mascot';
+import { AFTER_LOGIN_KEY } from '@/lib/afterLogin';
 import styles from './connexion.module.css';
 
 // Le fournisseur Google n'est pas encore activé dans Supabase Auth
@@ -136,6 +137,15 @@ export default function ConnexionPage() {
     setToast({ text, type });
     setTimeout(() => setToast(null), 4000);
   }
+
+  // Page à rouvrir après la connexion (ex. le panier, quand « Commander »
+  // a renvoyé ici) : lue par /bienvenue. Chemins internes uniquement.
+  useEffect(() => {
+    try {
+      const next = new URLSearchParams(window.location.search).get('next');
+      if (next && next.startsWith('/') && !next.startsWith('//')) sessionStorage.setItem(AFTER_LOGIN_KEY, next);
+    } catch {}
+  }, []);
 
   // Redirection si déjà connecté
   useEffect(() => {

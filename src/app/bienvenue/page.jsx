@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
 import Mascot from '@/components/Mascot';
+import { takeAfterLogin } from '@/lib/afterLogin';
 import styles from './bienvenue.module.css';
 
 const SLIDE_SECONDS = 4;
@@ -119,7 +120,7 @@ export default function BienvenuePage() {
       }
       try { localStorage.removeItem('wenna_referral_code'); } catch {}
 
-      const dest = effectiveRole === 'artisan' ? '/vendeur' : '/boutique';
+      const dest = takeAfterLogin() || (effectiveRole === 'artisan' ? '/vendeur' : '/boutique');
       setDestination(dest);
 
       if (row?.onboarding_completed_at) { router.replace(dest); return; }
