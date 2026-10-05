@@ -194,3 +194,12 @@ textarea.input { resize: vertical; min-height: 70px; }
 .gridRate { flex: 0 0 52px; font-size: 18px; font-weight: 900; color: var(--accent); }
 .gridNames { font-size: 12px; line-height: 1.6; color: var(--text); }
 .gridFoot { font-size: 11px; line-height: 1.5; color: var(--text-faint); margin: 0; }
+
+/* Détail commande : coordonnées de livraison */
+.deliveryBox { font-size: 12px; line-height: 1.6; padding: 12px 14px; border-radius: var(--radius-md); background: var(--surface-2); border: 1px solid var(--border); display: flex; flex-direction: column; gap: 2px; }
+.deliveryTitle { font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 4px; }
+.deliveryName { font-size: 13px; font-weight: 800; }
+.deliveryPhone { color: var(--accent); font-weight: 700; text-decoration: none; }
+.deliveryMuted { color: var(--text-faint); }
+.deliveryNote { color: var(--text-muted); font-style: italic; }
+.deliveryPay { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border); color: var(--text-muted); }
