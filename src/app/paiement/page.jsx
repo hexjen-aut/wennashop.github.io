@@ -31,6 +31,8 @@ function PaiementContent() {
   const [mobileProvider, setMobileProvider] = useState('airtel_money');
   const [mobilePhone, setMobilePhone] = useState('');
   const [awaitingMobileConfirm, setAwaitingMobileConfirm] = useState(false);
+  // Virement : la commande attend que l'équipe voie l'argent arriver.
+  const [transferRef, setTransferRef] = useState(null);
   const [mobileError, setMobileError] = useState(params.get('error') === 'payment_failed' ? 'Le paiement mobile money a échoué ou a été annulé. Réessaie ci-dessous.' : null);
 
   useEffect(() => {
@@ -103,6 +105,12 @@ function PaiementContent() {
       if (o.user_id !== profile.id) { setError("Cette commande ne t'appartient pas."); setLoading(false); return; }
       if (['processing', 'shipped', 'delivered'].includes(o.status)) { setSuccess(true); setLoading(false); return; }
       setOrder(o);
+      const { data: pay } = await sb.from('payments').select('method,status,metadata')
+        .eq('order_id', orderId).eq('type', 'order_payment').maybeSingle();
+      if (pay?.method === 'virement' && pay.status === 'pending') {
+        if (o.shipping_country) setForm((f) => ({ ...f, country: o.shipping_country }));
+        setTransferRef(pay.metadata?.reference || null);
+      }
       const { data: it } = await sb.from('order_items').select('id,quantity,unit_price,products(name,image_url)').eq('order_id', orderId);
       setItems(it || []);
 
@@ -126,21 +134,28 @@ function PaiementContent() {
     setSending(true);
     setMobileError(null);
     const sb = getSupabase();
-    const { data: { user } } = await sb.auth.getUser();
-    let row = null;
-    const { data: byAuth } = await sb.from('users').select('id').eq('auth_id', user.id).maybeSingle();
-    row = byAuth || (await sb.from('users').select('id').ilike('email', user.email).maybeSingle()).data;
-    if (row?.id !== order.user_id) { alert("Cette commande ne t'appartient pas."); setSending(false); return; }
+
+    // Adresse + statut enregistrés côté serveur (submit_checkout) : un
+    // acheteur ne peut pas modifier `orders` directement.
+    const { data: res, error: rpcErr } = await sb.rpc('submit_checkout', {
+      p_order_id: orderId,
+      p_name: `${form.first} ${form.last}`,
+      p_address: form.address,
+      p_city: form.city,
+      p_country: form.country,
+      p_notes: form.notes || '',
+      p_method: method === 'mobile_money' ? mobileProvider : method,
+    });
+    if (rpcErr) {
+      alert("Impossible d'enregistrer ta commande : " + rpcErr.message);
+      setSending(false);
+      return;
+    }
 
     if (method === 'mobile_money') {
-      // Ne pas marquer la commande "processing" ni insérer de paiement ici :
       // process-payment crée le paiement lui-même (avec transaction_id/metadata
       // SingPay), et c'est le webhook singpay-webhook qui confirme la commande
       // une fois le paiement réellement validé par l'acheteur sur son téléphone.
-      await sb.from('orders').update({
-        shipping_name: `${form.first} ${form.last}`, shipping_address: form.address, shipping_city: form.city,
-        shipping_country: form.country, notes: form.notes || null, updated_at: new Date().toISOString(),
-      }).eq('id', orderId);
       const { data, error: fnError } = await sb.functions.invoke('process-payment', {
         body: { order_id: orderId, amount: order.buyer_total_amount ?? order.total_amount, client_msisdn: mobilePhone.trim(), payment_method: mobileProvider },
       });
@@ -149,23 +164,15 @@ function PaiementContent() {
         setSending(false);
         return;
       }
-      if (row) await sb.from('cart_items').delete().eq('user_id', row.id);
+      await sb.from('cart_items').delete().eq('user_id', order.user_id);
       setSending(false);
       setAwaitingMobileConfirm(true);
       return;
     }
 
-    await sb.from('orders').update({
-      shipping_name: `${form.first} ${form.last}`, shipping_address: form.address, shipping_city: form.city,
-      shipping_country: form.country, notes: form.notes || null, status: 'processing', updated_at: new Date().toISOString(),
-    }).eq('id', orderId);
-    // Un seul paiement 'order_payment' par commande (contrainte unique en base).
-    // Si ce paiement existe déjà (double clic, nouvelle tentative réseau),
-    // on continue normalement plutôt que d'afficher une erreur.
-    const { error: payErr } = await sb.from('payments').insert({ order_id: orderId, user_id: row.id, amount: order.buyer_total_amount ?? order.total_amount, currency: order.buyer_currency || order.currency || 'MAD', method, status: 'pending', type: 'order_payment' });
-    if (payErr && payErr.code !== '23505') { alert('Erreur lors de l\'enregistrement du paiement : ' + payErr.message); setSending(false); return; }
-    if (row) await sb.from('cart_items').delete().eq('user_id', row.id);
+    await sb.from('cart_items').delete().eq('user_id', order.user_id);
     setSending(false);
+    if (method === 'virement' && res?.status === 'pending') { setTransferRef(res.reference); return; }
     setSuccess(true);
   }
 
@@ -184,6 +191,40 @@ function PaiementContent() {
       </div>
     </>
   );
+  if (transferRef) {
+    const account = bankAccounts.find((a) => a.country_name === form.country)
+      || bankAccounts.find((a) => a.currency === (order?.buyer_currency || order?.currency))
+      || bankAccounts[0];
+    return (
+      <>
+        <Nav />
+        <div className={styles.transferWrap}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}><Mascot size={96} float /></div>
+          <h1 className={styles.transferTitle}>Plus qu'une étape : ton virement</h1>
+          <p className={styles.transferText}>
+            Ta commande est réservée. Fais le virement ci-dessous en indiquant la référence dans le motif : c'est grâce à elle que l'équipe reconnaît ton paiement. La commande part en préparation dès que le virement apparaît sur notre compte.
+          </p>
+          <div className={styles.transferBox}>
+            <div className={styles.transferRow}><span>Montant</span><strong>{fmt(order?.buyer_total_amount ?? order?.total_amount, order?.buyer_currency || order?.currency)}</strong></div>
+            <div className={styles.transferRow}>
+              <span>Motif du virement</span>
+              <strong className={styles.transferRef}>{transferRef}</strong>
+            </div>
+            <button type="button" className={styles.transferCopy} onClick={() => { try { navigator.clipboard.writeText(transferRef); } catch {} }}>Copier la référence</button>
+            {account && (
+              <div className={styles.transferAccount}>
+                {account.holder && <div>Titulaire : <strong>{account.holder}</strong></div>}
+                <div>RIB : <strong className={styles.transferRib}>{account.rib}</strong></div>
+                <div>Banque : {account.bank_name}{account.swift ? ` · SWIFT : ${account.swift}` : ''}</div>
+              </div>
+            )}
+          </div>
+          <p className={styles.transferNote}>Sans la référence dans le motif, ton paiement peut prendre plus de temps à être reconnu.</p>
+          <Link href={`/suivi?order=${orderId}`} className={styles.transferBtn}>Suivre ma commande</Link>
+        </div>
+      </>
+    );
+  }
   if (success) return (
     <>
       <Nav />
@@ -255,7 +296,7 @@ function PaiementContent() {
                 if (!account) return null;
                 return (
                   <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, padding: '12px 14px', marginTop: 14, fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>
-                    <p style={{ marginBottom: 6 }}>Effectue un virement à :</p>
+                    <p style={{ marginBottom: 6 }}>Après validation, tu recevras une référence à indiquer dans le motif du virement, vers :</p>
                     {account.holder && <p>Titulaire : {account.holder}</p>}
                     <p style={{ fontWeight: 700, letterSpacing: '.5px', marginBottom: 4, color: 'var(--text)' }}>RIB : {account.rib}</p>
                     <p>Banque : {account.bank_name}{account.swift ? ` · SWIFT : ${account.swift}` : ''}</p>
