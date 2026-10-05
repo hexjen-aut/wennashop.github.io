@@ -502,6 +502,19 @@ export default function AdminPage() {
     setPayments(data || []);
   }
 
+  // Virement : l'admin vérifie sur le relevé bancaire qu'un virement portant
+  // la référence (motif) est arrivé, puis confirme ici. La commande part
+  // alors en préparation.
+  async function confirmTransfer(p) {
+    const ref = p.metadata?.reference || String(p.order_id).slice(0, 8).toUpperCase();
+    if (!confirm(`Confirmer la réception du virement ${ref} de ${fmt(p.amount, p.currency)} ? La commande partira en préparation.`)) return;
+    const sb = getSupabase();
+    const { error } = await sb.rpc('confirm_bank_transfer', { p_order_id: p.order_id });
+    if (error) { showToast('Erreur : ' + error.message, 'ko'); return; }
+    showToast('Virement confirmé, commande en préparation');
+    await loadPayments();
+  }
+
   // ── Analytiques ──
   async function loadAnalytics() {
     const sb = getSupabase();
@@ -1281,20 +1294,31 @@ export default function AdminPage() {
         {section === 'payments' && (
           <>
             <h1 style={{ fontSize: 22, fontWeight: 900, marginBottom: 18 }}>Paiements</h1>
+            {(() => {
+              const waiting = payments.filter((p) => p.method === 'virement' && p.status === 'pending' && p.order_id).length;
+              return waiting > 0 ? (
+                <div className={styles.card} style={{ marginBottom: 14, fontSize: 12, lineHeight: 1.6, border: '1px solid var(--border-accent)' }}>
+                  <strong>{waiting} virement{waiting > 1 ? 's' : ''} en attente.</strong> Compare le motif de chaque virement reçu sur ton relevé avec la colonne « Référence », vérifie le montant, puis clique « Virement reçu ». Ne confirme jamais sur la seule base d'une capture envoyée par le client.
+                </div>
+              ) : null;
+            })()}
             <div className={styles.card}>
               <table className={styles.table}>
-                <thead><tr><th>ID</th><th>Commande</th><th>Montant</th><th>Méthode</th><th>Statut</th><th>Date</th></tr></thead>
+                <thead><tr><th>Référence</th><th>Commande</th><th>Montant</th><th>Méthode</th><th>Statut</th><th>Date</th><th></th></tr></thead>
                 <tbody>
                   {payments.length === 0 ? (
-                    <tr><td colSpan={6} style={{ textAlign: 'center', padding: 30, color: 'var(--text-faint)' }}>Aucun paiement</td></tr>
+                    <tr><td colSpan={7} style={{ textAlign: 'center', padding: 30, color: 'var(--text-faint)' }}>Aucun paiement</td></tr>
                   ) : payments.map((p) => (
                     <tr key={p.id}>
-                      <td style={{ fontFamily: 'monospace' }}>{String(p.id).slice(0, 8).toUpperCase()}</td>
+                      <td style={{ fontFamily: 'monospace', fontWeight: 700 }}>{p.metadata?.reference || String(p.id).slice(0, 8).toUpperCase()}</td>
                       <td style={{ fontFamily: 'monospace', color: 'var(--text-faint)' }}>{p.order_id ? String(p.order_id).slice(0, 8).toUpperCase() : '—'}</td>
-                      <td style={{ color: 'var(--accent)', fontWeight: 700 }}>{fmt(p.amount)}</td>
-                      <td style={{ color: 'var(--text-faint)' }}>{p.method || '—'}</td>
+                      <td style={{ color: 'var(--accent)', fontWeight: 700 }}>{fmt(p.amount, p.currency || 'MAD')}</td>
+                      <td style={{ color: 'var(--text-faint)' }}>{{ virement: 'Virement', cash_on_delivery: 'À la livraison', airtel_money: 'Airtel Money', moov_money: 'Moov Money' }[p.method] || p.method || '—'}</td>
                       <td><Badge status={p.status} /></td>
                       <td style={{ color: 'var(--text-faint)' }}>{fdate(p.created_at)}</td>
+                      <td>{p.method === 'virement' && p.status === 'pending' && p.order_id && (
+                        <button className={styles.btnSm} onClick={() => confirmTransfer(p)}>Virement reçu</button>
+                      )}</td>
                     </tr>
                   ))}
                 </tbody>

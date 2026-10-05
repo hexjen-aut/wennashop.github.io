@@ -12,3 +12,18 @@
 .methodActive { border-color: var(--accent); background: var(--accent-light); }
 .btnSubmit { width: 100%; background: var(--accent-btn); color: #fff; border: none; border-radius: var(--radius-pill); padding: 14px; font-weight: 800; font-size: 14px; cursor: pointer; margin-top: 16px; }
 .btnSubmit:disabled { opacity: .5; }
+
+/* Virement en attente : référence à mettre dans le motif */
+.transferWrap { max-width: 460px; margin: 0 auto; padding: 40px 16px 60px; text-align: center; }
+.transferTitle { font-size: 24px; font-weight: 900; margin-bottom: 8px; }
+.transferText { font-size: 13px; line-height: 1.6; color: var(--text-muted); margin-bottom: 20px; }
+.transferBox { text-align: left; background: var(--surface); border: 1.5px solid var(--border-accent); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 14px; }
+.transferRow { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text-muted); }
+.transferRow strong { color: var(--text); font-size: 15px; }
+.transferRef { font-family: monospace; font-size: 20px !important; letter-spacing: 1px; color: var(--accent) !important; }
+.transferCopy { margin: 10px 0 4px; background: none; border: 1px solid var(--border); color: var(--text); border-radius: 999px; padding: 7px 14px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.transferAccount { margin-top: 10px; font-size: 12px; line-height: 1.8; color: var(--text-muted); }
+.transferAccount strong { color: var(--text); }
+.transferRib { letter-spacing: .5px; word-break: break-all; }
+.transferNote { font-size: 11px; color: var(--text-faint); margin-bottom: 20px; }
+.transferBtn { display: inline-block; background: var(--accent-btn); color: #fff; padding: 12px 28px; border-radius: 999px; font-weight: 700; text-decoration: none; }
