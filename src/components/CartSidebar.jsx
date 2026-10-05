@@ -44,7 +44,7 @@ export default function CartSidebar({ open, onClose }) {
     const res = await createOrder();
     setCheckingOut(false);
     if (!res.success) {
-      if (res.error === 'not_authenticated') { router.push('/connexion'); return; }
+      if (res.error === 'not_authenticated') { router.push('/connexion?next=/panier'); return; }
       if (res.error === 'out_of_stock') { alert(`Stock insuffisant pour "${res.product}".`); return; }
       if (res.error === 'mixed_shops') { alert("Ton panier contient des produits de plusieurs boutiques différentes, ce qui n'est plus permis. Vide-le et recommence avec une seule boutique à la fois."); return; }
       alert("Impossible de créer la commande. Réessaie.");
