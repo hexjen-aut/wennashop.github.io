@@ -32,7 +32,12 @@ const nextConfig = {
   // ─────────────────────────────────────────────────────────
   async redirects() {
     return [
-      { source: '/index.html', destination: '/', permanent: true },
+      // Accueil → connexion : redirection serveur (307 avec en-tête Location).
+      // Le redirect() de src/app/page.js, rendu en statique, renvoyait un 307
+      // sans Location + une page d'erreur Next.js, vu « KO » par le monitoring
+      // et mal compris par les moteurs de recherche.
+      { source: '/', destination: '/connexion', permanent: false },
+      { source: '/index.html', destination: '/connexion', permanent: true },
       { source: '/boutique.html', destination: '/boutique', permanent: true },
       { source: '/detail_produit.html', destination: '/produit', permanent: true },
       { source: '/panier.html', destination: '/panier', permanent: true },
