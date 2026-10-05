@@ -15,7 +15,8 @@ export default function CguPage() {
         <div style={{ fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.8, whiteSpace: 'pre-line' }}>
           {CGU_TEXT}
         </div>
-        <div style={{ marginTop: 40, display: 'flex', gap: 16, fontSize: 12 }}>
+        <div style={{ marginTop: 40, display: 'flex', flexWrap: 'wrap', gap: 16, fontSize: 12 }}>
+          <Link href="/commissions" style={{ color: 'var(--accent)' }}>Grille des commissions</Link>
           <Link href="/confidentialite" style={{ color: 'var(--accent)' }}>Politique de confidentialité</Link>
           <Link href="/mentions-legales" style={{ color: 'var(--accent)' }}>Mentions légales</Link>
         </div>

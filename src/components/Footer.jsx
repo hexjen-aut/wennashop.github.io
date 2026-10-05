@@ -7,6 +7,7 @@ export default function Footer() {
       <div className={styles.inner}>
         <span className={styles.brand}>WennaShop</span>
         <nav className={styles.links}>
+          <Link href="/commissions">Commissions</Link>
           <Link href="/cgu">CGU</Link>
           <Link href="/confidentialite">Confidentialité</Link>
           <Link href="/mentions-legales">Mentions légales</Link>

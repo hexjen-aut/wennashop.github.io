@@ -9,6 +9,7 @@ const STATIC_ROUTES = [
   { path: '/quetes', priority: 0.5, changeFrequency: 'daily' },
   { path: '/devenir-chasseur', priority: 0.4, changeFrequency: 'monthly' },
   { path: '/connexion', priority: 0.3, changeFrequency: 'monthly' },
+  { path: '/commissions', priority: 0.4, changeFrequency: 'monthly' },
   { path: '/cgu', priority: 0.2, changeFrequency: 'yearly' },
   { path: '/confidentialite', priority: 0.2, changeFrequency: 'yearly' },
   { path: '/mentions-legales', priority: 0.2, changeFrequency: 'yearly' },
