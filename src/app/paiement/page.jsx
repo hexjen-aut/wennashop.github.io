@@ -7,6 +7,7 @@ import { getSupabase } from '@/lib/supabase';
 import Nav from '@/components/Nav';
 import Mascot from '@/components/Mascot';
 import { convertPrice } from '@/lib/currency';
+import { BUYER_COUNTRY_KEY } from '@/lib/buyerCurrency';
 import styles from './paiement.module.css';
 
 function fmt(n, c = 'MAD') { try { return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: c }).format(n); } catch { return `${n} ${c}`; } }
@@ -24,7 +25,16 @@ function PaiementContent() {
 
   const COUNTRY_CODE = { Maroc: 'MA', Gabon: 'GA' };
 
-  const [form, setForm] = useState({ first: '', last: '', address: '', city: '', country: 'Maroc', notes: '' });
+  const [form, setForm] = useState({ first: '', last: '', phone: '', address: '', city: '', country: 'Maroc', notes: '' });
+
+  // Pays de livraison par défaut : celui choisi par l'acheteur dans la
+  // boutique (sinon un acheteur de Libreville se retrouvait livré « au Maroc »).
+  useEffect(() => {
+    try {
+      const c = localStorage.getItem(BUYER_COUNTRY_KEY);
+      if (c === 'Gabon' || c === 'Maroc') setForm((f) => ({ ...f, country: c }));
+    } catch {}
+  }, []);
   const [method, setMethod] = useState(params.get('error') === 'payment_failed' ? 'mobile_money' : 'cash_on_delivery');
   const [bankAccounts, setBankAccounts] = useState([]);
   const [availableMethods, setAvailableMethods] = useState(null); // null = pas encore chargé
@@ -134,7 +144,7 @@ function PaiementContent() {
   }, [orderId]);
 
   async function submit() {
-    if (!form.first || !form.last || !form.address || !form.city) { alert('Complète tous les champs requis.'); return; }
+    if (!form.first || !form.last || !form.phone.trim() || !form.address || !form.city) { alert('Complète tous les champs requis.'); return; }
     if (method === 'mobile_money' && !mobilePhone.trim()) { alert('Indique ton numéro de téléphone Mobile Money.'); return; }
     setSending(true);
     setMobileError(null);
@@ -156,6 +166,7 @@ function PaiementContent() {
       setSending(false);
       return;
     }
+    await sb.rpc('set_order_phone', { p_order_id: orderId, p_phone: form.phone });
 
     if (method === 'mobile_money') {
       // process-payment crée le paiement lui-même (avec transaction_id/metadata
@@ -256,7 +267,8 @@ function PaiementContent() {
                 <input className={styles.input} placeholder="Prénom *" value={form.first} onChange={(e) => setForm({ ...form, first: e.target.value })} />
                 <input className={styles.input} placeholder="Nom *" value={form.last} onChange={(e) => setForm({ ...form, last: e.target.value })} />
               </div>
-              <input className={styles.input} style={{ marginTop: 12 }} placeholder="Adresse *" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
+              <input className={styles.input} style={{ marginTop: 12 }} type="tel" inputMode="tel" autoComplete="tel" placeholder="Téléphone (pour la livraison) *" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+              <input className={styles.input} style={{ marginTop: 12 }} placeholder="Adresse (quartier, rue, repère) *" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
               <div className={styles.grid2} style={{ marginTop: 12 }}>
                 <input className={styles.input} placeholder="Ville *" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} />
                 <select className={styles.input} value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })}>

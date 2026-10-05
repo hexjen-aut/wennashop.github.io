@@ -204,6 +204,7 @@ export default function VendeurPage() {
   const [orders, setOrders] = useState([]);
   const [orderStatus, setOrderStatus] = useState('');
   const [orderModal, setOrderModal] = useState(null);
+  const [orderDelivery, setOrderDelivery] = useState(null); // adresse, téléphone, paiement
   const [orderItemsDetail, setOrderItemsDetail] = useState([]);
   const [shipTracking, setShipTracking] = useState('');
   const [shipEta, setShipEta] = useState('');
@@ -592,9 +593,15 @@ export default function VendeurPage() {
     setNewStatus(o.status);
     setShipTracking(o.tracking_number || '');
     setShipEta('');
+    setOrderDelivery(null);
     const sb = getSupabase();
-    const { data } = await sb.from('order_items').select('quantity,unit_price,products(name,image_url,seller_id)').eq('order_id', o.id);
+    const [{ data }, { data: full }, { data: pay }] = await Promise.all([
+      sb.from('order_items').select('quantity,unit_price,products(name,image_url,seller_id)').eq('order_id', o.id),
+      sb.from('orders').select('shipping_name,shipping_phone,shipping_address,shipping_city,shipping_country,notes').eq('id', o.id).maybeSingle(),
+      sb.from('payments').select('method,status').eq('order_id', o.id).eq('type', 'order_payment').maybeSingle(),
+    ]);
     setOrderItemsDetail((data || []).filter((it) => it.products?.seller_id === ownerId));
+    setOrderDelivery({ ...(full || {}), payment: pay || null });
   }
 
   async function updateOrderStatus() {
@@ -1944,9 +1951,26 @@ export default function VendeurPage() {
               {orderItemsDetail.map((it, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, padding: '6px 0', borderBottom: '1px solid var(--border)' }}>
                   <span>{it.products?.name} × {it.quantity}</span>
-                  <span style={{ fontWeight: 700 }}>{fmt(it.unit_price * it.quantity)}</span>
+                  <span style={{ fontWeight: 700 }}>{fmt(it.unit_price * it.quantity, orderModal.currency)}</span>
                 </div>
               ))}
+              {orderDelivery && (
+                <div className={styles.deliveryBox}>
+                  <div className={styles.deliveryTitle}>Livraison</div>
+                  <div className={styles.deliveryName}>{orderDelivery.shipping_name || '—'}</div>
+                  {orderDelivery.shipping_phone
+                    ? <a href={`tel:${orderDelivery.shipping_phone.replace(/\s+/g, '')}`} className={styles.deliveryPhone}>{orderDelivery.shipping_phone}</a>
+                    : <div className={styles.deliveryMuted}>Téléphone non renseigné</div>}
+                  <div>{[orderDelivery.shipping_address, orderDelivery.shipping_city, orderDelivery.shipping_country].filter(Boolean).join(', ') || <span className={styles.deliveryMuted}>Adresse non renseignée</span>}</div>
+                  {orderDelivery.notes && <div className={styles.deliveryNote}>Note : {orderDelivery.notes}</div>}
+                  {orderDelivery.payment && (
+                    <div className={styles.deliveryPay}>
+                      Paiement : {{ cash_on_delivery: 'à la livraison — à encaisser à la remise du colis', virement: 'virement bancaire', airtel_money: 'Airtel Money', moov_money: 'Moov Money' }[orderDelivery.payment.method] || orderDelivery.payment.method}
+                      {orderDelivery.payment.method !== 'cash_on_delivery' && (orderDelivery.payment.status === 'paid' ? ' · reçu' : ' · en attente, ne pas expédier')}
+                    </div>
+                  )}
+                </div>
+              )}
               <div>
                 <label className={styles.formLabel} style={{ display: 'block', marginBottom: 8 }}>Mettre à jour le statut</label>
                 <div style={{ display: 'flex', gap: 8 }}>
