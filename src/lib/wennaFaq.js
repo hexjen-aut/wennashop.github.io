@@ -21,7 +21,7 @@ export const WENNA_FAQ = [
     id: 'paiement',
     popular: true,
     q: 'Quels sont les moyens de paiement ?',
-    a: "Au Maroc : paiement à la livraison (espèces) ou virement bancaire. Au Gabon : paiement à la livraison, Airtel Money ou Moov Money. Au moment de payer, seuls les moyens disponibles pour ton pays s'affichent.",
+    a: "Au Maroc : paiement à la livraison (espèces) ou virement bancaire. Au Gabon : paiement à la livraison, Airtel Money ou Moov Money. Au moment de payer, seuls les moyens disponibles pour ton pays s'affichent. Pour un virement, indique dans le motif la référence affichée (WS-…) : sans virement reçu sous 72 h, la commande est annulée.",
     keywords: 'payer paiement carte bancaire espèces cash livraison virement mobile money airtel moov orange',
   },
   {
