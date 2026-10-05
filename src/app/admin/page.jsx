@@ -1298,7 +1298,7 @@ export default function AdminPage() {
               const waiting = payments.filter((p) => p.method === 'virement' && p.status === 'pending' && p.order_id).length;
               return waiting > 0 ? (
                 <div className={styles.card} style={{ marginBottom: 14, fontSize: 12, lineHeight: 1.6, border: '1px solid var(--border-accent)' }}>
-                  <strong>{waiting} virement{waiting > 1 ? 's' : ''} en attente.</strong> Compare le motif de chaque virement reçu sur ton relevé avec la colonne « Référence », vérifie le montant, puis clique « Virement reçu ». Ne confirme jamais sur la seule base d'une capture envoyée par le client.
+                  <strong>{waiting} virement{waiting > 1 ? 's' : ''} en attente.</strong> Compare le motif de chaque virement reçu sur ton relevé avec la colonne « Référence », vérifie le montant, puis clique « Virement reçu ». Ne confirme jamais sur la seule base d'une capture envoyée par le client. Sans confirmation, la commande est annulée automatiquement 72 h après le choix du virement.
                 </div>
               ) : null;
             })()}

@@ -104,6 +104,11 @@ function PaiementContent() {
       if (!o) { setError('Commande introuvable.'); setLoading(false); return; }
       if (o.user_id !== profile.id) { setError("Cette commande ne t'appartient pas."); setLoading(false); return; }
       if (['processing', 'shipped', 'delivered'].includes(o.status)) { setSuccess(true); setLoading(false); return; }
+      if (['cancelled', 'returned'].includes(o.status)) {
+        setError("Cette commande a été annulée (par exemple, virement non reçu dans les 72 h). Tu peux repasser commande depuis la boutique.");
+        setLoading(false);
+        return;
+      }
       setOrder(o);
       const { data: pay } = await sb.from('payments').select('method,status,metadata')
         .eq('order_id', orderId).eq('type', 'order_payment').maybeSingle();
@@ -202,7 +207,7 @@ function PaiementContent() {
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}><Mascot size={96} float /></div>
           <h1 className={styles.transferTitle}>Plus qu'une étape : ton virement</h1>
           <p className={styles.transferText}>
-            Ta commande est réservée. Fais le virement ci-dessous en indiquant la référence dans le motif : c'est grâce à elle que l'équipe reconnaît ton paiement. La commande part en préparation dès que le virement apparaît sur notre compte.
+            Ta commande est réservée pendant 72 h. Fais le virement ci-dessous en indiquant la référence dans le motif : c'est grâce à elle que l'équipe reconnaît ton paiement. La commande part en préparation dès que le virement apparaît sur notre compte ; sans virement reçu sous 72 h, elle est annulée automatiquement.
           </p>
           <div className={styles.transferBox}>
             <div className={styles.transferRow}><span>Montant</span><strong>{fmt(order?.buyer_total_amount ?? order?.total_amount, order?.buyer_currency || order?.currency)}</strong></div>
