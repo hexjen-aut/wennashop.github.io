@@ -17,13 +17,22 @@ export const CAROUSEL_BUCKET = 'site-assets';
 
 export const DEFAULT_CAROUSEL = { source: 'products', autoplay: true, images: [] };
 
+// Lien au clic : une page du site (/…) ou une adresse https.
+export function isSafeLink(link) {
+  return typeof link === 'string' && /^(\/(?!\/)|https:\/\/)\S*$/i.test(link);
+}
+
 // rows : lignes { key, value } de site_config.
 export function parseCarouselConfig(rows) {
   const map = Object.fromEntries((rows || []).map((r) => [r.key, r.value]));
   let images = [];
   try {
     const parsed = JSON.parse(map[CAROUSEL_KEYS.images] || '[]');
-    if (Array.isArray(parsed)) images = parsed.filter((i) => i && typeof i.url === 'string' && i.url);
+    if (Array.isArray(parsed)) {
+      images = parsed
+        .filter((i) => i && typeof i.url === 'string' && i.url)
+        .map((i) => (isSafeLink(i.link) ? { url: i.url, link: i.link } : { url: i.url }));
+    }
   } catch { images = []; }
   const source = ['products', 'custom', 'mixed'].includes(map[CAROUSEL_KEYS.source])
     ? map[CAROUSEL_KEYS.source]

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { getSupabase } from '@/lib/supabase';
-import { CAROUSEL_BUCKET, CAROUSEL_KEYS, DEFAULT_CAROUSEL, parseCarouselConfig } from '@/lib/loginCarousel';
+import { CAROUSEL_BUCKET, CAROUSEL_KEYS, DEFAULT_CAROUSEL, isSafeLink, parseCarouselConfig } from '@/lib/loginCarousel';
 import styles from './admin.module.css';
 
 function fmt(n, c = 'MAD') { try { return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: c }).format(n); } catch { return `${n} ${c}`; } }
@@ -642,6 +642,10 @@ export default function AdminPage() {
     if (error) { alert('Erreur : ' + error.message); return; }
     setCarousel(next);
   }
+  function carouselLinkError() {
+    const link = carouselLink.trim();
+    return link && !isSafeLink(link) ? 'Le lien doit commencer par / (page du site) ou par https://' : null;
+  }
   function addCarouselImage(url) {
     const link = carouselLink.trim();
     saveCarousel({ images: [...carousel.images, link ? { url, link } : { url }] });
@@ -651,12 +655,14 @@ export default function AdminPage() {
   function addCarouselImageFromUrl() {
     const url = carouselUrl.trim();
     if (!/^https:\/\/\S+$/i.test(url)) { alert("Colle l'adresse complète de l'image (elle doit commencer par https://)."); return; }
+    if (carouselLinkError()) { alert(carouselLinkError()); return; }
     addCarouselImage(url);
   }
   async function uploadCarouselImage(e) {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
+    if (carouselLinkError()) { alert(carouselLinkError()); return; }
     if (!file.type.startsWith('image/')) { alert('Choisis un fichier image (JPG, PNG ou WebP).'); return; }
     if (file.size > 5 * 1024 * 1024) { alert("L'image dépasse 5 Mo. Réduis-la avant de l'envoyer."); return; }
     setCarouselUploading(true);
