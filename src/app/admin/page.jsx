@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { getSupabase } from '@/lib/supabase';
+import { CAROUSEL_BUCKET, CAROUSEL_KEYS, DEFAULT_CAROUSEL, parseCarouselConfig } from '@/lib/loginCarousel';
 import styles from './admin.module.css';
 
 function fmt(n, c = 'MAD') { try { return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: c }).format(n); } catch { return `${n} ${c}`; } }
@@ -89,6 +90,10 @@ export default function AdminPage() {
 
   // ── Vitrine — sélection des photos produits (carrousel connexion) ──
   const [showcaseProducts, setShowcaseProducts] = useState([]);
+  const [carousel, setCarousel] = useState(DEFAULT_CAROUSEL);
+  const [carouselUrl, setCarouselUrl] = useState('');
+  const [carouselLink, setCarouselLink] = useState('');
+  const [carouselUploading, setCarouselUploading] = useState(false);
 
   // ── Objectifs ──
   const [goals, setGoals] = useState([]);
@@ -613,14 +618,67 @@ export default function AdminPage() {
   // ── Vitrine ──
   async function loadShowcase() {
     const sb = getSupabase();
-    const [{ data: products }, { data: ratings }] = await Promise.all([
+    const [{ data: products }, { data: ratings }, { data: cfgRows }] = await Promise.all([
       sb.from('products').select('id,name,image_url,is_featured,shops(name)').eq('status', 'active').not('image_url', 'is', null).order('created_at', { ascending: false }).limit(200),
       sb.from('product_ratings').select('product_id,avg_rating,review_count'),
+      sb.from('site_config').select('key,value').in('key', Object.values(CAROUSEL_KEYS)),
     ]);
+    setCarousel(parseCarouselConfig(cfgRows));
     const ratingMap = new Map((ratings || []).map((r) => [r.product_id, r]));
     const merged = (products || []).map((p) => ({ ...p, avg_rating: ratingMap.get(p.id)?.avg_rating ?? null, review_count: ratingMap.get(p.id)?.review_count ?? 0 }));
     merged.sort((a, b) => (b.is_featured - a.is_featured) || (b.avg_rating ?? -1) - (a.avg_rating ?? -1) || b.review_count - a.review_count);
     setShowcaseProducts(merged);
+  }
+  // Réglages du carrousel : chaque changement est enregistré tout de suite.
+  async function saveCarousel(patch) {
+    const next = { ...carousel, ...patch };
+    const sb = getSupabase();
+    const now = new Date().toISOString();
+    const { error } = await sb.from('site_config').upsert([
+      { key: CAROUSEL_KEYS.source, value: next.source, updated_at: now },
+      { key: CAROUSEL_KEYS.autoplay, value: String(next.autoplay), updated_at: now },
+      { key: CAROUSEL_KEYS.images, value: JSON.stringify(next.images), updated_at: now },
+    ]);
+    if (error) { alert('Erreur : ' + error.message); return; }
+    setCarousel(next);
+  }
+  function addCarouselImage(url) {
+    const link = carouselLink.trim();
+    saveCarousel({ images: [...carousel.images, link ? { url, link } : { url }] });
+    setCarouselUrl('');
+    setCarouselLink('');
+  }
+  function addCarouselImageFromUrl() {
+    const url = carouselUrl.trim();
+    if (!/^https:\/\/\S+$/i.test(url)) { alert("Colle l'adresse complète de l'image (elle doit commencer par https://)."); return; }
+    addCarouselImage(url);
+  }
+  async function uploadCarouselImage(e) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { alert('Choisis un fichier image (JPG, PNG ou WebP).'); return; }
+    if (file.size > 5 * 1024 * 1024) { alert("L'image dépasse 5 Mo. Réduis-la avant de l'envoyer."); return; }
+    setCarouselUploading(true);
+    const sb = getSupabase();
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+    const path = `carousel/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const { error } = await sb.storage.from(CAROUSEL_BUCKET).upload(path, file, { contentType: file.type, cacheControl: '31536000' });
+    setCarouselUploading(false);
+    if (error) { alert("Échec de l'envoi : " + error.message); return; }
+    const { data } = sb.storage.from(CAROUSEL_BUCKET).getPublicUrl(path);
+    addCarouselImage(data.publicUrl);
+  }
+  function moveCarouselImage(idx, dir) {
+    const images = [...carousel.images];
+    const to = idx + dir;
+    if (to < 0 || to >= images.length) return;
+    [images[idx], images[to]] = [images[to], images[idx]];
+    saveCarousel({ images });
+  }
+  function removeCarouselImage(idx) {
+    if (!confirm('Retirer cette image du carrousel ?')) return;
+    saveCarousel({ images: carousel.images.filter((_, i) => i !== idx) });
   }
   async function toggleFeatured(id, next) {
     const sb = getSupabase();
@@ -1461,8 +1519,77 @@ export default function AdminPage() {
           <>
             <div style={{ marginBottom: 18 }}>
               <h1 style={{ fontSize: 22, fontWeight: 900, marginBottom: 4 }}>Vitrine</h1>
-              <p style={{ fontSize: 12, color: 'var(--text-faint)' }}>Sélectionne les photos affichées en carrousel sur la page de connexion. Les produits "En vitrine" passent en premier ; le reste du carrousel se complète automatiquement avec les mieux notés, triés ci-dessous par note.</p>
+              <p style={{ fontSize: 12, color: 'var(--text-faint)' }}>Choisis les images du carrousel de la page d'accueil : tes propres images, les photos des produits, ou les deux.</p>
             </div>
+            <div className={styles.card}>
+              <div className={styles.cardTitle} style={{ marginBottom: 4 }}>Carrousel de la page d'accueil</div>
+              <p style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 14 }}>Chaque changement est enregistré tout de suite et visible au prochain chargement de la page.</p>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 14, padding: '12px 0', borderBottom: '1px solid var(--border)' }}>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 700 }}>Défilement automatique</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 2 }}>Désactivé : le carrousel reste bloqué sur la première image.</div>
+                </div>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, cursor: 'pointer' }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: carousel.autoplay ? 'var(--success)' : 'var(--text-faint)' }}>{carousel.autoplay ? 'Actif' : 'Bloqué'}</span>
+                  <input type="checkbox" checked={carousel.autoplay} onChange={() => saveCarousel({ autoplay: !carousel.autoplay })} />
+                </label>
+              </div>
+
+              <div style={{ padding: '12px 0', borderBottom: '1px solid var(--border)' }}>
+                <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>Images affichées</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  {[
+                    { value: 'custom', label: 'Mes images uniquement' },
+                    { value: 'mixed', label: 'Mes images, puis les produits' },
+                    { value: 'products', label: 'Photos des produits' },
+                  ].map((o) => (
+                    <button key={o.value} className={carousel.source === o.value ? styles.btnSm : styles.btnGhost} onClick={() => saveCarousel({ source: o.value })}>
+                      {o.label}
+                    </button>
+                  ))}
+                </div>
+                {carousel.source === 'custom' && carousel.images.length === 0 && (
+                  <div style={{ fontSize: 11, color: 'var(--warning, var(--gold))', marginTop: 8 }}>Aucune image ajoutée : les photos des produits restent affichées en attendant.</div>
+                )}
+              </div>
+
+              <div style={{ padding: '12px 0' }}>
+                <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>Mes images ({carousel.images.length})</div>
+                {carousel.images.length > 0 && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
+                    {carousel.images.map((img, i) => (
+                      <div key={`${img.url}-${i}`} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <img src={img.url} alt="" style={{ width: 96, height: 54, objectFit: 'cover', borderRadius: 6, background: 'var(--border)' }} />
+                        <div style={{ flex: 1, minWidth: 0, fontSize: 11, color: 'var(--text-faint)' }}>
+                          {i === 0 && <div style={{ fontWeight: 700, color: 'var(--text)' }}>Image affichée en premier</div>}
+                          <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{img.link ? `Lien : ${img.link}` : 'Sans lien'}</div>
+                        </div>
+                        <button className={styles.btnGhost} disabled={i === 0} onClick={() => moveCarouselImage(i, -1)}>Monter</button>
+                        <button className={styles.btnGhost} disabled={i === carousel.images.length - 1} onClick={() => moveCarouselImage(i, 1)}>Descendre</button>
+                        <button className={styles.btnDanger} onClick={() => removeCarouselImage(i)}>Retirer</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxWidth: 520 }}>
+                  <input className={styles.input} placeholder="Lien au clic (facultatif), ex. /boutique ou https://…" value={carouselLink} onChange={(e) => setCarouselLink(e.target.value)} />
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <label className={styles.btnPrimary} style={{ cursor: carouselUploading ? 'wait' : 'pointer' }}>
+                      {carouselUploading ? 'Envoi…' : 'Ajouter depuis mon appareil'}
+                      <input type="file" accept="image/jpeg,image/png,image/webp" style={{ display: 'none' }} disabled={carouselUploading} onChange={uploadCarouselImage} />
+                    </label>
+                  </div>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <input className={styles.input} style={{ flex: 1 }} placeholder="Ou colle l'adresse d'une image (https://…)" value={carouselUrl} onChange={(e) => setCarouselUrl(e.target.value)} />
+                    <button className={styles.btnSm} onClick={addCarouselImageFromUrl}>Ajouter</button>
+                  </div>
+                  <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>Format conseillé : paysage, au moins 1600 px de large, 5 Mo maximum.</div>
+                </div>
+              </div>
+            </div>
+            <div className={styles.cardTitle} style={{ margin: '6px 0 8px' }}>Photos des produits</div>
+            <p style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 10 }}>Utilisées si tu choisis « Photos des produits » ou « Mes images, puis les produits ». Les produits « En vitrine » passent en premier, puis les mieux notés.</p>
             <div className={styles.card}>
               <table className={styles.table}>
                 <thead><tr><th></th><th>Produit</th><th>Boutique</th><th>Note</th><th>Vitrine</th></tr></thead>

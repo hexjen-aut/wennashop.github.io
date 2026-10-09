@@ -8,6 +8,7 @@ import { CGU_TEXT, PRIVACY_TEXT } from '@/lib/legalTexts';
 import { PAYS_GROUPS } from '@/lib/geo';
 import Mascot from '@/components/Mascot';
 import { AFTER_LOGIN_KEY } from '@/lib/afterLogin';
+import { CAROUSEL_KEYS, parseCarouselConfig } from '@/lib/loginCarousel';
 import styles from './connexion.module.css';
 
 // Le fournisseur Google n'est pas encore activé dans Supabase Auth
@@ -53,13 +54,21 @@ export default function ConnexionPage() {
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
 
-  // Carrousel vertical du panneau gauche — vraies photos produits
+  // Carrousel du panneau gauche : photos produits et/ou images choisies par
+  // l'admin (section « Vitrine »), défilement désactivable.
   const [slides, setSlides] = useState([]);
   const [slideIndex, setSlideIndex] = useState(0);
+  const [autoplay, setAutoplay] = useState(true);
 
   useEffect(() => {
     (async () => {
       const sb = getSupabase();
+      const { data: cfgRows } = await sb.from('site_config').select('key,value').in('key', Object.values(CAROUSEL_KEYS));
+      const cfg = parseCarouselConfig(cfgRows);
+      setAutoplay(cfg.autoplay);
+      const customSlides = cfg.source === 'products' ? [] : cfg.images.map((img) => ({ url: img.url, link: img.link || null }));
+      if (cfg.source === 'custom' && customSlides.length) { setSlides(customSlides); return; }
+
       const cols = 'id,name,image_url,shops(name,slug)';
       const { data: featured } = await sb.from('products').select(cols).eq('status', 'active').eq('is_featured', true).not('image_url', 'is', null).limit(8);
       let picked = featured || [];
@@ -79,19 +88,19 @@ export default function ConnexionPage() {
         picked = fallback || [];
       }
 
-      const seenUrls = new Set();
+      const seenUrls = new Set(customSlides.map((s) => s.url));
       const items = picked
         .filter((p) => (seenUrls.has(p.image_url) ? false : (seenUrls.add(p.image_url), true)))
         .map((p) => ({ url: p.image_url, name: p.name, shopName: p.shops?.name || null, shopSlug: p.shops?.slug || null }));
-      setSlides(items);
+      setSlides([...customSlides, ...items]);
     })();
   }, []);
 
   useEffect(() => {
-    if (slides.length < 2) return;
+    if (!autoplay || slides.length < 2) return;
     const id = setInterval(() => setSlideIndex((i) => (i + 1) % slides.length), 5000);
     return () => clearInterval(id);
-  }, [slides]);
+  }, [slides, autoplay]);
 
   // Connexion
   const [cnxEmail, setCnxEmail] = useState('');
@@ -281,6 +290,12 @@ export default function ConnexionPage() {
             Achète des produits authentiques, vends dans ta boutique en ligne, ou deviens chasseur
             et sois payé pour livrer — WennaShop connecte le Gabon et le Maroc, à toi de choisir ton rôle.
           </p>
+          {slides[slideIndex]?.link && (
+            <a href={slides[slideIndex].link} className={styles.shopBadge}>
+              <span className={styles.corridorDot} />
+              <strong>Découvrir</strong>
+            </a>
+          )}
           {slides[slideIndex]?.shopSlug && (
             <Link href={`/boutique-vendeur?slug=${slides[slideIndex].shopSlug}`} className={styles.shopBadge}>
               <span className={styles.corridorDot} />
