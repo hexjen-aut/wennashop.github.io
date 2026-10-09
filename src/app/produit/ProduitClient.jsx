@@ -52,7 +52,7 @@ export default function ProduitContent() {
 
       if (data.seller_id) {
         const [{ data: user }, { data: shopRow }] = await Promise.all([
-          sb.from('users').select('id,full_name,avatar_url,created_at,country').eq('id', data.seller_id).maybeSingle(),
+          sb.from('vendors_public').select('id,full_name,avatar_url,created_at,country').eq('id', data.seller_id).maybeSingle(),
           sb.from('shops').select('id,slug,name,logo_url,rating_avg,rating_count,total_sales,is_verified,is_official').eq('user_id', data.seller_id).maybeSingle(),
         ]);
         setSeller(user || null);
