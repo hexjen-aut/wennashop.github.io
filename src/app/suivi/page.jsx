@@ -68,7 +68,7 @@ async function fetchOrder(sb, identifier, userId) {
   if (order.order_items?.length) {
     const sellerIds = [...new Set(order.order_items.map((i) => i.products?.seller_id).filter(Boolean))];
     if (sellerIds.length) {
-      const { data: sellers } = await sb.from('users').select('id, full_name, email, specialty, city, country, origin_city').in('id', sellerIds);
+      const { data: sellers } = await sb.from('vendors_public').select('id, full_name, specialty, city, country').in('id', sellerIds);
       const sellerMap = Object.fromEntries((sellers || []).map((s) => [s.id, s]));
       order.order_items = order.order_items.map((item) => ({ ...item, products: item.products ? { ...item.products, seller: sellerMap[item.products.seller_id] || null } : null }));
     }
