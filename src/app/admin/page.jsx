@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getSupabase } from '@/lib/supabase';
 import { CAROUSEL_BUCKET, CAROUSEL_KEYS, DEFAULT_CAROUSEL, isSafeLink, parseCarouselConfig } from '@/lib/loginCarousel';
 import styles from './admin.module.css';
@@ -115,6 +115,20 @@ export default function AdminPage() {
   const [paysSaving, setPaysSaving] = useState(null);
 
   useEffect(() => { checkAuth(); }, []);
+
+  // Si la session disparaît (déconnexion dans un autre onglet, session
+  // révoquée…), on revient à l'écran de connexion au lieu de laisser des
+  // boutons qui échoueraient avec une erreur de sécurité incompréhensible.
+  const authorizedRef = useRef(false);
+  useEffect(() => { authorizedRef.current = authorized; }, [authorized]);
+  useEffect(() => {
+    const { data: { subscription } } = getSupabase().auth.onAuthStateChange((event) => {
+      if (event !== 'SIGNED_OUT' || !authorizedRef.current) return;
+      setAuthorized(false);
+      setLoginError('Ta session a expiré. Reconnecte-toi pour continuer.');
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   async function checkAuth() {
     const sb = getSupabase();
@@ -630,6 +644,14 @@ export default function AdminPage() {
     setShowcaseProducts(merged);
   }
   // Réglages du carrousel : chaque changement est enregistré tout de suite.
+  // Erreur d'écriture lisible : un refus de sécurité veut dire, en pratique,
+  // que la session admin n'est plus valide.
+  function adminWriteError(error) {
+    if (error?.code === '42501' || /row-level security|JWT/i.test(error?.message || '')) {
+      return "Ta session admin n'est plus valide : recharge la page et reconnecte-toi, puis recommence.";
+    }
+    return 'Erreur : ' + (error?.message || 'réessaie');
+  }
   async function saveCarousel(patch) {
     const next = { ...carousel, ...patch };
     const sb = getSupabase();
@@ -639,7 +661,7 @@ export default function AdminPage() {
       { key: CAROUSEL_KEYS.autoplay, value: String(next.autoplay), updated_at: now },
       { key: CAROUSEL_KEYS.images, value: JSON.stringify(next.images), updated_at: now },
     ]);
-    if (error) { alert('Erreur : ' + error.message); return; }
+    if (error) { alert(adminWriteError(error)); return; }
     setCarousel(next);
   }
   function carouselLinkError() {
@@ -671,7 +693,7 @@ export default function AdminPage() {
     const path = `carousel/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
     const { error } = await sb.storage.from(CAROUSEL_BUCKET).upload(path, file, { contentType: file.type, cacheControl: '31536000' });
     setCarouselUploading(false);
-    if (error) { alert("Échec de l'envoi : " + error.message); return; }
+    if (error) { alert(adminWriteError(error)); return; }
     const { data } = sb.storage.from(CAROUSEL_BUCKET).getPublicUrl(path);
     addCarouselImage(data.publicUrl);
   }
@@ -749,7 +771,7 @@ export default function AdminPage() {
     const sb = getSupabase();
     const nextValue = !featureFlags[key];
     const { error } = await sb.from('site_config').upsert({ key, value: String(nextValue), updated_at: new Date().toISOString() });
-    if (error) { alert('Erreur : ' + error.message); return; }
+    if (error) { alert(adminWriteError(error)); return; }
     setFeatureFlags((prev) => ({ ...prev, [key]: nextValue }));
   }
   function openAddBankAccount() {
@@ -763,7 +785,7 @@ export default function AdminPage() {
   async function persistBankAccounts(list) {
     const sb = getSupabase();
     const { error } = await sb.from('site_config').upsert({ key: 'bank_accounts', value: JSON.stringify(list), updated_at: new Date().toISOString() });
-    if (error) { alert('Erreur : ' + error.message); return; }
+    if (error) { alert(adminWriteError(error)); return; }
     setBankAccounts(list);
   }
   async function saveBankAccount() {
