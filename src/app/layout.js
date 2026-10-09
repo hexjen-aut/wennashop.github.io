@@ -26,6 +26,9 @@ export const metadata = {
     statusBarStyle: 'black-translucent',
     title: 'WennaShop',
   },
+  // Équivalent standard de apple-mobile-web-app-capable, que Chrome signale
+  // comme obsolète quand il est seul.
+  other: { 'mobile-web-app-capable': 'yes' },
   robots: { index: true, follow: true },
   openGraph: {
     type: 'website',
