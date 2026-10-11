@@ -6,10 +6,16 @@ import { getSupabase } from '@/lib/supabase';
 import Nav from '@/components/Nav';
 import ImageCropModal from '@/components/ImageCropModal';
 import { useFeatureFlags } from '@/context/FeatureFlagsContext';
+import { SIZE_BRACKETS, bracketFor, estimatedWeightKg, formatKg, quoteShipping } from '@/lib/shipping';
 import styles from './quetes.module.css';
 
 function fmt(n) { return Number(n).toLocaleString('fr-FR'); }
 function daysLeft(d) { return Math.max(0, Math.ceil((new Date(d) - new Date()) / 86400000)); }
+
+const COUNTRIES = ['Gabon', 'Maroc', "Côte d'Ivoire", 'Sénégal', 'Bénin', 'Mali'];
+const EMPTY_FORM = { title: '', description: '', budget: '', reward: '', country: 'Les deux', image_url: '', quantity: 1, size: '', destination: '' };
+
+function questCurrency(country) { return country === 'Maroc' ? 'MAD' : 'FCFA'; }
 
 export default function QuetesPage() {
   const { quests_enabled: questsEnabled } = useFeatureFlags();
@@ -17,7 +23,10 @@ export default function QuetesPage() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [isHunter, setIsHunter] = useState(false);
-  const [form, setForm] = useState({ title: '', description: '', budget: '', reward: '', country: 'Les deux', image_url: '' });
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [buyerCountry, setBuyerCountry] = useState('');
+  // undefined = calcul en cours, null = pas de tarif pour ce trajet
+  const [shippingPreview, setShippingPreview] = useState(undefined);
   const [cropSrc, setCropSrc] = useState(null);
   const [uploadingImg, setUploadingImg] = useState(false);
 
@@ -26,7 +35,7 @@ export default function QuetesPage() {
   async function load() {
     const sb = getSupabase();
     const { data } = await sb.from('quests')
-      .select('id,title,description,country_target,product_budget,reward_amount,currency,expires_at,created_at,image_url')
+      .select('id,title,description,country_target,destination_country,product_budget,reward_amount,currency,expires_at,created_at,image_url,quantity,size_bracket,est_weight_kg,shipping_estimate')
       .eq('status', 'open').order('created_at', { ascending: false });
     setQuests(data || []);
     setLoading(false);
@@ -38,9 +47,31 @@ export default function QuetesPage() {
     const sb = getSupabase();
     const { data: { session } } = await sb.auth.getSession();
     if (!session) return;
-    const { data: u } = await sb.from('users').select('hunter_status').eq('auth_id', session.user.id).maybeSingle();
+    const { data: u } = await sb.from('users').select('hunter_status, country').eq('auth_id', session.user.id).maybeSingle();
     setIsHunter(!!u?.hunter_status);
+    const home = COUNTRIES.find((c) => c.toLowerCase() === (u?.country || '').toLowerCase());
+    if (home) setBuyerCountry(home);
   }
+
+  // Le pays de livraison part de celui du profil
+  useEffect(() => {
+    if (modalOpen && !form.destination && buyerCountry) setForm((prev) => ({ ...prev, destination: buyerCountry }));
+  }, [modalOpen, buyerCountry, form.destination]);
+
+  // Aperçu du transport (poids maximum de la tranche × quantité)
+  const estWeight = estimatedWeightKg(form.size, form.quantity);
+  useEffect(() => {
+    if (!modalOpen || !estWeight || !form.destination) { setShippingPreview(null); return; }
+    let cancelled = false;
+    setShippingPreview(undefined);
+    const t = setTimeout(async () => {
+      const amount = await quoteShipping(getSupabase(), {
+        weightKg: estWeight, origin: form.country, destination: form.destination, currency: questCurrency(form.country),
+      });
+      if (!cancelled) setShippingPreview(amount);
+    }, 300);
+    return () => { cancelled = true; clearTimeout(t); };
+  }, [modalOpen, estWeight, form.country, form.destination]);
 
   function handleImageSelect(e) {
     const file = e.target.files?.[0];
@@ -65,8 +96,12 @@ export default function QuetesPage() {
   }
 
   async function submit() {
-    const currency = form.country === 'Maroc' ? 'MAD' : 'FCFA';
+    const currency = questCurrency(form.country);
+    const quantity = parseInt(form.quantity, 10);
     if (!form.title) return alert('Le titre est obligatoire.');
+    if (!Number.isInteger(quantity) || quantity < 1 || quantity > 50) return alert('Quantité : entre 1 et 50.');
+    if (!form.size) return alert('Choisis la taille du produit pour estimer le transport.');
+    if (!form.destination) return alert('Choisis le pays de livraison.');
     if (!form.budget || form.budget < 1000) return alert(`Budget minimum : 1000 ${currency}.`);
     if (!form.reward || form.reward < 500) return alert(`Récompense minimum : 500 ${currency}.`);
     const sb = getSupabase();
@@ -77,10 +112,11 @@ export default function QuetesPage() {
       buyer_id: row.id, title: form.title, description: form.description || null,
       country_target: form.country, product_budget: parseFloat(form.budget), reward_amount: parseFloat(form.reward),
       duration_days: 7, currency, image_url: form.image_url || null,
+      quantity, size_bracket: form.size, destination_country: form.destination,
     });
     if (error) return alert('Erreur : ' + error.message);
     setModalOpen(false);
-    setForm({ title: '', description: '', budget: '', reward: '', country: 'Les deux', image_url: '' });
+    setForm(EMPTY_FORM);
     await load();
   }
 
@@ -123,7 +159,14 @@ export default function QuetesPage() {
             <div style={{ flex: 1, minWidth: 200 }}>
               <div className={styles.cardTitle}>{q.title}</div>
               {q.description && <div className={styles.cardDesc}>{q.description}</div>}
-              <div className={styles.meta}>{daysLeft(q.expires_at)}j restants · Budget {fmt(q.product_budget)} {q.currency} · {q.country_target}</div>
+              <div className={styles.meta}>{daysLeft(q.expires_at)}j restants · Budget {fmt(q.product_budget)} {q.currency} · {q.country_target}{q.destination_country ? ` → ${q.destination_country}` : ''}</div>
+              {q.size_bracket && (
+                <div className={styles.meta}>
+                  {q.quantity || 1} × {bracketFor(q.size_bracket)?.label.toLowerCase()}
+                  {q.est_weight_kg ? ` · ${formatKg(q.est_weight_kg)} max` : ''}
+                  {' · Transport '}{q.shipping_estimate != null ? `${fmt(q.shipping_estimate)} ${q.currency} max` : 'à confirmer'}
+                </div>
+              )}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div className={styles.rewardBox}>
@@ -164,6 +207,36 @@ export default function QuetesPage() {
                 <option value="Bénin">Bénin</option>
                 <option value="Mali">Mali</option>
               </select>
+              <div style={{ display: 'grid', gridTemplateColumns: '90px 1fr', gap: 10 }}>
+                <input className={styles.input} type="number" min="1" max="50" placeholder="Quantité" aria-label="Quantité" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} />
+                <select className={styles.input} aria-label="Taille du produit" value={form.size} onChange={(e) => setForm({ ...form, size: e.target.value })}>
+                  <option value="">Taille du produit *</option>
+                  {SIZE_BRACKETS.map((b) => <option key={b.value} value={b.value}>{b.label} ({b.range})</option>)}
+                </select>
+              </div>
+              {form.size && (
+                <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: -4 }}>Exemples : {bracketFor(form.size)?.hint}</div>
+              )}
+              <select className={styles.input} aria-label="Pays de livraison" value={form.destination} onChange={(e) => setForm({ ...form, destination: e.target.value })}>
+                <option value="">Livrer dans quel pays ? *</option>
+                {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+              {form.size && (
+                <div data-testid="shipping-preview" style={{ fontSize: 12, padding: '10px 12px', borderRadius: 10, background: 'var(--surface-2)', lineHeight: 1.5 }}>
+                  {form.size === 'tres_gros' ? (
+                    <>Transport <strong>sur devis</strong> : le chasseur indiquera le poids réel.</>
+                  ) : shippingPreview === undefined ? (
+                    <>Calcul du transport…</>
+                  ) : shippingPreview == null ? (
+                    <>Transport <strong>à confirmer</strong> pour ce trajet : le chasseur indiquera le poids réel.</>
+                  ) : (
+                    <>
+                      Transport estimé : <strong>{fmt(shippingPreview)} {questCurrency(form.country)} maximum</strong>
+                      {' '}({formatKg(estWeight)}). Ajusté au poids réel donné par le chasseur : tu ne paies jamais plus.
+                    </>
+                  )}
+                </div>
+              )}
               <button className={styles.btnPrimary} onClick={submit} disabled={uploadingImg}>Publier la quête</button>
             </div>
           </div>

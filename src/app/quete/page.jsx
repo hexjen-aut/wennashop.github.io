@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
 import Nav from '@/components/Nav';
 import { useFeatureFlags } from '@/context/FeatureFlagsContext';
+import { bracketFor, formatKg } from '@/lib/shipping';
 import styles from '@/app/quetes/quetes.module.css';
 
 function fmt(n) { return Number(n).toLocaleString('fr-FR'); }
@@ -87,6 +88,14 @@ function Content() {
         )}
         <h1 className={styles.title}>{quest.title}</h1>
         <p className={styles.sub}>{quest.description}</p>
+        {quest.size_bracket && (
+          <p className={styles.meta} style={{ marginBottom: 10 }}>
+            {quest.quantity || 1} × {bracketFor(quest.size_bracket)?.label.toLowerCase()}
+            {quest.est_weight_kg ? ` · ${formatKg(quest.est_weight_kg)} max` : ''}
+            {quest.destination_country ? ` · livraison ${quest.destination_country}` : ''}
+            {' · Transport estimé '}{quest.shipping_estimate != null ? `${fmt(quest.shipping_estimate)} ${quest.currency} max` : 'à confirmer'}
+          </p>
+        )}
         <div className={styles.rewardBox} style={{ display: 'inline-block', textAlign: 'center' }}>
           <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--gold)', textTransform: 'uppercase' }}>Récompense</div>
           <div className={styles.rewardAmount}>{fmt(quest.reward_amount)} {quest.currency}</div>
@@ -102,6 +111,15 @@ function Content() {
             <div>
               <div className={styles.cardDesc}>{p.description}</div>
               <div className={styles.meta}>Prix proposé : {fmt(p.proposed_price)} {quest.currency} · {PROPOSAL_STATUS_LABEL[p.status] || p.status}</div>
+              {p.weight_kg != null && (
+                <div className={styles.meta} data-testid="proposal-total">
+                  Poids réel {formatKg(p.weight_kg)} · Transport {p.shipping_cost != null ? `${fmt(p.shipping_cost)} ${quest.currency}` : 'à confirmer'}
+                  {p.shipping_cost != null && <> · <strong>Total {fmt(Number(p.proposed_price) + Number(p.shipping_cost))} {quest.currency}</strong></>}
+                  {p.shipping_cost != null && quest.shipping_estimate != null && Number(p.shipping_cost) !== Number(quest.shipping_estimate) && (
+                    <> ({Number(p.shipping_cost) < Number(quest.shipping_estimate) ? '−' : '+'}{fmt(Math.abs(quest.shipping_estimate - p.shipping_cost))} {quest.currency} par rapport à l'estimation)</>
+                  )}
+                </div>
+              )}
             </div>
             {isBuyer && quest.status === 'open' && p.status === 'pending' && (
               <button className={styles.btnPrimary} onClick={() => selectProposal(p.id)}>Choisir cette offre</button>

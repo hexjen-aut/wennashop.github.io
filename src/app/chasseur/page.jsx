@@ -6,6 +6,7 @@ import { getSupabase } from '@/lib/supabase';
 import TourOverlay from '@/components/TourOverlay';
 import tourStyles from '@/components/TourOverlay.module.css';
 import { useFeatureFlags } from '@/context/FeatureFlagsContext';
+import { bracketFor, formatKg, quoteShipping } from '@/lib/shipping';
 import styles from './chasseur.module.css';
 import Mascot from '@/components/Mascot';
 
@@ -88,6 +89,9 @@ export default function ChasseurPage() {
   const [modalQuest, setModalQuest] = useState(null);
   const [propMessage, setPropMessage] = useState('');
   const [propPrice, setPropPrice] = useState('');
+  const [propWeight, setPropWeight] = useState('');
+  // undefined = calcul en cours, null = pas de tarif pour ce trajet
+  const [propShipping, setPropShipping] = useState(null);
   const [propLink, setPropLink] = useState('');
   const [files, setFiles] = useState([]);
   const [dragOver, setDragOver] = useState(false);
@@ -124,7 +128,7 @@ export default function ChasseurPage() {
 
       const { data: q } = await sb
         .from('quests')
-        .select('id,title,description,country_target,product_budget,reward_amount,currency,duration_days,expires_at,status,created_at,category_id,categories(name)')
+        .select('id,title,description,country_target,destination_country,product_budget,reward_amount,currency,duration_days,expires_at,status,created_at,category_id,quantity,size_bracket,est_weight_kg,shipping_estimate,categories(name)')
         .eq('status', 'open')
         .order('created_at', { ascending: false });
       const questsList = (q || []).map((x) => ({ ...x, category_id: String(x.category_id ?? '') }));
@@ -180,7 +184,7 @@ export default function ChasseurPage() {
   async function loadMyProposals(sb, hunterId) {
     const { data } = await sb
       .from('quest_proposals')
-      .select('id,quest_id,description,proposed_price,product_url,product_images,status,created_at,selected_at,reward_paid_at,quests(title,reward_amount,currency,country_target)')
+      .select('id,quest_id,description,proposed_price,weight_kg,shipping_cost,product_url,product_images,status,created_at,selected_at,reward_paid_at,quests(title,reward_amount,currency,country_target)')
       .eq('hunter_id', hunterId)
       .order('created_at', { ascending: false });
     setMyProposals(data || []);
@@ -242,8 +246,25 @@ export default function ChasseurPage() {
   function openModal(quest) {
     if (!canHunt) { showToast('Seuls les chasseurs et vendeurs peuvent proposer.', 'error'); return; }
     setModalQuest(quest);
-    setPropMessage(''); setPropPrice(''); setPropLink(''); setFiles([]);
+    setPropMessage(''); setPropPrice(''); setPropWeight(''); setPropShipping(null); setPropLink(''); setFiles([]);
   }
+
+  // Aperçu du transport sur le poids réel : du pays du chasseur vers l'acheteur
+  // (même règle que le calcul en base, qui fait foi).
+  useEffect(() => {
+    const weight = parseFloat(propWeight);
+    if (!modalQuest || !(weight > 0) || !modalQuest.destination_country) { setPropShipping(null); return; }
+    let cancelled = false;
+    setPropShipping(undefined);
+    const origin = internalUser?.country && internalUser.country !== 'Autre' ? internalUser.country : modalQuest.country_target;
+    const t = setTimeout(async () => {
+      const amount = await quoteShipping(getSupabase(), {
+        weightKg: weight, origin, destination: modalQuest.destination_country, currency: modalQuest.currency,
+      });
+      if (!cancelled) setPropShipping(amount);
+    }, 300);
+    return () => { cancelled = true; clearTimeout(t); };
+  }, [modalQuest, propWeight, internalUser?.country]);
   function closeModal() { setModalQuest(null); }
 
   function handleFiles(fileList) {
@@ -262,6 +283,8 @@ export default function ChasseurPage() {
     if (!propMessage.trim()) return showToast('Décris ta proposition.', 'error');
     const price = parseFloat(propPrice);
     if (!price || price < 100) return showToast('Indique un prix estimé valide.', 'error');
+    const weight = parseFloat(String(propWeight).replace(',', '.'));
+    if (!(weight > 0) || weight > 500) return showToast('Indique le poids réel du colis (en kg).', 'error');
 
     setSubmitting(true);
     const sb = getSupabase();
@@ -281,6 +304,7 @@ export default function ChasseurPage() {
       hunter_id: internalUser.id,
       description: propMessage.trim(),
       proposed_price: price,
+      weight_kg: weight,
       product_url: propLink.trim() || null,
       product_images: imageUrls.length ? imageUrls : null,
       status: 'pending',
@@ -486,6 +510,11 @@ export default function ChasseurPage() {
                             <span className={styles.metaItem}>{props} proposition{props !== 1 ? 's' : ''}</span>
                             <span className={`${styles.metaItem} ${exp <= 1 ? styles.metaUrgent : ''}`}>{exp <= 1 ? 'Expire demain' : `${exp}j restants`}</span>
                             <span className={styles.metaItem}>Budget {fmt(q.product_budget)} {q.currency}</span>
+                            {q.size_bracket && (
+                              <span className={styles.metaItem}>
+                                {q.quantity || 1} × {bracketFor(q.size_bracket)?.label.toLowerCase()}{q.est_weight_kg ? ` (${formatKg(q.est_weight_kg)} max)` : ''}{q.destination_country ? ` → ${q.destination_country}` : ''}
+                              </span>
+                            )}
                           </div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                             {!done && canHunt && <button className={styles.btnHunt} onClick={() => openModal(q)}>Je chasse</button>}
@@ -569,6 +598,11 @@ export default function ChasseurPage() {
                       <div className={styles.proposalFooter}>
                         <div className={styles.proposalMeta}>
                           <span className={styles.metaItem}>Prix estimé : {p.proposed_price ? fmt(p.proposed_price) + ' ' + (p.quests?.currency || 'FCFA') : 'N/A'}</span>
+                          {p.weight_kg != null && (
+                            <span className={styles.metaItem}>
+                              {formatKg(p.weight_kg)} · Transport {p.shipping_cost != null ? `${fmt(p.shipping_cost)} ${p.quests?.currency || 'FCFA'}` : 'à confirmer'}
+                            </span>
+                          )}
                           {p.product_url && <a href={p.product_url} target="_blank" rel="noreferrer" style={{ color: 'var(--accent)', fontSize: 12, fontWeight: 600 }}>Référence</a>}
                           <span className={styles.metaItem}>{fmtDate(p.created_at)}</span>
                         </div>
@@ -739,6 +773,22 @@ export default function ChasseurPage() {
               <div className={styles.formGroup}>
                 <label className={styles.formLabel}>Prix estimé ({modalQuest?.currency || 'FCFA'}) *</label>
                 <input className={styles.input} type="number" placeholder="ex : 28000" value={propPrice} onChange={(e) => setPropPrice(e.target.value)} />
+              </div>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Poids réel du colis, emballage compris (kg) *</label>
+                <input className={styles.input} type="number" min="0.1" step="0.1" placeholder={modalQuest.est_weight_kg ? `ex : ${String(modalQuest.est_weight_kg).replace('.', ',')} (estimation max de l'acheteur)` : 'ex : 1,5'} value={propWeight} onChange={(e) => setPropWeight(e.target.value)} />
+                {modalQuest.size_bracket && (
+                  <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 4 }}>
+                    L'acheteur a indiqué {modalQuest.quantity || 1} × {bracketFor(modalQuest.size_bracket)?.label.toLowerCase()}{modalQuest.est_weight_kg ? `, soit ${formatKg(modalQuest.est_weight_kg)} maximum` : ''}.
+                  </div>
+                )}
+                {parseFloat(propWeight) > 0 && (
+                  <div data-testid="proposal-shipping" style={{ fontSize: 12, marginTop: 6 }}>
+                    {propShipping === undefined ? 'Calcul du transport…'
+                      : propShipping == null ? 'Transport à confirmer pour ce trajet.'
+                      : <>Produit {fmt(parseFloat(propPrice) || 0)} + transport {fmt(propShipping)} = <strong>{fmt((parseFloat(propPrice) || 0) + propShipping)} {modalQuest.currency || 'FCFA'}</strong></>}
+                  </div>
+                )}
               </div>
               <div className={styles.formGroup}>
                 <label className={styles.formLabel}>Lien ou référence (facultatif)</label>
