@@ -169,9 +169,9 @@ function PaiementContent() {
     await sb.rpc('set_order_phone', { p_order_id: orderId, p_phone: form.phone });
 
     if (method === 'mobile_money') {
-      // process-payment crée le paiement lui-même (avec transaction_id/metadata
-      // SingPay), et c'est le webhook singpay-webhook qui confirme la commande
-      // une fois le paiement réellement validé par l'acheteur sur son téléphone.
+      // process-payment crée le paiement lui-même chez le fournisseur choisi
+      // dans l'admin (SingPay ou pawaPay), et c'est son callback qui confirme
+      // la commande une fois le paiement réellement validé sur le téléphone.
       const { data, error: fnError } = await sb.functions.invoke('process-payment', {
         body: { order_id: orderId, amount: order.buyer_total_amount ?? order.total_amount, client_msisdn: mobilePhone.trim(), payment_method: mobileProvider },
       });

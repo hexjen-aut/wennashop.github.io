@@ -1,9 +1,11 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-// Lance un paiement Mobile Money SingPay (USSD push Airtel / Moov, ou lien
-// de paiement externe). La commande n'est validée que plus tard, par le
-// callback singpay-webhook, après vérification auprès de SingPay.
+// Lance un paiement Mobile Money : SingPay (USSD push Airtel / Moov, ou lien
+// de paiement externe) ou pawaPay (Airtel Gabon), selon le fournisseur choisi
+// dans l'admin. La commande n'est validée que plus tard, par le
+// callback du fournisseur (singpay-webhook / pawapay-callback), après
+// vérification auprès de lui.
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -15,6 +17,107 @@ const SITE_URL = 'https://wennashop.com'
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...CORS, 'Content-Type': 'application/json' } })
+
+// pawaPay : code opérateur par moyen de paiement (Airtel Gabon uniquement
+// pour l'instant, Moov Gabon n'est pas proposé par pawaPay).
+const PAWAPAY_PROVIDERS: Record<string, string> = { airtel_money: 'AIRTEL_GAB' }
+
+type PawapayInput = {
+  sbAdmin: ReturnType<typeof createClient>
+  orderId: string
+  userId: string
+  userEmail: string | undefined
+  amount: number
+  existingPaymentId: string | null
+  msisdn: string | undefined
+  paymentMethod: string
+}
+
+// Dépôt pawaPay (demande de validation envoyée sur le téléphone). La commande
+// n'est validée que par pawapay-callback, après relecture du statut chez pawaPay.
+async function payWithPawapay(p: PawapayInput): Promise<Response> {
+  const token = Deno.env.get('PAWAPAY_API_TOKEN')
+  if (!token) {
+    return json({ error: "Le paiement Airtel Money n'est pas encore disponible. Choisis un autre moyen de paiement." }, 503)
+  }
+  const provider = PAWAPAY_PROVIDERS[p.paymentMethod]
+  if (!provider) return json({ error: "Ce moyen de paiement n'est pas proposé via pawaPay." }, 400)
+  if (!p.msisdn) return json({ error: 'Numéro de téléphone requis' }, 400)
+
+  const base = (Deno.env.get('PAWAPAY_BASE_URL') || 'https://api.sandbox.pawapay.io').replace(/\/+$/, '')
+  const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+
+  // Numéro au format international (241…), puis nettoyé et vérifié par pawaPay.
+  const digits = String(p.msisdn).replace(/\D/g, '').replace(/^00/, '')
+  const msisdn = digits.startsWith('241') ? digits : `241${digits.replace(/^0/, '')}`
+  const predictRes = await fetch(`${base}/v2/predict-provider`, {
+    method: 'POST', headers, body: JSON.stringify({ phoneNumber: msisdn }),
+  })
+  const predicted = predictRes.ok ? await predictRes.json().catch(() => null) : null
+  if (!predicted?.phoneNumber || predicted.provider !== provider) {
+    console.error('pawaPay predict-provider:', predictRes.status, JSON.stringify(predicted))
+    return json({ error: "Ce numéro n'est pas un numéro Airtel Money du Gabon." }, 400)
+  }
+
+  const depositId = crypto.randomUUID()
+  const roundedAmount = Math.round(p.amount)
+  const depositRes = await fetch(`${base}/v2/deposits`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      depositId,
+      amount: String(roundedAmount),
+      currency: 'XAF',
+      payer: { type: 'MMO', accountDetails: { phoneNumber: predicted.phoneNumber, provider } },
+      clientReferenceId: p.orderId,
+      customerMessage: 'WennaShop',
+    }),
+  })
+  const deposit = await depositRes.json().catch(() => null)
+  if (!depositRes.ok || deposit?.status !== 'ACCEPTED') {
+    console.error('pawaPay deposit refusé:', depositRes.status, JSON.stringify(deposit))
+    return json({ error: 'Le paiement Airtel Money a été refusé. Vérifie ton numéro et réessaie.' }, 502)
+  }
+
+  const paymentRow = {
+    order_id: p.orderId,
+    user_id: p.userId,
+    amount: roundedAmount,
+    currency: 'XAF',
+    method: p.paymentMethod,
+    status: 'pending',
+    transaction_id: depositId,
+    provider: 'pawapay',
+    type: 'order_payment',
+    updated_at: new Date().toISOString(),
+    metadata: { reference: depositId, pawapay_provider: provider, pawapay_response: deposit },
+  }
+  const { data: payment, error: payError } = p.existingPaymentId
+    ? await p.sbAdmin.from('payments').update(paymentRow).eq('id', p.existingPaymentId).select('id').single()
+    : await p.sbAdmin.from('payments').insert([paymentRow]).select('id').single()
+  if (payError) {
+    console.error('Payment save error:', payError)
+    return json({ error: 'Erreur enregistrement paiement' }, 500)
+  }
+
+  const n8nUrl = Deno.env.get('N8N_WEBHOOK_URL')
+  if (n8nUrl) {
+    fetch(n8nUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event: 'payment_initiated', provider: 'pawapay', order_id: p.orderId, payment_id: payment.id,
+        transaction_id: depositId, amount: roundedAmount, currency: 'XAF', reference: depositId,
+        user_email: p.userEmail, timestamp: new Date().toISOString(),
+      }),
+    }).catch((e) => console.warn('n8n non bloquant:', e))
+  }
+
+  return json({
+    success: true, provider: 'pawapay', payment_id: payment.id, transaction_id: depositId,
+    reference: depositId, order_status: 'pending', payment_url: null, exp: null,
+  })
+}
 
 serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
@@ -72,6 +175,16 @@ serve(async (req: Request) => {
       .from('payments').select('id, status')
       .eq('order_id', order_id).eq('type', 'order_payment').maybeSingle()
     if (existing?.status === 'paid') return json({ error: 'Commande déjà payée' }, 409)
+
+    // Fournisseur du moyen de paiement, choisi dans l'admin (section Pays).
+    const { data: methodRow } = await sbAdmin
+      .from('payment_methods').select('provider_code').eq('code', payment_method).maybeSingle()
+    if (methodRow?.provider_code === 'pawapay') {
+      return await payWithPawapay({
+        sbAdmin, orderId: order_id, userId: userRow.id, userEmail: user.email, amount,
+        existingPaymentId: existing?.id ?? null, msisdn: client_msisdn, paymentMethod: payment_method,
+      })
+    }
 
     const clientId     = Deno.env.get('SINGPAY_CLIENT_ID')!
     const clientSecret = Deno.env.get('SINGPAY_SECRET')!

@@ -834,6 +834,16 @@ export default function AdminPage() {
     setCountryPaymentMethods((prev) => ({ ...prev, [countryCode]: { ...prev[countryCode], [methodCode]: !current } }));
   }
 
+  // Fournisseur technique d'un moyen mobile money (lu par process-payment).
+  async function setMethodProvider(methodCode, providerCode) {
+    const sb = getSupabase();
+    const { error } = await sb.from('payment_methods')
+      .update({ provider_code: providerCode, updated_at: new Date().toISOString() })
+      .eq('code', methodCode);
+    if (error) { alert(adminWriteError(error)); return; }
+    setPaymentMethods((prev) => prev.map((m) => (m.code === methodCode ? { ...m, provider_code: providerCode } : m)));
+  }
+
   function goTo(s) {
     setSection(s);
     setMobileNavOpen(false);
@@ -1734,6 +1744,29 @@ export default function AdminPage() {
                   </table>
                 </div>
               )}
+            </div>
+            <div className={styles.card}>
+              <div className={styles.cardTitle} style={{ marginBottom: 4 }}>Fournisseur du mobile money</div>
+              <p style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 14 }}>
+                Choisis par quel service passe chaque moyen de paiement. pawaPay ne propose qu'Airtel Money au Gabon,
+                et ne fonctionne qu'une fois le jeton PAWAPAY_API_TOKEN ajouté dans Supabase (Edge Functions → Secrets).
+                En cas de panne d'un fournisseur, bascule ici sur l'autre.
+              </p>
+              {paymentMethods.filter((m) => m.code === 'airtel_money' || m.code === 'moov_money').map((m) => (
+                <div key={m.code} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 14, padding: '12px 0', borderBottom: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: 13, fontWeight: 700 }}>{m.name}</div>
+                  <select
+                    className={styles.input}
+                    style={{ width: 'auto' }}
+                    value={m.provider_code}
+                    onChange={(e) => setMethodProvider(m.code, e.target.value)}
+                  >
+                    <option value="singpay">SingPay</option>
+                    {m.code === 'airtel_money' && <option value="pawapay">pawaPay</option>}
+                    {!['singpay', 'pawapay'].includes(m.provider_code) && <option value={m.provider_code}>{m.provider_code}</option>}
+                  </select>
+                </div>
+              ))}
             </div>
           </>
         )}
