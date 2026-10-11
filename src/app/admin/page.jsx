@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { getSupabase } from '@/lib/supabase';
 import { CAROUSEL_BUCKET, CAROUSEL_KEYS, DEFAULT_CAROUSEL, isSafeLink, parseCarouselConfig } from '@/lib/loginCarousel';
+import { SHIPPING_RATES_KEY, parseShippingRates } from '@/lib/shipping';
 import styles from './admin.module.css';
 
 function fmt(n, c = 'MAD') { try { return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: c }).format(n); } catch { return `${n} ${c}`; } }
@@ -105,6 +106,8 @@ export default function AdminPage() {
 
   // ── Paramètres — comptes bancaires ──
   const [bankAccounts, setBankAccounts] = useState([]);
+  const [shippingRates, setShippingRates] = useState([]);
+  const [shippingSaving, setShippingSaving] = useState(false);
   const [countries, setCountries] = useState([]);
   const [bankModalOpen, setBankModalOpen] = useState(false);
   const [bankForm, setBankForm] = useState({ idx: null, country_code: '', bank_name: '', holder: '', rib: '', swift: '' });
@@ -754,11 +757,13 @@ export default function AdminPage() {
   // ── Paramètres — comptes bancaires ──
   async function loadSettings() {
     const sb = getSupabase();
-    const [{ data }, { data: countryRows }, { data: flagRows }] = await Promise.all([
+    const [{ data }, { data: countryRows }, { data: flagRows }, { data: ratesRow }] = await Promise.all([
       sb.from('site_config').select('value').eq('key', 'bank_accounts').maybeSingle(),
       sb.from('countries').select('code,name,currency_code,flag_emoji').eq('status', 'ACTIVE').order('sort_order'),
       sb.from('site_config').select('key,value').in('key', ['maintenance_mode', 'quests_enabled', 'wallets_enabled', 'boosters_enabled']),
+      sb.from('site_config').select('value').eq('key', SHIPPING_RATES_KEY).maybeSingle(),
     ]);
+    setShippingRates(parseShippingRates(ratesRow?.value));
     let list = [];
     if (data?.value) { try { list = JSON.parse(data.value); } catch { list = []; } }
     setBankAccounts(Array.isArray(list) ? list : []);
@@ -773,6 +778,28 @@ export default function AdminPage() {
     const { error } = await sb.from('site_config').upsert({ key, value: String(nextValue), updated_at: new Date().toISOString() });
     if (error) { alert(adminWriteError(error)); return; }
     setFeatureFlags((prev) => ({ ...prev, [key]: nextValue }));
+  }
+  // ── Paramètres — tarifs transport des quêtes (lus par quest_shipping_quote en base) ──
+  function updateShippingRate(idx, patch) {
+    setShippingRates((prev) => prev.map((r, i) => (i === idx ? { ...r, ...patch } : r)));
+  }
+  async function saveShippingRates() {
+    const list = shippingRates.map((r) => ({ ...r, rate_per_kg: Number(r.rate_per_kg), minimum: Number(r.minimum) || 0 }));
+    const routes = new Set();
+    for (const r of list) {
+      if (!r.from || !r.to) { alert('Choisis le pays de départ et d\'arrivée de chaque trajet.'); return; }
+      if (!(r.rate_per_kg > 0)) { alert(`Tarif au kg manquant pour ${r.from} → ${r.to}.`); return; }
+      const route = `${r.from}→${r.to}`.toLowerCase();
+      if (routes.has(route)) { alert(`Le trajet ${r.from} → ${r.to} est en double.`); return; }
+      routes.add(route);
+    }
+    setShippingSaving(true);
+    const sb = getSupabase();
+    const { error } = await sb.from('site_config').upsert({ key: SHIPPING_RATES_KEY, value: JSON.stringify(list), updated_at: new Date().toISOString() });
+    setShippingSaving(false);
+    if (error) { alert(adminWriteError(error)); return; }
+    setShippingRates(list);
+    showToast('Tarifs transport enregistrés', 'ok');
   }
   function openAddBankAccount() {
     setBankForm({ idx: null, country_code: countries[0]?.code || '', bank_name: '', holder: '', rib: '', swift: '' });
@@ -1796,6 +1823,48 @@ export default function AdminPage() {
                   </label>
                 </div>
               ))}
+            </div>
+            <div className={styles.card}>
+              <div className={styles.cardTitle} style={{ marginBottom: 4 }}>Tarifs transport — quêtes</div>
+              <p style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 14 }}>
+                Prix au kilo par trajet. À la publication d'une quête, le transport est estimé sur le poids maximum de la taille choisie,
+                puis recalculé sur le poids réel donné par le chasseur. Le minimum s'applique aux petits colis.
+                Un trajet absent affiche « transport à confirmer ».
+              </p>
+              <table className={styles.table}>
+                <thead><tr><th>Départ</th><th>Arrivée</th><th>Prix / kg</th><th>Devise</th><th>Minimum</th><th></th></tr></thead>
+                <tbody>
+                  {shippingRates.length === 0 ? (
+                    <tr><td colSpan={6} style={{ textAlign: 'center', padding: 30, color: 'var(--text-faint)' }}>Aucun tarif : le transport des quêtes reste « à confirmer ».</td></tr>
+                  ) : shippingRates.map((r, i) => (
+                    <tr key={i}>
+                      {['from', 'to'].map((field) => (
+                        <td key={field}>
+                          <select className={styles.input} aria-label={field === 'from' ? 'Départ' : 'Arrivée'} value={r[field]} onChange={(e) => updateShippingRate(i, { [field]: e.target.value })}>
+                            <option value="">—</option>
+                            {countries.map((c) => <option key={c.code} value={c.name}>{c.name}</option>)}
+                            {r[field] && !countries.some((c) => c.name === r[field]) && <option value={r[field]}>{r[field]}</option>}
+                          </select>
+                        </td>
+                      ))}
+                      <td><input className={styles.input} type="number" min="0" aria-label="Prix au kilo" value={r.rate_per_kg} onChange={(e) => updateShippingRate(i, { rate_per_kg: e.target.value })} style={{ width: 90 }} /></td>
+                      <td>
+                        <select className={styles.input} aria-label="Devise" value={r.currency} onChange={(e) => updateShippingRate(i, { currency: e.target.value })}>
+                          <option value="MAD">MAD</option>
+                          <option value="XAF">FCFA (XAF)</option>
+                          <option value="XOF">FCFA (XOF)</option>
+                        </select>
+                      </td>
+                      <td><input className={styles.input} type="number" min="0" aria-label="Minimum" value={r.minimum} onChange={(e) => updateShippingRate(i, { minimum: e.target.value })} style={{ width: 90 }} /></td>
+                      <td><button className={`${styles.btnDanger} ${styles.btnSm}`} onClick={() => setShippingRates((prev) => prev.filter((_, j) => j !== i))}>Retirer</button></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div style={{ display: 'flex', gap: 10, marginTop: 14 }}>
+                <button className={styles.btnGhost} onClick={() => setShippingRates((prev) => [...prev, { from: '', to: '', rate_per_kg: '', currency: 'MAD', minimum: '' }])}>Ajouter un trajet</button>
+                <button className={styles.btnPrimary} onClick={saveShippingRates} disabled={shippingSaving}>{shippingSaving ? 'Enregistrement…' : 'Enregistrer les tarifs'}</button>
+              </div>
             </div>
             <div className={styles.card}>
               <div className={styles.cardTitle} style={{ marginBottom: 4 }}>Comptes bancaires — virement</div>
