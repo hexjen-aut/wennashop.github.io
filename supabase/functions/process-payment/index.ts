@@ -186,9 +186,15 @@ serve(async (req: Request) => {
       })
     }
 
-    const clientId     = Deno.env.get('SINGPAY_CLIENT_ID')!
-    const clientSecret = Deno.env.get('SINGPAY_SECRET')!
-    const walletId     = Deno.env.get('SINGPAY_WALLET_ID')!
+    // Identifiants et portefeuille SingPay : secrets Supabase uniquement
+    // (voir docs/singpay.md), jamais d'ID en dur.
+    const clientId     = Deno.env.get('SINGPAY_CLIENT_ID')
+    const clientSecret = Deno.env.get('SINGPAY_SECRET')
+    const walletId     = Deno.env.get('SINGPAY_WALLET_ID')
+    if (!clientId || !clientSecret || !walletId) {
+      console.error('SingPay non configuré : SINGPAY_CLIENT_ID, SINGPAY_SECRET ou SINGPAY_WALLET_ID manquant')
+      return json({ error: "Le paiement Mobile Money n'est pas encore disponible. Choisis un autre moyen de paiement." }, 503)
+    }
     const headers = {
       'Content-Type':    'application/json',
       'x-client-id':     clientId,
@@ -230,6 +236,11 @@ serve(async (req: Request) => {
     if (!singpayRes.ok) {
       const errText = await singpayRes.text()
       console.error('SingPay error:', errText)
+      await sbAdmin.from('system_logs').insert({
+        source: 'singpay', level: 'error', message: 'Paiement refusé par SingPay',
+        status_code: singpayRes.status,
+        metadata: { order_id, reference, payment_method, detail: errText.slice(0, 1000) },
+      }).then(({ error }) => { if (error) console.warn('system_logs:', error.message) })
       return json({ error: 'Erreur SingPay', detail: errText }, 502)
     }
     const singpayData = await singpayRes.json()

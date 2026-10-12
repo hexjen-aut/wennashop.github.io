@@ -88,12 +88,15 @@ Deno.serve(async (req: Request) => {
     const tx = await fetchTransactionByReference(reference)
     if (!tx) return json({ error: 'Transaction introuvable chez SingPay' }, 502)
 
-    const walletId = Deno.env.get('SINGPAY_WALLET_ID')
+    // La relecture ci-dessus est faite avec x-wallet = SINGPAY_WALLET_ID : elle
+    // ne voit que les transactions de ce portefeuille. Si SingPay précise en
+    // plus le portefeuille de la transaction, il doit être le même.
+    const walletId = Deno.env.get('SINGPAY_WALLET_ID') || ''
     const pf = tx.portefeuille as Record<string, unknown> | string | undefined
     const txWallet = typeof pf === 'string' ? pf : (pf?.id as string) || (pf?._id as string) || ''
     const checks = {
       reference: tx.reference === reference,
-      wallet: !txWallet || !walletId || txWallet === walletId,
+      wallet: !!walletId && (!txWallet || txWallet === walletId),
       amount: Number(tx.amount) >= Number(payment.amount),
     }
 
