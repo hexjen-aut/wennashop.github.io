@@ -7,7 +7,7 @@ import { getSupabase } from '@/lib/supabase';
 import { uploadFileWithProgress } from '@/lib/storageUpload';
 import ImageCropModal from '@/components/ImageCropModal';
 import AutoKycCard from '@/components/AutoKycCard';
-import { WHITE_BG_KEY, checkWhiteBackground, whitenBackground } from '@/lib/whiteBackground';
+import { WHITE_BG_KEY, BG_REMOVAL_LINKS, checkWhiteBackground } from '@/lib/whiteBackground';
 import { COUNTRIES_WITH_AUTRE as COUNTRIES, SHIP_COUNTRIES } from '@/lib/geo';
 import { currencyForCountry } from '@/lib/currency';
 import { useFeatureFlags } from '@/context/FeatureFlagsContext';
@@ -192,6 +192,7 @@ export default function VendeurPage() {
   const [productImages, setProductImages] = useState([]);
   const [caracs, setCaracs] = useState([]);
   const [uploading, setUploading] = useState(false);
+  const [bgRefused, setBgRefused] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [cropQueue, setCropQueue] = useState([]);
   const [cropSrc, setCropSrc] = useState(null);
@@ -501,25 +502,21 @@ export default function VendeurPage() {
       setCaracs([]);
     }
     setProductTab('info');
+    setBgRefused(false);
     setProductModalOpen(true);
   }
 
-  // Photos produits sur fond blanc (réglage admin) : un fond non blanc est
-  // remplacé automatiquement quand le détourage est activé, sinon refusé.
+  // Photos produits sur fond blanc (réglage admin) : une photo dont le fond
+  // n'est pas blanc est refusée, avec des liens pour détourer soi-même.
   async function ensureWhiteBackground(sb, file) {
     const { data: cfg } = await sb.from('site_config').select('value').eq('key', WHITE_BG_KEY).maybeSingle();
     if (cfg?.value === 'false') return file;
     let check;
     try { check = await checkWhiteBackground(file); } catch { return file; } // format illisible : on laisse passer
     if (check.ok) return file;
-    try {
-      const blob = await whitenBackground(sb, file);
-      showToast('Fond remplacé par du blanc', 'success');
-      return new File([blob], file.name.replace(/\.\w+$/, '') + '.jpg', { type: 'image/jpeg' });
-    } catch (err) {
-      showToast(`Photo refusée : le fond doit être blanc. ${err.message}`, 'error');
-      return null;
-    }
+    setBgRefused(true);
+    showToast('Photo refusée : le fond doit être blanc', 'error');
+    return null;
   }
 
   async function handleProductFiles(files) {
@@ -1877,9 +1874,17 @@ export default function VendeurPage() {
                   <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>La 1ère photo est l'image principale.</p>
                   <div style={{ padding: '10px 12px', background: 'var(--accent-light)', border: '1px solid var(--border-accent)', borderRadius: 8, fontSize: 11, color: 'var(--text-faint)', lineHeight: 1.7, marginBottom: 4 }}>
                     <strong style={{ color: 'var(--text)' }}>Pour de bonnes photos :</strong><br />
-                    Format carré (1:1), produit centré et qui remplit le cadre, <strong>fond blanc</strong> (un autre fond est remplacé automatiquement ou refusé).<br />
+                    Format carré (1:1), produit centré et qui remplit le cadre, <strong>fond blanc obligatoire</strong>.<br />
                     Résolution minimum conseillée : 1000 × 1000 px.<br />
                     Lumière naturelle plutôt que flash, plusieurs angles (face, profil, détail, emballage).
+                  </div>
+                  <div data-testid="bg-help" style={{ fontSize: 12, lineHeight: 1.6, margin: '0 0 12px', padding: bgRefused ? '10px 12px' : 0, borderRadius: 10, border: bgRefused ? '1.5px solid var(--error)' : 'none', color: bgRefused ? 'var(--text)' : 'var(--text-muted)' }}>
+                    {bgRefused && <strong style={{ display: 'block', color: 'var(--error)' }}>Photo refusée : le fond n'est pas blanc.</strong>}
+                    Pour mettre ta photo sur fond blanc en quelques secondes :{' '}
+                    {BG_REMOVAL_LINKS.map((l, i) => (
+                      <span key={l.url}>{i > 0 && ' ou '}<a href={l.url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', fontWeight: 700 }}>{l.label}</a></span>
+                    ))}
+                    , puis ajoute-la ici.
                   </div>
                   <div className={styles.imgGrid}>
                     {productImages.map((url, i) => (

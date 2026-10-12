@@ -10,6 +10,18 @@ import { convertPrice } from '@/lib/currency';
 import { BUYER_COUNTRY_KEY } from '@/lib/buyerCurrency';
 import styles from './paiement.module.css';
 
+// Appel d'une fonction serveur ; renvoie { data, error } avec le message lisible
+async function callFn(sb, name, body) {
+  const { data, error } = await sb.functions.invoke(name, { body });
+  if (!error) return { data, error: null };
+  let message = data?.error;
+  try { message = message || (await error.context?.json())?.error; } catch {}
+  return { data: null, error: message || error.message || 'Erreur' };
+}
+
+// Numéro Airtel Gabon saisi après le +241 : 07X XX XX XX ou 7X XX XX XX
+const AIRTEL_GA = /^0?7\d{7}$/;
+
 function fmt(n, c = 'MAD') { try { return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: c }).format(n); } catch { return `${n} ${c}`; } }
 
 function PaiementContent() {
@@ -45,6 +57,11 @@ function PaiementContent() {
   const [awaitingMobileConfirm, setAwaitingMobileConfirm] = useState(false);
   // Virement : la commande attend que l'équipe voie l'argent arriver.
   const [transferRef, setTransferRef] = useState(null);
+  // Airtel Money en direct (fournisseur « airtel » choisi dans l'admin)
+  const [airtelDirect, setAirtelDirect] = useState(false);
+  const [airtelHolder, setAirtelHolder] = useState(null); // nom masqué du titulaire
+  const [airtelPayment, setAirtelPayment] = useState(null); // { id, status, message }
+  const [airtelCanCheck, setAirtelCanCheck] = useState(false);
   const [mobileError, setMobileError] = useState(params.get('error') === 'payment_failed' ? 'Le paiement mobile money a échoué ou a été annulé. Réessaie ci-dessous.' : null);
 
   useEffect(() => {
@@ -65,10 +82,11 @@ function PaiementContent() {
       if (!countryCode) { setAvailableMethods([]); return; }
       const sb = getSupabase();
       const [{ data: methods }, { data: cpm }] = await Promise.all([
-        sb.from('payment_methods').select('code,status'),
+        sb.from('payment_methods').select('code,status,provider_code'),
         sb.from('country_payment_methods').select('payment_method_code,is_enabled').eq('country_code', countryCode).eq('is_enabled', true),
       ]);
       const activeCodes = new Set((methods || []).filter((m) => m.status === 'ACTIVE').map((m) => m.code));
+      setAirtelDirect((methods || []).some((m) => m.code === 'airtel_money' && m.provider_code === 'airtel'));
       const enabled = (cpm || []).map((r) => r.payment_method_code).filter((code) => activeCodes.has(code));
       setAvailableMethods(enabled);
     })();
@@ -155,9 +173,64 @@ function PaiementContent() {
     })();
   }, [orderId]);
 
+  const useAirtelDirect = method === 'mobile_money' && mobileProvider === 'airtel_money' && airtelDirect;
+  const airtelNumber = mobilePhone.replace(/[\s.-]/g, '');
+
+  // Étape 1 : le numéro est-il un compte Airtel Money ? (nom du titulaire masqué)
+  async function checkAirtelNumber() {
+    if (!AIRTEL_GA.test(airtelNumber)) { setMobileError('Numéro Airtel invalide : 07X XX XX XX.'); return; }
+    setSending(true);
+    setMobileError(null);
+    const { data, error } = await callFn(getSupabase(), 'airtel-kyc', { msisdn: airtelNumber });
+    setSending(false);
+    if (error) { setMobileError(error); return; }
+    if (data.is_barred) { setMobileError('Ce compte Airtel Money est bloqué. Utilise un autre numéro.'); return; }
+    setAirtelHolder(data.name || 'titulaire non communiqué');
+  }
+
+  // Étape 2 : demande de paiement (push USSD), suivie en direct
+  async function startAirtelPayment(sb) {
+    const { data, error } = await callFn(sb, 'airtel-collect', { order_id: orderId, msisdn: airtelNumber });
+    if (error) { setMobileError(error); setSending(false); return; }
+    setSending(false);
+    if (data.status === 'paid') { setSuccess(true); return; }
+    setAirtelCanCheck(false);
+    setAirtelPayment({ id: data.payment_id, status: 'pending', message: null });
+  }
+
+  async function checkAirtelStatus() {
+    if (!airtelPayment) return;
+    const { data, error } = await callFn(getSupabase(), 'airtel-status', { payment_id: airtelPayment.id });
+    if (error) return;
+    if (data.status === 'paid') setSuccess(true);
+    else if (data.status === 'failed') setAirtelPayment((p) => ({ ...p, status: 'failed', message: data.message }));
+  }
+
+  // Suivi en direct de la ligne payments (Realtime) + relecture de secours
+  useEffect(() => {
+    if (!airtelPayment?.id || airtelPayment.status !== 'pending') return;
+    const sb = getSupabase();
+    const onStatus = (status) => {
+      if (status === 'paid') setSuccess(true);
+      else if (status === 'failed') checkAirtelStatus();
+    };
+    const channel = sb.channel(`payment-${airtelPayment.id}`)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'payments', filter: `id=eq.${airtelPayment.id}` },
+        (payload) => onStatus(payload.new?.status))
+      .subscribe();
+    const poll = setInterval(async () => {
+      const { data } = await sb.from('payments').select('status').eq('id', airtelPayment.id).maybeSingle();
+      onStatus(data?.status);
+    }, 10000);
+    const reveal = setTimeout(() => setAirtelCanCheck(true), 30000);
+    return () => { sb.removeChannel(channel); clearInterval(poll); clearTimeout(reveal); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [airtelPayment?.id, airtelPayment?.status]);
+
   async function submit() {
     if (!form.first || !form.last || !form.phone.trim() || !form.address || !form.city) { alert('Complète tous les champs requis.'); return; }
     if (method === 'mobile_money' && !mobilePhone.trim()) { alert('Indique ton numéro de téléphone Mobile Money.'); return; }
+    if (useAirtelDirect && !airtelHolder) { await checkAirtelNumber(); return; }
     setSending(true);
     setMobileError(null);
     const sb = getSupabase();
@@ -179,6 +252,8 @@ function PaiementContent() {
       return;
     }
     await sb.rpc('set_order_phone', { p_order_id: orderId, p_phone: form.phone });
+
+    if (useAirtelDirect) { await startAirtelPayment(sb); return; }
 
     if (method === 'mobile_money') {
       // process-payment crée le paiement lui-même chez le fournisseur choisi
@@ -208,6 +283,34 @@ function PaiementContent() {
 
   if (loading) return <><Nav /><div style={{ padding: 60, textAlign: 'center', color: 'var(--text-faint)' }}>Chargement…</div></>;
   if (error) return <><Nav /><div style={{ padding: 60, textAlign: 'center' }}><p>{error}</p><Link href="/panier" style={{ color: 'var(--accent)' }}>Retour au panier</Link></div></>;
+  if (airtelPayment && !success) {
+    const amount = fmt(order?.buyer_total_amount ?? order?.total_amount, order?.buyer_currency || order?.currency);
+    return (
+      <>
+        <Nav />
+        <div data-testid="airtel-waiting" style={{ padding: '70px 20px', textAlign: 'center', maxWidth: 460, margin: '0 auto' }}>
+          {airtelPayment.status === 'failed' ? (
+            <>
+              <h1 style={{ fontSize: 24, fontWeight: 900, marginBottom: 8 }}>Paiement non abouti</h1>
+              <p style={{ color: 'var(--text-muted)', marginBottom: 22 }}>{airtelPayment.message || "Le paiement Airtel Money n'a pas abouti."}</p>
+              <button className={styles.btnSubmit} style={{ maxWidth: 260, margin: '0 auto' }} onClick={() => { setAirtelPayment(null); setAirtelHolder(null); }}>Réessayer</button>
+            </>
+          ) : (
+            <>
+              <h1 style={{ fontSize: 24, fontWeight: 900, marginBottom: 8 }}>Valide le paiement sur ton téléphone</h1>
+              <p style={{ color: 'var(--text-muted)', marginBottom: 6 }}>
+                Une demande de {amount} a été envoyée au +241 {airtelNumber}. Saisis ton code PIN Airtel Money pour confirmer.
+              </p>
+              <p style={{ fontSize: 12, color: 'var(--text-faint)', marginBottom: 22 }}>Cette page se met à jour toute seule dès que le paiement est confirmé.</p>
+              {airtelCanCheck && (
+                <button type="button" onClick={checkAirtelStatus} style={{ background: 'transparent', border: '1.5px solid var(--border)', color: 'var(--text)', padding: '11px 24px', borderRadius: 999, fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--font)' }}>Vérifier le statut</button>
+              )}
+            </>
+          )}
+        </div>
+      </>
+    );
+  }
   if (awaitingMobileConfirm) return (
     <>
       <Nav />
@@ -341,9 +444,19 @@ function PaiementContent() {
                       {mobileMoneyProviders.includes('airtel_money') && <option value="airtel_money">Airtel Money</option>}
                       {mobileMoneyProviders.includes('moov_money') && <option value="moov_money">Moov Money</option>}
                     </select>
-                    <input className={styles.input} placeholder="Numéro (ex: 074123456)" value={mobilePhone} onChange={(e) => setMobilePhone(e.target.value)} />
+                    {useAirtelDirect ? (
+                      <div style={{ display: 'flex', alignItems: 'stretch' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', padding: '0 12px', border: '1.5px solid var(--border)', borderRight: 'none', borderRadius: '10px 0 0 10px', fontSize: 13, fontWeight: 700, color: 'var(--text-muted)' }}>+241</span>
+                        <input className={styles.input} style={{ borderRadius: '0 10px 10px 0' }} inputMode="tel" aria-label="Numéro Airtel Money" placeholder="07X XX XX XX" value={mobilePhone} onChange={(e) => { setMobilePhone(e.target.value); setAirtelHolder(null); }} />
+                      </div>
+                    ) : (
+                      <input className={styles.input} placeholder="Numéro (ex: 074123456)" value={mobilePhone} onChange={(e) => setMobilePhone(e.target.value)} />
+                    )}
                   </div>
                   <p style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 8 }}>Tu recevras une demande de confirmation directement sur ce numéro.</p>
+                  {useAirtelDirect && airtelHolder && (
+                    <p data-testid="airtel-holder" style={{ fontSize: 13, marginTop: 8 }}>Paiement au nom de <strong>{airtelHolder}</strong></p>
+                  )}
                   {mobileError && <p style={{ fontSize: 12, color: 'var(--error)', marginTop: 8 }}>{mobileError}</p>}
                 </div>
               )}
@@ -387,7 +500,9 @@ function PaiementContent() {
                 <span>Total</span><span style={{ color: 'var(--accent)' }}>{fmt(order?.buyer_total_amount ?? order?.total_amount, order?.buyer_currency || order?.currency)}</span>
               </div>
               <button className={styles.btnSubmit} onClick={submit} disabled={sending || !(hasCod || hasVirement || mobileMoneyProviders.length > 0)}>
-                {sending ? 'Traitement…' : method === 'mobile_money' ? 'Envoyer la demande de paiement' : 'Confirmer la commande'}
+                {sending ? 'Traitement…'
+                  : useAirtelDirect ? (airtelHolder ? `Confirmer le paiement de ${fmt(order?.buyer_total_amount ?? order?.total_amount, order?.buyer_currency || order?.currency)}` : 'Vérifier mon numéro Airtel')
+                  : method === 'mobile_money' ? 'Envoyer la demande de paiement' : 'Confirmer la commande'}
               </button>
             </div>
           </div>

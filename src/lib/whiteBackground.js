@@ -2,10 +2,14 @@
 //
 // Photos produits sur fond blanc. On regarde une bande sur les bords de
 // l'image : si elle est presque entièrement blanche, le fond est blanc.
-// Sinon, le fond est remplacé par du blanc côté serveur (fonction
-// remove-background, Photoroom) quand le service est configuré.
+// Sinon la photo est refusée et le vendeur la détoure lui-même (liens).
 
 export const WHITE_BG_KEY = 'product_white_bg_required';
+
+export const BG_REMOVAL_LINKS = [
+  { label: 'Photoroom', url: 'https://www.photoroom.com/tools/white-background' },
+  { label: 'remove.bg', url: 'https://www.remove.bg/fr' },
+];
 
 const BORDER = 0.04; // 4 % de la largeur / hauteur sur chaque bord
 const MIN_CHANNEL = 235; // R, G et B au moins à ce niveau
@@ -59,24 +63,4 @@ export async function checkWhiteBackground(blob) {
   ctx.drawImage(bmp, 0, 0, w, h);
   const ratio = borderWhiteRatio(ctx.getImageData(0, 0, w, h).data, w, h);
   return { ok: ratio >= MIN_RATIO, ratio };
-}
-
-// Remplace le fond par du blanc (Photoroom, via la fonction remove-background).
-// Retourne un Blob JPEG, ou lève une erreur avec un message lisible.
-export async function whitenBackground(sb, blob) {
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session) throw new Error('Connecte-toi pour ajouter des photos.');
-  const form = new FormData();
-  form.append('image_file', blob, 'photo.jpg');
-  const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/remove-background`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${session.access_token}`, apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY },
-    body: form,
-  });
-  if (!res.ok) {
-    let message = '';
-    try { message = (await res.json())?.error || ''; } catch {}
-    throw new Error(message || 'Le détourage automatique est indisponible.');
-  }
-  return res.blob();
 }
