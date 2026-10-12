@@ -760,7 +760,7 @@ export default function AdminPage() {
     const [{ data }, { data: countryRows }, { data: flagRows }, { data: ratesRow }] = await Promise.all([
       sb.from('site_config').select('value').eq('key', 'bank_accounts').maybeSingle(),
       sb.from('countries').select('code,name,currency_code,flag_emoji').eq('status', 'ACTIVE').order('sort_order'),
-      sb.from('site_config').select('key,value').in('key', ['maintenance_mode', 'quests_enabled', 'wallets_enabled', 'boosters_enabled']),
+      sb.from('site_config').select('key,value').in('key', ['maintenance_mode', 'quests_enabled', 'wallets_enabled', 'boosters_enabled', 'product_white_bg_required', 'kyc_auto_enabled']),
       sb.from('site_config').select('value').eq('key', SHIPPING_RATES_KEY).maybeSingle(),
     ]);
     setShippingRates(parseShippingRates(ratesRow?.value));
@@ -1182,6 +1182,11 @@ export default function AdminPage() {
                             {u.id_card_back_url && <button className={styles.btnGhost} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 10px', fontSize: 10 }} onClick={() => viewKycDoc(u.id_card_back_url)}><i className="ph ph-file-text" /> Verso</button>}
                           </div>
                           <div style={{ fontSize: 10, color: 'var(--text-faint)', marginBottom: 10 }}>{u.document_type === 'cni' ? 'CNI' : 'Passeport'} · {u.address || 'Adresse non renseignée'}</div>
+                          {u.kyc_auto_status && u.kyc_auto_status !== 'approved' && (
+                            <div style={{ fontSize: 11, marginBottom: 10, color: u.kyc_auto_status === 'pending' ? 'var(--text-muted)' : 'var(--error)' }}>
+                              Vérification automatique : {{ pending: 'en cours', declined: 'refusée', review: 'à revoir' }[u.kyc_auto_status]}{u.kyc_auto_reason ? ` — ${u.kyc_auto_reason}` : ''}
+                            </div>
+                          )}
                           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                             <button className={styles.btnPrimary} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5, flex: 1, padding: '7px 10px', fontSize: 11, opacity: vendorActionId === u.id ? 0.6 : 1 }} disabled={vendorActionId === u.id} onClick={() => approveVendor(u)}>
                               {vendorActionId === u.id ? <><i className="ph ph-spinner" style={{ animation: 'spin 0.8s linear infinite' }} /> Validation…</> : <><i className="ph ph-check" /> Valider</>}
@@ -1231,6 +1236,11 @@ export default function AdminPage() {
                             {u.id_card_back_url && <button className={styles.btnGhost} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 10px', fontSize: 10 }} onClick={() => viewKycDoc(u.id_card_back_url)}><i className="ph ph-file-text" /> Verso</button>}
                           </div>
                           <div style={{ fontSize: 10, color: 'var(--text-faint)', marginBottom: 10 }}>{u.document_type === 'cni' ? 'CNI' : 'Passeport'} · {u.address || 'Adresse non renseignée'}</div>
+                          {u.kyc_auto_status && u.kyc_auto_status !== 'approved' && (
+                            <div style={{ fontSize: 11, marginBottom: 10, color: u.kyc_auto_status === 'pending' ? 'var(--text-muted)' : 'var(--error)' }}>
+                              Vérification automatique : {{ pending: 'en cours', declined: 'refusée', review: 'à revoir' }[u.kyc_auto_status]}{u.kyc_auto_reason ? ` — ${u.kyc_auto_reason}` : ''}
+                            </div>
+                          )}
                           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                             <button className={styles.btnPrimary} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5, flex: 1, padding: '7px 10px', fontSize: 11, opacity: chasseurActionId === u.id ? 0.6 : 1 }} disabled={chasseurActionId === u.id} onClick={() => approveChasseur(u)}>
                               {chasseurActionId === u.id ? <><i className="ph ph-spinner" style={{ animation: 'spin 0.8s linear infinite' }} /> Validation…</> : <><i className="ph ph-check" /> Valider</>}
@@ -1811,6 +1821,8 @@ export default function AdminPage() {
                 { key: 'quests_enabled', label: 'Quêtes', desc: 'Poster une quête, y répondre, espace chasseur — liens et pages masqués si désactivé.' },
                 { key: 'wallets_enabled', label: 'Wallets', desc: 'Solde, recharge et retrait — masqués côté vendeur et acheteur si désactivé.' },
                 { key: 'boosters_enabled', label: 'Boosters', desc: 'Achat de boost et mise en avant "Boutiques boostées" — masqués si désactivé.' },
+                { key: 'product_white_bg_required', label: 'Fond blanc obligatoire', desc: 'Photos produits : un fond non blanc est remplacé par du blanc (Photoroom, secret PHOTOROOM_API_KEY) ou refusé si le service n\'est pas configuré.' },
+                { key: 'kyc_auto_enabled', label: "Vérification d'identité automatique", desc: 'Propose aux vendeurs et chasseurs de vérifier leur identité en 2 minutes (Didit). À activer seulement une fois les secrets DIDIT_* ajoutés dans Supabase.' },
               ].map((f) => (
                 <div key={f.key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 14, padding: '12px 0', borderBottom: '1px solid var(--border)' }}>
                   <div>

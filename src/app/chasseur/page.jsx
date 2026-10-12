@@ -9,6 +9,7 @@ import { useFeatureFlags } from '@/context/FeatureFlagsContext';
 import { bracketFor, formatKg, quoteShipping } from '@/lib/shipping';
 import styles from './chasseur.module.css';
 import Mascot from '@/components/Mascot';
+import AutoKycCard from '@/components/AutoKycCard';
 
 const MAX_IMAGES = 5;
 const BUCKET = 'products';
@@ -402,6 +403,10 @@ export default function ChasseurPage() {
           <Link href="/compte" className={styles.btnNav}>Mon compte</Link>
         </div>
       </nav>
+
+      {internalUser?.hunter_status === 'pending_verification' && (
+        <div style={{ maxWidth: 1100, margin: '16px auto 0', padding: '0 16px' }}><AutoKycCard purpose="hunter" /></div>
+      )}
 
       {/* HERO */}
       <div className={styles.hero}>

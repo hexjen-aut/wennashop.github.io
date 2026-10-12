@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
 import { uploadFileWithProgress } from '@/lib/storageUpload';
 import ImageCropModal from '@/components/ImageCropModal';
+import AutoKycCard from '@/components/AutoKycCard';
+import { WHITE_BG_KEY, checkWhiteBackground, whitenBackground } from '@/lib/whiteBackground';
 import { COUNTRIES_WITH_AUTRE as COUNTRIES, SHIP_COUNTRIES } from '@/lib/geo';
 import { currencyForCountry } from '@/lib/currency';
 import { useFeatureFlags } from '@/context/FeatureFlagsContext';
@@ -502,12 +504,32 @@ export default function VendeurPage() {
     setProductModalOpen(true);
   }
 
+  // Photos produits sur fond blanc (réglage admin) : un fond non blanc est
+  // remplacé automatiquement quand le détourage est activé, sinon refusé.
+  async function ensureWhiteBackground(sb, file) {
+    const { data: cfg } = await sb.from('site_config').select('value').eq('key', WHITE_BG_KEY).maybeSingle();
+    if (cfg?.value === 'false') return file;
+    let check;
+    try { check = await checkWhiteBackground(file); } catch { return file; } // format illisible : on laisse passer
+    if (check.ok) return file;
+    try {
+      const blob = await whitenBackground(sb, file);
+      showToast('Fond remplacé par du blanc', 'success');
+      return new File([blob], file.name.replace(/\.\w+$/, '') + '.jpg', { type: 'image/jpeg' });
+    } catch (err) {
+      showToast(`Photo refusée : le fond doit être blanc. ${err.message}`, 'error');
+      return null;
+    }
+  }
+
   async function handleProductFiles(files) {
     if (!files || !files.length) return;
     setUploading(true);
     const sb = getSupabase();
     const uploaded = [];
-    for (const file of Array.from(files)) {
+    for (const original of Array.from(files)) {
+      const file = await ensureWhiteBackground(sb, original);
+      if (!file) continue;
       const path = `products/${seller.id}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '')}`;
       const { error } = await sb.storage.from('products').upload(path, file, { upsert: true });
       if (!error) {
@@ -874,7 +896,9 @@ export default function VendeurPage() {
 
   async function confirmDeleteAccount() {
     const sb = getSupabase();
-    await sb.from('users').update({ status: 'deletion_requested' }).eq('id', seller.id);
+    // Suppression différée : 30 jours pour annuler en se reconnectant
+    const { data, error } = await sb.rpc('request_account_deletion', { p_user_id: seller.id });
+    if (error || data?.success === false) { showToast('Erreur : ' + (error?.message || data?.error), 'error'); return; }
     await sb.auth.signOut();
     router.push('/connexion');
   }
@@ -964,6 +988,7 @@ export default function VendeurPage() {
           <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 18, lineHeight: 1.6 }}>
             Pour activer ta boutique, envoie une pièce d'identité — ta boutique reste masquée tant que le dossier n'est pas validé (24 à 48h).
           </p>
+          <AutoKycCard purpose="vendor" />
           <div className={styles.formGroup} style={{ marginBottom: 10 }}>
             <label className={styles.formLabel}>Type de document *</label>
             <select className={styles.input} value={kycDocType} onChange={(e) => setKycDocType(e.target.value)}>
@@ -1050,6 +1075,7 @@ export default function VendeurPage() {
       </aside>
 
       <main className={styles.main}>
+        {seller.status === 'pending' && <AutoKycCard purpose="vendor" />}
         <div className={styles.topRow}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <button onClick={() => setSidebarOpen(true)} className={styles.mobileMenuBtn}><i className="ph ph-list" /></button>
@@ -1851,7 +1877,7 @@ export default function VendeurPage() {
                   <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>La 1ère photo est l'image principale.</p>
                   <div style={{ padding: '10px 12px', background: 'var(--accent-light)', border: '1px solid var(--border-accent)', borderRadius: 8, fontSize: 11, color: 'var(--text-faint)', lineHeight: 1.7, marginBottom: 4 }}>
                     <strong style={{ color: 'var(--text)' }}>Pour de bonnes photos :</strong><br />
-                    Format carré (1:1), produit centré et qui remplit le cadre, fond neutre ou uni.<br />
+                    Format carré (1:1), produit centré et qui remplit le cadre, <strong>fond blanc</strong> (un autre fond est remplacé automatiquement ou refusé).<br />
                     Résolution minimum conseillée : 1000 × 1000 px.<br />
                     Lumière naturelle plutôt que flash, plusieurs angles (face, profil, détail, emballage).
                   </div>

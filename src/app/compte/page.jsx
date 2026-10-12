@@ -11,6 +11,7 @@ import CartSidebar from '@/components/CartSidebar';
 import ImageCropModal from '@/components/ImageCropModal';
 import { COUNTRIES_WITH_AUTRE as COUNTRIES } from '@/lib/geo';
 import { useFeatureFlags } from '@/context/FeatureFlagsContext';
+import AutoKycCard from '@/components/AutoKycCard';
 import styles from './compte.module.css';
 
 function fmt(n, currency = 'MAD') {
@@ -701,6 +702,7 @@ export default function ComptePage() {
               <div className={styles.card} style={{ background: 'var(--gold-light)', borderColor: 'rgba(245,158,11,.3)' }}>
                 <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--gold)', marginBottom: 4 }}>Dossier en cours de vérification</div>
                 <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 10 }}>Ta boutique n'est pas encore visible des acheteurs — nos équipes valident les dossiers sous 24 à 48h.</div>
+                <AutoKycCard purpose="vendor" />
                 <Link href="/vendeur" style={{ display: 'inline-block', background: 'transparent', border: '1.5px solid var(--gold)', color: 'var(--gold)', padding: '10px 20px', borderRadius: 999, fontWeight: 700, fontSize: 13, textDecoration: 'none' }}>Préparer ma boutique</Link>
               </div>
             ) : profile?.status === 'rejected' ? (
