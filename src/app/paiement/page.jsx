@@ -22,6 +22,8 @@ function PaiementContent() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(null);
   const [sending, setSending] = useState(false);
+  // Commande de quête : produit + transport + récompense, jamais payée à la livraison
+  const [quest, setQuest] = useState(null);
 
   const COUNTRY_CODE = { Maroc: 'MA', Gabon: 'GA' };
 
@@ -72,7 +74,7 @@ function PaiementContent() {
     })();
   }, [form.country]);
 
-  const hasCod = availableMethods?.includes('cash_on_delivery');
+  const hasCod = !quest && availableMethods?.includes('cash_on_delivery');
   const hasVirement = availableMethods?.includes('virement') && bankAccounts.length > 0;
   const mobileMoneyProviders = ['airtel_money', 'moov_money'].filter((p) => availableMethods?.includes(p));
 
@@ -87,7 +89,7 @@ function PaiementContent() {
     else if (hasVirement) setMethod('virement');
     else if (mobileMoneyProviders.length > 0) { setMethod('mobile_money'); setMobileProvider(mobileMoneyProviders[0]); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [availableMethods, bankAccounts]);
+  }, [availableMethods, bankAccounts, quest]);
 
   useEffect(() => {
     if (!orderId) { setError('Aucune commande spécifiée.'); setLoading(false); return; }
@@ -120,6 +122,16 @@ function PaiementContent() {
         return;
       }
       setOrder(o);
+      if (o.quest_id) {
+        const [{ data: q }, { data: prop }] = await Promise.all([
+          sb.from('quests').select('id,title,reward_amount,currency,destination_country').eq('id', o.quest_id).maybeSingle(),
+          sb.from('quest_proposals').select('proposed_price,shipping_cost,weight_kg').eq('id', o.quest_proposal_id).maybeSingle(),
+        ]);
+        if (q) {
+          setQuest({ ...q, proposal: prop || null });
+          if (q.destination_country === 'Gabon' || q.destination_country === 'Maroc') setForm((f) => ({ ...f, country: q.destination_country }));
+        }
+      }
       const { data: pay } = await sb.from('payments').select('method,status,metadata')
         .eq('order_id', orderId).eq('type', 'order_payment').maybeSingle();
       if (pay?.method === 'virement' && pay.status === 'pending') {
@@ -192,6 +204,8 @@ function PaiementContent() {
     setSuccess(true);
   }
 
+  const followUrl = quest ? `/quete?id=${quest.id}` : `/suivi?order=${orderId}`;
+
   if (loading) return <><Nav /><div style={{ padding: 60, textAlign: 'center', color: 'var(--text-faint)' }}>Chargement…</div></>;
   if (error) return <><Nav /><div style={{ padding: 60, textAlign: 'center' }}><p>{error}</p><Link href="/panier" style={{ color: 'var(--accent)' }}>Retour au panier</Link></div></>;
   if (awaitingMobileConfirm) return (
@@ -203,7 +217,7 @@ function PaiementContent() {
         <p style={{ color: 'var(--text-muted)', marginBottom: 24, maxWidth: 420, marginLeft: 'auto', marginRight: 'auto' }}>
           Un code de confirmation {mobileProvider === 'airtel_money' ? 'Airtel Money' : 'Moov Money'} a été envoyé au {mobilePhone}. Valide-le pour finaliser ta commande — le statut se mettra à jour automatiquement.
         </p>
-        <Link href={`/suivi?order=${orderId}`} style={{ background: 'var(--accent-btn)', color: '#fff', padding: '12px 28px', borderRadius: 999, fontWeight: 700, textDecoration: 'none' }}>Suivre ma commande</Link>
+        <Link href={followUrl} style={{ background: 'var(--accent-btn)', color: '#fff', padding: '12px 28px', borderRadius: 999, fontWeight: 700, textDecoration: 'none' }}>{quest ? 'Voir ma quête' : 'Suivre ma commande'}</Link>
       </div>
     </>
   );
@@ -236,7 +250,7 @@ function PaiementContent() {
             )}
           </div>
           <p className={styles.transferNote}>Sans la référence dans le motif, ton paiement peut prendre plus de temps à être reconnu.</p>
-          <Link href={`/suivi?order=${orderId}`} className={styles.transferBtn}>Suivre ma commande</Link>
+          <Link href={followUrl} className={styles.transferBtn}>{quest ? 'Voir ma quête' : 'Suivre ma commande'}</Link>
         </div>
       </>
     );
@@ -248,7 +262,7 @@ function PaiementContent() {
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}><Mascot size={110} float /></div>
         <h1 style={{ fontSize: 30, fontWeight: 900, marginBottom: 8 }}>Commande confirmée !</h1>
         <p style={{ color: 'var(--text-muted)', marginBottom: 24, maxWidth: 420, marginLeft: 'auto', marginRight: 'auto' }}>Merci pour ta commande ! Tu recevras une confirmation par email, et tu peux suivre chaque étape de ta livraison.</p>
-        <Link href={`/suivi?order=${orderId}`} style={{ display: 'inline-block', border: '1.5px solid var(--border)', color: 'var(--text)', padding: '11px 24px', borderRadius: 999, fontWeight: 700, textDecoration: 'none', margin: '0 6px 10px' }}>Suivre ma commande</Link>
+        <Link href={followUrl} style={{ display: 'inline-block', border: '1.5px solid var(--border)', color: 'var(--text)', padding: '11px 24px', borderRadius: 999, fontWeight: 700, textDecoration: 'none', margin: '0 6px 10px' }}>{quest ? 'Voir ma quête' : 'Suivre ma commande'}</Link>
         <Link href="/boutique" style={{ display: 'inline-block', background: 'var(--accent-btn)', color: '#fff', padding: '12px 28px', borderRadius: 999, fontWeight: 700, textDecoration: 'none', margin: '0 6px 10px' }}>Continuer mes achats</Link>
       </div>
     </>
@@ -339,6 +353,24 @@ function PaiementContent() {
           <div className={styles.aside}>
             <div className={styles.card}>
               <div className={styles.cardTitle}>Récapitulatif</div>
+              {quest && (
+                <div data-testid="quest-summary">
+                  <div style={{ fontSize: 13, fontWeight: 700, paddingBottom: 6 }}>Quête : {quest.title}</div>
+                  {[
+                    ['Produit', quest.proposal?.proposed_price],
+                    [`Transport${quest.proposal?.weight_kg ? ` (${Number(quest.proposal.weight_kg).toLocaleString('fr-FR')} kg)` : ''}`, quest.proposal?.shipping_cost],
+                    ['Récompense du chasseur', quest.reward_amount],
+                  ].map(([label, amount]) => (
+                    <div key={label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
+                      <span>{label}</span>
+                      <span style={{ fontWeight: 700 }}>{fmt(amount ?? 0, order?.currency)}</span>
+                    </div>
+                  ))}
+                  <p style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 8, lineHeight: 1.5 }}>
+                    L'argent reste bloqué par WennaShop et n'est versé au chasseur qu'après ta confirmation de réception.
+                  </p>
+                </div>
+              )}
               {items.map((it) => (
                 <div key={it.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
                   <span>{it.products?.name} × {it.quantity}</span>

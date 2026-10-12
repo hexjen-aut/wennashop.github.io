@@ -588,7 +588,7 @@ export default function ChasseurPage() {
                               <div className={styles.acceptedTitle}>Proposition acceptée — passe à l'étape suivante</div>
                               <div className={styles.acceptedText}>
                                 Ta proposition a été retenue par l'acheteur{isIntl ? " (envoi entre le Gabon et le Maroc)" : ''}. Organise l'envoi du colis, puis marque-le comme envoyé.
-                                <br /><span style={{ color: 'var(--text-faint)', fontSize: 11 }}>Aucun paiement en liquide. La récompense de {fmt(reward)} {currency} sera versée automatiquement à la réception du colis.</span>
+                                <br /><span style={{ color: 'var(--text-faint)', fontSize: 11 }}>L'acheteur a payé : l'argent est bloqué par WennaShop. Tu seras payé (produit{p.shipping_cost != null ? ' + transport' : ''} + récompense de {fmt(reward)} {currency}) dès qu'il confirme la réception. Aucun paiement en liquide.</span>
                               </div>
                               <button className={styles.expressBtn} onClick={() => markInDelivery(p.id)}>Marquer comme envoyé</button>
                             </>

@@ -95,7 +95,14 @@ function SuiviContent() {
       const sb = getSupabase();
       const { data: { session: s } } = await sb.auth.getSession();
       setSession(s);
-      const initial = searchParams.get('tracking') || searchParams.get('order');
+      // Retour du paiement d'une quête (SingPay renvoie vers /suivi?order=) :
+      // le suivi se fait sur la page de la quête.
+      const orderParam = searchParams.get('order');
+      if (orderParam && s) {
+        const { data: qo } = await sb.from('orders').select('quest_id').eq('id', orderParam).maybeSingle();
+        if (qo?.quest_id) { router.replace(`/quete?id=${qo.quest_id}`); return; }
+      }
+      const initial = searchParams.get('tracking') || orderParam;
       if (initial) { setQuery(initial); await search(initial, s); }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
