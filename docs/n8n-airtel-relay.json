@@ -1,0 +1,61 @@
+{
+  "name": "WennaShop — relais Airtel Money",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "airtel-relay",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Requête Supabase",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "credentials": { "httpHeaderAuth": { "name": "Airtel relay key" } }
+    },
+    {
+      "parameters": {
+        "method": "={{ $json.body.method === 'GET' ? 'GET' : 'POST' }}",
+        "url": "={{ /^https:\\/\\/openapi(uat)?\\.airtel\\.africa$/.test($json.body.base) && /^\\/[A-Za-z0-9\\/._-]*$/.test($json.body.path) ? $json.body.base + $json.body.path : 'https://refuse.invalid/' }}",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "={{ JSON.stringify($json.body.headers || {}) }}",
+        "sendBody": "={{ $json.body.method === 'POST' }}",
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.body.bodyRaw }}",
+        "options": {
+          "timeout": 20000,
+          "response": { "response": { "fullResponse": true, "neverError": true, "responseFormat": "json" } }
+        }
+      },
+      "name": "Appel Airtel",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: $json.statusCode, body: $json.body }) }}",
+        "options": {}
+      },
+      "name": "Réponse à Supabase",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [520, 0]
+    }
+  ],
+  "connections": {
+    "Requête Supabase": { "main": [[{ "node": "Appel Airtel", "type": "main", "index": 0 }]] },
+    "Appel Airtel": { "main": [[{ "node": "Réponse à Supabase", "type": "main", "index": 0 }]] }
+  },
+  "settings": {
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "none",
+    "saveManualExecutions": false,
+    "executionOrder": "v1"
+  }
+}

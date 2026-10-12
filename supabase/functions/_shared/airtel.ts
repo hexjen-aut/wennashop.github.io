@@ -24,12 +24,39 @@ export function airtelConfig() {
     kycPath: env('AIRTEL_KYC_PATH') || '/standard/v1/users/',
     messageSigning: env('AIRTEL_MESSAGE_SIGNING') === 'true',
     keepZero: env('AIRTEL_MSISDN_KEEP_ZERO') === 'true',
+    // Relais à IP fixe (webhook n8n) : Airtel n'accepte que les IP déclarées
+    // dans le portail, et les fonctions Supabase n'ont pas d'IP fixe.
+    relayUrl: env('AIRTEL_RELAY_URL'),
+    relayKey: env('AIRTEL_RELAY_KEY'),
   }
 }
 
 export const airtelConfigured = () => {
   const c = airtelConfig()
-  return Boolean(c.base && c.clientId && c.clientSecret)
+  return Boolean(c.base && c.clientId && c.clientSecret && (!c.relayUrl || c.relayKey))
+}
+
+// Appel HTTP vers Airtel, en direct ou via le relais. Le relais reçoit la
+// requête telle quelle (corps brut, pour ne pas casser la signature) et
+// renvoie { status, body } de la réponse Airtel.
+async function airtelHttp(
+  method: 'GET' | 'POST', path: string, headers: Record<string, string>, body?: string,
+): Promise<{ status: number; data: Record<string, any> }> {
+  const c = airtelConfig()
+  if (c.relayUrl) {
+    const res = await fetch(c.relayUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Relay-Key': c.relayKey },
+      body: JSON.stringify({ base: c.base, method, path, headers, bodyRaw: body ?? null }),
+    })
+    const out = await res.json().catch(() => null) as { status?: number; body?: unknown } | null
+    if (!res.ok || !out) return { status: res.status >= 400 ? res.status : 502, data: {} }
+    let data: unknown = out.body ?? {}
+    if (typeof data === 'string') { try { data = JSON.parse(data) } catch { data = {} } }
+    return { status: Number(out.status) || 502, data: (data ?? {}) as Record<string, any> }
+  }
+  const res = await fetch(`${c.base}${path}`, { method, headers, body })
+  return { status: res.status, data: await res.json().catch(() => ({})) as Record<string, any> }
 }
 
 export const adminClient = () =>
@@ -51,14 +78,11 @@ export async function getToken(sb: SupabaseClient): Promise<string> {
   if (cached && new Date(cached.expires_at).getTime() - Date.now() > 60_000) return cached.access_token
 
   const c = airtelConfig()
-  const res = await fetch(`${c.base}/auth/oauth2/token`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Accept: '*/*' },
-    body: JSON.stringify({ client_id: c.clientId, client_secret: c.clientSecret, grant_type: 'client_credentials' }),
-  })
-  const body = await res.json().catch(() => ({})) as Record<string, unknown>
-  if (!res.ok || typeof body.access_token !== 'string') {
-    await logAirtel(sb, 'error', 'Jeton OAuth Airtel refusé', res.status)
+  const { status, data: body } = await airtelHttp('POST', '/auth/oauth2/token',
+    { 'Content-Type': 'application/json', Accept: '*/*' },
+    JSON.stringify({ client_id: c.clientId, client_secret: c.clientSecret, grant_type: 'client_credentials' }))
+  if (status < 200 || status >= 300 || typeof body.access_token !== 'string') {
+    await logAirtel(sb, 'error', 'Jeton OAuth Airtel refusé', status)
     throw new Error('airtel_auth_failed')
   }
   const ttl = Number(body.expires_in) || 180
@@ -111,10 +135,9 @@ export async function airtelFetch(
     'X-Currency': c.currency,
   }
   if (payload && c.messageSigning) Object.assign(headers, signedHeaders(payload))
-  const res = await fetch(`${c.base}${path}`, { method, headers, body: payload })
-  const data = await res.json().catch(() => ({})) as Record<string, any>
-  if (!res.ok) await logAirtel(sb, 'warn', `Airtel ${method} ${path.split('/').slice(0, 4).join('/')}`, res.status, { status: data?.status })
-  return { status: res.status, data }
+  const { status, data } = await airtelHttp(method, path, headers, payload)
+  if (status < 200 || status >= 300) await logAirtel(sb, 'warn', `Airtel ${method} ${path.split('/').slice(0, 4).join('/')}`, status, { status: data?.status })
+  return { status, data }
 }
 
 // Statut d'une transaction chez Airtel (source de vérité)

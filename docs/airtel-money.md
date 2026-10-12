@@ -48,6 +48,8 @@ autres fournisseurs (notifications vendeur et commissions inchangées).
 | `AIRTEL_RSA_PUBLIC_KEY` | clé publique Airtel (signature des messages, PIN de décaissement) |
 | `AIRTEL_CALLBACK_HASH_KEY` | clé de l'« Authentification du rappel », si activée |
 | `AIRTEL_MSISDN_KEEP_ZERO` | `true` si l'API attend le numéro avec le 0 (`077…`) ; par défaut `77…` |
+| `AIRTEL_RELAY_URL` | URL du webhook n8n du relais (voir « Relais n8n ») |
+| `AIRTEL_RELAY_KEY` | clé partagée avec la credential n8n « Airtel relay key » |
 | `AIRTEL_DISBURSE_PIN` | phase 2 (décaissements), inutilisé pour l'instant |
 
 ## Réglages du portail Airtel
@@ -58,15 +60,42 @@ autres fournisseurs (notifications vendeur et commissions inchangées).
   réussi (on vérifie d'abord le format exact du callback reçu, stocké dans
   `payments.raw_callback`), puis copier la clé dans `AIRTEL_CALLBACK_HASH_KEY`.
   Même sans, aucun paiement n'est validé sans relecture du statut chez Airtel.
-- **Liste des IP de serveur autorisées** : les fonctions Supabase n'ont pas
-  d'adresse IP fixe. Si Airtel n'accepte que les IP listées, les appels
-  seront refusés (erreur 401/403 dans `system_logs`) : il faudra alors vider
-  la liste si le portail le permet, ou faire passer les appels par un serveur
-  à IP fixe (par exemple celui de l'IP déjà déclarée).
+- **Liste des IP de serveur autorisées** : la liste ne peut pas être vidée,
+  et les fonctions Supabase n'ont pas d'adresse IP fixe. Les appels vers
+  Airtel passent donc par un **relais n8n** (voir plus bas) dont l'IP est
+  déclarée ici.
 - **Configuration → statuts supplémentaires (APIs de collecte)** : à activer.
   Airtel renvoie alors `TE` (transaction expirée) quand l'acheteur ne répond
   pas au push USSD ; le site l'affiche comme « Délai dépassé ».
 - **Configuration → Définir le code PIN (APIs de transfert)** : phase 2.
+
+## Relais n8n (IP fixe)
+
+Airtel n'accepte que les IP déclarées dans le portail. Les fonctions envoient
+donc chaque appel (jeton, KYC, encaissement, statut) à un webhook n8n qui le
+transmet à Airtel depuis son IP. Les callbacks Airtel → Supabase ne passent
+pas par le relais.
+
+1. **Hébergement de n8n** : un serveur allumé en permanence, avec une **IP
+   fixe** et une adresse HTTPS publique (VPS avec n8n, ou n8n Cloud). Un
+   ordinateur personnel ne convient pas (IP qui change, machine éteinte).
+2. **Clé du relais** : générer une longue clé aléatoire (40 caractères ou plus).
+   - n8n → Credentials → « Header Auth », nom `Airtel relay key`,
+     Name `X-Relay-Key`, Value = la clé.
+   - Supabase → Secrets : `AIRTEL_RELAY_KEY` = la même clé.
+3. **Importer** `docs/n8n-airtel-relay.json` (Workflows → Import from file),
+   rattacher la credential au nœud « Requête Supabase », puis **activer** le
+   workflow. Les exécutions ne sont pas enregistrées (elles contiendraient les
+   jetons Airtel).
+4. **URL** : copier l'URL de production du webhook
+   (`https://<n8n>/webhook/airtel-relay`) dans le secret `AIRTEL_RELAY_URL`.
+5. **IP à déclarer chez Airtel** : dans n8n, un workflow d'essai avec un nœud
+   HTTP Request vers `https://api.ipify.org?format=json` donne l'IP de sortie.
+   La déclarer dans « Liste des IP de serveur autorisées » (avec n8n Cloud,
+   déclarer toutes les IP de sortie publiées par n8n).
+
+Le relais n'accepte que les hôtes `openapi.airtel.africa` et
+`openapiuat.airtel.africa` ; sans la bonne clé, n8n répond 403.
 
 ## Tests en UAT
 
@@ -102,7 +131,7 @@ from system_logs where source = 'airtel' order by created_at desc limit 20;
 - [ ] URL de callback déclarée sur l'application de production
 - [ ] Authentification du rappel activée + `AIRTEL_CALLBACK_HASH_KEY`
 - [ ] Signature des messages : `AIRTEL_MESSAGE_SIGNING` / `AIRTEL_RSA_PUBLIC_KEY` si exigée
-- [ ] Question des IP autorisées réglée (voir plus haut)
+- [ ] Relais n8n actif, son IP déclarée dans le portail de production
 - [ ] Admin → Pays : Airtel Money sur « Airtel direct »
 - [ ] Un vrai paiement de faible montant, puis vérification de la commande
 
