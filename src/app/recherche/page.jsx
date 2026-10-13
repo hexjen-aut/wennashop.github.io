@@ -14,6 +14,8 @@ export default function RecherchePage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // Les résultats d'un terme déjà remplacé sont ignorés s'ils arrivent après.
+    let stale = false;
     const t = setTimeout(async () => {
       if (!term.trim()) { setProducts([]); return; }
       setLoading(true);
@@ -26,10 +28,11 @@ export default function RecherchePage() {
         const conv = await convertPrice(p.price, p.currency || 'MAD', buyerCurrency, sb);
         return { ...p, displayPrice: formatSmartPrice(conv.amount, conv.currency) };
       }));
+      if (stale) return;
       setProducts(withPrices);
       setLoading(false);
     }, 350);
-    return () => clearTimeout(t);
+    return () => { stale = true; clearTimeout(t); };
   }, [term]);
 
   return (
