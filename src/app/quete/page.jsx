@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { getSupabase } from '@/lib/supabase';
 import Nav from '@/components/Nav';
 import { useFeatureFlags } from '@/context/FeatureFlagsContext';
@@ -10,9 +10,16 @@ import styles from '@/app/quetes/quetes.module.css';
 
 function fmt(n) { return Number(n).toLocaleString('fr-FR'); }
 
+// Erreurs de start_quest_checkout (base de données)
+const CHECKOUT_ERRORS = {
+  shipping_not_quoted: "Le transport de cette offre n'est pas encore chiffré pour ce trajet. Contacte le support.",
+  quest_not_open: "Cette quête n'est plus ouverte.",
+  proposal_not_available: "Cette offre n'est plus disponible.",
+};
+
 const PROPOSAL_STATUS_LABEL = {
   pending: 'En attente',
-  selected: 'Acceptée, en attente d\'envoi',
+  selected: 'Payée, en attente d\'envoi',
   in_delivery: 'En cours de livraison',
   delivered: 'Livrée, en attente de ta confirmation',
   reward_paid: 'Réceptionnée, récompense versée',
@@ -22,12 +29,15 @@ const PROPOSAL_STATUS_LABEL = {
 function Content() {
   const { quests_enabled: questsEnabled } = useFeatureFlags();
   const params = useSearchParams();
+  const router = useRouter();
   const id = params.get('id');
   const [quest, setQuest] = useState(null);
   const [proposals, setProposals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isBuyer, setIsBuyer] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [pendingOrder, setPendingOrder] = useState(null);
+  const [paying, setPaying] = useState(null);
 
   useEffect(() => {
     if (!id) return;
@@ -45,16 +55,27 @@ function Content() {
 
       const { data: props } = await sb.from('quest_proposals').select('*').eq('quest_id', id).order('created_at', { ascending: false });
       setProposals(props || []);
+
+      // Paiement commencé mais pas encore confirmé (virement en attente, etc.)
+      if (session) {
+        const { data: po } = await sb.from('orders').select('id, quest_proposal_id').eq('quest_id', id).eq('status', 'pending').maybeSingle();
+        setPendingOrder(po || null);
+      }
       setLoading(false);
     })();
   }, [id]);
 
+  // Choisir une offre = la payer. La base crée la commande (produit + transport
+  // + récompense) ; l'offre n'est retenue qu'une fois le paiement confirmé.
   async function selectProposal(propId) {
-    if (!confirm('Choisir cette proposition ?')) return;
-    const sb = getSupabase();
-    await sb.from('quests').update({ winning_proposal_id: propId, status: 'resolved' }).eq('id', id);
-    await sb.from('quest_proposals').update({ status: 'selected' }).eq('id', propId);
-    location.reload();
+    setPaying(propId);
+    const { data: orderId, error } = await getSupabase().rpc('start_quest_checkout', { p_proposal_id: propId });
+    if (error || !orderId) {
+      setPaying(null);
+      alert(CHECKOUT_ERRORS[error?.message] || 'Impossible de lancer le paiement : ' + (error?.message || 'erreur inconnue'));
+      return;
+    }
+    router.push(`/paiement?order_id=${orderId}`);
   }
 
   async function confirmReceipt(propId) {
@@ -103,6 +124,12 @@ function Content() {
       </section>
 
       <div className={styles.list}>
+        {isBuyer && pendingOrder && quest.status === 'open' && (
+          <div data-testid="pending-payment" style={{ border: '1.5px solid var(--border-accent)', borderRadius: 12, padding: '12px 14px', fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <span>Paiement en attente pour l'offre choisie. Le chasseur sera prévenu dès sa confirmation.</span>
+            <a className={styles.btnPrimary} href={`/paiement?order_id=${pendingOrder.id}`}>Reprendre le paiement</a>
+          </div>
+        )}
         <h2 style={{ fontSize: 16, fontWeight: 800, marginBottom: 4 }}>Propositions ({proposals.length})</h2>
         {proposals.length === 0 ? (
           <div style={{ textAlign: 'center', padding: 30, color: 'var(--text-faint)' }}>Aucune proposition pour l'instant.</div>
@@ -114,7 +141,7 @@ function Content() {
               {p.weight_kg != null && (
                 <div className={styles.meta} data-testid="proposal-total">
                   Poids réel {formatKg(p.weight_kg)} · Transport {p.shipping_cost != null ? `${fmt(p.shipping_cost)} ${quest.currency}` : 'à confirmer'}
-                  {p.shipping_cost != null && <> · <strong>Total {fmt(Number(p.proposed_price) + Number(p.shipping_cost))} {quest.currency}</strong></>}
+                  {p.shipping_cost != null && <> · <strong>Produit + transport {fmt(Number(p.proposed_price) + Number(p.shipping_cost))} {quest.currency}</strong></>}
                   {p.shipping_cost != null && quest.shipping_estimate != null && Number(p.shipping_cost) !== Number(quest.shipping_estimate) && (
                     <> ({Number(p.shipping_cost) < Number(quest.shipping_estimate) ? '−' : '+'}{fmt(Math.abs(quest.shipping_estimate - p.shipping_cost))} {quest.currency} par rapport à l'estimation)</>
                   )}
@@ -122,7 +149,13 @@ function Content() {
               )}
             </div>
             {isBuyer && quest.status === 'open' && p.status === 'pending' && (
-              <button className={styles.btnPrimary} onClick={() => selectProposal(p.id)}>Choisir cette offre</button>
+              p.shipping_cost == null ? (
+                <span className={styles.meta}>Transport à confirmer avant paiement</span>
+              ) : (
+                <button className={styles.btnPrimary} disabled={paying !== null} onClick={() => selectProposal(p.id)}>
+                  {paying === p.id ? 'Préparation…' : `Choisir et payer ${fmt(Number(p.proposed_price) + Number(p.shipping_cost) + Number(quest.reward_amount || 0))} ${quest.currency}`}
+                </button>
+              )
             )}
             {isBuyer && p.status === 'delivered' && (
               <button className={styles.btnPrimary} onClick={() => confirmReceipt(p.id)}>Confirmer la réception</button>

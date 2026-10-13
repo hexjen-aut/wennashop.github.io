@@ -1,1 +1,20 @@
+# Configuration Supabase CLI (déploiement des fonctions).
 project_id = "aakxoydznmybstfozjte"
+
+# Fonctions appelées par des services externes ou par pg_cron : elles
+# vérifient elles-mêmes l'appelant (signature, relecture chez le fournisseur,
+# secret du coffre), donc pas de JWT Supabase exigé.
+[functions.airtel-callback]
+verify_jwt = false
+
+[functions.airtel-status]
+verify_jwt = false
+
+[functions.pawapay-callback]
+verify_jwt = false
+
+[functions.singpay-webhook]
+verify_jwt = false
+
+[functions.didit-webhook]
+verify_jwt = false

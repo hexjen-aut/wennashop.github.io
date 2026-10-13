@@ -9,6 +9,7 @@ import { useFeatureFlags } from '@/context/FeatureFlagsContext';
 import { bracketFor, formatKg, quoteShipping } from '@/lib/shipping';
 import styles from './chasseur.module.css';
 import Mascot from '@/components/Mascot';
+import AutoKycCard from '@/components/AutoKycCard';
 
 const MAX_IMAGES = 5;
 const BUCKET = 'products';
@@ -403,6 +404,10 @@ export default function ChasseurPage() {
         </div>
       </nav>
 
+      {internalUser?.hunter_status === 'pending_verification' && (
+        <div style={{ maxWidth: 1100, margin: '16px auto 0', padding: '0 16px' }}><AutoKycCard purpose="hunter" /></div>
+      )}
+
       {/* HERO */}
       <div className={styles.hero}>
         <div className={styles.heroInner}>
@@ -588,7 +593,7 @@ export default function ChasseurPage() {
                               <div className={styles.acceptedTitle}>Proposition acceptée — passe à l'étape suivante</div>
                               <div className={styles.acceptedText}>
                                 Ta proposition a été retenue par l'acheteur{isIntl ? " (envoi entre le Gabon et le Maroc)" : ''}. Organise l'envoi du colis, puis marque-le comme envoyé.
-                                <br /><span style={{ color: 'var(--text-faint)', fontSize: 11 }}>Aucun paiement en liquide. La récompense de {fmt(reward)} {currency} sera versée automatiquement à la réception du colis.</span>
+                                <br /><span style={{ color: 'var(--text-faint)', fontSize: 11 }}>L'acheteur a payé : l'argent est bloqué par WennaShop. Tu seras payé (produit{p.shipping_cost != null ? ' + transport' : ''} + récompense de {fmt(reward)} {currency}) dès qu'il confirme la réception. Aucun paiement en liquide.</span>
                               </div>
                               <button className={styles.expressBtn} onClick={() => markInDelivery(p.id)}>Marquer comme envoyé</button>
                             </>
