@@ -1,0 +1,37 @@
+/* Pages équipe (vérification des paiements, reversements) */
+.page { max-width: 1180px; margin: 0 auto; padding: 24px 16px 60px; }
+.head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+.title { font-size: 22px; font-weight: 900; }
+.back { font-size: 12px; color: var(--text-muted); text-decoration: none; }
+.tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.tab { display: inline-flex; align-items: center; gap: 8px; background: var(--surface); border: 1.5px solid var(--border); color: var(--text-muted); border-radius: var(--radius-pill); padding: 8px 14px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: var(--font); }
+.tabActive { border-color: var(--border-accent); background: var(--accent-light); color: var(--accent); }
+.count { background: var(--surface-2); border-radius: var(--radius-pill); padding: 1px 8px; font-size: 11px; color: var(--text); }
+.late { color: var(--error); font-weight: 800; }
+.hold { color: var(--gold); font-weight: 700; }
+.mono { font-family: monospace; letter-spacing: .5px; }
+.rowBtn { cursor: pointer; }
+.rowBtn:hover td { background: var(--surface-2); }
+.summary { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; padding: 14px; }
+.sumCard { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 14px; font-size: 12px; color: var(--text-muted); line-height: 1.7; }
+.sumCard strong { color: var(--text); }
+.sumTitle { font-size: 13px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+.panelOv { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 50; display: flex; justify-content: flex-end; }
+.panel { width: 100%; max-width: 480px; height: 100%; overflow-y: auto; background: var(--bg); border-left: 1px solid var(--border); padding: 20px 18px 40px; }
+.panelHead { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 14px; }
+.close { display: inline-flex; align-items: center; gap: 6px; background: none; border: 1px solid var(--border); color: var(--text); border-radius: var(--radius-pill); padding: 6px 12px; font-size: 12px; cursor: pointer; font-family: var(--font); }
+.dl { display: grid; grid-template-columns: 130px 1fr; gap: 8px 12px; font-size: 13px; margin-bottom: 14px; }
+.dl dt { color: var(--text-muted); }
+.dl dd { margin: 0; color: var(--text); font-weight: 600; word-break: break-word; }
+.section { border-top: 1px solid var(--border); padding-top: 14px; margin-top: 14px; }
+.sectionTitle { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); margin-bottom: 10px; }
+.proof { max-width: 100%; border-radius: var(--radius-md); border: 1px solid var(--border); }
+.warn { font-size: 12px; color: var(--gold); margin-top: 6px; }
+.err { font-size: 12px; color: var(--error); margin-top: 8px; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.history { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+.history li { margin-bottom: 6px; }
+@media (max-width: 520px) {
+  .dl { grid-template-columns: 1fr; gap: 2px; }
+  .dl dd { margin-bottom: 8px; }
+}

@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { getSupabase } from '@/lib/supabase';
 import Nav from '@/components/Nav';
@@ -24,8 +24,21 @@ const AIRTEL_GA = /^0?7\d{7}$/;
 
 function fmt(n, c = 'MAD') { try { return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: c }).format(n); } catch { return `${n} ${c}`; } }
 
+// Moyens vérifiés à la main par l'équipe (circuit manuel : référence WN-,
+// déclaration du client, validation par un agent) — réglés dans l'admin.
+const MANUAL_LABEL = { airtel_money: 'Airtel Money', moov_money: 'Moov Money', virement: 'Virement bancaire' };
+const MANUAL_ERRORS = {
+  method_not_available: "Ce moyen de paiement n'est pas disponible pour ce pays.",
+  amount_unavailable: 'Le montant de la commande ne peut pas être calculé. Contacte le support.',
+  payment_under_review: 'Un paiement est déjà en cours de vérification pour cette commande.',
+  payment_in_progress: 'Un paiement Airtel Money est encore en cours pour cette commande. Réessaie dans quelques minutes.',
+  already_paid: 'Cette commande est déjà payée.',
+  order_not_payable: "Cette commande ne peut plus être payée.",
+};
+
 function PaiementContent() {
   const params = useSearchParams();
+  const router = useRouter();
   const orderId = params.get('order_id');
   const [order, setOrder] = useState(null);
   const [items, setItems] = useState([]);
@@ -50,27 +63,18 @@ function PaiementContent() {
     } catch {}
   }, []);
   const [method, setMethod] = useState(params.get('error') === 'payment_failed' ? 'mobile_money' : 'cash_on_delivery');
-  const [bankAccounts, setBankAccounts] = useState([]);
   const [availableMethods, setAvailableMethods] = useState(null); // null = pas encore chargé
+  const [manualMethods, setManualMethods] = useState([]); // [{ code, account_holder }]
   const [mobileProvider, setMobileProvider] = useState('airtel_money');
   const [mobilePhone, setMobilePhone] = useState('');
   const [awaitingMobileConfirm, setAwaitingMobileConfirm] = useState(false);
   // Virement : la commande attend que l'équipe voie l'argent arriver.
-  const [transferRef, setTransferRef] = useState(null);
   // Airtel Money en direct (fournisseur « airtel » choisi dans l'admin)
   const [airtelDirect, setAirtelDirect] = useState(false);
   const [airtelHolder, setAirtelHolder] = useState(null); // nom masqué du titulaire
   const [airtelPayment, setAirtelPayment] = useState(null); // { id, status, message }
   const [airtelCanCheck, setAirtelCanCheck] = useState(false);
   const [mobileError, setMobileError] = useState(params.get('error') === 'payment_failed' ? 'Le paiement mobile money a échoué ou a été annulé. Réessaie ci-dessous.' : null);
-
-  useEffect(() => {
-    (async () => {
-      const sb = getSupabase();
-      const { data } = await sb.from('site_config').select('value').eq('key', 'bank_accounts').maybeSingle();
-      if (data?.value) { try { setBankAccounts(JSON.parse(data.value)); } catch { setBankAccounts([]); } }
-    })();
-  }, []);
 
   // ── Moyens de paiement réellement activés pour le pays choisi — pilotés
   // depuis l'admin (section Pays), pas codés en dur. Un moyen "PLANNED"
@@ -83,31 +87,41 @@ function PaiementContent() {
       const sb = getSupabase();
       const [{ data: methods }, { data: cpm }] = await Promise.all([
         sb.from('payment_methods').select('code,status,provider_code'),
-        sb.from('country_payment_methods').select('payment_method_code,is_enabled').eq('country_code', countryCode).eq('is_enabled', true),
+        sb.from('country_payment_methods').select('payment_method_code,is_enabled,account_number,account_holder').eq('country_code', countryCode).eq('is_enabled', true),
       ]);
-      const activeCodes = new Set((methods || []).filter((m) => m.status === 'ACTIVE').map((m) => m.code));
-      setAirtelDirect((methods || []).some((m) => m.code === 'airtel_money' && m.provider_code === 'airtel'));
-      const enabled = (cpm || []).map((r) => r.payment_method_code).filter((code) => activeCodes.has(code));
+      const active = (methods || []).filter((m) => m.status === 'ACTIVE');
+      const manualCodes = new Set(active.filter((m) => m.provider_code === 'manual' && m.code !== 'cash_on_delivery').map((m) => m.code));
+      setAirtelDirect(active.some((m) => m.code === 'airtel_money' && m.provider_code === 'airtel'));
+      // Moyens automatiques (SingPay, pawaPay, Airtel direct) et paiement à la livraison
+      const enabled = (cpm || []).map((r) => r.payment_method_code)
+        .filter((code) => active.some((m) => m.code === code) && !manualCodes.has(code));
       setAvailableMethods(enabled);
+      // Moyens vérifiés par l'équipe : seulement si un compte de réception est renseigné
+      setManualMethods((cpm || [])
+        .filter((r) => manualCodes.has(r.payment_method_code) && r.account_number)
+        .map((r) => ({ code: r.payment_method_code, account_holder: r.account_holder })));
     })();
   }, [form.country]);
 
   const hasCod = !quest && availableMethods?.includes('cash_on_delivery');
-  const hasVirement = availableMethods?.includes('virement') && bankAccounts.length > 0;
   const mobileMoneyProviders = ['airtel_money', 'moov_money'].filter((p) => availableMethods?.includes(p));
+  const manualCode = method.startsWith('manual:') ? method.slice(7) : null;
+  const hasAnyMethod = hasCod || mobileMoneyProviders.length > 0 || manualMethods.length > 0;
 
   // Si le pays change et que la méthode choisie n'est plus proposée, on
   // retombe sur la première disponible plutôt que de laisser un mode
   // sélectionné mais invisible.
   useEffect(() => {
     if (!availableMethods) return;
-    const stillValid = (method === 'cash_on_delivery' && hasCod) || (method === 'virement' && hasVirement) || (method === 'mobile_money' && mobileMoneyProviders.length > 0);
+    const stillValid = (method === 'cash_on_delivery' && hasCod)
+      || (method === 'mobile_money' && mobileMoneyProviders.length > 0)
+      || (manualCode && manualMethods.some((m) => m.code === manualCode));
     if (stillValid) return;
     if (hasCod) setMethod('cash_on_delivery');
-    else if (hasVirement) setMethod('virement');
+    else if (manualMethods.length > 0) setMethod(`manual:${manualMethods[0].code}`);
     else if (mobileMoneyProviders.length > 0) { setMethod('mobile_money'); setMobileProvider(mobileMoneyProviders[0]); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [availableMethods, bankAccounts, quest]);
+  }, [availableMethods, manualMethods, quest]);
 
   useEffect(() => {
     if (!orderId) { setError('Aucune commande spécifiée.'); setLoading(false); return; }
@@ -135,7 +149,7 @@ function PaiementContent() {
       if (o.user_id !== profile.id) { setError("Cette commande ne t'appartient pas."); setLoading(false); return; }
       if (['processing', 'shipped', 'delivered'].includes(o.status)) { setSuccess(true); setLoading(false); return; }
       if (['cancelled', 'returned'].includes(o.status)) {
-        setError("Cette commande a été annulée (par exemple, virement non reçu dans les 72 h). Tu peux repasser commande depuis la boutique.");
+        setError("Cette commande a été annulée (par exemple, paiement non reçu dans le délai). Tu peux repasser commande depuis la boutique.");
         setLoading(false);
         return;
       }
@@ -150,11 +164,13 @@ function PaiementContent() {
           if (q.destination_country === 'Gabon' || q.destination_country === 'Maroc') setForm((f) => ({ ...f, country: q.destination_country }));
         }
       }
-      const { data: pay } = await sb.from('payments').select('method,status,metadata')
+      const { data: pay } = await sb.from('payments').select('verification_status')
         .eq('order_id', orderId).eq('type', 'order_payment').maybeSingle();
-      if (pay?.method === 'virement' && pay.status === 'pending') {
-        if (o.shipping_country) setForm((f) => ({ ...f, country: o.shipping_country }));
-        setTransferRef(pay.metadata?.reference || null);
+      // Paiement manuel déjà lancé (en attente, déclaré, refusé à corriger) :
+      // tout se passe sur la page de la commande.
+      if (pay?.verification_status === 'awaiting_payment' || pay?.verification_status === 'declared') {
+        router.replace(`/commande/${orderId}`);
+        return;
       }
       const { data: it } = await sb.from('order_items').select('id,quantity,unit_price,products(name,image_url)').eq('order_id', orderId);
       setItems(it || []);
@@ -244,7 +260,7 @@ function PaiementContent() {
       p_city: form.city,
       p_country: form.country,
       p_notes: form.notes || '',
-      p_method: method === 'mobile_money' ? mobileProvider : method,
+      p_method: method === 'mobile_money' ? mobileProvider : (manualCode || method),
     });
     if (rpcErr) {
       alert("Impossible d'enregistrer ta commande : " + rpcErr.message);
@@ -254,6 +270,19 @@ function PaiementContent() {
     await sb.rpc('set_order_phone', { p_order_id: orderId, p_phone: form.phone });
 
     if (useAirtelDirect) { await startAirtelPayment(sb); return; }
+
+    if (manualCode) {
+      // Montant recalculé et référence générés côté serveur
+      const { error: payErr } = await sb.rpc('create_manual_payment', { p_order_id: orderId, p_method_code: manualCode });
+      if (payErr) {
+        setMobileError(MANUAL_ERRORS[payErr.message] || 'Impossible de préparer le paiement. Réessaie.');
+        setSending(false);
+        return;
+      }
+      await sb.from('cart_items').delete().eq('user_id', order.user_id);
+      router.push(`/commande/${orderId}`);
+      return;
+    }
 
     if (method === 'mobile_money') {
       // process-payment crée le paiement lui-même chez le fournisseur choisi
@@ -275,7 +304,6 @@ function PaiementContent() {
 
     await sb.from('cart_items').delete().eq('user_id', order.user_id);
     setSending(false);
-    if (method === 'virement' && res?.status === 'pending') { setTransferRef(res.reference); return; }
     setSuccess(true);
   }
 
@@ -324,40 +352,6 @@ function PaiementContent() {
       </div>
     </>
   );
-  if (transferRef) {
-    const account = bankAccounts.find((a) => a.country_name === form.country)
-      || bankAccounts.find((a) => a.currency === (order?.buyer_currency || order?.currency))
-      || bankAccounts[0];
-    return (
-      <>
-        <Nav />
-        <div className={styles.transferWrap}>
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}><Mascot size={96} float /></div>
-          <h1 className={styles.transferTitle}>Plus qu'une étape : ton virement</h1>
-          <p className={styles.transferText}>
-            Ta commande est réservée pendant 72 h. Fais le virement ci-dessous en indiquant la référence dans le motif : c'est grâce à elle que l'équipe reconnaît ton paiement. La commande part en préparation dès que le virement apparaît sur notre compte ; sans virement reçu sous 72 h, elle est annulée automatiquement.
-          </p>
-          <div className={styles.transferBox}>
-            <div className={styles.transferRow}><span>Montant</span><strong>{fmt(order?.buyer_total_amount ?? order?.total_amount, order?.buyer_currency || order?.currency)}</strong></div>
-            <div className={styles.transferRow}>
-              <span>Motif du virement</span>
-              <strong className={styles.transferRef}>{transferRef}</strong>
-            </div>
-            <button type="button" className={styles.transferCopy} onClick={() => { try { navigator.clipboard.writeText(transferRef); } catch {} }}>Copier la référence</button>
-            {account && (
-              <div className={styles.transferAccount}>
-                {account.holder && <div>Titulaire : <strong>{account.holder}</strong></div>}
-                <div>RIB : <strong className={styles.transferRib}>{account.rib}</strong></div>
-                <div>Banque : {account.bank_name}{account.swift ? ` · SWIFT : ${account.swift}` : ''}</div>
-              </div>
-            )}
-          </div>
-          <p className={styles.transferNote}>Sans la référence dans le motif, ton paiement peut prendre plus de temps à être reconnu.</p>
-          <Link href={followUrl} className={styles.transferBtn}>{quest ? 'Voir ma quête' : 'Suivre ma commande'}</Link>
-        </div>
-      </>
-    );
-  }
   if (success) return (
     <>
       <Nav />
@@ -405,12 +399,12 @@ function PaiementContent() {
                     <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Espèces à la réception</div>
                   </button>
                 )}
-                {hasVirement && (
-                  <button className={`${styles.methodCard} ${method === 'virement' ? styles.methodActive : ''}`} onClick={() => setMethod('virement')}>
-                    <div style={{ fontWeight: 700, fontSize: 13 }}>Virement bancaire</div>
-                    <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{bankAccounts.map((a) => a.bank_name).join(' · ')}</div>
+                {manualMethods.map((m) => (
+                  <button key={m.code} className={`${styles.methodCard} ${method === `manual:${m.code}` ? styles.methodActive : ''}`} onClick={() => setMethod(`manual:${m.code}`)}>
+                    <div style={{ fontWeight: 700, fontSize: 13 }}>{MANUAL_LABEL[m.code] || m.code}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{m.code === 'virement' ? 'Virement, vérifié par l\'équipe' : 'Envoi au numéro WennaShop, vérifié par l\'équipe'}</div>
                   </button>
-                )}
+                ))}
                 {mobileMoneyProviders.length > 0 && (
                   <button className={`${styles.methodCard} ${method === 'mobile_money' ? styles.methodActive : ''}`} onClick={() => setMethod('mobile_money')}>
                     <div style={{ fontWeight: 700, fontSize: 13 }}>Mobile Money</div>
@@ -418,25 +412,17 @@ function PaiementContent() {
                   </button>
                 )}
               </div>
-              {availableMethods && !hasCod && !hasVirement && mobileMoneyProviders.length === 0 && (
+              {availableMethods && !hasAnyMethod && (
                 <p style={{ fontSize: 12, color: 'var(--error)', marginTop: 4 }}>
                   Aucun moyen de paiement disponible pour {form.country} pour l'instant — contacte le support.
                 </p>
               )}
-              {method === 'virement' && (() => {
-                const account = bankAccounts.find((a) => a.country_name === form.country)
-                  || bankAccounts.find((a) => a.currency === (order?.buyer_currency || order?.currency))
-                  || bankAccounts[0];
-                if (!account) return null;
-                return (
-                  <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, padding: '12px 14px', marginTop: 14, fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>
-                    <p style={{ marginBottom: 6 }}>Après validation, tu recevras une référence à indiquer dans le motif du virement, vers :</p>
-                    {account.holder && <p>Titulaire : {account.holder}</p>}
-                    <p style={{ fontWeight: 700, letterSpacing: '.5px', marginBottom: 4, color: 'var(--text)' }}>RIB : {account.rib}</p>
-                    <p>Banque : {account.bank_name}{account.swift ? ` · SWIFT : ${account.swift}` : ''}</p>
-                  </div>
-                );
-              })()}
+              {manualCode && (
+                <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, padding: '12px 14px', marginTop: 14, fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+                  <p>Après validation, tu verras le {manualCode === 'virement' ? 'RIB' : 'numéro'} WennaShop, le montant exact et une référence WN-… à indiquer. Une fois le paiement fait, tu le déclares avec l'ID de transaction : l'équipe vérifie et ta commande part en préparation.</p>
+                  {mobileError && <p style={{ fontSize: 12, color: 'var(--error)', marginTop: 8 }}>{mobileError}</p>}
+                </div>
+              )}
               {method === 'mobile_money' && (
                 <div style={{ marginTop: 14 }}>
                   <div className={styles.grid2}>
@@ -499,10 +485,11 @@ function PaiementContent() {
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 18, fontWeight: 900, marginTop: 14 }}>
                 <span>Total</span><span style={{ color: 'var(--accent)' }}>{fmt(order?.buyer_total_amount ?? order?.total_amount, order?.buyer_currency || order?.currency)}</span>
               </div>
-              <button className={styles.btnSubmit} onClick={submit} disabled={sending || !(hasCod || hasVirement || mobileMoneyProviders.length > 0)}>
+              <button className={styles.btnSubmit} onClick={submit} disabled={sending || !hasAnyMethod}>
                 {sending ? 'Traitement…'
                   : useAirtelDirect ? (airtelHolder ? `Confirmer le paiement de ${fmt(order?.buyer_total_amount ?? order?.total_amount, order?.buyer_currency || order?.currency)}` : 'Vérifier mon numéro Airtel')
-                  : method === 'mobile_money' ? 'Envoyer la demande de paiement' : 'Confirmer la commande'}
+                  : method === 'mobile_money' ? 'Envoyer la demande de paiement'
+                  : manualCode ? 'Voir les instructions de paiement' : 'Confirmer la commande'}
               </button>
             </div>
           </div>

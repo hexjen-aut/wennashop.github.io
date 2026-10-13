@@ -12,21 +12,23 @@
 // - À cette conversion, on ajoute une marge de sécurité (4% par défaut).
 //   Si le taux change un peu avant que l'argent arrive au vendeur, cette
 //   marge absorbe la différence — le vendeur ne perd jamais.
-// - Les taux sont stockés dans Supabase (table exchange_rates) pour être
-//   mis à jour facilement depuis l'admin. Si jamais cette table est vide
-//   ou injoignable, des taux de secours + la marge par défaut prennent le
-//   relais automatiquement : la protection ne s'arrête jamais.
+// - Les taux sont stockés dans Supabase (table exchange_rates) et mis à
+//   jour chaque jour par la fonction fx-rates-update ; la marge se règle
+//   dans l'admin. Si jamais cette table est vide ou injoignable, des taux
+//   de secours + la marge par défaut prennent le relais automatiquement :
+//   la protection ne s'arrête jamais.
 
 const DEFAULT_SAFETY_MARGIN = 0.04; // 4% — appliqué dans tous les cas
 
-// Taux de secours (utilisés seulement si Supabase est injoignable)
+// Taux de secours (utilisés seulement si Supabase est injoignable),
+// marché du 13/10/2026 : 1 EUR = 10,857 MAD = 655,957 FCFA.
 const FALLBACK_RATES = {
-  MAD_XOF: 65,
-  MAD_XAF: 65,
-  XOF_MAD: 1 / 65,
-  XAF_MAD: 1 / 65,
-  MAD_TND: 0.31,
-  TND_MAD: 3.2,
+  MAD_XOF: 60.42,
+  MAD_XAF: 60.42,
+  XOF_MAD: 1 / 60.42,
+  XAF_MAD: 1 / 60.42,
+  MAD_TND: 0.3095,
+  TND_MAD: 3.231,
 };
 
 let ratesCache = null;

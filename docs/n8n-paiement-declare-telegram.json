@@ -1,0 +1,40 @@
+{
+  "name": "WennaShop — paiement déclaré → Telegram Team-wenna",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "paiement-declare",
+        "authentication": "headerAuth",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Paiement déclaré (Supabase)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "credentials": { "httpHeaderAuth": { "name": "WennaShop paiements" } }
+    },
+    {
+      "parameters": {
+        "chatId": "REMPLACER_PAR_ID_DU_GROUPE_TEAM_WENNA",
+        "text": "={{ $json.body.text }}",
+        "additionalFields": { "disable_web_page_preview": true }
+      },
+      "name": "Message Team-wenna",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [280, 0],
+      "credentials": { "telegramApi": { "name": "Bot WennaShop" } }
+    }
+  ],
+  "connections": {
+    "Paiement déclaré (Supabase)": { "main": [[{ "node": "Message Team-wenna", "type": "main", "index": 0 }]] }
+  },
+  "settings": {
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "all",
+    "saveManualExecutions": false,
+    "executionOrder": "v1"
+  }
+}
