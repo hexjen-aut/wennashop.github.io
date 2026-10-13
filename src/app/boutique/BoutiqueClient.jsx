@@ -162,7 +162,11 @@ export default function BoutiqueClient() {
   }
 
   // ── Produits (filtres + tri + pagination + prix protégés) ──
+  // Une requête plus ancienne (ex. celle lancée avant que le pays et la devise
+  // de l'acheteur soient lus) peut répondre après la dernière : elle est
+  // ignorée, sinon elle écraserait la liste avec d'autres prix et filtres.
   useEffect(() => {
+    let stale = false;
     (async () => {
       setLoading(true);
       const sb = getSupabase();
@@ -192,10 +196,12 @@ export default function BoutiqueClient() {
         const conv = await convertPrice(p.price, p.currency || 'MAD', displayCurrency, sb);
         return { ...p, displayPrice: formatSmartPrice(conv.amount, conv.currency) };
       }));
+      if (stale) return;
       setProducts(withPrices);
       setTotal(count || 0);
       setLoading(false);
     })();
+    return () => { stale = true; };
   }, [catId, categoryGroups, sort, page, countries, buyerCountry, stockOnly, priceMin, priceMax, searchTerm, displayCurrency]);
 
   // ── Boutiques boostées ──
