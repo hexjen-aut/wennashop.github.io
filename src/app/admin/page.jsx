@@ -88,6 +88,8 @@ export default function AdminPage() {
   const [payments, setPayments] = useState([]);
   const [payouts, setPayouts] = useState([]);
   const [recharges, setRecharges] = useState([]);
+  const [agentIds, setAgentIds] = useState(new Set());
+  const [receiveAccounts, setReceiveAccounts] = useState([]);
   const [analytics, setAnalytics] = useState({ orders: [], countries: {}, statuses: {}, gmv: 0, commission: 0, avgBasket: 0, cancelRate: 0, months: [], vendorsNoProducts: [], topCategories: [], topVendors: [], reviewStats: { avg: '—', pending: 0, lowPct: 0 } });
 
   // ── Vitrine — sélection des photos produits (carrousel connexion) ──
@@ -237,8 +239,25 @@ export default function AdminPage() {
 
   async function loadUsers() {
     const sb = getSupabase();
-    const { data } = await sb.from('users').select('*').order('created_at', { ascending: false }).limit(100);
+    const [{ data }, { data: staff }] = await Promise.all([
+      sb.from('users').select('*').order('created_at', { ascending: false }).limit(100),
+      sb.from('staff_roles').select('user_id').eq('role', 'payment_agent'),
+    ]);
     setUsers(data || []);
+    setAgentIds(new Set((staff || []).map((r) => r.user_id)));
+  }
+
+  // Agent de paiement : vérifie les paiements manuels sur /admin/paiements
+  async function togglePaymentAgent(u) {
+    const sb = getSupabase();
+    const isAgent = agentIds.has(u.id);
+    if (!confirm(isAgent ? `Retirer le rôle d'agent de paiement à ${u.full_name || u.email} ?` : `Donner le rôle d'agent de paiement à ${u.full_name || u.email} ? Il pourra valider ou refuser les paiements manuels.`)) return;
+    const { error } = isAgent
+      ? await sb.from('staff_roles').delete().eq('user_id', u.id).eq('role', 'payment_agent')
+      : await sb.from('staff_roles').insert({ user_id: u.id, role: 'payment_agent' });
+    if (error) { alert(adminWriteError(error)); return; }
+    showToast(isAgent ? 'Rôle retiré' : 'Agent de paiement ajouté', 'ok');
+    await loadUsers();
   }
 
   // ── Catégories ──
@@ -899,10 +918,11 @@ export default function AdminPage() {
     const [{ data: countryRows }, { data: methods }, { data: cpm }] = await Promise.all([
       sb.from('countries').select('code,name,currency_code,flag_emoji').eq('status', 'ACTIVE').order('sort_order'),
       sb.from('payment_methods').select('code,name,provider_code,status,payment_providers(name,status)').order('sort_order'),
-      sb.from('country_payment_methods').select('country_code,payment_method_code,is_enabled'),
+      sb.from('country_payment_methods').select('country_code,payment_method_code,is_enabled,currency,account_number,account_holder,instructions'),
     ]);
     setCountries(countryRows || []);
     setPaymentMethods(methods || []);
+    setReceiveAccounts((cpm || []).filter((r) => r.is_enabled && ['airtel_money', 'moov_money', 'virement'].includes(r.payment_method_code)));
     const grid = {};
     (cpm || []).forEach((r) => {
       if (!grid[r.country_code]) grid[r.country_code] = {};
@@ -921,6 +941,23 @@ export default function AdminPage() {
     setPaysSaving(null);
     if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
     setCountryPaymentMethods((prev) => ({ ...prev, [countryCode]: { ...prev[countryCode], [methodCode]: !current } }));
+  }
+
+  // Comptes de réception du paiement manuel (affichés au client sur /commande/[id])
+  function updateReceiveAccount(idx, patch) {
+    setReceiveAccounts((prev) => prev.map((r, i) => (i === idx ? { ...r, ...patch } : r)));
+  }
+  async function saveReceiveAccount(r) {
+    const sb = getSupabase();
+    const { error } = await sb.from('country_payment_methods').update({
+      account_number: r.account_number?.trim() || null,
+      account_holder: r.account_holder?.trim() || null,
+      instructions: r.instructions?.trim() || null,
+      currency: r.currency || null,
+      updated_at: new Date().toISOString(),
+    }).eq('country_code', r.country_code).eq('payment_method_code', r.payment_method_code);
+    if (error) { alert(adminWriteError(error)); return; }
+    showToast('Compte de réception enregistré', 'ok');
   }
 
   // Fournisseur technique d'un moyen mobile money (lu par process-payment).
@@ -1063,6 +1100,14 @@ export default function AdminPage() {
           <button key={key} className={`${styles.navItem} ${section === key ? styles.navItemActive : ''}`} onClick={() => goTo(key)}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}><i className={`ph ${icon}`} />{label}</span>
           </button>
+        ))}
+        {[
+          ['/admin/paiements', 'ph-seal-check', 'Vérification paiements'],
+          ['/admin/reversements', 'ph-hand-coins', 'Reversements'],
+        ].map(([href, icon, label]) => (
+          <a key={href} href={href} className={styles.navItem} style={{ textDecoration: 'none' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}><i className={`ph ${icon}`} />{label}</span>
+          </a>
         ))}
       </aside>
 
@@ -1464,13 +1509,20 @@ export default function AdminPage() {
             <h1 style={{ fontSize: 22, fontWeight: 900, marginBottom: 18 }}>Utilisateurs</h1>
             <div className={styles.card}>
               <table className={styles.table}>
-                <thead><tr><th>Nom</th><th>Email</th><th>Rôle</th></tr></thead>
+                <thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Agent paiement</th></tr></thead>
                 <tbody>
                   {users.map((u) => (
                     <tr key={u.id}>
                       <td>{u.full_name || '—'}</td>
                       <td>{u.email}</td>
                       <td><span className={styles.badge} style={{ background: 'var(--accent-light)', color: 'var(--accent)' }}>{u.role || 'buyer'}</span></td>
+                      <td>
+                        {u.role !== 'admin' && (
+                          <button className={`${agentIds.has(u.id) ? styles.btnDanger : styles.btnGhost} ${styles.btnSm}`} onClick={() => togglePaymentAgent(u)}>
+                            {agentIds.has(u.id) ? 'Retirer' : 'Nommer agent'}
+                          </button>
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -1886,13 +1938,48 @@ export default function AdminPage() {
                     value={m.provider_code}
                     onChange={(e) => setMethodProvider(m.code, e.target.value)}
                   >
+                    <option value="manual">Vérification manuelle (agent)</option>
                     <option value="singpay">SingPay</option>
                     {m.code === 'airtel_money' && <option value="airtel">Airtel direct</option>}
                     {m.code === 'airtel_money' && <option value="pawapay">pawaPay</option>}
-                    {!['singpay', 'pawapay', 'airtel'].includes(m.provider_code) && <option value={m.provider_code}>{m.provider_code}</option>}
+                    {!['manual', 'singpay', 'pawapay', 'airtel'].includes(m.provider_code) && <option value={m.provider_code}>{m.provider_code}</option>}
                   </select>
                 </div>
               ))}
+            </div>
+            <div className={styles.card}>
+              <div className={styles.cardTitle} style={{ marginBottom: 4 }}>Comptes de réception — paiement manuel</div>
+              <p style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 14 }}>
+                Numéro ou RIB sur lequel le client envoie l'argent quand le moyen est en « Vérification manuelle ».
+                Sans numéro, le moyen n'est pas proposé au client. Le virement bancaire passe toujours par ce circuit.
+              </p>
+              {receiveAccounts.length === 0 ? <div className={styles.empty}>Active d'abord Airtel Money, Moov Money ou le virement pour un pays.</div> : (
+                <div style={{ overflowX: 'auto' }}>
+                  <table className={styles.table}>
+                    <thead><tr><th>Pays</th><th>Moyen</th><th>Numéro / RIB</th><th>Titulaire</th><th>Devise</th><th>Instructions</th><th></th></tr></thead>
+                    <tbody>
+                      {receiveAccounts.map((r, i) => (
+                        <tr key={`${r.country_code}:${r.payment_method_code}`}>
+                          <td>{countries.find((c) => c.code === r.country_code)?.name || r.country_code}</td>
+                          <td>{paymentMethods.find((m) => m.code === r.payment_method_code)?.name || r.payment_method_code}</td>
+                          <td><input className={styles.input} aria-label="Numéro ou RIB" value={r.account_number || ''} onChange={(e) => updateReceiveAccount(i, { account_number: e.target.value })} style={{ minWidth: 150 }} /></td>
+                          <td><input className={styles.input} aria-label="Titulaire" value={r.account_holder || ''} onChange={(e) => updateReceiveAccount(i, { account_holder: e.target.value })} style={{ minWidth: 130 }} /></td>
+                          <td>
+                            <select className={styles.input} aria-label="Devise" value={r.currency || ''} onChange={(e) => updateReceiveAccount(i, { currency: e.target.value })}>
+                              <option value="">—</option>
+                              <option value="XAF">FCFA (XAF)</option>
+                              <option value="XOF">FCFA (XOF)</option>
+                              <option value="MAD">MAD</option>
+                            </select>
+                          </td>
+                          <td><input className={styles.input} aria-label="Instructions" value={r.instructions || ''} onChange={(e) => updateReceiveAccount(i, { instructions: e.target.value })} style={{ minWidth: 200 }} /></td>
+                          <td><button className={`${styles.btnPrimary} ${styles.btnSm}`} onClick={() => saveReceiveAccount(r)}>Enregistrer</button></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </>
         )}

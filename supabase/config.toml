@@ -21,3 +21,6 @@ verify_jwt = false
 
 [functions.fx-rates-update]
 verify_jwt = false
+
+[functions.notify-payment-declared]
+verify_jwt = false

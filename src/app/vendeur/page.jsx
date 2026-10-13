@@ -634,7 +634,9 @@ export default function VendeurPage() {
 
   async function updateOrderStatus() {
     const sb = getSupabase();
-    await sb.from('orders').update({ status: newStatus, updated_at: new Date().toISOString() }).eq('id', orderModal.id);
+    const { error } = await sb.from('orders').update({ status: newStatus, updated_at: new Date().toISOString() }).eq('id', orderModal.id);
+    // La base refuse « en préparation » sans paiement confirmé, et tout retour en arrière
+    if (error) { showToast(error.message || 'Statut non modifiable', 'error'); return; }
     showToast('Statut mis à jour', 'success');
     setOrderModal((prev) => ({ ...prev, status: newStatus }));
     await loadOrders(sb);
@@ -643,7 +645,8 @@ export default function VendeurPage() {
   async function shipOrder() {
     if (!shipTracking.trim()) { showToast('Numéro de suivi requis', 'error'); return; }
     const sb = getSupabase();
-    await sb.from('orders').update({ status: 'shipped', tracking_number: shipTracking.trim(), updated_at: new Date().toISOString() }).eq('id', orderModal.id);
+    const { error: shipErr } = await sb.from('orders').update({ status: 'shipped', tracking_number: shipTracking.trim(), updated_at: new Date().toISOString() }).eq('id', orderModal.id);
+    if (shipErr) { showToast(shipErr.message || "La commande ne peut pas être expédiée (paiement non confirmé ?)", 'error'); return; }
     const { data: existingDelivery } = await sb.from('deliveries').select('id').eq('order_id', orderModal.id).maybeSingle();
     const deliveryPayload = { status: 'in_transit', picked_up_at: new Date().toISOString(), estimated_delivery: shipEta || null };
     if (existingDelivery) await sb.from('deliveries').update(deliveryPayload).eq('id', existingDelivery.id);
