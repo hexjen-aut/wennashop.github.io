@@ -170,7 +170,7 @@ export default function ChasseurPage() {
     setTourStep(null);
     const sb = getSupabase();
     if (internalUser?.id) {
-      sb.from('users').update({ hunter_tour_completed_at: new Date().toISOString() }).eq('id', internalUser.id);
+      sb.from('users').update({ hunter_tour_completed_at: new Date().toISOString() }).eq('id', internalUser.id).then(() => {});
       setInternalUser((prev) => ({ ...prev, hunter_tour_completed_at: new Date().toISOString() }));
     }
   }

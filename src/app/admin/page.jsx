@@ -4,6 +4,11 @@ import { useEffect, useRef, useState } from 'react';
 import { getSupabase } from '@/lib/supabase';
 import { CAROUSEL_BUCKET, CAROUSEL_KEYS, DEFAULT_CAROUSEL, isSafeLink, parseCarouselConfig } from '@/lib/loginCarousel';
 import { SHIPPING_RATES_KEY, parseShippingRates } from '@/lib/shipping';
+import TourOverlay from '@/components/TourOverlay';
+import tourStyles from '@/components/TourOverlay.module.css';
+import Mascot from '@/components/Mascot';
+import AdminGuide from './AdminGuide';
+import { ADMIN_TOUR_STEPS } from './guide';
 import styles from './admin.module.css';
 
 function fmt(n, c = 'MAD') { try { return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: c }).format(n); } catch { return `${n} ${c}`; } }
@@ -52,6 +57,10 @@ export default function AdminPage() {
 
   const [section, setSection] = useState('dashboard');
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  // Visite guidée : proposée au premier passage, relançable depuis le Guide
+  const [me, setMe] = useState(null);
+  const [tourStep, setTourStep] = useState(null);
+  const [tourProposalOpen, setTourProposalOpen] = useState(false);
   const [kpis, setKpis] = useState({ revenue: 0, orders: 0, users: 0, products: 0, pending: 0 });
   const [pendingProducts, setPendingProducts] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -129,6 +138,44 @@ export default function AdminPage() {
   // Si la session disparaît (déconnexion dans un autre onglet, session
   // révoquée…), on revient à l'écran de connexion au lieu de laisser des
   // boutons qui échoueraient avec une erreur de sécurité incompréhensible.
+  useEffect(() => {
+    if (!authorized) return;
+    (async () => {
+      const sb = getSupabase();
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) return;
+      const { data } = await sb.from('users').select('id, admin_tour_completed_at').eq('auth_id', session.user.id).maybeSingle();
+      setMe(data);
+      if (data && !data.admin_tour_completed_at) setTourProposalOpen(true);
+    })();
+  }, [authorized]);
+
+  // Sur mobile, la barre latérale est repliée : on l'ouvre le temps de la
+  // visite et on fait défiler jusqu'à l'entrée présentée.
+  useEffect(() => {
+    if (tourStep === null) return;
+    if (window.innerWidth <= 900) setMobileNavOpen(true);
+    const t = setTimeout(() => {
+      document.getElementById(ADMIN_TOUR_STEPS[tourStep]?.targetId)?.scrollIntoView({ block: 'nearest' });
+    }, 60);
+    return () => clearTimeout(t);
+  }, [tourStep]);
+
+  function endTour() {
+    setTourStep(null);
+    setMobileNavOpen(false);
+    if (!me?.id) return;
+    const now = new Date().toISOString();
+    // .then() : la requête Supabase ne part que lorsqu'on l'attend
+    getSupabase().from('users').update({ admin_tour_completed_at: now }).eq('id', me.id).then(() => {});
+    setMe((prev) => ({ ...prev, admin_tour_completed_at: now }));
+  }
+  function nextTourStep() {
+    if (tourStep < ADMIN_TOUR_STEPS.length - 1) setTourStep(tourStep + 1);
+    else endTour();
+  }
+  function tourHl(id) { return tourStep !== null && ADMIN_TOUR_STEPS[tourStep]?.targetId === id ? tourStyles.tourHighlight : ''; }
+
   const authorizedRef = useRef(false);
   useEffect(() => { authorizedRef.current = authorized; }, [authorized]);
   useEffect(() => {
@@ -575,7 +622,10 @@ export default function AdminPage() {
     if (!confirm(`Confirmer la réception du virement ${ref} de ${fmt(p.amount, p.currency)} ? La commande partira en préparation.`)) return;
     const sb = getSupabase();
     const { error } = await sb.rpc('confirm_bank_transfer', { p_order_id: p.order_id });
-    if (error) { showToast('Erreur : ' + error.message, 'ko'); return; }
+    if (error) {
+      showToast(error.message.includes('use_payment_review') ? 'Ce virement se valide dans Vérification paiements.' : 'Erreur : ' + error.message, 'ko');
+      return;
+    }
     showToast('Virement confirmé, commande en préparation');
     await loadPayments();
   }
@@ -1096,16 +1146,17 @@ export default function AdminPage() {
           ['goals', 'ph-target', 'Objectifs'],
           ['pays', 'ph-globe', 'Pays'],
           ['settings', 'ph-gear', 'Paramètres'],
+          ['guide', 'ph-book-open', 'Guide'],
         ].map(([key, icon, label]) => (
-          <button key={key} className={`${styles.navItem} ${section === key ? styles.navItemActive : ''}`} onClick={() => goTo(key)}>
+          <button key={key} id={`tour-admin-nav-${key}`} className={`${styles.navItem} ${section === key ? styles.navItemActive : ''} ${tourHl(`tour-admin-nav-${key}`)}`} onClick={() => goTo(key)}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}><i className={`ph ${icon}`} />{label}</span>
           </button>
         ))}
         {[
-          ['/admin/paiements', 'ph-seal-check', 'Vérification paiements'],
-          ['/admin/reversements', 'ph-hand-coins', 'Reversements'],
-        ].map(([href, icon, label]) => (
-          <a key={href} href={href} className={styles.navItem} style={{ textDecoration: 'none' }}>
+          ['/admin/paiements', 'ph-seal-check', 'Vérification paiements', 'verif'],
+          ['/admin/reversements', 'ph-hand-coins', 'Reversements', 'reversements'],
+        ].map(([href, icon, label, key]) => (
+          <a key={href} href={href} id={`tour-admin-nav-${key}`} className={`${styles.navItem} ${tourHl(`tour-admin-nav-${key}`)}`} style={{ textDecoration: 'none' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}><i className={`ph ${icon}`} />{label}</span>
           </a>
         ))}
@@ -1589,7 +1640,9 @@ export default function AdminPage() {
                       <td style={{ color: 'var(--text-faint)' }}>{{ virement: 'Virement', cash_on_delivery: 'À la livraison', airtel_money: 'Airtel Money', moov_money: 'Moov Money' }[p.method] || p.method || '—'}</td>
                       <td><Badge status={p.status} /></td>
                       <td style={{ color: 'var(--text-faint)' }}>{fdate(p.created_at)}</td>
-                      <td>{p.method === 'virement' && p.status === 'pending' && p.order_id && (
+                      <td>{p.verification_status ? (
+                        <a className={styles.btnSm} style={{ textDecoration: 'none' }} href={`/admin/paiements?id=${p.id}`}>Vérifier</a>
+                      ) : p.method === 'virement' && p.status === 'pending' && p.order_id && (
                         <button className={styles.btnSm} onClick={() => confirmTransfer(p)}>Virement reçu</button>
                       )}</td>
                     </tr>
@@ -1984,6 +2037,13 @@ export default function AdminPage() {
           </>
         )}
 
+        {section === 'guide' && (
+          <>
+            <h1 style={{ fontSize: 22, fontWeight: 900, marginBottom: 18 }}>Guide de l'équipe</h1>
+            <AdminGuide audience="admin" onReplayTour={() => setTourStep(0)} />
+          </>
+        )}
+
         {section === 'settings' && (
           <>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
@@ -2249,6 +2309,22 @@ export default function AdminPage() {
       {toast && (
         <div className={`${styles.toast} ${toast.type === 'error' ? styles.toastError : ''}`}>{toast.message}</div>
       )}
+
+      {tourProposalOpen && (
+        <div className={styles.modalOv} style={{ zIndex: 6999, alignItems: 'center', padding: 24 }} onClick={() => { setTourProposalOpen(false); endTour(); }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ maxWidth: 380, width: '100%', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: 24, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+            <Mascot size={72} float />
+            <h3 style={{ fontSize: 16, fontWeight: 900 }}>Bienvenue dans l'admin</h3>
+            <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>On te montre en {ADMIN_TOUR_STEPS.length} étapes à quoi sert chaque rubrique. Les procédures détaillées sont ensuite dans « Guide ».</p>
+            <div style={{ display: 'flex', gap: 10, width: '100%' }}>
+              <button className={styles.btnGhost} style={{ flex: 1 }} onClick={() => { setTourProposalOpen(false); endTour(); }}>Plus tard</button>
+              <button className={styles.btnPrimary} style={{ flex: 1 }} onClick={() => { setTourProposalOpen(false); setTourStep(0); }}>Oui, guide-moi</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <TourOverlay steps={ADMIN_TOUR_STEPS} stepIndex={tourStep} onNext={nextTourStep} onSkip={endTour} />
     </div>
   );
 }
