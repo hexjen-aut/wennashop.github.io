@@ -87,6 +87,7 @@ export default function AdminPage() {
   const [reviews, setReviews] = useState([]);
   const [payments, setPayments] = useState([]);
   const [payouts, setPayouts] = useState([]);
+  const [recharges, setRecharges] = useState([]);
   const [analytics, setAnalytics] = useState({ orders: [], countries: {}, statuses: {}, gmv: 0, commission: 0, avgBasket: 0, cancelRate: 0, months: [], vendorsNoProducts: [], topCategories: [], topVendors: [], reviewStats: { avg: '—', pending: 0, lowPct: 0 } });
 
   // ── Vitrine — sélection des photos produits (carrousel connexion) ──
@@ -108,6 +109,10 @@ export default function AdminPage() {
   const [bankAccounts, setBankAccounts] = useState([]);
   const [shippingRates, setShippingRates] = useState([]);
   const [shippingSaving, setShippingSaving] = useState(false);
+  const [fxRates, setFxRates] = useState([]);
+  const [fxLog, setFxLog] = useState(null);
+  const [fxMargin, setFxMargin] = useState('');
+  const [fxSaving, setFxSaving] = useState(false);
   const [countries, setCountries] = useState([]);
   const [bankModalOpen, setBankModalOpen] = useState(false);
   const [bankForm, setBankForm] = useState({ idx: null, country_code: '', bank_name: '', holder: '', rib: '', swift: '' });
@@ -468,8 +473,27 @@ export default function AdminPage() {
   // ── Retraits ──
   async function loadPayouts() {
     const sb = getSupabase();
-    const { data } = await sb.from('payouts').select('*, users(full_name,email)').order('requested_at', { ascending: false });
+    const [{ data }, { data: topups }] = await Promise.all([
+      sb.from('payouts').select('*, users(full_name,email)').order('requested_at', { ascending: false }),
+      sb.from('payments').select('id,amount,currency,reference,created_at,metadata,users(full_name,email)').eq('type', 'wallet_topup').eq('status', 'pending').order('created_at', { ascending: true }),
+    ]);
     setPayouts(data || []);
+    setRecharges(topups || []);
+  }
+
+  // ── Recharges de portefeuille : le solde n'est crédité qu'ici, une fois
+  // l'argent du vendeur reçu (admin_resolve_wallet_recharge, idempotente).
+  async function resolveRecharge(r, approve) {
+    const who = r.users?.full_name || r.users?.email || 'ce vendeur';
+    const note = approve
+      ? (confirm(`Confirmer la réception de ${fmt(r.amount, r.currency)} (réf. ${r.reference}) et créditer le portefeuille de ${who} ?`) ? null : false)
+      : prompt('Motif du refus (optionnel) :');
+    if (note === false || (!approve && note === null)) return;
+    const sb = getSupabase();
+    const { error } = await sb.rpc('admin_resolve_wallet_recharge', { p_payment_id: r.id, p_approve: approve, p_note: note || null });
+    if (error) { alert(adminWriteError(error)); return; }
+    showToast(approve ? 'Portefeuille crédité' : 'Recharge refusée', 'ok');
+    await loadPayouts();
   }
 
   async function approvePayout(p) {
@@ -480,7 +504,7 @@ export default function AdminPage() {
     if (balance < Number(p.amount)) { alert(`Solde insuffisant côté vendeur (${fmt(balance, p.currency)}) — impossible d'approuver.`); return; }
     const { error: wErr } = await sb.from('vendor_wallets').update({ balance: balance - Number(p.amount), updated_at: new Date().toISOString() }).eq('user_id', p.user_id);
     if (wErr) { alert("Erreur lors du débit du wallet : " + wErr.message); return; }
-    await sb.from('wallet_transactions').insert({ user_id: p.user_id, shop_id: p.shop_id, type: 'payout', amount: -Number(p.amount), currency: p.currency, description: `Retrait approuvé — ${p.payment_method_code || ''} ${p.recipient_phone || ''}`, status: 'completed' });
+    await sb.from('wallet_transactions').insert({ user_id: p.user_id, shop_id: p.shop_id, type: 'debit', amount: Number(p.amount), currency: p.currency, description: `Retrait approuvé — ${p.payment_method_code || ''} ${p.recipient_phone || ''}`, status: 'completed' });
     await sb.from('payouts').update({ status: 'APPROVED' }).eq('id', p.id);
     await loadPayouts();
   }
@@ -764,6 +788,7 @@ export default function AdminPage() {
       sb.from('site_config').select('value').eq('key', SHIPPING_RATES_KEY).maybeSingle(),
     ]);
     setShippingRates(parseShippingRates(ratesRow?.value));
+    loadFxRates(sb);
     let list = [];
     if (data?.value) { try { list = JSON.parse(data.value); } catch { list = []; } }
     setBankAccounts(Array.isArray(list) ? list : []);
@@ -778,6 +803,43 @@ export default function AdminPage() {
     const { error } = await sb.from('site_config').upsert({ key, value: String(nextValue), updated_at: new Date().toISOString() });
     if (error) { alert(adminWriteError(error)); return; }
     setFeatureFlags((prev) => ({ ...prev, [key]: nextValue }));
+  }
+  // ── Paramètres — taux de change (mis à jour chaque jour par fx-rates-update) ──
+  async function loadFxRates(sb) {
+    const [{ data: rows }, { data: log }] = await Promise.all([
+      sb.from('exchange_rates').select('id,base_currency,quote_currency,rate,safety_margin_percent,updated_at').order('base_currency').order('quote_currency'),
+      sb.from('system_logs').select('level,message,metadata,created_at').eq('source', 'fx').order('created_at', { ascending: false }).limit(1).maybeSingle(),
+    ]);
+    setFxRates(rows || []);
+    setFxLog(log || null);
+    const margins = [...new Set((rows || []).map((r) => Number(r.safety_margin_percent)))];
+    setFxMargin(margins.length === 1 ? String(margins[0]) : '');
+  }
+  async function saveFxMargin() {
+    const m = Number(fxMargin);
+    if (!(m >= 0 && m <= 20)) { alert('La marge doit être comprise entre 0 et 20 %.'); return; }
+    setFxSaving(true);
+    const sb = getSupabase();
+    const { error } = await sb.from('exchange_rates').update({ safety_margin_percent: m }).in('id', fxRates.map((r) => r.id));
+    setFxSaving(false);
+    if (error) { alert(adminWriteError(error)); return; }
+    showToast('Marge de change enregistrée', 'ok');
+    await loadFxRates(sb);
+  }
+  // Taux bloqués par le garde-fou (variation > 5 %) : l'admin les applique après vérification.
+  async function applyBlockedFxRates() {
+    const blocked = fxLog?.metadata?.blocked || {};
+    const keys = Object.keys(blocked);
+    if (!keys.length) return;
+    if (!confirm(`Appliquer ${keys.length} taux bloqué(s) ? ${keys.map((k) => `${k.replace('_', '→')} ${blocked[k].from} → ${blocked[k].to}`).join(' · ')}`)) return;
+    const sb = getSupabase();
+    for (const k of keys) {
+      const [base, quote] = k.split('_');
+      const { error } = await sb.from('exchange_rates').update({ rate: blocked[k].to, updated_at: new Date().toISOString() }).eq('base_currency', base).eq('quote_currency', quote);
+      if (error) { alert(adminWriteError(error)); return; }
+    }
+    showToast('Taux appliqués', 'ok');
+    await loadFxRates(sb);
   }
   // ── Paramètres — tarifs transport des quêtes (lus par quest_shipping_quote en base) ──
   function updateShippingRate(idx, patch) {
@@ -1336,6 +1398,32 @@ export default function AdminPage() {
         {section === 'payouts' && (
           <>
             <h1 style={{ fontSize: 22, fontWeight: 900, marginBottom: 18 }}>Retraits</h1>
+            <div className={styles.card} style={{ overflowX: 'auto' }}>
+              <div className={styles.cardTitle} style={{ marginBottom: 4 }}>Recharges de portefeuille en attente</div>
+              <p style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 12 }}>
+                Le vendeur règle sa recharge hors du site (mobile money ou virement, avec la référence). Crédite le portefeuille seulement une fois l'argent reçu.
+              </p>
+              {recharges.length === 0 ? <div className={styles.empty}>Aucune recharge en attente</div> : (
+                <table className={styles.table}>
+                  <thead><tr><th>Vendeur</th><th>Montant</th><th>Pack</th><th>Référence</th><th>Demandée le</th><th></th></tr></thead>
+                  <tbody>
+                    {recharges.map((r) => (
+                      <tr key={r.id}>
+                        <td>{r.users?.full_name || '—'}<br /><span style={{ fontSize: 10, color: 'var(--text-faint)' }}>{r.users?.email}</span></td>
+                        <td>{fmt(r.amount, r.currency)}</td>
+                        <td>{r.metadata?.pack_name || '—'}</td>
+                        <td>{r.reference}</td>
+                        <td>{fdate(r.created_at)}</td>
+                        <td style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                          <button className={styles.btnPrimary} onClick={() => resolveRecharge(r, true)}>Argent reçu — créditer</button>
+                          <button className={styles.btnDanger} onClick={() => resolveRecharge(r, false)}>Refuser</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
             {payouts.length === 0 ? (
               <div className={styles.card}><div className={styles.empty}>Aucune demande de retrait</div></div>
             ) : (
@@ -1836,6 +1924,43 @@ export default function AdminPage() {
                   </label>
                 </div>
               ))}
+            </div>
+            <div className={styles.card}>
+              <div className={styles.cardTitle} style={{ marginBottom: 4 }}>Taux de change</div>
+              <p style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 14 }}>
+                Mis à jour automatiquement chaque jour à 05:13 UTC (1 EUR = 655,957 FCFA, fixe ; MAD et TND au cours du marché).
+                Une variation de plus de 5 % en un jour n'est pas appliquée sans ton accord. La marge s'ajoute à chaque prix converti.
+              </p>
+              {fxLog && (
+                <div style={{ fontSize: 12, marginBottom: 12, color: fxLog.level === 'info' ? 'var(--text-muted)' : 'var(--error)' }}>
+                  Dernier passage : {fdate(fxLog.created_at)} — {fxLog.message}
+                  {Object.keys(fxLog.metadata?.blocked || {}).length > 0 && (
+                    <button className={`${styles.btnPrimary} ${styles.btnSm}`} style={{ marginLeft: 10 }} onClick={applyBlockedFxRates}>Appliquer ces taux</button>
+                  )}
+                </div>
+              )}
+              <table className={styles.table}>
+                <thead><tr><th>Conversion</th><th>Taux</th><th>Marge</th><th>Mis à jour</th></tr></thead>
+                <tbody>
+                  {fxRates.map((r) => {
+                    const stale = Date.now() - new Date(r.updated_at).getTime() > 3 * 86400000;
+                    return (
+                      <tr key={r.id}>
+                        <td>1 {r.base_currency} → {r.quote_currency}</td>
+                        <td>{Number(r.rate)}</td>
+                        <td>{Number(r.safety_margin_percent)} %</td>
+                        <td style={{ color: stale ? 'var(--error)' : 'var(--text-faint)' }}>{fdate(r.updated_at)}{stale ? ' — plus de 3 jours' : ''}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+              <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginTop: 14, flexWrap: 'wrap' }}>
+                <label style={{ fontSize: 12, color: 'var(--text-muted)' }} htmlFor="fx-margin">Marge de sécurité (toutes les conversions)</label>
+                <input id="fx-margin" className={styles.input} type="number" min="0" max="20" step="0.5" value={fxMargin} onChange={(e) => setFxMargin(e.target.value)} style={{ width: 90 }} />
+                <span style={{ fontSize: 12 }}>%</span>
+                <button className={styles.btnPrimary} onClick={saveFxMargin} disabled={fxSaving || fxMargin === ''}>{fxSaving ? 'Enregistrement…' : 'Enregistrer la marge'}</button>
+              </div>
             </div>
             <div className={styles.card}>
               <div className={styles.cardTitle} style={{ marginBottom: 4 }}>Tarifs transport — quêtes</div>

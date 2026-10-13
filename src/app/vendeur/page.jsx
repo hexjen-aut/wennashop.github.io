@@ -38,6 +38,12 @@ function slugify(s) {
 const NOTIF_ICON = { order: 'ph-shopping-bag', money: 'ph-currency-circle-dollar', review: 'ph-star', stock: 'ph-warning', system: 'ph-bell' };
 
 function fmt(n, c = 'MAD') { try { return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: c, minimumFractionDigits: 0 }).format(n || 0); } catch { return `${n || 0} ${c}`; } }
+const RECHARGE_ERRORS = {
+  recharge_pending: 'Une demande de recharge est déjà en attente de règlement.',
+  pack_not_payable: 'Ce pack ne peut pas être acheté.',
+  pack_not_found: "Ce pack n'est plus disponible.",
+  not_a_seller: 'Seul le propriétaire de la boutique peut recharger le portefeuille.',
+};
 // Devise d'un produit = devise de son pays d'origine (le prix saisi est
 // stocké tel quel dans cette devise, puis converti pour les acheteurs).
 function productCurrency(country) { return currencyForCountry(country) || 'MAD'; }
@@ -222,6 +228,9 @@ export default function VendeurPage() {
   const [boostPacks, setBoostPacks] = useState([]);
   const [rechargeOpen, setRechargeOpen] = useState(false);
   const [selectedPack, setSelectedPack] = useState(null);
+  const [pendingRecharge, setPendingRecharge] = useState(null);
+  const [boostProducts, setBoostProducts] = useState([]);
+  const [boostProductId, setBoostProductId] = useState('');
 
   // Retraits
   const [payouts, setPayouts] = useState([]);
@@ -668,13 +677,27 @@ export default function VendeurPage() {
   }
 
   // ── WALLET ──
+  // Devise du portefeuille : celle du portefeuille s'il existe, sinon celle
+  // qu'il aura à sa création (MAD au Maroc, FCFA ailleurs — wallet_currency_for).
+  const walletCurrency = wallet?.id ? wallet.currency : (/maroc/i.test(shop?.country || seller?.country || '') ? 'MAD' : 'FCFA');
+  const packPrice = (pack) => Number(walletCurrency === 'MAD' ? pack.price_mad : pack.price_fcfa) || 0;
+
   async function loadWalletSection(sb) {
-    const { data: b } = await sb.from('boosts').select('*, boost_packs(name)').eq('user_id', seller.id).order('created_at', { ascending: false });
+    const [{ data: b }, { data: packs }, { data: p }, { data: w }, { data: topup }, { data: prods }] = await Promise.all([
+      sb.from('boosts').select('*, boost_packs(name)').eq('user_id', seller.id).order('created_at', { ascending: false }),
+      sb.from('boost_packs').select('*').eq('is_active', true).order('sort_order', { ascending: true }),
+      sb.from('payouts').select('*').eq('user_id', seller.id).order('requested_at', { ascending: false }),
+      sb.from('vendor_wallets').select('*').eq('user_id', seller.id).maybeSingle(),
+      sb.from('payments').select('id,amount,currency,reference,created_at').eq('user_id', seller.id).eq('type', 'wallet_topup').eq('status', 'pending').order('created_at', { ascending: false }).limit(1).maybeSingle(),
+      sb.from('products').select('id,name').eq('seller_id', seller.id).eq('status', 'active').order('created_at', { ascending: false }),
+    ]);
     setBoosts(b || []);
-    const { data: packs } = await sb.from('boost_packs').select('*').eq('is_active', true).order('sort_order', { ascending: true });
-    setBoostPacks(packs || []);
-    const { data: p } = await sb.from('payouts').select('*').eq('user_id', seller.id).order('requested_at', { ascending: false });
+    // Les packs gratuits sont réservés à l'admin (mise en avant manuelle)
+    setBoostPacks((packs || []).filter((pk) => Number(pk.price_mad) > 0 || Number(pk.price_fcfa) > 0));
     setPayouts(p || []);
+    if (w) setWallet(w);
+    setPendingRecharge(topup || null);
+    setBoostProducts(prods || []);
   }
 
   function openPayoutModal() {
@@ -693,7 +716,7 @@ export default function VendeurPage() {
       user_id: seller.id,
       shop_id: shop?.id || null,
       amount,
-      currency: wallet?.currency || 'MAD',
+      currency: walletCurrency,
       payment_method_code: payoutForm.payment_method_code,
       recipient_phone: payoutForm.recipient_phone.trim(),
       status: 'PENDING',
@@ -704,33 +727,38 @@ export default function VendeurPage() {
     await loadWalletSection(sb);
   }
 
+  // Recharge : demande enregistrée côté serveur (paiement en attente) ; le
+  // solde n'est crédité qu'une fois le règlement confirmé par l'équipe.
   async function requestRecharge() {
-    if (!selectedPack) return;
+    if (!selectedPack) { showToast('Choisissez un pack', 'error'); return; }
     const sb = getSupabase();
-    const amount = selectedPack.price_mad || selectedPack.price_fcfa;
-    const currency = selectedPack.price_mad ? 'MAD' : 'FCFA';
-    await sb.from('payments').insert({ user_id: seller.id, amount, currency, method: 'cash_on_delivery', status: 'pending', type: 'wallet_recharge', metadata: { pack_id: selectedPack.id, pack_name: selectedPack.name } });
-    await sb.from('wallet_transactions').insert({ user_id: seller.id, type: 'recharge_request', amount, currency, description: `Demande de recharge — ${selectedPack.name}`, status: 'pending' });
-    showToast('Demande envoyée — en attente de confirmation', 'success');
+    const { data, error } = await sb.rpc('request_wallet_recharge', { p_pack_id: selectedPack.id });
+    if (error) {
+      showToast(RECHARGE_ERRORS[error.message] || "La demande de recharge n'a pas pu être envoyée.", 'error');
+      return;
+    }
+    showToast(`Demande envoyée (réf. ${data.reference}) — l'équipe te contacte pour le règlement`, 'success');
     setRechargeOpen(false);
     setSelectedPack(null);
+    await loadWalletSection(sb);
   }
 
-  async function activateBoost(target) {
-    // target = { type: 'shop'|'product', product_id? }
+  // Boost : débit du solde et création du boost en une seule opération serveur.
+  async function activateBoost() {
     if (!selectedPack) { showToast('Choisissez un pack', 'error'); return; }
-    const currentBalance = Number(wallet?.balance || 0);
-    const cost = selectedPack.price_mad || 0;
-    if (currentBalance < cost) { showToast('Solde insuffisant — rechargez votre wallet', 'error'); return; }
     const sb = getSupabase();
-    const expiresAt = new Date(Date.now() + (selectedPack.duration_days || 7) * 86400000).toISOString();
-    await sb.from('boosts').insert({ user_id: seller.id, shop_id: shop?.id, product_id: target?.product_id || null, pack_id: selectedPack.id, type: target?.type || 'shop_homepage', status: 'active', started_at: new Date().toISOString(), expires_at: expiresAt, amount_paid: cost, currency: 'MAD' });
-    await sb.from('vendor_wallets').update({ balance: currentBalance - cost, updated_at: new Date().toISOString() }).eq('user_id', seller.id);
-    await sb.from('wallet_transactions').insert({ user_id: seller.id, type: 'boost_purchase', amount: -cost, currency: 'MAD', description: `Boost ${selectedPack.name}`, status: 'completed' });
-    setWallet((prev) => ({ ...prev, balance: currentBalance - cost }));
+    const { data, error } = await sb.rpc('purchase_boost', {
+      p_user_id: seller.id, p_pack_id: selectedPack.id,
+      p_product_id: boostProductId || null, p_shop_id: shop?.id || null, p_currency: walletCurrency,
+    });
+    if (error || !data?.success) {
+      showToast(data?.error === 'Solde insuffisant' ? 'Solde insuffisant — demande une recharge' : (data?.error || "Le boost n'a pas pu être activé."), 'error');
+      return;
+    }
     showToast('Boost activé !', 'success');
     setRechargeOpen(false);
     setSelectedPack(null);
+    setBoostProductId('');
     await loadWalletSection(sb);
   }
 
@@ -1048,7 +1076,7 @@ export default function VendeurPage() {
           <div className={styles.walletMini}>
             <div>
               <div className={styles.walletMiniLabel}>Crédits Boost</div>
-              <div className={styles.walletMiniAmount}>{fmt(wallet?.balance, wallet?.currency)}</div>
+              <div className={styles.walletMiniAmount}>{fmt(wallet?.balance, walletCurrency)}</div>
             </div>
             <button className={styles.linkBtn} onClick={() => showSection('wallet')}><i className="ph ph-arrow-right" /></button>
           </div>
@@ -1344,7 +1372,12 @@ export default function VendeurPage() {
           <>
             <div className={styles.walletCard}>
               <div className={styles.walletLabel}>Solde Crédits Boost</div>
-              <div className={styles.walletAmount}>{fmt(wallet?.balance, wallet?.currency)}</div>
+              <div className={styles.walletAmount}>{fmt(wallet?.balance, walletCurrency)}</div>
+              {pendingRecharge && (
+                <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 6 }}>
+                  Recharge de {fmt(pendingRecharge.amount, pendingRecharge.currency)} en attente de règlement · réf. {pendingRecharge.reference}
+                </div>
+              )}
               <div className={styles.walletActions}>
                 {boostersEnabled && <button className={styles.btnPrimary} onClick={() => setRechargeOpen(true)}><i className="ph ph-plus-circle" /> Recharger</button>}
                 <button className={styles.btnGhost} onClick={openPayoutModal}><i className="ph ph-bank" /> Retrait</button>
@@ -1386,7 +1419,7 @@ export default function VendeurPage() {
                 <button className={styles.modalClose} onClick={() => setPayoutModalOpen(false)}><i className="ph ph-x" /></button>
               </div>
               <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
-                <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>Solde disponible : <strong style={{ color: 'var(--text)' }}>{fmt(wallet?.balance, wallet?.currency)}</strong></div>
+                <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>Solde disponible : <strong style={{ color: 'var(--text)' }}>{fmt(wallet?.balance, walletCurrency)}</strong></div>
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel}>Montant *</label>
                   <input className={styles.input} type="number" min="0" step="0.01" value={payoutForm.amount} onChange={(e) => setPayoutForm({ ...payoutForm, amount: e.target.value })} />
@@ -2033,18 +2066,28 @@ export default function VendeurPage() {
               <button className={styles.modalClose} onClick={() => setRechargeOpen(false)}><i className="ph ph-x" /></button>
             </div>
             <div className={styles.modalBody}>
+              <div style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 10 }}>Solde : <strong style={{ color: 'var(--text)' }}>{fmt(wallet?.balance, walletCurrency)}</strong></div>
               {boostPacks.length === 0 ? <div className={styles.empty}>Aucun pack disponible.</div> : boostPacks.map((pack) => (
                 <button key={pack.id} onClick={() => setSelectedPack(pack)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', textAlign: 'left', padding: 14, borderRadius: 12, border: selectedPack?.id === pack.id ? '1.5px solid var(--accent)' : '1.5px solid var(--border)', background: selectedPack?.id === pack.id ? 'var(--accent-light)' : 'var(--surface-2)', cursor: 'pointer', marginBottom: 8 }}>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 800 }}>{pack.name}</div>
                     <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>{pack.duration_days} jours · {pack.description}</div>
                   </div>
-                  <div style={{ fontSize: 15, fontWeight: 900, color: 'var(--accent)' }}>{fmt(pack.price_mad)}</div>
+                  <div style={{ fontSize: 15, fontWeight: 900, color: 'var(--accent)' }}>{fmt(packPrice(pack), walletCurrency)}</div>
                 </button>
               ))}
+              {selectedPack && (
+                <div className={styles.formGroup} style={{ marginTop: 6 }}>
+                  <label className={styles.formLabel}>Produit à mettre en avant{selectedPack.slug === 'starter' ? ' *' : ' (facultatif)'}</label>
+                  <select className={styles.input} value={boostProductId} onChange={(e) => setBoostProductId(e.target.value)}>
+                    <option value="">{selectedPack.slug === 'starter' ? 'Choisir un produit' : 'Aucun — boutique seulement'}</option>
+                    {boostProducts.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+                  </select>
+                </div>
+              )}
             </div>
             <div className={styles.modalFooter}>
-              <button className={styles.btnGhost} style={{ flex: 1, justifyContent: 'center' }} onClick={() => activateBoost({ type: 'shop_homepage' })}>Activer avec mon solde</button>
+              <button className={styles.btnGhost} style={{ flex: 1, justifyContent: 'center' }} onClick={activateBoost}>Activer avec mon solde</button>
               <button className={styles.btnPrimary} style={{ flex: 1, justifyContent: 'center' }} onClick={requestRecharge}>Demander une recharge</button>
             </div>
           </div>
