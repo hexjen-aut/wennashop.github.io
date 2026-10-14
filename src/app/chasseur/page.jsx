@@ -119,7 +119,7 @@ export default function ChasseurPage() {
 
       let internal = null;
       if (session) {
-        const { data } = await sb.from('users').select('id, role, full_name, first_name, last_name, country, avatar_url, hunter_referral_code, hunter_status, hunter_tour_completed_at').eq('auth_id', session.user.id).single();
+        const { data } = await sb.from('users').select('id, role, full_name, first_name, last_name, country, avatar_url, hunter_referral_code, hunter_status, hunter_reject_reason, hunter_tour_completed_at').eq('auth_id', session.user.id).single();
         internal = data;
         setInternalUser(data);
       }
@@ -209,7 +209,8 @@ export default function ChasseurPage() {
   }
 
   const unreadCount = notifications.filter((n) => !n.is_read).length;
-  const canHunt = internalUser?.role === 'artisan' || internalUser?.role === 'admin';
+  // Proposer sur une quête : chasseur vérifié, quel que soit le rôle (même règle en base)
+  const canHunt = internalUser?.hunter_status === 'verified';
   const myQuestIds = useMemo(() => new Set(myProposals.map((p) => p.quest_id)), [myProposals]);
 
   const filteredQuests = useMemo(() => {
@@ -245,7 +246,7 @@ export default function ChasseurPage() {
 
   // ── MODAL PROPOSITION ──
   function openModal(quest) {
-    if (!canHunt) { showToast('Seuls les chasseurs et vendeurs peuvent proposer.', 'error'); return; }
+    if (!canHunt) { showToast('Ton dossier chasseur doit être validé avant de proposer.', 'error'); return; }
     setModalQuest(quest);
     setPropMessage(''); setPropPrice(''); setPropWeight(''); setPropShipping(null); setPropLink(''); setFiles([]);
   }
@@ -404,8 +405,30 @@ export default function ChasseurPage() {
         </div>
       </nav>
 
-      {internalUser?.hunter_status === 'pending_verification' && (
-        <div style={{ maxWidth: 1100, margin: '16px auto 0', padding: '0 16px' }}><AutoKycCard purpose="hunter" /></div>
+      {internalUser && internalUser.hunter_status !== 'verified' && (
+        <div style={{ maxWidth: 1100, margin: '16px auto 0', padding: '0 16px' }}>
+          <div className={styles.statusCard} data-testid="hunter-status">
+            {internalUser.hunter_status === 'pending_verification' ? (
+              <>
+                <strong>Dossier chasseur en cours de vérification</strong>
+                <p>L'équipe vérifie ta pièce d'identité, en général sous 48 h. Tu pourras proposer des offres et obtenir ton code de parrainage dès la validation.</p>
+              </>
+            ) : internalUser.hunter_status === 'rejected' ? (
+              <>
+                <strong>Dossier chasseur refusé</strong>
+                <p>{internalUser.hunter_reject_reason ? `Motif : ${internalUser.hunter_reject_reason}. ` : ''}Corrige et renvoie ton dossier.</p>
+                <Link href="/devenir-chasseur" className={styles.statusBtn}>Renvoyer mon dossier</Link>
+              </>
+            ) : (
+              <>
+                <strong>Tu n'es pas encore chasseur</strong>
+                <p>Pour répondre aux quêtes et parrainer des vendeurs, envoie ta pièce d'identité. Vérification en général sous 48 h.</p>
+                <Link href="/devenir-chasseur" className={styles.statusBtn}>Devenir chasseur</Link>
+              </>
+            )}
+          </div>
+          {internalUser.hunter_status === 'pending_verification' && <AutoKycCard purpose="hunter" />}
+        </div>
       )}
 
       {/* HERO */}
@@ -523,7 +546,7 @@ export default function ChasseurPage() {
                           </div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                             {!done && canHunt && <button className={styles.btnHunt} onClick={() => openModal(q)}>Je chasse</button>}
-                            {!done && !canHunt && <span style={{ fontSize: 11, color: 'var(--text-faint)', fontWeight: 600 }}>Rôle chasseur requis</span>}
+                            {!done && !canHunt && <span style={{ fontSize: 11, color: 'var(--text-faint)', fontWeight: 600 }}>Chasseur vérifié requis</span>}
                             <div className={styles.rewardBox}>
                               <div className={styles.rewardLabel}>Récompense</div>
                               <div className={styles.rewardAmount}>{fmt(q.reward_amount)} <span style={{ fontSize: '.65em' }}>{q.currency || 'FCFA'}</span></div>

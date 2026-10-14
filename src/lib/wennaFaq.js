@@ -109,7 +109,7 @@ export const WENNA_FAQ = [
   {
     id: 'chasseur',
     q: 'Comment devenir chasseur ?',
-    a: "Depuis la page « Devenir chasseur », envoie ta vérification d'identité : réponse sous 48 h. Ensuite, tu réponds aux quêtes des acheteurs et tu peux recruter des vendeurs avec ton code de parrainage pour toucher une prime.",
+    a: "Ouvre l'onglet « Chasse » (ou la page « Devenir chasseur »), remplis le formulaire et envoie ta pièce d'identité (CNI recto et verso, ou passeport) : l'équipe vérifie sous 48 h. Une fois validé, tu réponds aux quêtes des acheteurs et tu reçois ton code de parrainage pour recruter des vendeurs.",
     keywords: 'chasseur devenir gagner argent parrainage code recruter prime',
     link: { href: '/devenir-chasseur', label: 'Devenir chasseur' },
   },
