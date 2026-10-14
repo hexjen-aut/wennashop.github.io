@@ -1,75 +1,118 @@
-export const CGU_TEXT = `Dernière mise à jour : juillet 2026
+// Textes légaux affichés sur /cgu, /confidentialite, /mentions-legales et à
+// l'inscription. Ils décrivent le fonctionnement réel du site : à mettre à
+// jour avec le code quand une règle change (paiement manuel vérifié, quêtes,
+// parrainage : paramètres hunter_* de site_config).
+
+export const CGU_TEXT = `Dernière mise à jour : 14 octobre 2026
 
 1. Objet
-WennaShop est une marketplace qui met en relation des vendeurs (artisans et commerçants) et des acheteurs entre le Gabon et le Maroc. WennaShop a vocation à s'étendre progressivement à d'autres pays africains.
+WennaShop est une marketplace éditée par Hexjen Conceptions qui met en relation des vendeurs (artisans et commerçants) et des acheteurs, principalement entre le Gabon et le Maroc, avec une ouverture progressive à d'autres pays africains. Les présentes conditions générales d'utilisation (CGU) s'appliquent à toute personne qui utilise le site wennashop.com. Créer un compte vaut acceptation des CGU.
 
-2. Inscription et compte
-L'inscription est gratuite. L'utilisateur s'engage à fournir des informations exactes et à maintenir la confidentialité de ses identifiants.
+2. Compte
+L'inscription est gratuite. Tu t'engages à fournir des informations exactes, à les tenir à jour et à garder tes identifiants confidentiels. Un compte est personnel. WennaShop peut suspendre ou fermer un compte en cas de fausse information, de fraude, de paiement déclaré à tort ou de non-respect des CGU.
 
-3. Rôles utilisateurs
-Acheteur : peut parcourir les boutiques, passer commande et suivre ses livraisons.
-Vendeur : peut créer une boutique, lister des produits et gérer ses commandes après validation par l'administration WennaShop.
-La validation d'un compte vendeur est requise avant toute mise en ligne. Un document d'identité valide (CNI ou passeport) ainsi qu'une adresse exacte doivent être fournis à l'inscription.
-Chasseur : profil vérifié pouvant répondre aux quêtes postées par les acheteurs et recruter de nouveaux vendeurs via un code de parrainage personnel. La vérification d'identité est requise avant toute activité de chasseur.
+3. Rôles
+Acheteur : parcourt les boutiques, passe commande, paie, suit ses livraisons et peut publier des quêtes.
+Vendeur : crée une boutique, publie des produits et gère ses commandes. Le compte vendeur est validé par l'équipe WennaShop après envoi d'un document d'identité valide (CNI ou passeport) et d'une adresse exacte. Chaque produit est contrôlé avant sa mise en ligne.
+Chasseur : profil vérifié qui répond aux quêtes des acheteurs et peut recruter des vendeurs grâce à un code de parrainage (voir articles 7 et 8).
+Équipe WennaShop : administrateurs et agents de paiement. Les agents vérifient les paiements déclarés ; ils n'ont accès qu'à cette fonction.
 
-4. Commissions et paiements
-WennaShop prélève une commission sur chaque vente, dont le taux dépend de la catégorie du produit vendu (à partir de 6%, grille disponible publiquement sur le site). Un taux dérogatoire peut être appliqué à une boutique par l'administration. Les paiements sont traités via CinetPay et PayDunia.
+4. Prix, devises et commissions
+Les prix sont fixés par les vendeurs dans leur devise. Pour un acheteur d'un autre pays, ils sont convertis dans sa devise au taux du jour, majoré d'une marge de sécurité qui couvre les frais de change. Le montant à payer est toujours calculé par WennaShop au moment de la commande, à partir des prix des produits : c'est ce montant qui fait foi. Les montants en FCFA sont arrondis à l'unité supérieure.
+WennaShop prélève une commission sur chaque vente, selon la catégorie du produit (de 6 à 13 %, grille publique sur la page Commissions). Un taux particulier peut être accordé à une boutique par l'administration. L'inscription et la publication de produits sont gratuites.
 
-5. Programme de parrainage chasseurs
-Un chasseur vérifié dispose d'un code de parrainage unique qu'il peut transmettre à un vendeur. Le vendeur recruté doit saisir ce code dans les 7 jours suivant la création de sa boutique. Le chasseur perçoit alors une prime unique lorsque la boutique recrutée atteint un nombre minimal de commandes livrées, ainsi qu'un pourcentage de la commission WennaShop perçue sur les ventes de cette boutique pendant une durée limitée après le recrutement. Les gains sont bloqués quelques jours après chaque livraison avant de devenir disponibles, et sont annulés en cas d'annulation ou de retour de la commande concernée. Les montants et durées exacts de ce programme sont consultables dans l'espace chasseur et peuvent évoluer ; toute évolution s'applique aux recrutements futurs.
+5. Paiement
+5.1 Moyens disponibles. Seuls les moyens actifs pour le pays de livraison s'affichent au moment de payer. À ce jour : au Gabon, paiement à la livraison, Airtel Money et Moov Money ; au Maroc, paiement à la livraison et virement bancaire. Les frais facturés par l'opérateur ou la banque sont à la charge de l'acheteur.
+5.2 Paiement à la livraison. L'acheteur paie le vendeur en espèces à la réception. La commande part en préparation dès sa validation. Il n'est pas proposé pour les quêtes.
+5.3 Paiement mobile money et virement. L'acheteur reçoit le montant exact, le numéro ou le RIB de réception WennaShop et une référence (WN-…). Il envoie le montant exact, puis déclare son paiement sur la page de sa commande avec l'identifiant de transaction (une capture peut être jointe). Un agent WennaShop vérifie la transaction sur le relevé de l'opérateur ou de la banque, puis :
+- valide le paiement : la commande passe en préparation et le vendeur est prévenu ;
+- ou le refuse avec un motif (transaction introuvable, montant incorrect, identifiant déjà utilisé…) : l'acheteur dispose alors de 12 heures supplémentaires pour corriger et déclarer à nouveau.
+Le paiement doit être déclaré dans les 24 heures suivant la commande ; passé ce délai, la commande est annulée automatiquement. Un montant reçu inférieur au montant dû n'est pas validé. Un identifiant de transaction ne peut servir qu'une fois. Déclarer un paiement qui n'a pas eu lieu est une fraude et entraîne la fermeture du compte.
+Les paiements par mobile money et virement sont encaissés par WennaShop pour le compte du vendeur. Aucune coordonnée bancaire ni code secret n'est demandé ou conservé par WennaShop.
+5.4 Reversement aux vendeurs. Pour une commande payée en ligne, WennaShop reverse au vendeur le montant de sa vente moins la commission, après la livraison, par mobile money ou virement. Pour le paiement à la livraison, le vendeur encaisse directement et la commission reste due à WennaShop.
+5.5 Remboursement. Si une commande payée est annulée avant expédition, n'est pas livrée, ou fait l'objet d'un remboursement accepté (article 9), WennaShop rembourse l'acheteur par le moyen utilisé pour payer, dans les meilleurs délais. Un trop-perçu est remboursé de la même façon.
+5.6 Portefeuille et options vendeurs. Lorsqu'ils sont proposés, le portefeuille vendeur et les options de mise en avant (boosts) se règlent par recharge : le portefeuille n'est crédité qu'après réception des fonds constatée par l'équipe. Les retraits sont examinés par l'équipe avant versement.
 
-6. Retraits vendeurs
-Un vendeur peut demander le retrait de son solde disponible depuis son tableau de bord. Chaque demande est examinée par l'administration WennaShop avant versement.
+6. Commandes et livraison
+Les délais de livraison sont indiqués par chaque vendeur. Le vendeur expédie et met à jour le suivi ; il ne peut pas passer en préparation une commande dont le paiement en ligne n'a pas été validé, ni modifier son montant.
 
-7. Commandes, livraison et retours
-Les délais de livraison sont indiqués par chaque vendeur sur sa fiche produit. Toute réclamation (produit non conforme, non reçu) doit être signalée sous 7 jours après réception via la page de suivi de commande. Les modalités de retour et de remboursement sont propres à chaque vendeur et précisées sur sa boutique ; à défaut d'accord, WennaShop peut intervenir en médiation entre l'acheteur et le vendeur.
+7. Chasseurs et quêtes
+7.1 Devenir chasseur. Le statut de chasseur est ouvert à tout utilisateur majeur après vérification de son identité (document officiel et adresse), en général sous 48 heures. Un dossier refusé l'est avec un motif et peut être renvoyé.
+7.2 Quêtes. Un acheteur publie une quête : le produit recherché, la quantité, le budget et une récompense pour le chasseur. Les chasseurs envoient des offres (prix du produit et poids réel). Le transport est calculé par WennaShop selon le poids et le trajet ; tant qu'aucun tarif ne couvre le trajet, il reste à confirmer. L'acheteur peut annuler une quête tant qu'aucune offre n'a été payée.
+7.3 Paiement d'une quête. Quand l'acheteur choisit une offre, il paie en une fois le prix du produit, le transport et la récompense, par mobile money ou virement (jamais à la livraison). L'offre n'est retenue qu'après validation du paiement ; le chasseur est alors prévenu et les autres offres sont écartées. WennaShop conserve les fonds jusqu'à la livraison, puis verse au chasseur le prix de l'offre et la récompense. Le poids indiqué dans une offre ne peut plus être modifié une fois le paiement engagé.
+7.4 Obligations du chasseur. Le chasseur s'engage à décrire honnêtement le produit proposé, à indiquer son poids réel et à livrer dans les délais annoncés. Une offre trompeuse ou un produit non conforme peut entraîner l'annulation de la récompense et la suspension du statut de chasseur.
 
-8. Responsabilités
-WennaShop agit en qualité d'intermédiaire technique. Les vendeurs assument l'entière responsabilité de la conformité de leurs articles.
+8. Programme de parrainage
+8.1 Code. Chaque chasseur vérifié reçoit un code de parrainage personnel (WS-…) et un lien d'inscription à partager avec des vendeurs.
+8.2 Rattachement. Le vendeur recruté s'inscrit avec le lien ou saisit le code dans les 7 jours suivant la création de sa boutique. Une boutique ne peut être rattachée qu'à un seul chasseur, et ce rattachement ne peut plus être modifié. Se parrainer soi-même est interdit, y compris avec un second compte ou le même numéro de téléphone.
+8.3 Gains. La boutique est « activée » lorsqu'elle atteint 3 commandes livrées : le chasseur reçoit alors une prime unique de 3 000 FCFA. Pendant 6 mois à compter du rattachement, il perçoit aussi 20 % de la commission WennaShop prélevée sur les ventes livrées de cette boutique.
+8.4 Disponibilité. Chaque gain devient disponible 7 jours après la livraison concernée. Les commissions liées à une commande annulée ou retournée sont annulées. Un gain obtenu par fraude (commandes fictives, auto-parrainage) est annulé et peut entraîner la fermeture du compte.
+8.5 Évolution. Les montants, pourcentages et durées en vigueur sont affichés dans l'espace chasseur. Ils peuvent évoluer ; une modification ne s'applique qu'aux recrutements effectués après son annonce.
 
-9. Propriété intellectuelle
-Le nom, le logo et les éléments graphiques de WennaShop sont la propriété exclusive de Hexjen Conceptions.
+9. Réclamations, retours et remboursements
+Toute réclamation (produit non reçu, abîmé ou non conforme) doit être signalée dans les 7 jours suivant la réception, depuis la page de suivi de commande ou le formulaire de réclamation. Les conditions de retour sont propres à chaque vendeur et indiquées sur sa boutique. À défaut d'accord entre l'acheteur et le vendeur, WennaShop intervient en médiation et peut décider d'un remboursement lorsque le paiement a transité par WennaShop.
 
-10. Loi applicable
-Les présentes CGU sont soumises au droit marocain. Tout litige sera soumis aux tribunaux de Casablanca, Maroc.`;
+10. Responsabilités
+WennaShop agit en intermédiaire technique : le contrat de vente est conclu entre l'acheteur et le vendeur. Le vendeur est seul responsable de la conformité, de la légalité et de la description de ses produits ; le chasseur, de ses offres. Sont interdits notamment les contrefaçons, les produits dangereux ou illicites et toute vente contraire à la loi du pays d'expédition ou de livraison.
 
-export const PRIVACY_TEXT = `Dernière mise à jour : juillet 2026
+11. Propriété intellectuelle
+Le nom, le logo, la mascotte et les éléments graphiques de WennaShop sont la propriété exclusive de Hexjen Conceptions. Les vendeurs et chasseurs garantissent détenir les droits sur les photos et textes qu'ils publient et autorisent WennaShop à les afficher pour promouvoir leurs produits.
+
+12. Modification des CGU
+WennaShop peut modifier les présentes CGU. La date de mise à jour figure en tête de page ; les changements importants sont signalés aux utilisateurs.
+
+13. Loi applicable
+Les présentes CGU sont soumises au droit marocain. Tout litige sera soumis aux tribunaux de Casablanca, Maroc, après une tentative de règlement amiable auprès de support@wennashop.com.`;
+
+export const PRIVACY_TEXT = `Dernière mise à jour : 14 octobre 2026
 
 1. Responsable du traitement
-Hexjen Conceptions, société basée à Casablanca, Maroc.
+Hexjen Conceptions, société basée à Casablanca, Maroc, éditrice de WennaShop. Contact : privacy@wennashop.com.
 
 2. Données collectées
-Données d'identité : prénom, nom, email, genre (optionnel).
-Données de localisation : pays de résidence, adresse exacte (vendeurs).
-Données de vérification vendeur : document d'identité (CNI ou passeport) requis pour la validation du compte.
-Données de transaction : historique de commandes, montants, statuts, demandes de retrait.
+Compte : prénom, nom, e-mail, téléphone, pays, genre (facultatif), photo de profil (facultative).
+Vendeurs et chasseurs : document d'identité (CNI ou passeport, recto et verso), adresse exacte, informations de boutique, coordonnées de versement (numéro mobile money ou RIB).
+Commandes : articles, montants, adresse et téléphone de livraison, statut et suivi.
+Paiements : moyen utilisé, montant, référence WN-…, identifiant de transaction, numéro d'envoi déclaré, capture de paiement si tu en joins une, et historique des vérifications. Aucun code secret ni donnée de carte bancaire n'est demandé ou conservé.
+Quêtes et parrainage : quêtes publiées, offres, poids et photos des produits proposés, code de parrainage, boutiques recrutées et gains.
+Échanges : réclamations, avis et notifications.
+Mesure d'audience : statistiques anonymes de fréquentation (Vercel Analytics, sans cookie publicitaire).
 
-3. Partage des données
-Vos données ne sont jamais vendues à des tiers. Elles peuvent être partagées avec nos prestataires de paiement et Supabase. Les documents d'identité vendeurs sont stockés dans un espace privé, accessible uniquement à l'administration WennaShop.
+3. Pourquoi
+Faire fonctionner le compte et les commandes, vérifier les vendeurs, les chasseurs et les paiements, verser les reversements et les gains de parrainage, prévenir la fraude, répondre aux réclamations et respecter nos obligations comptables et légales.
 
-4. Conservation
-Les données sont conservées le temps de l'utilisation du compte. En cas de suppression de compte, ton compte et tes identifiants de connexion sont supprimés immédiatement et définitivement. Les données liées à des commandes passées peuvent être conservées à des fins comptables et légales, conformément à la réglementation en vigueur.
+4. Qui y a accès
+L'équipe WennaShop, selon son rôle : les agents de paiement voient uniquement les paiements à vérifier (nom du client, montant, référence, identifiant de transaction, numéro d'envoi, capture). Le vendeur reçoit ce qui est nécessaire pour expédier ta commande (nom, adresse, téléphone de livraison). Les documents d'identité et les captures de paiement sont stockés dans des espaces privés, lisibles seulement par toi et par l'équipe habilitée.
+Prestataires techniques, chacun pour sa fonction : Supabase (base de données et fichiers, hébergés en Irlande), Vercel (hébergement du site et mesure d'audience), Resend (envoi des e-mails), opérateurs de paiement (Airtel Money, Moov Money, SingPay, banques) pour les paiements, Didit pour la vérification d'identité automatique lorsqu'elle est proposée, n8n et Telegram pour alerter l'équipe d'un paiement à vérifier.
+Tes données ne sont jamais vendues.
 
-5. Vos droits
-Accès, rectification, suppression : privacy@wennashop.com
+5. Stockage dans ton navigateur
+Le site garde dans ton navigateur ton panier, ton pays d'affichage, l'avancement des visites guidées, un code de parrainage reçu par lien et, pour l'équipe, l'appareil reconnu. Aucun cookie publicitaire.
 
-6. Sécurité
-Données chiffrées en transit (HTTPS) et au repos. Aucune donnée bancaire stockée sur nos serveurs.`;
+6. Conservation
+Les données du compte sont conservées tant que le compte existe. Si tu supprimes ton compte, ton profil et tes identifiants de connexion sont supprimés. Les données liées à des commandes, paiements et reversements sont conservées le temps imposé par la réglementation comptable et fiscale. Les documents d'identité sont supprimés avec le compte.
 
-export const LEGAL_MENTIONS_TEXT = `Dernière mise à jour : juillet 2026
+7. Tes droits
+Tu peux accéder à tes données, les corriger, demander leur suppression ou t'opposer à un traitement en écrivant à privacy@wennashop.com. Ces droits s'exercent conformément à la loi marocaine n° 09-08 et à la réglementation gabonaise sur la protection des données personnelles. Tu peux aussi saisir l'autorité de protection des données de ton pays.
+
+8. Sécurité
+Les échanges sont chiffrés (HTTPS) et les données chiffrées au repos. Chaque utilisateur n'accède qu'à ses propres données ; l'accès de l'équipe est limité par rôle, et les connexions administrateur depuis un nouvel appareil sont confirmées par un code envoyé par e-mail.`;
+
+export const LEGAL_MENTIONS_TEXT = `Dernière mise à jour : 14 octobre 2026
 
 Éditeur du site
 WennaShop est édité par Hexjen Conceptions, société basée à Casablanca, Maroc.
-Contact : contact@wennashop.com
+Contact : contact@wennashop.com · Support : support@wennashop.com · Données personnelles : privacy@wennashop.com
 
 Hébergement
-Le site est hébergé par Vercel Inc. (340 S Lemon Ave #4133, Walnut, CA 91789, États-Unis) et Netlify Inc. Les données applicatives sont hébergées par Supabase.
+Site : Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, États-Unis.
+Données et fichiers : Supabase Inc., serveurs situés en Irlande (Union européenne).
 
 Nature de l'activité
-WennaShop est une marketplace mettant en relation des vendeurs (artisans et commerçants) et des acheteurs entre le Gabon et le Maroc. WennaShop agit en qualité d'intermédiaire technique et n'est pas partie aux contrats de vente conclus entre vendeurs et acheteurs.
+WennaShop est une marketplace qui met en relation des vendeurs (artisans et commerçants) et des acheteurs entre le Gabon et le Maroc. WennaShop agit en intermédiaire technique et n'est pas partie aux contrats de vente conclus entre vendeurs et acheteurs. Les paiements par mobile money et virement sont encaissés par WennaShop pour le compte des vendeurs, puis reversés après livraison, commission déduite.
 
 Propriété intellectuelle
-L'ensemble des éléments graphiques, textuels et logiciels du site WennaShop (logo, charte graphique, code) est la propriété exclusive de Hexjen Conceptions, sauf mention contraire.
+Les éléments graphiques, textuels et logiciels du site (logo, mascotte, charte graphique, code) sont la propriété exclusive de Hexjen Conceptions, sauf mention contraire.
 
 Médiation
-En cas de litige, l'utilisateur peut contacter le support à support@wennashop.com avant toute action judiciaire.`;
+En cas de litige, contacte d'abord le support à support@wennashop.com.`;
