@@ -23,13 +23,13 @@ WennaShop prélève une commission sur chaque vente, selon la catégorie du prod
 
 5. Paiement
 5.1 Moyens disponibles. Seuls les moyens actifs pour le pays de livraison s'affichent au moment de payer. À ce jour : au Gabon, paiement à la livraison, Airtel Money et Moov Money ; au Maroc, paiement à la livraison et virement bancaire. Les frais facturés par l'opérateur ou la banque sont à la charge de l'acheteur.
-5.2 Paiement à la livraison. L'acheteur paie le vendeur en espèces à la réception. La commande part en préparation dès sa validation. Il n'est pas proposé pour les quêtes.
+5.2 Paiement à la livraison. L'acheteur paie en espèces à la réception, au livreur mandaté par WennaShop (livreur local ou société de livraison partenaire), qui encaisse pour le compte de WennaShop. La commande part en préparation dès sa validation. Il n'est pas proposé pour les quêtes.
 5.3 Paiement mobile money et virement. L'acheteur reçoit le montant exact, le numéro ou le RIB de réception WennaShop et une référence (WN-…). Il envoie le montant exact, puis déclare son paiement sur la page de sa commande avec l'identifiant de transaction (une capture peut être jointe). Un agent WennaShop vérifie la transaction sur le relevé de l'opérateur ou de la banque, puis :
 - valide le paiement : la commande passe en préparation et le vendeur est prévenu ;
 - ou le refuse avec un motif (transaction introuvable, montant incorrect, identifiant déjà utilisé…) : l'acheteur dispose alors de 12 heures supplémentaires pour corriger et déclarer à nouveau.
 Le paiement doit être déclaré dans les 24 heures suivant la commande ; passé ce délai, la commande est annulée automatiquement. Un montant reçu inférieur au montant dû n'est pas validé. Un identifiant de transaction ne peut servir qu'une fois. Déclarer un paiement qui n'a pas eu lieu est une fraude et entraîne la fermeture du compte.
 Les paiements par mobile money et virement sont encaissés par WennaShop pour le compte du vendeur. Aucune coordonnée bancaire ni code secret n'est demandé ou conservé par WennaShop.
-5.4 Reversement aux vendeurs. Pour une commande payée en ligne, WennaShop reverse au vendeur le montant de sa vente moins la commission, après la livraison, par mobile money ou virement. Pour le paiement à la livraison, le vendeur encaisse directement et la commission reste due à WennaShop.
+5.4 Reversement aux vendeurs. Pour une commande payée en ligne, WennaShop reverse au vendeur le montant de sa vente moins la commission, après la livraison, par mobile money ou virement. Il en va de même pour le paiement à la livraison : WennaShop récupère les espèces auprès du livreur, puis reverse au vendeur sa part, commission déduite. Chaque reversement est communiqué au vendeur avec sa référence.
 5.5 Remboursement. Si une commande payée est annulée avant expédition, n'est pas livrée, ou fait l'objet d'un remboursement accepté (article 9), WennaShop rembourse l'acheteur par le moyen utilisé pour payer, dans les meilleurs délais. Un trop-perçu est remboursé de la même façon.
 5.6 Portefeuille et options vendeurs. Lorsqu'ils sont proposés, le portefeuille vendeur et les options de mise en avant (boosts) se règlent par recharge : le portefeuille n'est crédité qu'après réception des fonds constatée par l'équipe. Les retraits sont examinés par l'équipe avant versement.
 
@@ -39,7 +39,7 @@ Les délais de livraison sont indiqués par chaque vendeur. Le vendeur expédie 
 7. Chasseurs et quêtes
 7.1 Devenir chasseur. Le statut de chasseur est ouvert à tout utilisateur majeur après vérification de son identité (document officiel et adresse), en général sous 48 heures. Un dossier refusé l'est avec un motif et peut être renvoyé.
 7.2 Quêtes. Un acheteur publie une quête : le produit recherché, la quantité, le budget et une récompense pour le chasseur. Les chasseurs envoient des offres (prix du produit et poids réel). Le transport est calculé par WennaShop selon le poids et le trajet ; tant qu'aucun tarif ne couvre le trajet, il reste à confirmer. L'acheteur peut annuler une quête tant qu'aucune offre n'a été payée.
-7.3 Paiement d'une quête. Quand l'acheteur choisit une offre, il paie en une fois le prix du produit, le transport et la récompense, par mobile money ou virement (jamais à la livraison). L'offre n'est retenue qu'après validation du paiement ; le chasseur est alors prévenu et les autres offres sont écartées. WennaShop conserve les fonds jusqu'à la livraison, puis verse au chasseur le prix de l'offre et la récompense. Le poids indiqué dans une offre ne peut plus être modifié une fois le paiement engagé.
+7.3 Paiement d'une quête. Quand l'acheteur choisit une offre, il paie en une fois le prix du produit, le transport et la récompense, par mobile money ou virement (jamais à la livraison). L'offre n'est retenue qu'après validation du paiement ; le chasseur est alors prévenu et les autres offres sont écartées. WennaShop conserve les fonds jusqu'à la livraison, puis verse au chasseur le prix de l'offre, le transport et la récompense, déduction faite d'une commission de 10 % de la récompense. Le poids indiqué dans une offre ne peut plus être modifié une fois le paiement engagé.
 7.4 Obligations du chasseur. Le chasseur s'engage à décrire honnêtement le produit proposé, à indiquer son poids réel et à livrer dans les délais annoncés. Une offre trompeuse ou un produit non conforme peut entraîner l'annulation de la récompense et la suspension du statut de chasseur.
 
 8. Programme de parrainage
@@ -109,7 +109,7 @@ Site : Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, États-Unis.
 Données et fichiers : Supabase Inc., serveurs situés en Irlande (Union européenne).
 
 Nature de l'activité
-WennaShop est une marketplace qui met en relation des vendeurs (artisans et commerçants) et des acheteurs entre le Gabon et le Maroc. WennaShop agit en intermédiaire technique et n'est pas partie aux contrats de vente conclus entre vendeurs et acheteurs. Les paiements par mobile money et virement sont encaissés par WennaShop pour le compte des vendeurs, puis reversés après livraison, commission déduite.
+WennaShop est une marketplace qui met en relation des vendeurs (artisans et commerçants) et des acheteurs entre le Gabon et le Maroc. WennaShop agit en intermédiaire technique et n'est pas partie aux contrats de vente conclus entre vendeurs et acheteurs. Les paiements par mobile money, virement et à la livraison sont encaissés par WennaShop (directement ou par ses livreurs partenaires) pour le compte des vendeurs, puis reversés après livraison, commission déduite.
 
 Propriété intellectuelle
 Les éléments graphiques, textuels et logiciels du site (logo, mascotte, charte graphique, code) sont la propriété exclusive de Hexjen Conceptions, sauf mention contraire.

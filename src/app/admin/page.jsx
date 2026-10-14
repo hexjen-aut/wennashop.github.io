@@ -1154,7 +1154,7 @@ export default function AdminPage() {
         ))}
         {[
           ['/admin/paiements', 'ph-seal-check', 'Vérification paiements', 'verif'],
-          ['/admin/reversements', 'ph-hand-coins', 'Reversements', 'reversements'],
+          ['/admin/compta', 'ph-calculator', 'Comptabilité', 'compta'],
         ].map(([href, icon, label, key]) => (
           <a key={href} href={href} id={`tour-admin-nav-${key}`} className={`${styles.navItem} ${tourHl(`tour-admin-nav-${key}`)}`} style={{ textDecoration: 'none' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}><i className={`ph ${icon}`} />{label}</span>
