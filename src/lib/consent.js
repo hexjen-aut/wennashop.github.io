@@ -1,6 +1,7 @@
 // Consentement aux cookies et traceurs non indispensables.
 // Le stockage nécessaire (connexion, panier, pays, visites guidées) n'en
-// dépend pas. Seule la mesure d'audience (Vercel Analytics) attend l'accord.
+// dépend pas. Seule la mesure d'audience (Vercel Analytics, Google Analytics)
+// attend l'accord.
 // Le choix est gardé dans le navigateur ; on redemande au bout de 6 mois ou
 // quand CONSENT_VERSION change (nouveau traceur à déclarer).
 
@@ -9,6 +10,9 @@ export const CONSENT_VERSION = 1;
 export const CONSENT_EVENT = 'wenna-consent-change';
 export const CONSENT_OPEN_EVENT = 'wenna-consent-open';
 const MAX_AGE_MS = 182 * 24 * 60 * 60 * 1000;
+
+// Identifiant de mesure Google Analytics 4 (public, visible dans la page).
+export const GA_ID = 'G-YBEGPCCX76';
 
 export function readConsent() {
   try {

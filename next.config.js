@@ -20,7 +20,10 @@ const nextConfig = {
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=(self)' },
-          { key: 'Content-Security-Policy', value: "default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://vercel.live; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://aakxoydznmybstfozjte.supabase.co wss://aakxoydznmybstfozjte.supabase.co https://accounts.google.com https://vercel.live wss://ws-us3.pusher.com https://*.pusher.com; frame-src https://accounts.google.com https://js.cinetpay.com https://paydunia.com https://vercel.live; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;" },
+          // Google Analytics : googletagmanager (script) et google-analytics /
+          // analytics.google.com (envoi). stats.g.doubleclick.net (publicitaire)
+          // reste bloqué volontairement.
+          { key: 'Content-Security-Policy', value: "default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://vercel.live https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://www.googletagmanager.com https://aakxoydznmybstfozjte.supabase.co wss://aakxoydznmybstfozjte.supabase.co https://accounts.google.com https://vercel.live wss://ws-us3.pusher.com https://*.pusher.com; frame-src https://accounts.google.com https://js.cinetpay.com https://paydunia.com https://vercel.live; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;" },
         ],
       },
     ];
