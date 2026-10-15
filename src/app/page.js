@@ -10,9 +10,29 @@ export const metadata = {
   alternates: { canonical: 'https://wennashop.com/' },
 };
 
+// Nom du site dans les résultats Google (au lieu de « wennashop.com ») :
+// Google le lit sur la page d'accueil uniquement.
+const STRUCTURED_DATA = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'WennaShop',
+    alternateName: ['Wenna Shop', 'WennaShop Gabon Maroc'],
+    url: 'https://wennashop.com/',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'WennaShop',
+    url: 'https://wennashop.com/',
+    logo: 'https://wennashop.com/icon-512.png',
+  },
+];
+
 export default function HomePage() {
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(STRUCTURED_DATA) }} />
       <HomeSessionRedirect />
       <BoutiqueClient />
     </>
