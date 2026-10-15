@@ -19,6 +19,8 @@ export default function DevenirChasseurPage() {
     const sb = getSupabase();
     const { data: { session } } = await sb.auth.getSession();
     if (!session) { alert('Connecte-toi pour devenir chasseur.'); router.push('/connexion'); return; }
+    const { data: me } = await sb.from('users').select('hunter_status').eq('auth_id', session.user.id).maybeSingle();
+    if (me?.hunter_status === 'verified') { alert('Tu es déjà chasseur vérifié.'); router.push('/chasseur'); return; }
     if (!form.firstName || !form.lastName || !form.country || !form.city || !form.phone) return alert('Remplis tous les champs.');
     if (!form.docType) return alert("Sélectionne le type de document d'identité.");
     if (!rectoFile) return alert('Ajoute le recto de ton document.');

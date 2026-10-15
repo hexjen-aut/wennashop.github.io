@@ -21,7 +21,7 @@ export const WENNA_FAQ = [
     id: 'paiement',
     popular: true,
     q: 'Quels sont les moyens de paiement ?',
-    a: "Au Maroc : paiement à la livraison (espèces) ou virement bancaire. Au Gabon : paiement à la livraison, Airtel Money ou Moov Money. Au moment de payer, seuls les moyens disponibles pour ton pays s'affichent. Pour un virement, indique dans le motif la référence affichée (WS-…) : sans virement reçu sous 72 h, la commande est annulée.",
+    a: "Au Maroc : paiement à la livraison (espèces) ou virement bancaire. Au Gabon : paiement à la livraison, Airtel Money ou Moov Money. Au moment de payer, seuls les moyens disponibles pour ton pays s'affichent. Pour Airtel Money, Moov Money ou un virement, envoie le montant exact au numéro ou au RIB affiché sur ta commande avec la référence WN-…, dans les 24 h, puis clique « J'ai payé » et saisis l'ID de transaction. Sans paiement déclaré à temps, la commande est annulée.",
     keywords: 'payer paiement carte bancaire espèces cash livraison virement mobile money airtel moov orange',
   },
   {
@@ -43,7 +43,7 @@ export const WENNA_FAQ = [
     id: 'probleme',
     popular: true,
     q: "Mon colis n'est pas arrivé ou ne correspond pas",
-    a: "Signale-le dans les 7 jours après la réception avec « Envoyer une réclamation » (juste en dessous), en indiquant ton numéro de commande. Les retours et remboursements dépendent de chaque vendeur ; si vous ne trouvez pas d'accord, l'équipe WennaShop intervient en médiation.",
+    a: "Signale-le dans les 7 jours après la réception avec « Envoyer une réclamation » (juste en dessous), en indiquant ton numéro de commande et, si le produit est abîmé ou non conforme, des photos. Produit abîmé, non conforme ou non reçu : remboursement intégral, frais de retour compris. Changement d'avis : retour possible sous 7 jours si le produit est intact, renvoi à ta charge. Tout est détaillé dans la Politique de retour (wennashop.com/retours).",
     keywords: 'problème reçu pas arrivé non conforme cassé abîmé défectueux retour rembourser remboursement réclamation litige échange',
     contact: true,
   },
@@ -109,7 +109,7 @@ export const WENNA_FAQ = [
   {
     id: 'chasseur',
     q: 'Comment devenir chasseur ?',
-    a: "Depuis la page « Devenir chasseur », envoie ta vérification d'identité : réponse sous 48 h. Ensuite, tu réponds aux quêtes des acheteurs et tu peux recruter des vendeurs avec ton code de parrainage pour toucher une prime.",
+    a: "Ouvre l'onglet « Chasse » (ou la page « Devenir chasseur »), remplis le formulaire et envoie ta pièce d'identité (CNI recto et verso, ou passeport) : l'équipe vérifie sous 48 h. Une fois validé, tu réponds aux quêtes des acheteurs et tu reçois ton code de parrainage pour recruter des vendeurs.",
     keywords: 'chasseur devenir gagner argent parrainage code recruter prime',
     link: { href: '/devenir-chasseur', label: 'Devenir chasseur' },
   },

@@ -1,0 +1,26 @@
+/* Comptabilité : complète admin.module.css et staff.module.css */
+.stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; margin-bottom: 18px; }
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; }
+.statNum { font-size: 20px; font-weight: 900; line-height: 1.1; word-break: break-word; }
+.statLabel { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-faint); margin-top: 6px; }
+.statHint { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+.cur { font-size: 13px; font-weight: 800; margin: 4px 0 8px; }
+.filters { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; padding: 14px 18px; border-bottom: 1px solid var(--border); }
+.filters > label { display: flex; flex-direction: column; gap: 5px; min-width: 140px; flex: 1 1 140px; }
+.filters > .month { max-width: 220px; }
+.filters > .actions { display: flex; gap: 8px; flex-wrap: wrap; flex: 0 0 auto; }
+.pos { color: var(--success, #16a34a); font-weight: 700; }
+.neg { color: var(--error); font-weight: 700; }
+.muted { font-size: 11px; color: var(--text-faint); }
+.note { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px; max-width: 760px; }
+.form { padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.row2 > label, .form > label { display: flex; flex-direction: column; gap: 5px; }
+.check { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); }
+.right { text-align: right; white-space: nowrap; }
+.inlineInput { width: 110px; }
+.link { background: none; border: none; color: var(--accent); font-size: 11px; font-weight: 700; cursor: pointer; font-family: var(--font); padding: 0; }
+@media (max-width: 520px) {
+  .row2 { grid-template-columns: 1fr; }
+  .statNum { font-size: 18px; }
+}

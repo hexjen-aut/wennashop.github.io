@@ -9,6 +9,7 @@ export default function Footer() {
         <nav className={styles.links}>
           <Link href="/commissions">Commissions</Link>
           <Link href="/cgu">CGU</Link>
+          <Link href="/retours">Retours</Link>
           <Link href="/confidentialite">Confidentialité</Link>
           <Link href="/mentions-legales">Mentions légales</Link>
         </nav>

@@ -280,7 +280,11 @@ export default function ComptePage() {
     const sb = getSupabase();
     try {
       const { error } = await sb.functions.invoke('delete-account');
-      if (error) throw error;
+      if (error) {
+        // Message du serveur (retrait en cours, compte admin…) plutôt que l'erreur HTTP brute
+        const body = await error.context?.json?.().catch(() => null);
+        throw new Error(body?.error || error.message);
+      }
       await sb.auth.signOut();
       router.push('/');
     } catch (err) {

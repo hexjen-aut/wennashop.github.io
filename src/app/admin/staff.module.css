@@ -31,6 +31,20 @@
 .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
 .history { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
 .history li { margin-bottom: 6px; }
+/* Guide de l'équipe */
+.guide { display: flex; flex-direction: column; gap: 8px; max-width: 760px; }
+.guideIntro { font-size: 13px; color: var(--text-muted); margin-bottom: 4px; }
+.guideReplay { align-self: flex-start; background: none; border: 1.5px solid var(--border-accent); color: var(--accent); border-radius: var(--radius-pill); padding: 8px 14px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: var(--font); margin-bottom: 6px; }
+.guideItem { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); }
+.guideItem[open] { border-color: var(--border-accent); }
+.guideSummary { cursor: pointer; padding: 14px 16px; font-size: 14px; font-weight: 800; color: var(--text); display: flex; justify-content: space-between; align-items: center; gap: 10px; list-style-position: inside; }
+.guideWho { font-size: 10px; font-weight: 700; color: var(--text-faint); white-space: nowrap; }
+.guideSteps { margin: 0; padding: 0 18px 4px 36px; font-size: 13px; color: var(--text); line-height: 1.6; }
+.guideSteps li { margin-bottom: 8px; }
+.guideNote { margin: 0 16px 14px; padding: 10px 12px; border-radius: var(--radius-md); background: var(--accent-light); color: var(--text); font-size: 12px; line-height: 1.5; }
+.guideBtn { background: none; border: 1px solid var(--border); color: var(--text); border-radius: var(--radius-pill); padding: 6px 12px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: var(--font); }
+.guideModal { width: 100%; max-width: 720px; max-height: 90vh; overflow-y: auto; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px 18px 28px; }
+.headActions { display: flex; align-items: center; gap: 12px; }
 @media (max-width: 520px) {
   .dl { grid-template-columns: 1fr; gap: 2px; }
   .dl dd { margin-bottom: 8px; }

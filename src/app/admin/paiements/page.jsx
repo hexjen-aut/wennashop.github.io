@@ -4,6 +4,10 @@ import { Suspense, useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { getSupabase } from '@/lib/supabase';
+import TourOverlay from '@/components/TourOverlay';
+import tourStyles from '@/components/TourOverlay.module.css';
+import AdminGuide from '../AdminGuide';
+import { AGENT_TOUR_STEPS } from '../guide';
 import a from '../admin.module.css';
 import s from '../staff.module.css';
 
@@ -159,6 +163,9 @@ function PaiementsAgent() {
   const [counts, setCounts] = useState({});
   const [summary, setSummary] = useState([]);
   const [selected, setSelected] = useState(null);
+  const [guideOpen, setGuideOpen] = useState(false);
+  const [me, setMe] = useState(null);
+  const [tourStep, setTourStep] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -167,8 +174,33 @@ function PaiementsAgent() {
       if (!session) { setAccess('login'); return; }
       const { data } = await sb.rpc('is_payment_staff');
       setAccess(data === true ? 'ok' : 'denied');
+      if (data !== true) return;
+      // Visite guidée au premier passage sur cette page
+      const { data: u } = await sb.from('users').select('id, agent_tour_completed_at').eq('auth_id', session.user.id).maybeSingle();
+      setMe(u);
+      if (u && !u.agent_tour_completed_at && !params.get('id')) setTourStep(0);
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (tourStep === null) return;
+    document.getElementById(AGENT_TOUR_STEPS[tourStep]?.targetId)?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }, [tourStep]);
+
+  function endTour() {
+    setTourStep(null);
+    if (!me?.id) return;
+    const now = new Date().toISOString();
+    // .then() : la requête Supabase ne part que lorsqu'on l'attend
+    getSupabase().from('users').update({ agent_tour_completed_at: now }).eq('id', me.id).then(() => {});
+    setMe((prev) => ({ ...prev, agent_tour_completed_at: now }));
+  }
+  function nextTourStep() {
+    if (tourStep < AGENT_TOUR_STEPS.length - 1) setTourStep(tourStep + 1);
+    else endTour();
+  }
+  function tourHl(id) { return tourStep !== null && AGENT_TOUR_STEPS[tourStep]?.targetId === id ? tourStyles.tourHighlight : ''; }
 
   const load = useCallback(async () => {
     const sb = getSupabase();
@@ -208,7 +240,10 @@ function PaiementsAgent() {
     <div className={s.page}>
       <div className={s.head}>
         <h1 className={s.title}>Vérification des paiements</h1>
-        <Link href="/admin" className={s.back}>Retour à l'admin</Link>
+        <div className={s.headActions}>
+          <button id="tour-agent-guide" className={`${s.guideBtn} ${tourHl('tour-agent-guide')}`} onClick={() => setGuideOpen(true)}>Guide</button>
+          <Link href="/admin" className={s.back}>Retour à l'admin</Link>
+        </div>
       </div>
 
       {lateCount > 0 && (
@@ -217,7 +252,7 @@ function PaiementsAgent() {
         </div>
       )}
 
-      <div className={s.tabs} role="tablist">
+      <div id="tour-agent-tabs" className={`${s.tabs} ${tourHl('tour-agent-tabs')}`} role="tablist">
         {TABS.map(([k, label]) => (
           <button key={k} role="tab" aria-selected={tab === k} className={`${s.tab} ${tab === k ? s.tabActive : ''}`} onClick={() => setTab(k)}>
             {label}<span className={s.count}>{k === 'awaiting_payment' ? (rows.awaiting_payment || []).length : counts[k] ?? 0}</span>
@@ -225,7 +260,7 @@ function PaiementsAgent() {
         ))}
       </div>
 
-      <div className={a.card}>
+      <div id="tour-agent-table" className={`${a.card} ${tourHl('tour-agent-table')}`}>
         <div className={a.tableWrap}>
           <table className={a.table}>
             <thead><tr><th>Référence</th><th>Moyen</th><th>Montant</th><th>ID transaction</th><th>Client</th><th>{tab === 'validated' ? 'Validé le' : tab === 'declared' ? 'Déclaré' : 'Expire le'}</th></tr></thead>
@@ -252,7 +287,7 @@ function PaiementsAgent() {
         </div>
       </div>
 
-      <div className={a.card}>
+      <div id="tour-agent-summary" className={`${a.card} ${tourHl('tour-agent-summary')}`}>
         <div className={a.cardTitle} style={{ padding: '14px 14px 0' }}>Clôture du jour</div>
         {summary.length === 0 ? <div className={a.empty}>Aucun paiement manuel pour l'instant.</div> : (
           <div className={s.summary} data-testid="daily-summary">
@@ -269,6 +304,20 @@ function PaiementsAgent() {
       </div>
 
       {selected && <Detail p={selected} onClose={() => setSelected(null)} onDone={async () => { setSelected(null); await load(); }} />}
+
+      {guideOpen && (
+        <div className={a.modalOv} style={{ alignItems: 'center', padding: 16 }} onClick={() => setGuideOpen(false)}>
+          <div className={s.guideModal} onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Guide de vérification">
+            <div className={s.panelHead}>
+              <h2 style={{ fontSize: 18, fontWeight: 900 }}>Guide de vérification</h2>
+              <button className={s.close} onClick={() => setGuideOpen(false)}>Fermer</button>
+            </div>
+            <AdminGuide audience="agent" onReplayTour={() => { setGuideOpen(false); setTourStep(0); }} />
+          </div>
+        </div>
+      )}
+
+      <TourOverlay steps={AGENT_TOUR_STEPS} stepIndex={tourStep} onNext={nextTourStep} onSkip={endTour} />
     </div>
   );
 }
