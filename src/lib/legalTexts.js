@@ -65,7 +65,7 @@ WennaShop peut modifier les présentes CGU. La date de mise à jour figure en t�
 13. Loi applicable
 Les présentes CGU sont soumises au droit marocain. Tout litige sera soumis aux tribunaux de Casablanca, Maroc, après une tentative de règlement amiable auprès de support@wennashop.com.`;
 
-export const PRIVACY_TEXT = `Dernière mise à jour : 14 octobre 2026
+export const PRIVACY_TEXT = `Dernière mise à jour : 15 octobre 2026
 
 1. Responsable du traitement
 Hexjen Conceptions, société basée à Casablanca, Maroc, éditrice de WennaShop. Contact : privacy@wennashop.com.
@@ -77,7 +77,7 @@ Commandes : articles, montants, adresse et téléphone de livraison, statut et s
 Paiements : moyen utilisé, montant, référence WN-…, identifiant de transaction, numéro d'envoi déclaré, capture de paiement si tu en joins une, et historique des vérifications. Aucun code secret ni donnée de carte bancaire n'est demandé ou conservé.
 Quêtes et parrainage : quêtes publiées, offres, poids et photos des produits proposés, code de parrainage, boutiques recrutées et gains.
 Échanges : réclamations, avis et notifications.
-Mesure d'audience : statistiques anonymes de fréquentation (Vercel Analytics, sans cookie publicitaire).
+Mesure d'audience, seulement si tu l'acceptes : statistiques anonymes de fréquentation (Vercel Analytics, sans cookie publicitaire).
 
 3. Pourquoi
 Faire fonctionner le compte et les commandes, vérifier les vendeurs, les chasseurs et les paiements, verser les reversements et les gains de parrainage, prévenir la fraude, répondre aux réclamations et respecter nos obligations comptables et légales.
@@ -87,8 +87,11 @@ L'équipe WennaShop, selon son rôle : les agents de paiement voient uniquement 
 Prestataires techniques, chacun pour sa fonction : Supabase (base de données et fichiers, hébergés en Irlande), Vercel (hébergement du site et mesure d'audience), Resend (envoi des e-mails), opérateurs de paiement (Airtel Money, Moov Money, SingPay, banques) pour les paiements, Didit pour la vérification d'identité automatique lorsqu'elle est proposée, n8n et Telegram pour alerter l'équipe d'un paiement à vérifier.
 Tes données ne sont jamais vendues.
 
-5. Stockage dans ton navigateur
-Le site garde dans ton navigateur ton panier, ton pays d'affichage, l'avancement des visites guidées, un code de parrainage reçu par lien et, pour l'équipe, l'appareil reconnu. Aucun cookie publicitaire.
+5. Cookies et stockage dans ton navigateur
+Nécessaires au fonctionnement, sans consentement : ta session de connexion, ton panier, ton pays d'affichage, l'avancement des visites guidées, un code de parrainage reçu par lien, un identifiant anonyme de visite pour afficher le nombre de personnes en ligne et, pour l'équipe, l'appareil reconnu. La connexion avec Google passe par Google, qui applique ses propres règles.
+Soumis à ton accord : la mesure d'audience (Vercel Analytics). Elle ne se charge que si tu cliques « Accepter » dans le bandeau affiché à ta première visite. Refuser est aussi simple qu'accepter et ne change rien à l'usage du site.
+Ton choix est gardé 6 mois, puis le bandeau te le redemande. Tu peux le changer à tout moment avec le lien « Gérer les cookies », en bas des pages ou ci-dessous.
+Aucun cookie publicitaire, aucun traceur de réseau social.
 
 6. Conservation
 Les données du compte sont conservées tant que le compte existe. Si tu supprimes ton compte, ton profil et tes identifiants de connexion sont supprimés. Les données liées à des commandes, paiements et reversements sont conservées le temps imposé par la réglementation comptable et fiscale. Les documents d'identité sont supprimés avec le compte.

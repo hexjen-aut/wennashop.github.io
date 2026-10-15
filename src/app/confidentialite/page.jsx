@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
+import ConsentSettingsLink from '@/components/ConsentSettingsLink';
 import { PRIVACY_TEXT } from '@/lib/legalTexts';
 
 export const metadata = { title: 'Politique de confidentialité — WennaShop' };
@@ -16,6 +17,7 @@ export default function ConfidentialitePage() {
           {PRIVACY_TEXT}
         </div>
         <div style={{ marginTop: 40, display: 'flex', flexWrap: 'wrap', gap: 16, fontSize: 12 }}>
+          <ConsentSettingsLink style={{ color: 'var(--accent)', textDecoration: 'underline' }} />
           <Link href="/cgu" style={{ color: 'var(--accent)' }}>Conditions générales d’utilisation</Link>
           <Link href="/mentions-legales" style={{ color: 'var(--accent)' }}>Mentions légales</Link>
           <Link href="/retours" style={{ color: 'var(--accent)' }}>Retours et remboursements</Link>
