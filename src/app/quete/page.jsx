@@ -6,6 +6,7 @@ import { getSupabase } from '@/lib/supabase';
 import Nav from '@/components/Nav';
 import { useFeatureFlags } from '@/context/FeatureFlagsContext';
 import { bracketFor, formatKg } from '@/lib/shipping';
+import { REWARD_MIN_PCT, paidReward } from '@/lib/questRules';
 import styles from '@/app/quetes/quetes.module.css';
 
 function fmt(n) { return Number(n).toLocaleString('fr-FR'); }
@@ -133,7 +134,10 @@ function Content() {
         <h2 style={{ fontSize: 16, fontWeight: 800, marginBottom: 4 }}>Propositions ({proposals.length})</h2>
         {proposals.length === 0 ? (
           <div style={{ textAlign: 'center', padding: 30, color: 'var(--text-faint)' }}>Aucune proposition pour l'instant.</div>
-        ) : proposals.map((p) => (
+        ) : proposals.map((p) => {
+          const reward = paidReward(quest.reward_amount, p.proposed_price, quest.currency);
+          const raised = reward > Number(quest.reward_amount || 0);
+          return (
           <div className={styles.card} key={p.id}>
             <div>
               <div className={styles.cardDesc}>{p.description}</div>
@@ -147,13 +151,18 @@ function Content() {
                   )}
                 </div>
               )}
+              {isBuyer && quest.status === 'open' && p.status === 'pending' && raised && (
+                <div className={styles.meta} data-testid="reward-raised">
+                  Récompense relevée à {fmt(reward)} {quest.currency} : {REWARD_MIN_PCT} % minimum du prix de l'offre, qui dépasse ton budget.
+                </div>
+              )}
             </div>
             {isBuyer && quest.status === 'open' && p.status === 'pending' && (
               p.shipping_cost == null ? (
                 <span className={styles.meta}>Transport à confirmer avant paiement</span>
               ) : (
                 <button className={styles.btnPrimary} disabled={paying !== null} onClick={() => selectProposal(p.id)}>
-                  {paying === p.id ? 'Préparation…' : `Choisir et payer ${fmt(Number(p.proposed_price) + Number(p.shipping_cost) + Number(quest.reward_amount || 0))} ${quest.currency}`}
+                  {paying === p.id ? 'Préparation…' : `Choisir et payer ${fmt(Number(p.proposed_price) + Number(p.shipping_cost) + reward)} ${quest.currency}`}
                 </button>
               )
             )}
@@ -161,7 +170,8 @@ function Content() {
               <button className={styles.btnPrimary} onClick={() => confirmReceipt(p.id)}>Confirmer la réception</button>
             )}
           </div>
-        ))}
+          );
+        })}
       </div>
     </>
   );

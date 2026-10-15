@@ -8,6 +8,7 @@ import TourOverlay from '@/components/TourOverlay';
 import tourStyles from '@/components/TourOverlay.module.css';
 import AdminGuide from '../AdminGuide';
 import { AGENT_TOUR_STEPS } from '../guide';
+import TicketsPanel from './TicketsPanel';
 import a from '../admin.module.css';
 import s from '../staff.module.css';
 
@@ -159,6 +160,9 @@ function PaiementsAgent() {
   const params = useSearchParams();
   const [access, setAccess] = useState('checking'); // checking | denied | ok | login
   const [tab, setTab] = useState('declared');
+  // Paiements des clients ou tickets de caisse des chasseurs (?tab=tickets)
+  const [view, setView] = useState(params.get('tab') === 'tickets' ? 'tickets' : 'payments');
+  const [ticketCount, setTicketCount] = useState(0);
   const [rows, setRows] = useState([]);
   const [counts, setCounts] = useState({});
   const [summary, setSummary] = useState([]);
@@ -246,6 +250,16 @@ function PaiementsAgent() {
         </div>
       </div>
 
+      <div className={s.tabs} role="tablist" aria-label="Type de vérification">
+        <button role="tab" aria-selected={view === 'payments'} className={`${s.tab} ${view === 'payments' ? s.tabActive : ''}`} onClick={() => setView('payments')}>
+          Paiements clients<span className={s.count}>{counts.declared ?? 0}</span>
+        </button>
+        <button role="tab" aria-selected={view === 'tickets'} className={`${s.tab} ${view === 'tickets' ? s.tabActive : ''}`} onClick={() => setView('tickets')} data-testid="view-tickets">
+          Tickets chasseurs<span className={s.count}>{ticketCount}</span>
+        </button>
+      </div>
+
+      {view === 'tickets' ? <TicketsPanel onCount={setTicketCount} /> : <>
       {lateCount > 0 && (
         <div className={a.card} style={{ padding: '12px 14px', borderColor: 'var(--error)' }} data-testid="late-alert">
           <span className={s.late}>{lateCount} paiement{lateCount > 1 ? 's' : ''} déclaré{lateCount > 1 ? 's' : ''} depuis plus de 2 h</span> — à traiter en priorité.
@@ -302,6 +316,7 @@ function PaiementsAgent() {
           </div>
         )}
       </div>
+      </>}
 
       {selected && <Detail p={selected} onClose={() => setSelected(null)} onDone={async () => { setSelected(null); await load(); }} />}
 

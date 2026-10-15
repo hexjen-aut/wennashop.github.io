@@ -70,7 +70,7 @@ export const WENNA_FAQ = [
   {
     id: 'quete',
     q: "C'est quoi une quête ?",
-    a: "Tu ne trouves pas un produit ? Poste une quête : décris ce que tu cherches et fixe une récompense (minimum 500, dans ta devise). Des chasseurs du Gabon et du Maroc le dénichent pour toi.",
+    a: "Tu ne trouves pas un produit ? Poste une quête : décris ce que tu cherches et fixe une récompense : au moins 10 % de ton budget (minimum 1 000 FCFA ou 20 MAD), c'est le salaire du chasseur, le produit lui est remboursé à part. Des chasseurs du Gabon et du Maroc le dénichent pour toi. Tu paies produit, transport et récompense en une fois, et WennaShop garde l'argent jusqu'à la livraison.",
     keywords: 'quête quete chercher introuvable trouver demande produit récompense',
     link: { href: '/quetes', label: 'Voir les quêtes' },
   },
@@ -112,6 +112,13 @@ export const WENNA_FAQ = [
     a: "Ouvre l'onglet « Chasse » (ou la page « Devenir chasseur »), remplis le formulaire et envoie ta pièce d'identité (CNI recto et verso, ou passeport) : l'équipe vérifie sous 48 h. Une fois validé, tu réponds aux quêtes des acheteurs et tu reçois ton code de parrainage pour recruter des vendeurs.",
     keywords: 'chasseur devenir gagner argent parrainage code recruter prime',
     link: { href: '/devenir-chasseur', label: 'Devenir chasseur' },
+  },
+  {
+    id: 'avance',
+    q: "Chasseur : est-ce que je dois avancer l'argent du produit ?",
+    a: "Par défaut, produit, transport et récompense te sont versés à la livraison. Dès que tu as livré 5 quêtes, tu peux demander une avance : envoie le ticket de caisse et une photo du produit avec le code de la quête écrit à la main. Une fois le ticket validé par l'équipe, le prix du produit t'est versé (au plus le prix de ton offre), puis tu as 72 h pour remettre le colis au transport. Avances en cours : 150 000 FCFA maximum au total.",
+    keywords: 'avance ticket caisse chasseur produit payer avancer argent remboursement achat',
+    link: { href: '/chasseur', label: 'Mon espace chasseur' },
   },
   {
     id: 'motdepasse',
