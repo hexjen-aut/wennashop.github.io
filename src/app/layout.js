@@ -1,10 +1,10 @@
 import './globals.css';
 import { CartProvider } from '@/context/CartContext';
 import { FeatureFlagsProvider } from '@/context/FeatureFlagsContext';
-import { Analytics } from '@vercel/analytics/next';
 import SupportButton from '@/components/SupportButton';
 import MaintenanceGate from '@/components/MaintenanceGate';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
+import CookieConsent from '@/components/CookieConsent';
 
 const SITE_URL = 'https://wennashop.com';
 const SITE_DESCRIPTION = "WennaShop est la marketplace qui connecte les vendeurs et acheteurs entre le Gabon et le Maroc. Achetez et vendez des produits authentiques en toute sécurité.";
@@ -69,7 +69,7 @@ export default function RootLayout({ children }) {
           <SupportButton />
         </FeatureFlagsProvider>
         <ServiceWorkerRegister />
-        <Analytics />
+        <CookieConsent />
       </body>
     </html>
   );

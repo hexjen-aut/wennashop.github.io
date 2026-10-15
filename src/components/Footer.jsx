@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import ConsentSettingsLink from './ConsentSettingsLink';
 import styles from './Footer.module.css';
 
 export default function Footer() {
@@ -12,6 +13,7 @@ export default function Footer() {
           <Link href="/retours">Retours</Link>
           <Link href="/confidentialite">Confidentialité</Link>
           <Link href="/mentions-legales">Mentions légales</Link>
+          <ConsentSettingsLink className={styles.linkBtn} />
         </nav>
         <span className={styles.copy}>© {new Date().getFullYear()} Hexjen Conceptions</span>
       </div>

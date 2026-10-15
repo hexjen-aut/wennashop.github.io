@@ -29,3 +29,9 @@
 .links a:hover {
   color: var(--accent);
 }
+.linkBtn {
+  color: var(--text-faint);
+}
+.linkBtn:hover {
+  color: var(--accent);
+}
