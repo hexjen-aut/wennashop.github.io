@@ -3,7 +3,7 @@
 // jour avec le code quand une règle change (paiement manuel vérifié, quêtes,
 // parrainage : paramètres hunter_* de site_config).
 
-export const CGU_TEXT = `Dernière mise à jour : 14 octobre 2026
+export const CGU_TEXT = `Dernière mise à jour : 15 octobre 2026
 
 1. Objet
 WennaShop est une marketplace éditée par Hexjen Conceptions qui met en relation des vendeurs (artisans et commerçants) et des acheteurs, principalement entre le Gabon et le Maroc, avec une ouverture progressive à d'autres pays africains. Les présentes conditions générales d'utilisation (CGU) s'appliquent à toute personne qui utilise le site wennashop.com. Créer un compte vaut acceptation des CGU.
@@ -50,7 +50,7 @@ Les délais de livraison sont indiqués par chaque vendeur. Le vendeur expédie 
 8.5 Évolution. Les montants, pourcentages et durées en vigueur sont affichés dans l'espace chasseur. Ils peuvent évoluer ; une modification ne s'applique qu'aux recrutements effectués après son annonce.
 
 9. Réclamations, retours et remboursements
-Toute réclamation (produit non reçu, abîmé ou non conforme) doit être signalée dans les 7 jours suivant la réception, depuis la page de suivi de commande ou le formulaire de réclamation. Les conditions de retour sont propres à chaque vendeur et indiquées sur sa boutique. À défaut d'accord entre l'acheteur et le vendeur, WennaShop intervient en médiation et peut décider d'un remboursement lorsque le paiement a transité par WennaShop.
+Les règles complètes sont dans la Politique de retour et de remboursement (wennashop.com/retours), qui fait partie des présentes CGU. En résumé : tout problème (colis non reçu, produit abîmé, non conforme ou erroné) se signale dans les 7 jours suivant la réception ; l'acheteur peut aussi retourner un produit intact dans ce délai s'il change d'avis, le renvoi étant alors à sa charge. Un produit défectueux ou non conforme est remboursé intégralement aux frais du vendeur. Le remboursement se fait par le moyen utilisé pour payer. À défaut d'accord entre l'acheteur et le vendeur, WennaShop décide.
 
 10. Responsabilités
 WennaShop agit en intermédiaire technique : le contrat de vente est conclu entre l'acheteur et le vendeur. Le vendeur est seul responsable de la conformité, de la légalité et de la description de ses produits ; le chasseur, de ses offres. Sont interdits notamment les contrefaçons, les produits dangereux ou illicites et toute vente contraire à la loi du pays d'expédition ou de livraison.
@@ -116,3 +116,47 @@ Les éléments graphiques, textuels et logiciels du site (logo, mascotte, charte
 
 Médiation
 En cas de litige, contacte d'abord le support à support@wennashop.com.`;
+
+export const RETURNS_TEXT = `Dernière mise à jour : 15 octobre 2026
+
+Cette politique s'applique à toutes les commandes passées sur WennaShop, au Gabon comme au Maroc, quel que soit le moyen de paiement. Elle complète les conditions générales d'utilisation (CGU). Un vendeur peut proposer des conditions plus favorables sur sa boutique, jamais moins favorables.
+
+1. Le délai : 7 jours
+Tu as 7 jours à compter de la réception de ta commande (date de livraison indiquée dans le suivi) pour signaler un problème ou demander un retour. Pour un colis jamais reçu, le délai court à partir de la date de livraison annoncée.
+
+2. Ce qui est couvert
+2.1 Colis non reçu. Si ta commande n'est pas livrée, WennaShop vérifie le suivi avec le vendeur et le livreur. S'il est confirmé que le colis n'a pas été remis, tu es remboursé intégralement (produit et livraison).
+2.2 Produit abîmé, défectueux, non conforme ou erroné. C'est à la charge du vendeur : remboursement du produit, de la livraison et des frais de renvoi. Si tu le préfères, le vendeur peut te proposer un échange ou une réparation, mais il ne peut pas te l'imposer.
+2.3 Changement d'avis. Tu peux retourner un produit conforme si tu changes d'avis, à condition qu'il soit intact, non utilisé, dans son emballage d'origine et avec tous ses accessoires. Les frais de renvoi sont à ta charge et la livraison initiale n'est pas remboursée ; le prix du produit l'est.
+
+3. Ce qui ne peut pas être retourné pour un changement d'avis
+Ces produits restent couverts s'ils sont abîmés, défectueux ou non conformes (point 2.2) :
+- produits alimentaires et périssables ;
+- cosmétiques, parfums et produits d'hygiène ouverts ou descellés ;
+- sous-vêtements et maillots de bain ;
+- produits fabriqués sur mesure ou personnalisés à ta demande ;
+- produits trouvés pour toi par un chasseur dans le cadre d'une quête.
+
+4. Comment faire
+4.1 Signale le problème. Depuis le site, clique sur « Envoyer une réclamation » et indique ton numéro de commande, le motif et, pour un produit abîmé ou non conforme, des photos du colis et du produit. Plus tu es précis, plus le traitement est rapide.
+4.2 Attends l'accord. L'équipe WennaShop et le vendeur étudient ta demande et te répondent avec les instructions de retour. N'envoie rien avant cet accord : un colis renvoyé sans accord peut être refusé.
+4.3 Renvoie le produit. Expédie-le dans les 7 jours suivant l'accord, à l'adresse indiquée, en gardant le bordereau ou le numéro de suivi. Pour un produit abîmé ou non conforme, le vendeur peut renoncer au retour et te rembourser directement.
+4.4 Contrôle. À réception, le vendeur vérifie l'état du produit, en principe sous 3 jours. S'il ne répond pas, WennaShop tranche.
+
+5. Le remboursement
+5.1 Montant. Tu es remboursé du montant que tu as payé, dans ta devise, sans nouvelle conversion, selon les cas décrits au point 2.
+5.2 Moyen. Le remboursement se fait par le moyen utilisé pour payer : Airtel Money ou Moov Money au numéro qui a envoyé l'argent, virement sur le compte qui a payé. Une commande payée à la livraison est remboursée par mobile money au Gabon ou par virement au Maroc, au numéro ou au RIB que tu nous indiques.
+5.3 Délai. Le remboursement est envoyé dans les 7 jours qui suivent sa validation (réception et contrôle du retour, ou confirmation de la non-livraison). Tu reçois une notification avec la référence de l'envoi.
+5.4 Annulation avant expédition. Une commande payée puis annulée avant son expédition est remboursée intégralement, de la même façon. Un montant payé en trop est remboursé aussi.
+
+6. Quêtes
+Si le chasseur ne livre pas, ou si le produit livré ne correspond pas à son offre (description, état, poids), tu es remboursé intégralement : prix du produit, transport et récompense. La récompense n'est alors pas versée au chasseur. Le changement d'avis n'est pas possible pour une quête (point 3).
+
+7. Pour les vendeurs
+Le vendeur s'engage à respecter au minimum cette politique. Un remboursement accepté annule la commission WennaShop sur la vente concernée. Les sommes dues à l'acheteur pour un produit abîmé, non conforme ou non livré par la faute du vendeur sont déduites de ses prochains reversements.
+
+8. Désaccord et abus
+Si l'acheteur et le vendeur ne trouvent pas d'accord, WennaShop décide, au vu des photos, du suivi et des échanges ; comme tout paiement passe par WennaShop, la décision s'applique directement au remboursement. Un retour abusif (produit renvoyé usé, incomplet ou différent, demandes répétées sans motif) peut être refusé et entraîner la suspension du compte.
+
+9. Contact
+Pour toute question : bouton « Envoyer une réclamation » sur le site.`;

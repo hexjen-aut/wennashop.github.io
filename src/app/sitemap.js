@@ -13,6 +13,7 @@ const STATIC_ROUTES = [
   { path: '/cgu', priority: 0.2, changeFrequency: 'yearly' },
   { path: '/confidentialite', priority: 0.2, changeFrequency: 'yearly' },
   { path: '/mentions-legales', priority: 0.2, changeFrequency: 'yearly' },
+  { path: '/retours', priority: 0.3, changeFrequency: 'yearly' },
 ];
 
 export default async function sitemap() {

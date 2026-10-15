@@ -15,9 +15,10 @@ export default function MentionsLegalesPage() {
         <div style={{ fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.8, whiteSpace: 'pre-line' }}>
           {LEGAL_MENTIONS_TEXT}
         </div>
-        <div style={{ marginTop: 40, display: 'flex', gap: 16, fontSize: 12 }}>
+        <div style={{ marginTop: 40, display: 'flex', flexWrap: 'wrap', gap: 16, fontSize: 12 }}>
           <Link href="/cgu" style={{ color: 'var(--accent)' }}>Conditions générales d’utilisation</Link>
           <Link href="/confidentialite" style={{ color: 'var(--accent)' }}>Politique de confidentialité</Link>
+          <Link href="/retours" style={{ color: 'var(--accent)' }}>Retours et remboursements</Link>
         </div>
       </main>
       <Footer />

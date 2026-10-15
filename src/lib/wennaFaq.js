@@ -43,7 +43,7 @@ export const WENNA_FAQ = [
     id: 'probleme',
     popular: true,
     q: "Mon colis n'est pas arrivé ou ne correspond pas",
-    a: "Signale-le dans les 7 jours après la réception avec « Envoyer une réclamation » (juste en dessous), en indiquant ton numéro de commande. Les retours et remboursements dépendent de chaque vendeur ; si vous ne trouvez pas d'accord, l'équipe WennaShop intervient en médiation.",
+    a: "Signale-le dans les 7 jours après la réception avec « Envoyer une réclamation » (juste en dessous), en indiquant ton numéro de commande et, si le produit est abîmé ou non conforme, des photos. Produit abîmé, non conforme ou non reçu : remboursement intégral, frais de retour compris. Changement d'avis : retour possible sous 7 jours si le produit est intact, renvoi à ta charge. Tout est détaillé dans la Politique de retour (wennashop.com/retours).",
     keywords: 'problème reçu pas arrivé non conforme cassé abîmé défectueux retour rembourser remboursement réclamation litige échange',
     contact: true,
   },

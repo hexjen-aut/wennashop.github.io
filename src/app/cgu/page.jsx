@@ -19,6 +19,7 @@ export default function CguPage() {
           <Link href="/commissions" style={{ color: 'var(--accent)' }}>Grille des commissions</Link>
           <Link href="/confidentialite" style={{ color: 'var(--accent)' }}>Politique de confidentialité</Link>
           <Link href="/mentions-legales" style={{ color: 'var(--accent)' }}>Mentions légales</Link>
+          <Link href="/retours" style={{ color: 'var(--accent)' }}>Retours et remboursements</Link>
         </div>
       </main>
       <Footer />
