@@ -103,7 +103,8 @@ export default function QuetesPage() {
     if (!Number.isInteger(quantity) || quantity < 1 || quantity > 50) return alert('Quantité : entre 1 et 50.');
     if (!form.size) return alert('Choisis la taille du produit pour estimer le transport.');
     if (!form.destination) return alert('Choisis le pays de livraison.');
-    if (!form.budget || form.budget < 1000) return alert(`Budget minimum : 1000 ${currency}.`);
+    const budgetMin = currency === 'MAD' ? 20 : 1000;
+    if (!form.budget || Number(form.budget) < budgetMin) return alert(`Budget minimum : ${fmt(budgetMin)} ${currency}.`);
     const rewardMin = minReward(form.budget, currency);
     if (!form.reward || Number(form.reward) < rewardMin) {
       return alert(`Récompense minimum : ${fmt(rewardMin)} ${currency} (${REWARD_MIN_PCT} % du budget). C'est la rémunération du chasseur.`);
