@@ -77,6 +77,20 @@ export const GUIDE = [
     ],
   },
   {
+    id: 'tickets-chasseurs',
+    who: 'agent',
+    title: "Vérifier un ticket de caisse (avance au chasseur)",
+    steps: [
+      "Un chasseur qui a déjà livré 5 quêtes peut demander le prix du produit dès l'achat. Ouvre Vérification des paiements, puis « Tickets chasseurs », onglet « À vérifier ».",
+      "Clique sur la ligne. La fiche montre le ticket, la photo du produit, le code attendu (WN-Q…), le prix de l'offre et l'avance calculée (le plus petit entre le ticket et l'offre).",
+      "Contrôle : magasin et date lisibles, date après le paiement de l'acheteur, montant cohérent avec le produit, code écrit à la main à côté du produit, produit conforme à l'offre.",
+      "Tout est bon : « Valider l'avance ». L'avance devient disponible dans Comptabilité, onglet Chasseurs : verse-la depuis cet onglet. Le chasseur a 72 h pour remettre le colis au transport.",
+      "Un doute ou une incohérence : choisis le motif puis « Refuser ». Le chasseur peut renvoyer un ticket, ou être payé à la livraison comme d'habitude.",
+      "Onglet « Colis en retard » : avance versée, colis pas envoyé après 72 h. Appelle le chasseur, et préviens un admin s'il ne répond pas.",
+    ],
+    note: "Plafond : 150 000 FCFA d'avances en cours par chasseur, contrôlé automatiquement. Si la commande est ensuite annulée ou retournée, l'avance repasse en dette du chasseur et se retient sur ses gains suivants.",
+  },
+  {
     id: 'vendeurs',
     who: 'admin',
     title: 'Valider un vendeur ou un chasseur',

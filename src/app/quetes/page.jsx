@@ -7,6 +7,7 @@ import Nav from '@/components/Nav';
 import ImageCropModal from '@/components/ImageCropModal';
 import { useFeatureFlags } from '@/context/FeatureFlagsContext';
 import { SIZE_BRACKETS, bracketFor, estimatedWeightKg, formatKg, quoteShipping } from '@/lib/shipping';
+import { REWARD_MIN_PCT, minReward } from '@/lib/questRules';
 import styles from './quetes.module.css';
 
 function fmt(n) { return Number(n).toLocaleString('fr-FR'); }
@@ -103,7 +104,10 @@ export default function QuetesPage() {
     if (!form.size) return alert('Choisis la taille du produit pour estimer le transport.');
     if (!form.destination) return alert('Choisis le pays de livraison.');
     if (!form.budget || form.budget < 1000) return alert(`Budget minimum : 1000 ${currency}.`);
-    if (!form.reward || form.reward < 500) return alert(`Récompense minimum : 500 ${currency}.`);
+    const rewardMin = minReward(form.budget, currency);
+    if (!form.reward || Number(form.reward) < rewardMin) {
+      return alert(`Récompense minimum : ${fmt(rewardMin)} ${currency} (${REWARD_MIN_PCT} % du budget). C'est la rémunération du chasseur.`);
+    }
     const sb = getSupabase();
     const { data: { user } } = await sb.auth.getUser();
     if (!user) { alert('Connecte-toi pour poster une quête.'); return; }
@@ -114,7 +118,10 @@ export default function QuetesPage() {
       duration_days: 7, currency, image_url: form.image_url || null,
       quantity, size_bracket: form.size, destination_country: form.destination,
     });
-    if (error) return alert('Erreur : ' + error.message);
+    if (error) {
+      if (error.message === 'reward_too_low') return alert(`Récompense trop basse. ${error.details || ''}`);
+      return alert('Erreur : ' + error.message);
+    }
     setModalOpen(false);
     setForm(EMPTY_FORM);
     await load();
@@ -197,6 +204,10 @@ export default function QuetesPage() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                 <input className={styles.input} type="number" placeholder="Budget produit *" value={form.budget} onChange={(e) => setForm({ ...form, budget: e.target.value })} />
                 <input className={styles.input} type="number" placeholder="Récompense chasseur *" value={form.reward} onChange={(e) => setForm({ ...form, reward: e.target.value })} />
+              </div>
+              <div data-testid="reward-hint" style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: -4, lineHeight: 1.5 }}>
+                Récompense minimum : <strong>{fmt(minReward(form.budget, questCurrency(form.country)))} {questCurrency(form.country)}</strong> ({REWARD_MIN_PCT} % du budget).
+                {' '}Le produit est remboursé au chasseur à part : la récompense paie son travail. Si l'offre choisie dépasse ton budget, elle est relevée à {REWARD_MIN_PCT} % de son prix.
               </div>
               <select className={styles.input} value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })}>
                 <option value="Les deux">Les deux</option>

@@ -10,6 +10,7 @@ import { bracketFor, formatKg, quoteShipping } from '@/lib/shipping';
 import styles from './chasseur.module.css';
 import Mascot from '@/components/Mascot';
 import AutoKycCard from '@/components/AutoKycCard';
+import AdvanceBox from './AdvanceBox';
 
 const MAX_IMAGES = 5;
 const BUCKET = 'products';
@@ -63,6 +64,9 @@ export default function ChasseurPage() {
   const [quests, setQuests] = useState([]);
   const [proposalsCount, setProposalsCount] = useState({});
   const [myProposals, setMyProposals] = useState([]);
+  // Avance sur ticket : dernier ticket par offre + éligibilité (my_quest_advance_status)
+  const [proofs, setProofs] = useState({});
+  const [advanceStatus, setAdvanceStatus] = useState(null);
 
   const { quests_enabled: questsEnabled } = useFeatureFlags();
   const [tab, setTab] = useState('quests');
@@ -189,6 +193,20 @@ export default function ChasseurPage() {
       .eq('hunter_id', hunterId)
       .order('created_at', { ascending: false });
     setMyProposals(data || []);
+    await loadAdvance(sb, hunterId);
+  }
+
+  async function loadAdvance(sb, hunterId) {
+    const { data } = await sb
+      .from('quest_purchase_proofs')
+      .select('id,proposal_id,status,receipt_amount,advance_amount,currency,reject_reason,handover_deadline,handed_over_at,created_at')
+      .eq('hunter_id', hunterId)
+      .order('created_at', { ascending: false });
+    const latest = {};
+    (data || []).forEach((p) => { if (!latest[p.proposal_id]) latest[p.proposal_id] = p; });
+    setProofs(latest);
+    const { data: st } = await sb.rpc('my_quest_advance_status');
+    setAdvanceStatus(st || null);
   }
 
   async function loadRecruitedShops(sb, hunterId) {
@@ -610,6 +628,7 @@ export default function ChasseurPage() {
                                 Une fois le colis remis à l'acheteur, marque-le comme livré. Sa récompense de {fmt(reward)} {currency} sera versée dès que l'acheteur confirme la réception.
                               </div>
                               <button className={styles.expressBtn} onClick={() => markDelivered(p.id)}>Marquer comme livré</button>
+                              {proofs[p.id]?.status === 'approved' && <AdvanceBox proposal={p} proof={proofs[p.id]} status={advanceStatus} showToast={showToast} />}
                             </>
                           ) : (
                             <>
@@ -619,6 +638,8 @@ export default function ChasseurPage() {
                                 <br /><span style={{ color: 'var(--text-faint)', fontSize: 11 }}>L'acheteur a payé : l'argent est bloqué par WennaShop. Tu seras payé (produit{p.shipping_cost != null ? ' + transport' : ''} + récompense de {fmt(reward)} {currency}) dès qu'il confirme la réception. Aucun paiement en liquide.</span>
                               </div>
                               <button className={styles.expressBtn} onClick={() => markInDelivery(p.id)}>Marquer comme envoyé</button>
+                              <AdvanceBox proposal={p} proof={proofs[p.id]} status={advanceStatus} showToast={showToast}
+                                onChanged={() => loadAdvance(getSupabase(), internalUser.id)} />
                             </>
                           )}
                         </div>
