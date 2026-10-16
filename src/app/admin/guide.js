@@ -19,7 +19,9 @@ export const ADMIN_TOUR_STEPS = [
 ];
 
 // Visite de /admin/paiements pour les agents (et les admins qui y passent).
+// `since` : voir lib/tourSteps.js.
 export const AGENT_TOUR_STEPS = [
+  { targetId: 'tour-agent-views', since: '2026-10-16', title: 'Paiements et tickets', text: "« Paiements clients » : les paiements Airtel, Moov et virement à vérifier. « Tickets chasseurs » : les tickets de caisse envoyés pour une avance ; compare le montant, la photo et le code WN-Q… écrit à la main, puis valide ou refuse." },
   { targetId: 'tour-agent-tabs', title: 'Les onglets', text: "« À vérifier » : les clients qui disent avoir payé. « En attente client » : pas encore déclaré. « Validés » et « Refusés » : l'historique." },
   { targetId: 'tour-agent-table', title: 'La file', text: "Le plus ancien en premier. Au-delà de 2 h, la ligne passe en rouge. Clique sur une ligne pour ouvrir la fiche du paiement." },
   { targetId: 'tour-agent-summary', title: 'Clôture du jour', text: "Le total validé par moyen de paiement. Compare-le chaque soir avec le relevé Airtel, Moov ou bancaire." },

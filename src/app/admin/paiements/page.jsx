@@ -2,6 +2,7 @@
 
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { tourStepsFor } from '@/lib/tourSteps';
 import Link from 'next/link';
 import { getSupabase } from '@/lib/supabase';
 import TourOverlay from '@/components/TourOverlay';
@@ -170,6 +171,8 @@ function PaiementsAgent() {
   const [guideOpen, setGuideOpen] = useState(false);
   const [me, setMe] = useState(null);
   const [tourStep, setTourStep] = useState(null);
+  // Étapes affichées : tout au premier passage, seulement les nouveautés ensuite.
+  const [tourSteps, setTourSteps] = useState(AGENT_TOUR_STEPS);
 
   useEffect(() => {
     (async () => {
@@ -182,15 +185,18 @@ function PaiementsAgent() {
       // Visite guidée au premier passage sur cette page
       const { data: u } = await sb.from('users').select('id, agent_tour_completed_at').eq('auth_id', session.user.id).maybeSingle();
       setMe(u);
-      if (u && !u.agent_tour_completed_at && !params.get('id')) setTourStep(0);
+      const pending = u ? tourStepsFor(AGENT_TOUR_STEPS, u.agent_tour_completed_at) : [];
+      if (pending.length && !params.get('id')) { setTourSteps(pending); setTourStep(0); }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (tourStep === null) return;
-    document.getElementById(AGENT_TOUR_STEPS[tourStep]?.targetId)?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-  }, [tourStep]);
+    // Les étapes visent la vue « Paiements clients ».
+    setView('payments');
+    document.getElementById(tourSteps[tourStep]?.targetId)?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }, [tourStep, tourSteps]);
 
   function endTour() {
     setTourStep(null);
@@ -201,10 +207,10 @@ function PaiementsAgent() {
     setMe((prev) => ({ ...prev, agent_tour_completed_at: now }));
   }
   function nextTourStep() {
-    if (tourStep < AGENT_TOUR_STEPS.length - 1) setTourStep(tourStep + 1);
+    if (tourStep < tourSteps.length - 1) setTourStep(tourStep + 1);
     else endTour();
   }
-  function tourHl(id) { return tourStep !== null && AGENT_TOUR_STEPS[tourStep]?.targetId === id ? tourStyles.tourHighlight : ''; }
+  function tourHl(id) { return tourStep !== null && tourSteps[tourStep]?.targetId === id ? tourStyles.tourHighlight : ''; }
 
   const load = useCallback(async () => {
     const sb = getSupabase();
@@ -250,7 +256,7 @@ function PaiementsAgent() {
         </div>
       </div>
 
-      <div className={s.tabs} role="tablist" aria-label="Type de vérification">
+      <div id="tour-agent-views" className={`${s.tabs} ${tourHl('tour-agent-views')}`} role="tablist" aria-label="Type de vérification">
         <button role="tab" aria-selected={view === 'payments'} className={`${s.tab} ${view === 'payments' ? s.tabActive : ''}`} onClick={() => setView('payments')}>
           Paiements clients<span className={s.count}>{counts.declared ?? 0}</span>
         </button>
@@ -327,12 +333,12 @@ function PaiementsAgent() {
               <h2 style={{ fontSize: 18, fontWeight: 900 }}>Guide de vérification</h2>
               <button className={s.close} onClick={() => setGuideOpen(false)}>Fermer</button>
             </div>
-            <AdminGuide audience="agent" onReplayTour={() => { setGuideOpen(false); setTourStep(0); }} />
+            <AdminGuide audience="agent" onReplayTour={() => { setGuideOpen(false); setTourSteps(AGENT_TOUR_STEPS); setTourStep(0); }} />
           </div>
         </div>
       )}
 
-      <TourOverlay steps={AGENT_TOUR_STEPS} stepIndex={tourStep} onNext={nextTourStep} onSkip={endTour} />
+      <TourOverlay steps={tourSteps} stepIndex={tourStep} onNext={nextTourStep} onSkip={endTour} />
     </div>
   );
 }
