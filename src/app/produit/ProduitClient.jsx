@@ -11,6 +11,7 @@ import CartSidebar from '@/components/CartSidebar';
 import { convertPrice, formatSmartPrice } from '@/lib/currency';
 import { getBuyerCurrency } from '@/lib/buyerCurrency';
 import styles from './produit.module.css';
+import { mediaUrl } from '@/lib/mediaUrl';
 
 export default function ProduitContent() {
   const searchParams = useSearchParams();
@@ -67,9 +68,9 @@ export default function ProduitContent() {
 
   function getImages(p) {
     if (!p) return [];
-    if (p._images && p._images.length) return p._images.map((i) => i.url || i);
-    if (Array.isArray(p.images) && p.images.length) return p.images;
-    if (p.image_url) return [p.image_url];
+    if (p._images && p._images.length) return p._images.map((i) => mediaUrl(i.url || i));
+    if (Array.isArray(p.images) && p.images.length) return p.images.map((u) => mediaUrl(u));
+    if (p.image_url) return [mediaUrl(p.image_url)];
     return [];
   }
 
@@ -176,7 +177,7 @@ export default function ProduitContent() {
           <div className={styles.sellerCard}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <div className={styles.sellerAv}>
-                {shop?.logo_url ? <img src={shop.logo_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : (shop?.name || seller?.full_name || 'V').charAt(0).toUpperCase()}
+                {shop?.logo_url ? <img src={mediaUrl(shop.logo_url)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : (shop?.name || seller?.full_name || 'V').charAt(0).toUpperCase()}
               </div>
               <div>
                 <div className={styles.sellerName}>{shop?.name || seller?.full_name || 'Vendeur'}</div>

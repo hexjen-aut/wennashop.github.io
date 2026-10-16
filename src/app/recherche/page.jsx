@@ -7,6 +7,7 @@ import Nav from '@/components/Nav';
 import { convertPrice, formatSmartPrice } from '@/lib/currency';
 import { getBuyerCurrency } from '@/lib/buyerCurrency';
 import styles from '@/app/boutique/boutique.module.css';
+import { mediaUrl } from '@/lib/mediaUrl';
 
 export default function RecherchePage() {
   const [term, setTerm] = useState('');
@@ -62,7 +63,7 @@ export default function RecherchePage() {
               const img = Array.isArray(p.images) && p.images.length ? p.images[0] : (p.image_url || 'https://images.unsplash.com/photo-1608181831688-e6c2cd67f0a9?w=400&q=80');
               return (
                 <Link href={`/produit?id=${p.id}`} className={styles.prodCard} key={p.id}>
-                  <div className={styles.prodImg}><img src={img} alt={p.name} loading="lazy" /></div>
+                  <div className={styles.prodImg}><img src={mediaUrl(img)} alt={p.name} loading="lazy" /></div>
                   <div className={styles.prodInfo}>
                     <div className={styles.prodName}>{p.name}</div>
                     <div className={styles.prodPrice}>{p.displayPrice}</div>

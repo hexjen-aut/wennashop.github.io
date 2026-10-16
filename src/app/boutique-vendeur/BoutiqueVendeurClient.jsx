@@ -9,6 +9,7 @@ import Nav from '@/components/Nav';
 import { convertPrice, formatSmartPrice } from '@/lib/currency';
 import { getBuyerCurrency } from '@/lib/buyerCurrency';
 import styles from './boutique-vendeur.module.css';
+import { mediaUrl } from '@/lib/mediaUrl';
 
 function fmt(n, c = 'MAD') {
   try { return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: c, maximumFractionDigits: 0 }).format(n); }
@@ -169,13 +170,13 @@ export default function Content() {
 
       {/* BANNIÈRE */}
       <div className={styles.banner}>
-        {shop.banner_url ? <img src={shop.banner_url} alt="" className={styles.bannerImg} /> : <div className={styles.bannerPlaceholder} />}
+        {shop.banner_url ? <img src={mediaUrl(shop.banner_url)} alt="" className={styles.bannerImg} /> : <div className={styles.bannerPlaceholder} />}
       </div>
 
       {/* EN-TÊTE BOUTIQUE */}
       <div className={styles.header}>
         <div className={styles.logo}>
-          {shop.logo_url ? <img src={shop.logo_url} alt={shop.name} /> : initials(shop.name)}
+          {shop.logo_url ? <img src={mediaUrl(shop.logo_url)} alt={shop.name} /> : initials(shop.name)}
         </div>
         <div className={styles.info}>
           <div className={styles.name}>{shop.name}</div>
@@ -283,7 +284,7 @@ export default function Content() {
               return (
                 <Link href={`/produit?id=${p.id}`} className={styles.card} key={p.id}>
                   <div className={styles.img}>
-                    {img && <img src={img} alt={p.name} loading="lazy" />}
+                    {img && <img src={mediaUrl(img)} alt={p.name} loading="lazy" />}
                     {hasPromo ? (
                       <span className={`${styles.badge} ${styles.badgePromo}`}>-{Math.round((1 - p.price / p.compare_price) * 100)}%</span>
                     ) : isNew ? (

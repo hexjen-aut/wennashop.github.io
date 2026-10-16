@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { getServerSupabase } from '@/lib/supabaseServer';
 import ProduitContent from './ProduitClient';
+import { mediaUrl } from '@/lib/mediaUrl';
 
 const SITE_URL = 'https://wennashop.com';
 
@@ -16,7 +17,7 @@ export async function generateMetadata({ searchParams }) {
   const product = await getProduct(id);
   if (!product) return { title: 'Produit introuvable' };
 
-  const image = product.image_url || product.images?.[0] || '/og-image.png';
+  const image = mediaUrl(product.image_url || product.images?.[0], { absolute: true }) || '/og-image.png';
   const description = product.description
     ? product.description.slice(0, 160)
     : `${product.name} — ${product.price} ${product.currency || 'MAD'}, vendu sur WennaShop${product.country ? `, en provenance du ${product.country}` : ''}.`;
@@ -49,7 +50,8 @@ export default async function ProduitPage({ searchParams }) {
     '@type': 'Product',
     name: product.name,
     description: product.description || undefined,
-    image: product.image_url || product.images?.[0] || undefined,
+    image: [...new Set([product.image_url, ...(Array.isArray(product.images) ? product.images : [])].filter(Boolean))]
+      .map((u) => mediaUrl(u, { absolute: true })),
     offers: {
       '@type': 'Offer',
       priceCurrency: product.currency || 'MAD',

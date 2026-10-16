@@ -11,6 +11,7 @@ import styles from './chasseur.module.css';
 import Mascot from '@/components/Mascot';
 import AutoKycCard from '@/components/AutoKycCard';
 import AdvanceBox from './AdvanceBox';
+import { tourStepsFor } from '@/lib/tourSteps';
 
 const MAX_IMAGES = 5;
 const BUCKET = 'products';
@@ -47,12 +48,17 @@ function timeAgo(d) {
 }
 function daysUntil(d) { return Math.max(0, Math.ceil((new Date(d) - new Date()) / 86400000)); }
 
+// `since` : date de mise en ligne de l'étape (voir lib/tourSteps.js). Les
+// chasseurs qui ont fini le tutoriel avant revoient seulement ces étapes.
 const HUNTER_TOUR_STEPS = [
-  { tab: 'quests', targetId: 'tour-tab-quests', title: 'Quêtes à pourvoir', text: "Des acheteurs postent des quêtes pour des produits introuvables — propose ton aide ici et gagne la récompense s'ils te choisissent." },
+  { tab: 'quests', targetId: 'tour-tab-quests', since: '2026-10-16', title: 'Quêtes à pourvoir', text: "Des acheteurs cherchent un produit introuvable chez eux. Le budget sert à acheter le produit ; la récompense paie ton travail : au moins 10 % du budget." },
+  { tab: 'quests', targetId: 'tour-first-quest', since: '2026-10-16', title: 'Envoyer une offre', text: "Clique « Je chasse » et indique le prix du produit et son poids réel ; WennaShop calcule le transport. Si ton prix dépasse le budget, ta récompense passe à 10 % de ton prix." },
+  { tab: 'proposals', targetId: 'tour-tab-proposals', since: '2026-10-16', title: 'Mes propositions', text: "Ton offre passe à « Acceptée » quand l'acheteur a payé : WennaShop garde l'argent jusqu'à la livraison. Achète alors le produit et remets le colis au transport." },
+  { tab: 'proposals', targetId: null, since: '2026-10-16', title: 'Avance sur ticket de caisse', text: "Après 5 quêtes livrées, tu peux te faire avancer le prix du produit dès l'achat : envoie le ticket de caisse et une photo du produit avec le code WN-Q… écrit à la main. Jusqu'à 150 000 FCFA d'avances en cours. Tu as ensuite 72 h pour remettre le colis au transport." },
   { tab: 'vendeurs', targetId: 'tour-referral-card', title: 'Ton code de parrainage', text: "Chaque chasseur vérifié a son propre code. Un vendeur qui s'inscrit avec devient automatiquement ton filleul." },
   { tab: 'vendeurs', targetId: 'tour-copy-link-btn', title: 'Le lien à partager', text: "Envoie ce lien plutôt que le code seul : tout se fait automatiquement à l'inscription, rien à taper de son côté." },
   { tab: 'vendeurs', targetId: 'tour-recruited-card', title: 'Tes vendeurs recrutés', text: 'Suis ici chaque boutique parrainée, et si elle est déjà active (3 commandes livrées).' },
-  { tab: 'gains', targetId: 'tour-gains-total', title: 'Tes gains', text: 'Le total encaissé sur les quêtes et le parrainage, avec le détail de chaque paiement en dessous.' },
+  { tab: 'gains', targetId: 'tour-gains-total', since: '2026-10-16', title: 'Tes gains', text: "À la livraison, tu reçois le prix du produit (sauf s'il t'a été avancé), le transport et la récompense moins 10 %. Le total et le détail de chaque paiement sont ici." },
 ];
 
 export default function ChasseurPage() {
@@ -108,6 +114,14 @@ export default function ChasseurPage() {
   // Tutoriel interactif
   const [tourStep, setTourStep] = useState(null); // null = pas en cours
   const [tourProposalOpen, setTourProposalOpen] = useState(false);
+  // 'all' : tutoriel complet ; 'news' : seulement les étapes ajoutées depuis
+  // la dernière fois (tourSeenAt = fin du tutoriel précédent).
+  const [tourScope, setTourScope] = useState('all');
+  const [tourSeenAt, setTourSeenAt] = useState(null);
+  const tourSteps = useMemo(() => {
+    const base = HUNTER_TOUR_STEPS.filter((s) => questsEnabled || (s.tab !== 'quests' && s.tab !== 'proposals'));
+    return tourScope === 'news' ? tourStepsFor(base, tourSeenAt) : base;
+  }, [questsEnabled, tourScope, tourSeenAt]);
 
   function showToast(text, type = 'ok') {
     setToast({ text, type });
@@ -149,7 +163,11 @@ export default function ChasseurPage() {
       if (internal?.id) await loadMyProposals(sb, internal.id);
       if (internal?.id) await loadNotifications(sb, internal.id);
       if (internal?.id) await loadRecruitedShops(sb, internal.id);
-      if (internal?.id && !internal.hunter_tour_completed_at) setTourProposalOpen(true);
+      if (internal?.id && tourStepsFor(HUNTER_TOUR_STEPS, internal.hunter_tour_completed_at).length) {
+        setTourSeenAt(internal.hunter_tour_completed_at);
+        setTourScope(internal.hunter_tour_completed_at ? 'news' : 'all');
+        setTourProposalOpen(true);
+      }
 
       setLoading(false);
     })();
@@ -166,9 +184,9 @@ export default function ChasseurPage() {
   // automatiquement avant de mettre en avant l'élément concerné. ──
   useEffect(() => {
     if (tourStep === null) return;
-    const step = HUNTER_TOUR_STEPS[tourStep];
+    const step = tourSteps[tourStep];
     if (step?.tab) setTab(step.tab);
-  }, [tourStep]);
+  }, [tourStep, tourSteps]);
 
   function endTour() {
     setTourStep(null);
@@ -181,10 +199,10 @@ export default function ChasseurPage() {
   function acceptTourProposal() { setTourProposalOpen(false); setTourStep(0); }
   function declineTourProposal() { setTourProposalOpen(false); endTour(); }
   function nextTourStep() {
-    if (tourStep < HUNTER_TOUR_STEPS.length - 1) setTourStep((s) => s + 1);
+    if (tourStep < tourSteps.length - 1) setTourStep((s) => s + 1);
     else endTour();
   }
-  function tourHl(id) { return tourStep !== null && HUNTER_TOUR_STEPS[tourStep]?.targetId === id ? tourStyles.tourHighlight : ''; }
+  function tourHl(id) { return tourStep !== null && tourSteps[tourStep]?.targetId === id ? tourStyles.tourHighlight : ''; }
 
   async function loadMyProposals(sb, hunterId) {
     const { data } = await sb
@@ -463,13 +481,13 @@ export default function ChasseurPage() {
           <div className={styles.tabsRow}>
             {questsEnabled && <button id="tour-tab-quests" className={`${styles.htab} ${tab === 'quests' ? styles.htabActive : ''} ${tourHl('tour-tab-quests')}`} onClick={() => setTab('quests')}>Quêtes</button>}
             {questsEnabled && (
-              <button className={`${styles.htab} ${tab === 'proposals' ? styles.htabActive : ''}`} onClick={() => setTab('proposals')}>
+              <button id="tour-tab-proposals" className={`${styles.htab} ${tab === 'proposals' ? styles.htabActive : ''} ${tourHl('tour-tab-proposals')}`} onClick={() => setTab('proposals')}>
                 Mes propositions <span className={styles.htabBadge}>{myProposals.filter((p) => p.status === 'pending').length}</span>
               </button>
             )}
             <button className={`${styles.htab} ${tab === 'gains' ? styles.htabActive : ''}`} onClick={() => setTab('gains')}>Gains</button>
             <button className={`${styles.htab} ${tab === 'vendeurs' ? styles.htabActive : ''}`} onClick={() => setTab('vendeurs')}>Mes vendeurs</button>
-            <button onClick={() => setTourStep(0)} title="Revoir le tutoriel" style={{ background: 'none', border: 'none', color: 'var(--text-faint)', cursor: 'pointer', fontSize: 16, marginLeft: 4, display: 'flex', alignItems: 'center' }}>
+            <button onClick={() => { setTourScope('all'); setTourStep(0); }} title="Revoir le tutoriel" style={{ background: 'none', border: 'none', color: 'var(--text-faint)', cursor: 'pointer', fontSize: 16, marginLeft: 4, display: 'flex', alignItems: 'center' }}>
               <i className="ph ph-question" />
             </button>
           </div>
@@ -532,14 +550,14 @@ export default function ChasseurPage() {
                 <div className={styles.emptyState}><div className={styles.emptyTitle}>Aucune quête disponible</div><div className={styles.emptySub}>Reviens plus tard ou modifie tes filtres.</div></div>
               ) : (
                 <div className={styles.questsList}>
-                  {filteredQuests.map((q) => {
+                  {filteredQuests.map((q, i) => {
                     const props = proposalsCount[q.id] || 0;
                     const exp = daysUntil(q.expires_at);
                     const hot = props >= 3;
                     const done = myQuestIds.has(q.id);
                     const fresh = Date.now() - new Date(q.created_at).getTime() < 86400000 * 2;
                     return (
-                      <div key={q.id} className={styles.questCard} style={done ? { opacity: .6 } : {}}>
+                      <div key={q.id} id={i === 0 ? 'tour-first-quest' : undefined} className={`${styles.questCard} ${i === 0 ? tourHl('tour-first-quest') : ''}`} style={done ? { opacity: .6 } : {}}>
                         <div className={styles.questHead}>
                           <div className={styles.questTitle}>{q.title}</div>
                           <div className={styles.badges}>
@@ -900,8 +918,12 @@ export default function ChasseurPage() {
         <div onClick={declineTourProposal} style={{ position: 'fixed', inset: 0, zIndex: 6999, background: 'rgba(0,0,0,.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
           <div onClick={(e) => e.stopPropagation()} style={{ maxWidth: 380, width: '100%', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: 24, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
             <Mascot size={72} float />
-            <h3 style={{ fontSize: 16, fontWeight: 900 }}>Bienvenue, chasseur !</h3>
-            <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>On te montre en 5 étapes les quêtes à pourvoir, ton lien de parrainage et où suivre tes gains. Ça prend une minute.</p>
+            <h3 style={{ fontSize: 16, fontWeight: 900 }}>{tourScope === 'news' ? 'Du nouveau dans ton espace' : 'Bienvenue, chasseur !'}</h3>
+            <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+              {tourScope === 'news'
+                ? `Récompense minimum, avance sur ticket de caisse, nouveaux gains : on te montre ce qui change en ${tourSteps.length} étape${tourSteps.length > 1 ? 's' : ''}.`
+                : `On te montre en ${tourSteps.length} étapes les quêtes, l'avance sur ticket, ton lien de parrainage et tes gains. Ça prend une minute.`}
+            </p>
             <div style={{ display: 'flex', gap: 10, width: '100%' }}>
               <button onClick={declineTourProposal} style={{ flex: 1, padding: '10px 12px', borderRadius: 10, background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-muted)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>Plus tard</button>
               <button onClick={acceptTourProposal} style={{ flex: 1, padding: '10px 12px', borderRadius: 10, background: 'var(--accent-btn)', border: 'none', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>Oui, guide-moi</button>
@@ -910,7 +932,7 @@ export default function ChasseurPage() {
         </div>
       )}
 
-      <TourOverlay steps={HUNTER_TOUR_STEPS} stepIndex={tourStep} onNext={nextTourStep} onSkip={endTour} />
+      <TourOverlay steps={tourSteps} stepIndex={tourStep} onNext={nextTourStep} onSkip={endTour} />
     </>
   );
 }

@@ -15,6 +15,7 @@ import { SHIP_COUNTRIES as COUNTRIES, COUNTRY_FLAG } from '@/lib/geo';
 import { useFeatureFlags } from '@/context/FeatureFlagsContext';
 import styles from './boutique.module.css';
 import Mascot from '@/components/Mascot';
+import { mediaUrl } from '@/lib/mediaUrl';
 
 const PAGE_SIZE = 24;
 const BUYER_COUNTRY_KEY = 'wenna_buyer_country';
@@ -535,7 +536,7 @@ export default function BoutiqueClient() {
                 return (
                   <Link href={`/produit?id=${p.id}`} id={i === 0 ? 'tour-first-product' : undefined} className={`${styles.prodCard} ${i === 0 ? tourHl('tour-first-product') : ''}`} key={p.id}>
                     <div className={styles.prodImg}>
-                      <img src={img} alt={p.name} loading="lazy" />
+                      <img src={mediaUrl(img)} alt={p.name} loading="lazy" />
                       <span className={styles.prodBadge}>{paysLabel}</span>
                       <button
                         id={i === 0 ? 'tour-add-to-cart-btn' : undefined}
@@ -651,7 +652,7 @@ export default function BoutiqueClient() {
                 <div className={styles.bpEmpty}>Aucune boutique boostée pour le moment.</div>
               ) : boostedShops.map((s) => (
                 <Link href={`/boutique-vendeur?slug=${s.slug}`} className={styles.boostCard} key={s.id}>
-                  {s.banner_url && <img src={s.banner_url} className={styles.boostCardBanner} alt={s.name} />}
+                  {s.banner_url && <img src={mediaUrl(s.banner_url)} className={styles.boostCardBanner} alt={s.name} />}
                   <div className={styles.boostCardBody}>
                     <span className={styles.boostBadge}>En vedette</span>
                     <div className={styles.boostCardName}>{s.name}</div>
@@ -682,7 +683,7 @@ export default function BoutiqueClient() {
                 const img = Array.isArray(r.images) && r.images.length ? r.images[0] : r.image_url;
                 return (
                   <Link href={`/produit?id=${r.id}`} className={styles.srchResultItem} key={r.id} onClick={() => setSearchOpen(false)}>
-                    {img && <img className={styles.srchResultImg} src={img} alt={r.name} />}
+                    {img && <img className={styles.srchResultImg} src={mediaUrl(img)} alt={r.name} />}
                     <div style={{ flex: 1 }}><div className={styles.srchResultName}>{r.name}</div></div>
                     <div className={styles.srchResultPrice}>{formatSmartPrice(r.price, r.currency || 'MAD')}</div>
                   </Link>
