@@ -15,9 +15,17 @@ export const metadata = {
   description: SITE_DESCRIPTION,
   keywords: ['marketplace', 'Gabon', 'Maroc', 'e-commerce', 'vendeur', 'boutique en ligne', 'Afrique'],
   manifest: '/manifest.json',
+  // Google Search affiche l'icône à côté du nom du site : carrée, côté
+  // multiple de 48 px (48, 96, 144, 192), sinon il met un globe générique.
   icons: {
-    icon: '/icon-192.png',
-    apple: '/icon-192.png',
+    icon: [
+      { url: '/favicon.ico', sizes: '48x48' },
+      { url: '/favicon-48.png', sizes: '48x48', type: 'image/png' },
+      { url: '/favicon-96.png', sizes: '96x96', type: 'image/png' },
+      { url: '/favicon-144.png', sizes: '144x144', type: 'image/png' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+    ],
+    apple: { url: '/apple-touch-icon.png', sizes: '180x180' },
   },
   // Sans ça, iOS Safari ouvre l'icône ajoutée à l'écran d'accueil dans un
   // onglet Safari normal (barre d'adresse visible) au lieu du plein écran.
