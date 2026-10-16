@@ -1,0 +1,30 @@
+.wrap { position: relative; width: 100%; touch-action: pan-y; }
+.grid { stroke: var(--border); stroke-width: 1; }
+.baseline { stroke: #3a3a3a; stroke-width: 1; }
+.axis { fill: var(--text-faint); font-size: 11px; font-variant-numeric: tabular-nums; }
+.cross { stroke: var(--text-faint); stroke-width: 1; stroke-dasharray: 3 3; }
+.dot { stroke: var(--surface); stroke-width: 2; }
+.endLabel { fill: var(--text-muted); font-size: 11px; font-weight: 700; }
+.legend { display: flex; gap: 16px; font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
+.legendItem { display: inline-flex; align-items: center; gap: 6px; }
+.legendLine { display: inline-block; width: 14px; height: 2px; border-radius: 1px; flex: none; }
+.tip {
+  position: absolute; top: 4px; transform: translateX(-50%); pointer-events: none;
+  min-width: 150px; padding: 8px 10px; border-radius: 8px;
+  background: var(--surface-2); border: 1px solid var(--border); box-shadow: var(--shadow-md);
+  font-size: 12px; color: var(--text);
+}
+.tipTitle { font-weight: 800; margin-bottom: 4px; text-transform: capitalize; }
+.tipRow { display: flex; align-items: center; gap: 6px; }
+.tipLabel { color: var(--text-muted); flex: 1; }
+.tipValue { font-weight: 700; font-variant-numeric: tabular-nums; }
+.tableToggle {
+  margin-top: 6px; background: none; border: none; padding: 0; cursor: pointer;
+  font: inherit; font-size: 11px; color: var(--text-faint); text-decoration: underline;
+}
+.tableToggle:hover { color: var(--accent); }
+.table { width: 100%; margin-top: 8px; font-size: 12px; border-collapse: collapse; }
+.table th, .table td { text-align: right; padding: 4px 6px; border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+.table th:first-child, .table td:first-child { text-align: left; text-transform: capitalize; }
+.table th { color: var(--text-faint); font-weight: 700; }
+.empty { font-size: 12px; color: var(--text-faint); padding: 24px 0; text-align: center; }

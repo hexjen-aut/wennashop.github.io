@@ -8,6 +8,7 @@ import TourOverlay from '@/components/TourOverlay';
 import tourStyles from '@/components/TourOverlay.module.css';
 import Mascot from '@/components/Mascot';
 import AdminGuide from './AdminGuide';
+import LineChart from './LineChart';
 import { ADMIN_TOUR_STEPS } from './guide';
 import styles from './admin.module.css';
 
@@ -1664,45 +1665,31 @@ export default function AdminPage() {
               <div className={styles.statCard}><div className={styles.statNum} style={{ color: analytics.cancelRate > 10 ? 'var(--error)' : 'var(--success)' }}>{analytics.cancelRate}%</div><div className={styles.statLabel}>Taux d'annulation</div></div>
             </div>
 
-            <div className={styles.card} style={{ marginBottom: 16 }}>
+            <div className={`${styles.card} ${styles.cardPad}`} style={{ marginBottom: 16 }}>
               <div className={styles.cardTitle} style={{ marginBottom: 14 }}>Revenus livrés — 6 derniers mois</div>
-              <div style={{ padding: '4px 4px 0' }}>
-                <svg viewBox="0 0 300 140" style={{ width: '100%', height: 140 }}>
-                  {(() => { const max = Math.max(1, ...analytics.months.map((m) => m.revenue)); return analytics.months.map((m, i) => {
-                    const h = (m.revenue / max) * 100; const x = i * 50 + 8;
-                    return (<g key={m.key}><rect x={x} y={120 - h} width="30" height={h} rx="4" fill="var(--accent)" opacity=".85" /><text x={x + 15} y="134" textAnchor="middle" fontSize="9" fill="var(--text-faint)">{m.label}</text></g>);
-                  }); })()}
-                </svg>
-              </div>
+              <LineChart
+                ariaLabel="Revenus livrés par mois, 6 derniers mois"
+                labels={analytics.months.map((m) => m.label)}
+                series={[{ key: 'revenue', label: 'Revenus livrés', color: '#e65100', values: analytics.months.map((m) => m.revenue) }]}
+                format={(v) => fmt(v)}
+              />
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
-              <div className={styles.card}>
+              <div className={`${styles.card} ${styles.cardPad}`}>
                 <div className={styles.cardTitle} style={{ marginBottom: 14 }}>Nouveaux comptes — 6 derniers mois</div>
-                {analytics.months.every((m) => m.buyers === 0 && m.vendors === 0) ? <div className={styles.empty}>Aucune donnée</div> : (
-                  <>
-                    <div style={{ display: 'flex', gap: 14, fontSize: 10, marginBottom: 10 }}>
-                      <span><span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: 2, background: 'var(--accent)', marginRight: 4 }} />Acheteurs</span>
-                      <span><span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: 2, background: 'var(--gold)', marginRight: 4 }} />Vendeurs</span>
-                    </div>
-                    {analytics.months.map((m) => {
-                      const max = Math.max(1, ...analytics.months.map((x) => x.buyers + x.vendors));
-                      return (
-                        <div key={m.key} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                          <span style={{ fontSize: 10, color: 'var(--text-faint)', width: 28 }}>{m.label}</span>
-                          <div style={{ flex: 1, display: 'flex', height: 10, borderRadius: 3, overflow: 'hidden', background: 'var(--surface-2)' }}>
-                            <div style={{ width: `${(m.buyers / max) * 100}%`, background: 'var(--accent)' }} />
-                            <div style={{ width: `${(m.vendors / max) * 100}%`, background: 'var(--gold)' }} />
-                          </div>
-                          <span style={{ fontSize: 10, fontWeight: 700 }}>{m.buyers + m.vendors}</span>
-                        </div>
-                      );
-                    })}
-                  </>
-                )}
+                <LineChart
+                  ariaLabel="Nouveaux acheteurs et vendeurs par mois, 6 derniers mois"
+                  labels={analytics.months.map((m) => m.label)}
+                  series={[
+                    { key: 'buyers', label: 'Acheteurs', color: '#e65100', values: analytics.months.map((m) => m.buyers) },
+                    { key: 'vendors', label: 'Vendeurs', color: '#3987e5', values: analytics.months.map((m) => m.vendors) },
+                  ]}
+                  height={190}
+                />
               </div>
 
-              <div className={styles.card}>
+              <div className={`${styles.card} ${styles.cardPad}`}>
                 <div className={styles.cardTitle} style={{ marginBottom: 14 }}>Répartition par pays</div>
                 {Object.keys(analytics.countries).length === 0 ? <div className={styles.empty}>Aucune donnée</div> : Object.entries(analytics.countries).sort((a, b) => b[1].revenue - a[1].revenue).map(([c, v]) => {
                   const max = Math.max(...Object.values(analytics.countries).map((x) => x.revenue), 1);
@@ -1717,7 +1704,7 @@ export default function AdminPage() {
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
-              <div className={styles.card}>
+              <div className={`${styles.card} ${styles.cardPad}`}>
                 <div className={styles.cardTitle} style={{ marginBottom: 14 }}>Top 5 vendeurs (CA livré)</div>
                 {analytics.topVendors.length === 0 ? <div className={styles.empty}>Aucune donnée</div> : analytics.topVendors.map((v, i) => (
                   <div key={v.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 0', borderTop: i > 0 ? '1px solid var(--border)' : 'none', fontSize: 12 }}>
@@ -1729,7 +1716,7 @@ export default function AdminPage() {
                   </div>
                 ))}
               </div>
-              <div className={styles.card}>
+              <div className={`${styles.card} ${styles.cardPad}`}>
                 <div className={styles.cardTitle} style={{ marginBottom: 14 }}>Top catégories (produits actifs)</div>
                 {analytics.topCategories.length === 0 ? <div className={styles.empty}>Aucune donnée</div> : analytics.topCategories.map(([name, count], i) => {
                   const max = analytics.topCategories[0][1];
@@ -1744,7 +1731,7 @@ export default function AdminPage() {
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-              <div className={styles.card} style={{ padding: 18, borderColor: analytics.vendorsNoProducts.length > 0 ? 'rgba(239,68,68,.3)' : undefined }}>
+              <div className={`${styles.card} ${styles.cardPad}`} style={{ padding: 18, borderColor: analytics.vendorsNoProducts.length > 0 ? 'rgba(239,68,68,.3)' : undefined }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: analytics.vendorsNoProducts.length > 0 ? 12 : 0 }}>
                   <i className="ph ph-warning" style={{ fontSize: 20, color: analytics.vendorsNoProducts.length > 0 ? 'var(--error)' : 'var(--success)' }} />
                   <div>
@@ -1763,7 +1750,7 @@ export default function AdminPage() {
                   </div>
                 )}
               </div>
-              <div className={styles.card} style={{ padding: 18 }}>
+              <div className={`${styles.card} ${styles.cardPad}`} style={{ padding: 18 }}>
                 <div style={{ display: 'flex', gap: 24 }}>
                   <div>
                     <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--gold)' }}>{analytics.reviewStats.avg}★</div>
