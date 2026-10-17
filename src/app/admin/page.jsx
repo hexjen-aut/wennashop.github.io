@@ -422,7 +422,7 @@ export default function AdminPage() {
     const sb = getSupabase();
     const isBoosted = boostedShopIds.has(shop.id);
     if (isBoosted) {
-      const { error } = await sb.from('boosts').update({ status: 'inactive' }).eq('shop_id', shop.id).eq('type', 'shop_homepage').eq('status', 'active');
+      const { error } = await sb.from('boosts').update({ status: 'cancelled' }).eq('shop_id', shop.id).eq('type', 'shop_homepage').eq('status', 'active');
       if (error) { alert('Erreur : ' + error.message); setBoostActionId(null); return; }
     } else {
       const { data: pack } = await sb.from('boost_packs').select('id,duration_days').eq('slug', 'admin-manuel').single();

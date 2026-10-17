@@ -15,6 +15,7 @@ import styles from './vendeur.module.css';
 import bvStyles from '../boutique-vendeur/boutique-vendeur.module.css';
 import Mascot from '@/components/Mascot';
 import WennaPointer from '@/components/WennaPointer';
+import { tourStepsFor } from '@/lib/tourSteps';
 
 function shopInitials(name) {
   if (!name) return 'W';
@@ -59,8 +60,11 @@ function timeAgo(d) {
 }
 const PAGE_SIZE = 10;
 
+// Une étape ajoutée après coup porte `since` (voir src/lib/tourSteps.js) :
+// le vendeur qui a déjà fini le tutoriel ne revoit qu'elle.
 const TOUR_STEPS = [
   { navKey: 'overview', title: "Vue d'ensemble", text: "Ton tableau de bord : ventes, commandes récentes, stock faible et tes objectifs, en un coup d'œil." },
+  { navKey: 'overview', fieldId: 'tour-founder-card', needsFounderCard: true, since: '2026-10-17', title: 'Vendeur fondateur', text: "Les 20 premières boutiques qui mettent un produit en ligne deviennent vendeurs fondateurs : badge à vie et 3 mois de mise en avant sur la page d'accueil. Cette carte te dit si tu en fais partie, ou combien de places il reste." },
   { navKey: 'products', title: 'Mes produits', text: "Ajoute et gère les produits que tu vends. C'est le cœur de ta boutique." },
   { navKey: 'orders', title: 'Commandes', text: 'Suis chaque commande et marque-la comme expédiée avec un numéro de suivi.' },
   { navKey: 'revenue', title: 'Revenus', text: "Ton chiffre d'affaires et l'historique détaillé de tes paiements." },
@@ -185,6 +189,11 @@ export default function VendeurPage() {
   const [tourStep, setTourStep] = useState(null); // null = pas en cours
   const [tourProposalOpen, setTourProposalOpen] = useState(false);
   const [tourRect, setTourRect] = useState(null); // rect de l'élément mis en avant, pour flouter le reste
+  // 'all' : tutoriel complet ; 'news' : seulement les étapes ajoutées depuis
+  // la fin du tutoriel précédent (vendor_tour_completed_at).
+  const [tourScope, setTourScope] = useState('all');
+  // Places de vendeur fondateur restantes (null = inconnu)
+  const [founderPlacesLeft, setFounderPlacesLeft] = useState(null);
 
   // Products
   const [products, setProducts] = useState([]);
@@ -262,6 +271,14 @@ export default function VendeurPage() {
 
   function showToast(msg, type = '') { setToast({ msg, type }); setTimeout(() => setToast(null), 3200); }
 
+  const hasFounderCard = !!(shop?.founder_rank || founderPlacesLeft > 0);
+  function availableTourSteps(withFounderCard) {
+    return TOUR_STEPS.filter((s) => withFounderCard || !s.needsFounderCard);
+  }
+  const tourSteps = tourScope === 'news'
+    ? tourStepsFor(availableTourSteps(hasFounderCard), seller?.vendor_tour_completed_at)
+    : availableTourSteps(hasFounderCard);
+
   // ── Auth + chargement initial ──
   useEffect(() => {
     (async () => {
@@ -322,7 +339,14 @@ export default function VendeurPage() {
       if (!member && shopRow && (user.role === 'admin' || user.status === 'active')) await loadTeam(sb, shopRow.id);
       await loadNotifications(sb, user.id);
       setChecking(false);
-      if (!user.vendor_tour_completed_at) setTourProposalOpen(true);
+      const { data: placesLeft } = await sb.rpc('founder_places_left');
+      const places = placesLeft == null ? null : Number(placesLeft);
+      setFounderPlacesLeft(places);
+      const steps = availableTourSteps(!!(shopRow?.founder_rank || places > 0));
+      if (tourStepsFor(steps, user.vendor_tour_completed_at).length) {
+        setTourScope(user.vendor_tour_completed_at ? 'news' : 'all');
+        setTourProposalOpen(true);
+      }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -363,7 +387,7 @@ export default function VendeurPage() {
   // que de laisser une simple info-bulle sans action. ──
   useEffect(() => {
     if (tourStep === null) return;
-    const step = TOUR_STEPS[tourStep];
+    const step = tourSteps[tourStep];
     if (!step?.fieldId) return;
     showSection(step.navKey);
     const t = setTimeout(() => {
@@ -379,7 +403,7 @@ export default function VendeurPage() {
   // recalcule au scroll/redimensionnement le temps que l'étape reste active. ──
   useEffect(() => {
     if (tourStep === null) { setTourRect(null); return; }
-    const step = TOUR_STEPS[tourStep];
+    const step = tourSteps[tourStep];
     function targetEl() {
       if (step.fieldId) return document.getElementById(step.fieldId);
       if (step.navKey === 'new-product') return document.getElementById('tour-new-product-btn');
@@ -932,7 +956,7 @@ export default function VendeurPage() {
   }
 
   function showSection(s) { setSection(s); setSidebarOpen(false); }
-  function tourFieldClass(id) { return tourStep !== null && TOUR_STEPS[tourStep]?.fieldId === id ? styles.tourHighlight : ''; }
+  function tourFieldClass(id) { return tourStep !== null && tourSteps[tourStep]?.fieldId === id ? styles.tourHighlight : ''; }
 
   // Quatre bandes qui encadrent tourRect pour flouter/assombrir tout le
   // reste de l'écran sans jamais toucher l'élément mis en avant (voir
@@ -964,7 +988,7 @@ export default function VendeurPage() {
   function acceptTourProposal() { setTourProposalOpen(false); setTourStep(0); }
   function declineTourProposal() { setTourProposalOpen(false); endTour(); }
   function nextTourStep() {
-    if (tourStep < TOUR_STEPS.length - 1) setTourStep(tourStep + 1);
+    if (tourStep < tourSteps.length - 1) setTourStep(tourStep + 1);
     else endTour();
   }
 
@@ -1094,7 +1118,7 @@ export default function VendeurPage() {
           ['shop', 'ph-storefront', 'Ma boutique'],
           ['profile', 'ph-user', 'Mon profil'],
         ].map(([key, icon, label]) => (
-          <button key={key} id={`tour-nav-${key}`} className={`${styles.navItem} ${section === key ? styles.navItemActive : ''} ${tourStep !== null && TOUR_STEPS[tourStep]?.navKey === key ? styles.tourHighlight : ''}`} onClick={() => showSection(key)}>
+          <button key={key} id={`tour-nav-${key}`} className={`${styles.navItem} ${section === key ? styles.navItemActive : ''} ${tourStep !== null && tourSteps[tourStep]?.navKey === key ? styles.tourHighlight : ''}`} onClick={() => showSection(key)}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}><i className={`ph ${icon}`} />{label}</span>
             {key === 'orders' && orders.filter((o) => o.status === 'pending').length > 0 && <span className={styles.navBadge}>{orders.filter((o) => o.status === 'pending').length}</span>}
           </button>
@@ -1116,8 +1140,8 @@ export default function VendeurPage() {
               <i className="ph ph-bell" />
               {unreadCount > 0 && <span className={styles.notifDot}>{unreadCount}</span>}
             </button>
-            <button id="tour-new-product-btn" className={`${styles.btnPrimary} ${tourStep !== null && TOUR_STEPS[tourStep]?.navKey === 'new-product' ? styles.tourHighlight : ''}`} onClick={() => { showSection('products'); openProductModal(); }}><i className="ph ph-plus" /> Nouveau produit</button>
-            <button className={styles.linkBtn} title="Revoir le tutoriel" onClick={() => setTourStep(0)}><i className="ph ph-question" /></button>
+            <button id="tour-new-product-btn" className={`${styles.btnPrimary} ${tourStep !== null && tourSteps[tourStep]?.navKey === 'new-product' ? styles.tourHighlight : ''}`} onClick={() => { showSection('products'); openProductModal(); }}><i className="ph ph-plus" /> Nouveau produit</button>
+            <button className={styles.linkBtn} title="Revoir le tutoriel" onClick={() => { setTourScope('all'); setTourStep(0); }}><i className="ph ph-question" /></button>
           </div>
         </div>
 
@@ -1129,6 +1153,34 @@ export default function VendeurPage() {
               <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', flex: 1 }}>Commission WennaShop : <strong style={{ color: 'var(--text)' }}>{shop?.commission_rate ? `${shop.commission_rate}%` : 'selon catégorie du produit'}</strong> par vente.</span>
               <button className={`${styles.btnGhost} ${styles.btnSm}`} onClick={() => setCommissionGridOpen(true)}>Voir la grille</button>
             </div>
+
+            {hasFounderCard && (
+              <div id="tour-founder-card" className={`${styles.card} ${tourFieldClass('tour-founder-card')}`} style={{ padding: '14px 18px', marginBottom: 14, border: '1px solid var(--border-accent)' }}>
+                {shop?.founder_rank ? (() => {
+                  const spotlightEnd = shop.founder_at ? new Date(new Date(shop.founder_at).getTime() + 90 * 86400000) : null;
+                  const spotlightOn = spotlightEnd && spotlightEnd > new Date();
+                  return (
+                    <>
+                      <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--accent)', marginBottom: 4 }}>Vendeur fondateur n° {shop.founder_rank}</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+                        Le badge « Vendeur fondateur » reste sur ta boutique et tes produits pour toujours.{' '}
+                        {spotlightOn
+                          ? `Ta boutique est mise en avant sur la page d'accueil jusqu'au ${spotlightEnd.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}.`
+                          : 'Ta mise en avant de 3 mois sur la page d’accueil est terminée.'}
+                      </div>
+                    </>
+                  );
+                })() : (
+                  <>
+                    <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--accent)', marginBottom: 4 }}>Plus que {founderPlacesLeft} place{founderPlacesLeft > 1 ? 's' : ''} de vendeur fondateur</div>
+                    <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+                      Les 20 premières boutiques validées qui mettent un produit en ligne gagnent le badge « Vendeur fondateur » à vie et 3 mois de mise en avant sur la page d&apos;accueil. Publie ton premier produit pour prendre ta place.{' '}
+                      <Link href="/vendre" style={{ color: 'var(--accent)' }}>En savoir plus</Link>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
 
             {overview.shopCompletion < 100 && (
               <div className={styles.card} style={{ marginBottom: 14, padding: 18 }}>
@@ -2134,9 +2186,11 @@ export default function VendeurPage() {
           <div className={styles.modalBox} style={{ maxWidth: 420 }} onClick={(e) => e.stopPropagation()}>
             <div style={{ padding: 24, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
               <Mascot size={72} float />
-              <h3 style={{ fontSize: 16, fontWeight: 900 }}>Bienvenue sur WennaShop !</h3>
+              <h3 style={{ fontSize: 16, fontWeight: 900 }}>{tourScope === 'news' ? 'Du nouveau dans ton espace' : 'Bienvenue sur WennaShop !'}</h3>
               <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                On peut te guider pas à pas pour configurer ta boutique — nom, logo, bannière, réseaux sociaux, livraison. Ça prend 2 minutes.
+                {tourScope === 'news'
+                  ? `On te montre ce qui a changé en ${tourSteps.length} étape${tourSteps.length > 1 ? 's' : ''}.`
+                  : 'On peut te guider pas à pas pour configurer ta boutique — nom, logo, bannière, réseaux sociaux, livraison. Ça prend 2 minutes.'}
               </p>
               <div style={{ display: 'flex', gap: 10, width: '100%' }}>
                 <button className={styles.btnGhost} style={{ flex: 1, justifyContent: 'center' }} onClick={declineTourProposal}>Plus tard</button>
@@ -2156,14 +2210,14 @@ export default function VendeurPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             {!tourRect && <Mascot size={36} />}
             <div>
-              <div className={styles.tourStepLabel}>Étape {tourStep + 1}/{TOUR_STEPS.length}</div>
-              <div className={styles.tourTitle}>{TOUR_STEPS[tourStep].title}</div>
+              <div className={styles.tourStepLabel}>Étape {tourStep + 1}/{tourSteps.length}</div>
+              <div className={styles.tourTitle}>{tourSteps[tourStep].title}</div>
             </div>
           </div>
-          <p className={styles.tourText}>{TOUR_STEPS[tourStep].text}</p>
+          <p className={styles.tourText}>{tourSteps[tourStep].text}</p>
           <div className={styles.tourActions}>
             <button className={styles.linkBtn} onClick={endTour}>Passer</button>
-            <button className={styles.btnPrimary} onClick={nextTourStep}>{tourStep === TOUR_STEPS.length - 1 ? "C'est parti !" : 'Suivant'}</button>
+            <button className={styles.btnPrimary} onClick={nextTourStep}>{tourStep === tourSteps.length - 1 ? "C'est parti !" : 'Suivant'}</button>
           </div>
           </div>
         </>

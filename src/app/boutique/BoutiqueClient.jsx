@@ -17,13 +17,20 @@ import styles from './boutique.module.css';
 import Mascot from '@/components/Mascot';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { COUNTRY_SOURCE_KEY, IP_COUNTRY_KEY, readLocal, writeLocal } from '@/lib/buyerCurrency';
+import { tourStepsFor } from '@/lib/tourSteps';
 
 const PAGE_SIZE = 24;
 const BUYER_COUNTRY_KEY = 'wenna_buyer_country';
+// Date (ISO) de fin du tutoriel. Les anciennes valeurs '1' datent d'avant
+// le 17 octobre 2026 : elles comptent comme vues ce jour-là.
 const BUYER_TOUR_SEEN_KEY = 'wenna_buyer_tour_seen';
+const LEGACY_TOUR_SEEN_AT = '2026-10-16T00:00:00Z';
+// Mise en avant des vendeurs fondateurs : 3 mois après leur premier produit.
+const FOUNDER_SPOTLIGHT_DAYS = 90;
 
 const BUYER_TOUR_STEPS = [
   { targetId: 'tour-search-btn', title: 'Rechercher', text: 'Cherche un produit précis, ou parcours les catégories juste en dessous.' },
+  { targetId: 'tour-founders', title: 'Vendeurs fondateurs', text: 'Les premières boutiques de WennaShop, mises en avant pendant 3 mois. Clique sur une boutique pour voir tous ses produits.', needsFounders: true, since: '2026-10-17' },
   { targetId: 'tour-first-product', title: 'Ouvrir un produit', text: 'Clique sur un produit pour voir ses photos, son prix et sa boutique.', needsProducts: true },
   { targetId: 'tour-add-to-cart-btn', title: 'Ajouter au panier', text: 'Ajoute directement un produit au panier sans quitter la liste.', needsProducts: true },
   { targetId: 'tour-cart-btn', title: 'Ton panier', text: 'Retrouve ici tout ce que tu as ajouté, et passe commande quand tu es prêt.' },
@@ -91,6 +98,11 @@ export default function BoutiqueClient() {
   // Tutoriel interactif
   const [tourStep, setTourStep] = useState(null); // null = pas en cours
   const [tourProposalOpen, setTourProposalOpen] = useState(false);
+  // 'all' : tutoriel complet ; 'news' : seulement les étapes ajoutées depuis
+  // la dernière fois (tourSeenAt = fin du tutoriel précédent).
+  const [tourScope, setTourScope] = useState('all');
+  const [tourSeenAt, setTourSeenAt] = useState(null);
+  const [founderShops, setFounderShops] = useState([]);
 
   // ── Config du site ──
   useEffect(() => {
@@ -249,6 +261,23 @@ export default function BoutiqueClient() {
     })();
   }, []);
 
+  // ── Vendeurs fondateurs (bandeau) : les 20 premières boutiques, mises en
+  // avant 3 mois après leur premier produit en ligne. ──
+  useEffect(() => {
+    (async () => {
+      const sb = getSupabase();
+      const since = new Date(Date.now() - FOUNDER_SPOTLIGHT_DAYS * 86400000).toISOString();
+      const { data } = await sb.from('shops')
+        .select('id,slug,name,logo_url,city,country,founder_rank')
+        .eq('status', 'active')
+        .not('founder_rank', 'is', null)
+        .gt('founder_at', since)
+        .order('founder_rank', { ascending: true })
+        .limit(20);
+      setFounderShops((data || []).filter((s) => s.slug));
+    })();
+  }, []);
+
   // ── Quêtes ouvertes (panneau flottant) ──
   useEffect(() => {
     (async () => {
@@ -272,25 +301,31 @@ export default function BoutiqueClient() {
     else { setShowBoostFloat(false); sessionStorage.setItem('wenna_float_boost_dismissed', '1'); }
   }
 
-  // ── Tutoriel interactif : proposé une seule fois, une fois le catalogue
-  // chargé. Les étapes qui pointent sur un produit réel sont retirées quand
-  // la grille est vide, au lieu de ne jamais proposer le tuto. ──
-  const tourSteps = products.length ? BUYER_TOUR_STEPS : BUYER_TOUR_STEPS.filter((s) => !s.needsProducts);
+  // ── Tutoriel interactif : proposé une fois, une fois le catalogue chargé,
+  // puis de nouveau seulement pour les étapes ajoutées depuis (since). Les
+  // étapes qui pointent sur un produit réel ou sur le bandeau des fondateurs
+  // sont retirées quand ils ne sont pas affichés. ──
+  const availableTourSteps = BUYER_TOUR_STEPS.filter((s) => (products.length || !s.needsProducts) && (founderShops.length || !s.needsFounders));
+  const tourSteps = tourScope === 'news' ? tourStepsFor(availableTourSteps, tourSeenAt) : availableTourSteps;
 
   // Attend que le choix du pays (première visite) soit fait, pour ne pas
   // empiler deux fenêtres.
   useEffect(() => {
-    if (loading || countryModalOpen) return;
+    if (loading || countryModalOpen || tourStep !== null) return;
     let seen = null;
     try { seen = localStorage.getItem(BUYER_TOUR_SEEN_KEY); } catch {}
-    if (seen) return;
+    const seenAt = seen ? (seen === '1' ? LEGACY_TOUR_SEEN_AT : seen) : null;
+    if (seenAt && !tourStepsFor(availableTourSteps, seenAt).length) return;
+    setTourSeenAt(seenAt);
+    setTourScope(seenAt ? 'news' : 'all');
     const t = setTimeout(() => setTourProposalOpen(true), 2500);
     return () => clearTimeout(t);
-  }, [loading, countryModalOpen]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, countryModalOpen, founderShops.length]);
 
   function endTour() {
     setTourStep(null);
-    try { localStorage.setItem(BUYER_TOUR_SEEN_KEY, '1'); } catch {}
+    try { localStorage.setItem(BUYER_TOUR_SEEN_KEY, new Date().toISOString()); } catch {}
   }
   function acceptTourProposal() { setTourProposalOpen(false); setTourStep(0); }
   function declineTourProposal() { setTourProposalOpen(false); endTour(); }
@@ -488,7 +523,7 @@ export default function BoutiqueClient() {
           </button>
           {boostersEnabled && <button className={styles.btnBoostToolbar} onClick={() => setBoostPanelOpen(true)}>Boostées</button>}
           {questsEnabled && <Link href="/quetes" className={styles.btnQueteToolbar}>Quêtes</Link>}
-          <button className={styles.hdBtn} onClick={() => setTourStep(0)} title="Revoir le tutoriel" style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 18, display: 'flex' }}>
+          <button className={styles.hdBtn} onClick={() => { setTourScope('all'); setTourStep(0); }} title="Revoir le tutoriel" style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 18, display: 'flex' }}>
             <i className="ph ph-question" />
           </button>
           <span className={styles.resultsCount}>{total > 0 ? `${total} produit${total > 1 ? 's' : ''}` : ''}</span>
@@ -551,6 +586,27 @@ export default function BoutiqueClient() {
         </aside>
 
         <div className={styles.productsArea}>
+          {founderShops.length > 0 && (
+            <section id="tour-founders" className={`${styles.founders} ${tourHl('tour-founders')}`} aria-label="Vendeurs fondateurs">
+              <div className={styles.foundersHead}>
+                <span className={styles.foundersTitle}>Vendeurs fondateurs</span>
+                <Link href="/vendre" className={styles.foundersLink}>Vendre sur WennaShop</Link>
+              </div>
+              <div className={styles.foundersRow}>
+                {founderShops.map((s) => (
+                  <Link href={`/boutique-vendeur?slug=${s.slug}`} className={styles.founderCard} key={s.id}>
+                    <span className={styles.founderLogo}>
+                      {s.logo_url ? <img src={mediaUrl(s.logo_url)} alt="" /> : (s.name || '?').trim().charAt(0).toUpperCase()}
+                    </span>
+                    <span className={styles.founderInfo}>
+                      <span className={styles.founderName}>{s.name}</span>
+                      <span className={styles.founderMeta}>{[s.city, s.country].filter(Boolean).join(' · ') || `Fondateur n° ${s.founder_rank}`}</span>
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
           {loading ? (
             <div className={`${styles.prodGrid} ${gridClass}`}>
               {Array.from({ length: 12 }).map((_, i) => (
@@ -791,8 +847,12 @@ export default function BoutiqueClient() {
         <div onClick={declineTourProposal} style={{ position: 'fixed', inset: 0, zIndex: 6999, background: 'rgba(0,0,0,.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
           <div onClick={(e) => e.stopPropagation()} style={{ maxWidth: 380, width: '100%', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: 24, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
             <Mascot size={72} float />
-            <h3 style={{ fontSize: 16, fontWeight: 900 }}>Bienvenue sur WennaShop !</h3>
-            <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>On te montre en {tourSteps.length} étapes comment chercher un produit, l'ajouter au panier et suivre ta commande. Ça prend une minute. Tu pourras le revoir à tout moment avec le bouton « ? » en haut du catalogue.</p>
+            <h3 style={{ fontSize: 16, fontWeight: 900 }}>{tourScope === 'news' ? 'Du nouveau sur WennaShop' : 'Bienvenue sur WennaShop !'}</h3>
+            <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+              {tourScope === 'news'
+                ? `On te montre ce qui a changé en ${tourSteps.length} étape${tourSteps.length > 1 ? 's' : ''}. Le tutoriel complet reste disponible avec le bouton « ? » en haut du catalogue.`
+                : `On te montre en ${tourSteps.length} étapes comment chercher un produit, l'ajouter au panier et suivre ta commande. Ça prend une minute. Tu pourras le revoir à tout moment avec le bouton « ? » en haut du catalogue.`}
+            </p>
             <div style={{ display: 'flex', gap: 10, width: '100%' }}>
               <button onClick={declineTourProposal} style={{ flex: 1, padding: '10px 12px', borderRadius: 10, background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-muted)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>Non merci</button>
               <button onClick={acceptTourProposal} style={{ flex: 1, padding: '10px 12px', borderRadius: 10, background: 'var(--accent-btn)', border: 'none', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>Oui, guide-moi</button>

@@ -21,7 +21,7 @@ export const WENNA_FAQ = [
     id: 'paiement',
     popular: true,
     q: 'Quels sont les moyens de paiement ?',
-    a: "Au Maroc : paiement à la livraison (espèces) ou virement bancaire. Au Gabon : paiement à la livraison, Airtel Money ou Moov Money. Au moment de payer, seuls les moyens disponibles pour ton pays s'affichent. Pour Airtel Money, Moov Money ou un virement, envoie le montant exact au numéro ou au RIB affiché sur ta commande avec la référence WN-…, dans les 24 h, puis clique « J'ai payé » et saisis l'ID de transaction. Sans paiement déclaré à temps, la commande est annulée.",
+    a: "Au Maroc : paiement à la livraison (espèces) ou virement bancaire. Au Gabon : paiement à la livraison ou Airtel Money (Moov Money arrive bientôt). Au moment de payer, seuls les moyens disponibles pour ton pays s'affichent. Pour Airtel Money ou un virement, envoie le montant exact au numéro ou au RIB affiché sur ta commande avec la référence WN-…, dans les 24 h, puis clique « J'ai payé » et saisis l'ID de transaction. Sans paiement déclaré à temps, la commande est annulée.",
     keywords: 'payer paiement carte bancaire espèces cash livraison virement mobile money airtel moov orange',
   },
   {
@@ -92,7 +92,21 @@ export const WENNA_FAQ = [
     q: 'Comment ouvrir ma boutique ?',
     a: "Inscris-toi gratuitement en choisissant « vendeur », puis fournis une pièce d'identité (CNI ou passeport) et ton adresse. L'équipe valide ta boutique, et tu peux publier tes produits.",
     keywords: 'vendre vendeur devenir boutique ouvrir créer inscription artisan commerçant',
-    link: { href: '/connexion', label: "S'inscrire" },
+    link: { href: '/vendre', label: 'Vendre sur WennaShop' },
+  },
+  {
+    id: 'fondateur',
+    q: "C'est quoi un vendeur fondateur ?",
+    a: "Les 20 premières boutiques validées qui mettent un produit en ligne deviennent vendeurs fondateurs : badge « Vendeur fondateur » à vie sur la boutique et ses produits, et 3 mois de mise en avant sur la page d'accueil. La commission ne change pas. Le nombre de places restantes est affiché sur la page Vendre sur WennaShop.",
+    keywords: 'fondateur fondateurs 20 premiers vendeurs offre lancement badge mise en avant vedette places',
+    link: { href: '/vendre', label: 'Voir les places restantes' },
+  },
+  {
+    id: 'vendre-gabon',
+    q: 'Je suis au Maroc, comment vendre au Gabon ?',
+    a: "Ouvre ta boutique, puis coche « Gabon » dans les pays où tu expédies (dans Ma boutique, ou produit par produit). Tes produits apparaissent alors chez les acheteurs gabonais, avec le prix converti en FCFA. Tu expédies avec ton transporteur et ajoutes le numéro de suivi ; WennaShop te reverse ta part par virement après la livraison.",
+    keywords: 'maroc gabon vendre étranger international expédier export livraison pays fcfa dirham',
+    link: { href: '/vendre', label: 'Vendre sur WennaShop' },
   },
   {
     id: 'commission',

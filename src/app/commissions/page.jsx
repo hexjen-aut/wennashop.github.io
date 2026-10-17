@@ -88,7 +88,7 @@ export default async function CommissionsPage() {
         </div>
 
         <div className={styles.actions}>
-          <Link href="/connexion" className={styles.btn}>Ouvrir ma boutique</Link>
+          <Link href="/vendre" className={styles.btn}>Ouvrir ma boutique</Link>
           <Link href="/cgu" className={styles.link}>Conditions générales</Link>
         </div>
       </main>
