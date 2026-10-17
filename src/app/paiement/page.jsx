@@ -7,7 +7,7 @@ import { getSupabase } from '@/lib/supabase';
 import Nav from '@/components/Nav';
 import Mascot from '@/components/Mascot';
 import { convertPrice } from '@/lib/currency';
-import { BUYER_COUNTRY_KEY } from '@/lib/buyerCurrency';
+import { BUYER_COUNTRY_KEY, COUNTRY_SOURCE_KEY, IP_COUNTRY_KEY, getDevicePosition, readLocal } from '@/lib/buyerCurrency';
 import styles from './paiement.module.css';
 
 // Appel d'une fonction serveur ; renvoie { data, error } avec le message lisible
@@ -251,6 +251,10 @@ function PaiementContent() {
     setMobileError(null);
     const sb = getSupabase();
 
+    // Contrôle anti-fraude : position de l'appareil (le navigateur demande
+    // l'autorisation ; un refus ne bloque pas la commande).
+    const device = await getDevicePosition();
+
     // Adresse + statut enregistrés côté serveur (submit_checkout) : un
     // acheteur ne peut pas modifier `orders` directement.
     const { data: res, error: rpcErr } = await sb.rpc('submit_checkout', {
@@ -268,6 +272,21 @@ function PaiementContent() {
       return;
     }
     await sb.rpc('set_order_phone', { p_order_id: orderId, p_phone: form.phone });
+
+    // Verdict calculé et enregistré côté serveur, visible des seuls agents.
+    // On n'attend pas plus de 5 s : la commande continue quoi qu'il arrive.
+    await Promise.race([
+      sb.functions.invoke('order-geo-check', {
+        body: {
+          order_id: orderId,
+          display_country: readLocal(BUYER_COUNTRY_KEY),
+          country_source: readLocal(COUNTRY_SOURCE_KEY),
+          ip_country_hint: readLocal(IP_COUNTRY_KEY),
+          device,
+        },
+      }).catch(() => null),
+      new Promise((r) => setTimeout(r, 5000)),
+    ]);
 
     if (useAirtelDirect) { await startAirtelPayment(sb); return; }
 
@@ -485,6 +504,10 @@ function PaiementContent() {
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 18, fontWeight: 900, marginTop: 14 }}>
                 <span>Total</span><span style={{ color: 'var(--accent)' }}>{fmt(order?.buyer_total_amount ?? order?.total_amount, order?.buyer_currency || order?.currency)}</span>
               </div>
+              <p style={{ fontSize: 11, color: 'var(--text-faint)', lineHeight: 1.5, margin: '14px 0 0' }}>
+                Sécurité : en confirmant, ton navigateur te demandera ta position. Elle sert seulement à vérifier que la commande
+                part bien du pays de livraison, puis elle est effacée après 12 mois. Tu peux refuser : la commande passe quand même.
+              </p>
               <button className={styles.btnSubmit} onClick={submit} disabled={sending || !hasAnyMethod}>
                 {sending ? 'Traitement…'
                   : useAirtelDirect ? (airtelHolder ? `Confirmer le paiement de ${fmt(order?.buyer_total_amount ?? order?.total_amount, order?.buyer_currency || order?.currency)}` : 'Vérifier mon numéro Airtel')

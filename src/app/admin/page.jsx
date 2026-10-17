@@ -9,6 +9,7 @@ import tourStyles from '@/components/TourOverlay.module.css';
 import Mascot from '@/components/Mascot';
 import AdminGuide from './AdminGuide';
 import LineChart from './LineChart';
+import { GEO_REASON_LABEL, geoVerdict } from '@/lib/geoCheck';
 import { ADMIN_TOUR_STEPS } from './guide';
 import styles from './admin.module.css';
 
@@ -65,6 +66,7 @@ export default function AdminPage() {
   const [kpis, setKpis] = useState({ revenue: 0, orders: 0, users: 0, products: 0, pending: 0 });
   const [pendingProducts, setPendingProducts] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [geoChecks, setGeoChecks] = useState({});
   const [users, setUsers] = useState([]);
 
   // ── Catégories ──
@@ -283,6 +285,12 @@ export default function AdminPage() {
     const sb = getSupabase();
     const { data } = await sb.from('orders').select('*').order('created_at', { ascending: false }).limit(50);
     setOrders(data || []);
+    // Contrôle du pays (anti-fraude) des commandes affichées
+    const ids = (data || []).map((o) => o.id);
+    if (ids.length) {
+      const { data: checks } = await sb.from('order_geo_checks').select('order_id,risk,reasons').in('order_id', ids);
+      setGeoChecks(Object.fromEntries((checks || []).map((c) => [c.order_id, c])));
+    }
   }
 
   async function loadUsers() {
@@ -1214,12 +1222,24 @@ export default function AdminPage() {
             <h1 style={{ fontSize: 22, fontWeight: 900, marginBottom: 18 }}>Commandes</h1>
             <div className={styles.card}>
               <table className={styles.table}>
-                <thead><tr><th>Réf.</th><th>Montant</th><th>Statut</th></tr></thead>
+                <thead><tr><th>Réf.</th><th>Montant</th><th>Pays</th><th>Statut</th></tr></thead>
                 <tbody>
                   {orders.map((o) => (
                     <tr key={o.id}>
                       <td style={{ fontFamily: 'monospace' }}>#{o.id.slice(0, 8).toUpperCase()}</td>
                       <td style={{ color: 'var(--accent)', fontWeight: 700 }}>{fmt(o.total_amount, o.currency)}</td>
+                      <td>
+                        {(() => {
+                          const c = geoChecks[o.id];
+                          const v = geoVerdict(c);
+                          const color = v.tone === 'warn' ? 'var(--gold)' : v.tone === 'ok' ? 'var(--success)' : 'var(--text-faint)';
+                          return (
+                            <span title={c?.reasons?.map((r) => GEO_REASON_LABEL[r] || r).join(' · ') || ''} style={{ fontSize: 11, fontWeight: 700, color }}>
+                              {o.shipping_country || '—'} · {v.label}
+                            </span>
+                          );
+                        })()}
+                      </td>
                       <td>
                         <select value={o.status} onChange={(e) => updateOrderStatus(o.id, e.target.value)} style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 6, color: 'var(--text)', padding: '4px 8px', fontSize: 11 }}>
                           {['pending', 'processing', 'shipped', 'delivered', 'cancelled'].map((s) => <option key={s} value={s}>{ORDER_STATUS_LABEL[s]}</option>)}

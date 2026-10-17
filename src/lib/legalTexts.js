@@ -3,7 +3,7 @@
 // jour avec le code quand une règle change (paiement manuel vérifié, quêtes,
 // parrainage : paramètres hunter_* de site_config).
 
-export const CGU_TEXT = `Dernière mise à jour : 15 octobre 2026
+export const CGU_TEXT = `Dernière mise à jour : 17 octobre 2026
 
 1. Objet
 WennaShop est une marketplace éditée par Hexjen Conceptions qui met en relation des vendeurs (artisans et commerçants) et des acheteurs, principalement entre le Gabon et le Maroc, avec une ouverture progressive à d'autres pays africains. Les présentes conditions générales d'utilisation (CGU) s'appliquent à toute personne qui utilise le site wennashop.com. Créer un compte vaut acceptation des CGU.
@@ -18,6 +18,7 @@ Chasseur : profil vérifié qui répond aux quêtes des acheteurs et peut recrut
 Équipe WennaShop : administrateurs et agents de paiement. Les agents vérifient les paiements déclarés ; ils n'ont accès qu'à cette fonction.
 
 4. Prix, devises et commissions
+Le pays de la boutique (produits proposés, devise d'affichage) est choisi automatiquement d'après ta connexion internet. Tu peux en choisir un autre, par exemple pour commander pour un proche : ce choix est enregistré avec ta commande.
 Les prix sont fixés par les vendeurs dans leur devise. Pour un acheteur d'un autre pays, ils sont convertis dans sa devise au taux du jour, majoré d'une marge de sécurité qui couvre les frais de change. Le montant à payer est toujours calculé par WennaShop au moment de la commande, à partir des prix des produits : c'est ce montant qui fait foi. Les montants en FCFA sont arrondis à l'unité supérieure.
 WennaShop prélève une commission sur chaque vente, selon la catégorie du produit (de 6 à 13 %, grille publique sur la page Commissions). Un taux particulier peut être accordé à une boutique par l'administration. L'inscription et la publication de produits sont gratuites.
 
@@ -32,6 +33,7 @@ Les paiements par mobile money et virement sont encaissés par WennaShop pour le
 5.4 Reversement aux vendeurs. Pour une commande payée en ligne, WennaShop reverse au vendeur le montant de sa vente moins la commission, après la livraison, par mobile money ou virement. Il en va de même pour le paiement à la livraison : WennaShop récupère les espèces auprès du livreur, puis reverse au vendeur sa part, commission déduite. Chaque reversement est communiqué au vendeur avec sa référence.
 5.5 Remboursement. Si une commande payée est annulée avant expédition, n'est pas livrée, ou fait l'objet d'un remboursement accepté (article 9), WennaShop rembourse l'acheteur par le moyen utilisé pour payer, dans les meilleurs délais. Un trop-perçu est remboursé de la même façon.
 5.6 Portefeuille et options vendeurs. Lorsqu'ils sont proposés, le portefeuille vendeur et les options de mise en avant (boosts) se règlent par recharge : le portefeuille n'est crédité qu'après réception des fonds constatée par l'équipe. Les retraits sont examinés par l'équipe avant versement.
+5.7 Contrôle du pays des commandes. Pour lutter contre la fraude, au moment où tu confirmes une commande, ton navigateur te demande l'autorisation de donner la position de ton appareil. Elle est comparée au pays de livraison, avec le pays de ta connexion internet et le pays choisi sur le site. Tu peux refuser : la commande est quand même enregistrée. Une commande dont les éléments ne concordent pas peut être vérifiée par un agent, qui peut te contacter au numéro de la commande ; une commande frauduleuse est annulée. Fausser ta position ou ces informations pour tromper le contrôle est une fraude au sens de l'article 2.
 
 6. Commandes et livraison
 Les délais de livraison sont indiqués par chaque vendeur. Le vendeur expédie et met à jour le suivi ; il ne peut pas passer en préparation une commande dont le paiement en ligne n'a pas été validé, ni modifier son montant.
@@ -65,7 +67,7 @@ WennaShop peut modifier les présentes CGU. La date de mise à jour figure en t�
 13. Loi applicable
 Les présentes CGU sont soumises au droit marocain. Tout litige sera soumis aux tribunaux de Casablanca, Maroc, après une tentative de règlement amiable auprès de support@wennashop.com.`;
 
-export const PRIVACY_TEXT = `Dernière mise à jour : 15 octobre 2026
+export const PRIVACY_TEXT = `Dernière mise à jour : 17 octobre 2026
 
 1. Responsable du traitement
 Hexjen Conceptions, société basée à Casablanca, Maroc, éditrice de WennaShop. Contact : privacy@wennashop.com.
@@ -77,24 +79,26 @@ Commandes : articles, montants, adresse et téléphone de livraison, statut et s
 Paiements : moyen utilisé, montant, référence WN-…, identifiant de transaction, numéro d'envoi déclaré, capture de paiement si tu en joins une, et historique des vérifications. Aucun code secret ni donnée de carte bancaire n'est demandé ou conservé.
 Quêtes et parrainage : quêtes publiées, offres, poids et photos des produits proposés, code de parrainage, boutiques recrutées et gains.
 Échanges : réclamations, avis et notifications.
+Contrôle du pays des commandes : pays de ta connexion internet (déduit de ton adresse IP, sans l'enregistrer), pays choisi sur le site et s'il a été changé à la main, et, seulement si tu l'acceptes au moment de payer, la position de ton appareil arrondie à environ 1 km, avec le pays qu'on en déduit et le résultat du contrôle.
 Mesure d'audience, seulement si tu l'acceptes : pages vues, durée de visite, provenance (lien, moteur de recherche), type d'appareil et pays approximatif (Vercel Analytics et Google Analytics, sans cookie publicitaire).
 
 3. Pourquoi
 Faire fonctionner le compte et les commandes, vérifier les vendeurs, les chasseurs et les paiements, verser les reversements et les gains de parrainage, prévenir la fraude, répondre aux réclamations et respecter nos obligations comptables et légales.
 
 4. Qui y a accès
-L'équipe WennaShop, selon son rôle : les agents de paiement voient uniquement les paiements à vérifier (nom du client, montant, référence, identifiant de transaction, numéro d'envoi, capture). Le vendeur reçoit ce qui est nécessaire pour expédier ta commande (nom, adresse, téléphone de livraison). Les documents d'identité et les captures de paiement sont stockés dans des espaces privés, lisibles seulement par toi et par l'équipe habilitée.
+L'équipe WennaShop, selon son rôle : les agents de paiement voient uniquement les paiements à vérifier (nom du client, montant, référence, identifiant de transaction, numéro d'envoi, capture) et le résultat du contrôle du pays de la commande (les pays, pas ta position). Le vendeur reçoit ce qui est nécessaire pour expédier ta commande (nom, adresse, téléphone de livraison). Les documents d'identité et les captures de paiement sont stockés dans des espaces privés, lisibles seulement par toi et par l'équipe habilitée.
 Prestataires techniques, chacun pour sa fonction : Supabase (base de données et fichiers, hébergés en Irlande), Vercel (hébergement du site et mesure d'audience), Google (Google Analytics, mesure d'audience si tu l'acceptes, données pouvant être traitées hors de ton pays), Resend (envoi des e-mails), opérateurs de paiement (Airtel Money, Moov Money, SingPay, banques) pour les paiements, Didit pour la vérification d'identité automatique lorsqu'elle est proposée, n8n et Telegram pour alerter l'équipe d'un paiement à vérifier.
 Tes données ne sont jamais vendues.
 
 5. Cookies et stockage dans ton navigateur
-Nécessaires au fonctionnement, sans consentement : ta session de connexion, ton panier, ton pays d'affichage, l'avancement des visites guidées, un code de parrainage reçu par lien, un identifiant anonyme de visite pour afficher le nombre de personnes en ligne et, pour l'équipe, l'appareil reconnu. La connexion avec Google passe par Google, qui applique ses propres règles.
+Nécessaires au fonctionnement, sans consentement : ta session de connexion, ton panier, ton pays d'affichage et la façon dont il a été choisi (détecté ou changé par toi), le pays de ta connexion, l'avancement des visites guidées, un code de parrainage reçu par lien, un identifiant anonyme de visite pour afficher le nombre de personnes en ligne et, pour l'équipe, l'appareil reconnu. La connexion avec Google passe par Google, qui applique ses propres règles.
 Soumis à ton accord : la mesure d'audience, avec Vercel Analytics (sans cookie) et Google Analytics (cookies _ga, gardés 13 mois au plus). Elle ne se charge que si tu cliques « Accepter » dans le bandeau affiché à ta première visite ; si tu retires ton accord, l'envoi s'arrête et les cookies _ga sont effacés. Refuser est aussi simple qu'accepter et ne change rien à l'usage du site.
 Ton choix est gardé 6 mois, puis le bandeau te le redemande. Tu peux le changer à tout moment avec le lien « Gérer les cookies », en bas des pages ou ci-dessous.
 Aucun cookie publicitaire, aucun traceur de réseau social.
+Position de ton appareil : elle n'est jamais lue à l'ouverture du site ni en arrière-plan, seulement quand tu confirmes une commande, après l'autorisation de ton navigateur. Tu peux refuser, et retirer cette autorisation à tout moment dans les réglages de ton navigateur.
 
 6. Conservation
-Les données du compte sont conservées tant que le compte existe. Si tu supprimes ton compte, ton profil et tes identifiants de connexion sont supprimés. Les données liées à des commandes, paiements et reversements sont conservées le temps imposé par la réglementation comptable et fiscale. Les documents d'identité sont supprimés avec le compte.
+Les données du compte sont conservées tant que le compte existe. Si tu supprimes ton compte, ton profil et tes identifiants de connexion sont supprimés. Les données liées à des commandes, paiements et reversements sont conservées le temps imposé par la réglementation comptable et fiscale. Les documents d'identité sont supprimés avec le compte. La position de l'appareil enregistrée au paiement est effacée 12 mois après la commande ; le résultat du contrôle du pays reste attaché à la commande.
 
 7. Tes droits
 Tu peux accéder à tes données, les corriger, demander leur suppression ou t'opposer à un traitement en écrivant à privacy@wennashop.com. Ces droits s'exercent conformément à la loi marocaine n° 09-08 et à la réglementation gabonaise sur la protection des données personnelles. Tu peux aussi saisir l'autorité de protection des données de ton pays.

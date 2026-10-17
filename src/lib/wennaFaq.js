@@ -57,7 +57,7 @@ export const WENNA_FAQ = [
   {
     id: 'devise',
     q: 'Pourquoi les prix sont en MAD ou en FCFA ?',
-    a: "Les prix s'affichent dans la devise du pays choisi : dirhams (MAD) au Maroc, francs CFA (FCFA) au Gabon. Pour changer, touche « Changer de pays » dans la boutique.",
+    a: "Les prix s'affichent dans la devise de ton pays, détecté automatiquement d'après ta connexion : dirhams (MAD) au Maroc, francs CFA (FCFA) au Gabon. Pour commander pour un proche dans l'autre pays, touche « Changer de pays » dans la boutique.",
     keywords: 'prix devise monnaie dirham mad fcfa xaf franc cfa pays changer',
   },
   {
@@ -73,6 +73,13 @@ export const WENNA_FAQ = [
     a: "Tu ne trouves pas un produit ? Poste une quête : décris ce que tu cherches et fixe une récompense : au moins 10 % de ton budget (minimum 1 000 FCFA ou 20 MAD), c'est le salaire du chasseur, le produit lui est remboursé à part. Des chasseurs du Gabon et du Maroc le dénichent pour toi. Tu paies produit, transport et récompense en une fois, et WennaShop garde l'argent jusqu'à la livraison.",
     keywords: 'quête quete chercher introuvable trouver demande produit récompense',
     link: { href: '/quetes', label: 'Voir les quêtes' },
+  },
+  {
+    id: 'position',
+    q: 'Pourquoi le site me demande ma position au paiement ?',
+    a: "Pour lutter contre la fraude : ta position est comparée au pays de livraison, puis effacée après 12 mois. Elle n'est demandée qu'au moment de confirmer, jamais en arrière-plan. Tu peux refuser, ta commande passe quand même ; un agent peut alors t'appeler pour la vérifier.",
+    keywords: 'position localisation gps géolocalisation fraude sécurité autorisation pays',
+    link: { href: '/confidentialite', label: 'Confidentialité' },
   },
   {
     id: 'confiance',
