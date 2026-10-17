@@ -15,8 +15,8 @@ const STATIC_ROUTES = [
   { path: '/quetes', priority: 0.5, changeFrequency: 'daily', updated: '2026-10-15' },
   { path: '/devenir-chasseur', priority: 0.4, changeFrequency: 'monthly', updated: '2026-10-14' },
   { path: '/commissions', priority: 0.4, changeFrequency: 'monthly', updated: '2026-10-05' },
-  { path: '/cgu', priority: 0.2, changeFrequency: 'yearly', updated: '2026-10-15' },
-  { path: '/confidentialite', priority: 0.2, changeFrequency: 'yearly', updated: '2026-10-15' },
+  { path: '/cgu', priority: 0.2, changeFrequency: 'yearly', updated: '2026-10-17' },
+  { path: '/confidentialite', priority: 0.2, changeFrequency: 'yearly', updated: '2026-10-17' },
   { path: '/mentions-legales', priority: 0.2, changeFrequency: 'yearly', updated: '2026-10-14' },
   { path: '/retours', priority: 0.3, changeFrequency: 'yearly', updated: '2026-10-15' },
 ];

@@ -10,6 +10,7 @@ import tourStyles from '@/components/TourOverlay.module.css';
 import AdminGuide from '../AdminGuide';
 import { AGENT_TOUR_STEPS } from '../guide';
 import TicketsPanel from './TicketsPanel';
+import { GEO_DEVICE_LABEL, GEO_REASON_LABEL, geoVerdict } from '@/lib/geoCheck';
 import a from '../admin.module.css';
 import s from '../staff.module.css';
 
@@ -36,6 +37,40 @@ const ACTION_LABEL = { validate: 'Validé', reject: 'Refusé', hold: 'Mis en att
 const money = (n, c) => `${Number(n || 0).toLocaleString('fr-FR')} ${c === 'XAF' || c === 'XOF' ? 'FCFA' : c}`;
 const when = (d) => (d ? new Date(d).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '—');
 const hoursSince = (d) => (d ? (Date.now() - new Date(d).getTime()) / 3600000 : 0);
+
+// Contrôle du pays de la commande (anti-fraude) : verdict + éléments.
+function GeoCheck({ orderId }) {
+  const [check, setCheck] = useState(undefined);
+  useEffect(() => {
+    getSupabase().rpc('order_geo_check', { p_order_id: orderId }).then(({ data }) => setCheck(data?.[0] || null));
+  }, [orderId]);
+  if (check === undefined) return null;
+  const v = geoVerdict(check);
+  const color = v.tone === 'warn' ? 'var(--gold)' : v.tone === 'ok' ? 'var(--success)' : 'var(--text-faint)';
+  return (
+    <div className={s.section} data-testid="geo-check">
+      <div className={s.sectionTitle}>Contrôle du pays · <span style={{ color }}>{v.label}</span></div>
+      {!check ? (
+        <p className={s.history}>Aucun contrôle pour cette commande (passée avant la mise en place, ou contrôle indisponible).</p>
+      ) : (
+        <>
+          <dl className={s.dl}>
+            <dt>Livraison</dt><dd>{check.delivery_country || '—'}</dd>
+            <dt>Position de l'appareil</dt><dd>{GEO_DEVICE_LABEL[check.device_status]}{check.device_country && check.device_status !== 'match' ? ` (${check.device_country})` : ''}</dd>
+            <dt>Connexion internet</dt><dd>{check.ip_country || '—'}</dd>
+            <dt>Pays choisi sur le site</dt><dd>{check.display_country || '—'}{check.country_source === 'manual' ? ' · changé à la main' : check.country_source === 'auto' ? ' · détecté' : ''}</dd>
+          </dl>
+          {check.reasons?.length > 0 && (
+            <ul className={s.history}>{check.reasons.map((r) => <li key={r}>{GEO_REASON_LABEL[r] || r}</li>)}</ul>
+          )}
+          {check.risk === 'a_verifier' && (
+            <p className={s.warn}>Avant de valider : appelle le client au numéro de la commande et vérifie son adresse de livraison.</p>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
 
 function Detail({ p, onClose, onDone }) {
   const [history, setHistory] = useState([]);
@@ -106,6 +141,8 @@ function Detail({ p, onClose, onDone }) {
           <dt>Boutique</dt><dd>{p.shop_name || '—'} · {p.shipping_country || '—'}</dd>
           {p.reject_reason && <><dt>Dernier refus</dt><dd>{p.reject_reason}</dd></>}
         </dl>
+
+        <GeoCheck orderId={p.order_id} />
 
         {p.proof_path && (
           <div className={s.section}>

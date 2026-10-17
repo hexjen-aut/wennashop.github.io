@@ -21,6 +21,7 @@ export const ADMIN_TOUR_STEPS = [
 // Visite de /admin/paiements pour les agents (et les admins qui y passent).
 // `since` : voir lib/tourSteps.js.
 export const AGENT_TOUR_STEPS = [
+  { targetId: 'tour-agent-table', since: '2026-10-17', title: 'Contrôle du pays', text: "Dans la fiche d'un paiement, la section « Contrôle du pays » compare la livraison avec la position de l'appareil du client et sa connexion. « À vérifier » : appelle le client avant de valider (procédure dans le Guide)." },
   { targetId: 'tour-agent-views', since: '2026-10-16', title: 'Paiements et tickets', text: "« Paiements clients » : les paiements Airtel, Moov et virement à vérifier. « Tickets chasseurs » : les tickets de caisse envoyés pour une avance ; compare le montant, la photo et le code WN-Q… écrit à la main, puis valide ou refuse." },
   { targetId: 'tour-agent-tabs', title: 'Les onglets', text: "« À vérifier » : les clients qui disent avoir payé. « En attente client » : pas encore déclaré. « Validés » et « Refusés » : l'historique." },
   { targetId: 'tour-agent-table', title: 'La file', text: "Le plus ancien en premier. Au-delà de 2 h, la ligne passe en rouge. Clique sur une ligne pour ouvrir la fiche du paiement." },
@@ -91,6 +92,18 @@ export const GUIDE = [
       "Onglet « Colis en retard » : avance versée, colis pas envoyé après 72 h. Appelle le chasseur, et préviens un admin s'il ne répond pas.",
     ],
     note: "Plafond : 150 000 FCFA d'avances en cours par chasseur, contrôlé automatiquement. Si la commande est ensuite annulée ou retournée, l'avance repasse en dette du chasseur et se retient sur ses gains suivants.",
+  },
+  {
+    id: 'controle-pays',
+    who: 'agent',
+    title: 'Contrôle du pays d’une commande (anti-fraude)',
+    steps: [
+      "Au paiement, le site compare le pays de livraison avec la position de l'appareil du client (s'il l'accepte), le pays de sa connexion internet et le pays choisi sur le site.",
+      "Dans la fiche d'un paiement, la section « Contrôle du pays » donne le verdict : « Cohérent », « À vérifier » ou « Pas de contrôle ». Dans Commandes, la colonne « Pays » donne le même verdict (survole-le pour les raisons).",
+      "« À vérifier » : appelle le client au numéro de la commande, fais-lui confirmer l'adresse et le destinataire. Un Gabonais au Maroc qui fait livrer sa famille à Libreville est un cas normal.",
+      "Réponse claire et cohérente : continue la vérification habituelle du paiement. Pas de réponse, adresse floue ou paiement suspect : mets en attente et préviens un admin, qui peut annuler la commande.",
+    ],
+    note: "Le contrôle ne bloque jamais seul une commande : c'est une aide à la décision. La position exacte n'est pas affichée à l'équipe, seulement les pays.",
   },
   {
     id: 'vendeurs',

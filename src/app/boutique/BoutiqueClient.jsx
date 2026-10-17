@@ -16,6 +16,7 @@ import { useFeatureFlags } from '@/context/FeatureFlagsContext';
 import styles from './boutique.module.css';
 import Mascot from '@/components/Mascot';
 import { mediaUrl } from '@/lib/mediaUrl';
+import { COUNTRY_SOURCE_KEY, IP_COUNTRY_KEY, readLocal, writeLocal } from '@/lib/buyerCurrency';
 
 const PAGE_SIZE = 24;
 const BUYER_COUNTRY_KEY = 'wenna_buyer_country';
@@ -132,26 +133,50 @@ export default function BoutiqueClient() {
   }, [catId, categoryGroups]);
 
   // ── Pays de l'acheteur : on ne montre que ses produits nationaux par
-  // défaut (voir tout le catalogue mélangé dès l'arrivée décourage) ; à la
-  // première visite on lui demande son pays, mémorisé ensuite.
-  useEffect(() => {
-    const stored = localStorage.getItem(BUYER_COUNTRY_KEY);
-    if (stored && COUNTRIES.includes(stored)) {
-      setBuyerCountry(stored);
-      setCountries([stored]);
-      setDisplayCurrency(currencyForCountry(stored) || 'MAD');
-    } else {
-      setCountryModalOpen(true);
-    }
-  }, []);
+  // défaut (voir tout le catalogue mélangé dès l'arrivée décourage). Le pays
+  // est déduit de la connexion (/api/geo), sans question ; on ne demande
+  // que si le pays n'est pas desservi ou inconnu. Un changement à la main
+  // reste possible et est noté (contrôle anti-fraude au paiement).
+  const [detectedCountry, setDetectedCountry] = useState(null);
 
-  function chooseBuyerCountry(c) {
-    localStorage.setItem(BUYER_COUNTRY_KEY, c);
+  function applyBuyerCountry(c) {
     setBuyerCountry(c);
     setCountries([c]);
     setDisplayCurrency(currencyForCountry(c) || 'MAD');
-    setCountryModalOpen(false);
     setPage(1);
+  }
+
+  useEffect(() => {
+    const stored = readLocal(BUYER_COUNTRY_KEY);
+    const hasStored = stored && COUNTRIES.includes(stored);
+    if (hasStored) applyBuyerCountry(stored);
+    let cancelled = false;
+    fetch('/api/geo')
+      .then((r) => (r.ok ? r.json() : null))
+      .catch(() => null)
+      .then((g) => {
+        if (cancelled) return;
+        if (g?.iso) writeLocal(IP_COUNTRY_KEY, g.iso);
+        const detected = g?.country && COUNTRIES.includes(g.country) ? g.country : null;
+        setDetectedCountry(detected);
+        if (hasStored) return;
+        if (detected) {
+          writeLocal(BUYER_COUNTRY_KEY, detected);
+          writeLocal(COUNTRY_SOURCE_KEY, 'auto');
+          applyBuyerCountry(detected);
+        } else {
+          setCountryModalOpen(true);
+        }
+      });
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function chooseBuyerCountry(c) {
+    writeLocal(BUYER_COUNTRY_KEY, c);
+    writeLocal(COUNTRY_SOURCE_KEY, c === detectedCountry ? 'auto' : 'manual');
+    applyBuyerCountry(c);
+    setCountryModalOpen(false);
   }
 
   const isNationalScope = !!buyerCountry && countries.length === 1 && countries[0] === buyerCountry;
@@ -408,9 +433,11 @@ export default function BoutiqueClient() {
       {countryModalOpen && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.75)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
           <div style={{ maxWidth: 380, width: '100%', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: 28, boxShadow: 'var(--shadow-md)' }}>
-            <div style={{ fontSize: 16, fontWeight: 900, marginBottom: 6 }}>D'où visites-tu WennaShop ?</div>
+            <div style={{ fontSize: 16, fontWeight: 900, marginBottom: 6 }}>{buyerCountry ? 'Changer de pays' : "D'où visites-tu WennaShop ?"}</div>
             <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 18, lineHeight: 1.6 }}>
-              On te montre d'abord les produits de ton pays — tu pourras voir tout le catalogue international en un clic.
+              {detectedCountry
+                ? `Ta connexion indique : ${detectedCountry}. Tu peux choisir un autre pays, par exemple pour commander pour un proche ; ce choix est noté avec ta commande.`
+                : "On te montre d'abord les produits de ton pays — tu pourras voir tout le catalogue international en un clic."}
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
               {COUNTRIES.map((c) => (
@@ -423,6 +450,14 @@ export default function BoutiqueClient() {
                 </button>
               ))}
             </div>
+            {buyerCountry && (
+              <button
+                onClick={() => setCountryModalOpen(false)}
+                style={{ marginTop: 14, width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-md)', border: 'none', background: 'none', color: 'var(--text-faint)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+              >
+                Annuler
+              </button>
+            )}
           </div>
         </div>
       )}
