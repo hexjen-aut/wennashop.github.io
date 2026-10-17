@@ -93,11 +93,13 @@ export default function ComptePage() {
     (async () => {
       const sb = getSupabase();
       const { data: { session } } = await sb.auth.getSession();
-      if (!session) { router.push('/connexion'); return; }
+      if (!session) { router.push(`/connexion?next=${encodeURIComponent(window.location.pathname + window.location.search)}`); return; }
 
       const { data } = await sb.from('users').select('*').eq('auth_id', session.user.id).single();
       const p = data || { email: session.user.email };
       setProfile(p);
+      // Lien « Ouvrir ma boutique » de /vendre : on arrive sur le formulaire vendeur.
+      if (new URLSearchParams(window.location.search).get('vendre') === '1') setMode('vendeur');
       setFirstName(p.first_name || '');
       setLastName(p.last_name || '');
 
@@ -662,7 +664,7 @@ export default function ComptePage() {
         {mode === 'vendeur' && !isVendeur && (
           <div className={styles.card}>
             <div className={styles.cardTitle}>Devenir vendeur</div>
-            <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: -8, marginBottom: 16, lineHeight: 1.7 }}>Inscription gratuite — WennaShop prend une commission <strong style={{ color: 'var(--accent)' }}>à partir de 6%</strong> selon la catégorie de tes produits.</p>
+            <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: -8, marginBottom: 16, lineHeight: 1.7 }}>Inscription gratuite — WennaShop prend une commission <strong style={{ color: 'var(--accent)' }}>à partir de 6%</strong> selon la catégorie de tes produits. Les 20 premières boutiques à mettre un produit en ligne deviennent <Link href="/vendre" style={{ color: 'var(--accent)' }}>vendeurs fondateurs</Link>.</p>
             <input value={upgradeForm.shopName} onChange={(e) => setUpgradeForm({ ...upgradeForm, shopName: e.target.value })} placeholder="Nom de la boutique *" style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)', padding: '10px 12px', fontSize: 13, marginBottom: 10 }} />
             <input value={upgradeForm.specialty} onChange={(e) => setUpgradeForm({ ...upgradeForm, specialty: e.target.value })} placeholder="Spécialité *" style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)', padding: '10px 12px', fontSize: 13, marginBottom: 10 }} />
             <select value={upgradeForm.country} onChange={(e) => setUpgradeForm({ ...upgradeForm, country: e.target.value })} style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)', padding: '10px 12px', fontSize: 13, marginBottom: 10 }}>

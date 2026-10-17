@@ -20,7 +20,8 @@
 }
 .links {
   display: flex;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 8px 16px;
 }
 .links a {
   color: var(--text-faint);

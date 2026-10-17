@@ -183,6 +183,7 @@ export default function Content() {
           <div className={styles.tags}>
             {shop.is_official && <span className={`${styles.tag} ${styles.tagOfficial}`}>Boutique officielle WennaShop</span>}
             {shop.is_verified && <span className={`${styles.tag} ${styles.tagVerified}`}>Boutique vérifiée</span>}
+            {shop.founder_rank && <span className={`${styles.tag} ${styles.tagOfficial}`}>Vendeur fondateur</span>}
             {shop.country && <span className={styles.tag}>{shop.country}</span>}
             {shop.city && <span className={styles.tag}>{shop.city}</span>}
           </div>

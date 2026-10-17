@@ -118,6 +118,18 @@ export const GUIDE = [
     ],
   },
   {
+    id: 'fondateurs',
+    who: 'admin',
+    title: 'Vendeurs fondateurs (offre des 20 premiers)',
+    steps: [
+      "Rien à faire à la main : quand une boutique validée a son premier produit validé, elle devient fondatrice automatiquement (n° 1, 2, 3…), jusqu'à 20.",
+      "Le vendeur reçoit une notification. Sa boutique et ses produits portent le badge « Vendeur fondateur », et la boutique apparaît 3 mois dans le bandeau « Vendeurs fondateurs » de la page d'accueil.",
+      "Les boutiques officielles WennaShop et de démonstration ne prennent pas de place.",
+      "Le nombre de places restantes s'affiche sur wennashop.com/vendre et dans le tableau de bord des vendeurs.",
+    ],
+    note: "Valide d'abord les vrais vendeurs : une boutique de test qui publie un produit prend une place. Pour retirer le badge (fraude, faux vendeur), demande à l'administrateur technique : la place est alors libérée.",
+  },
+  {
     id: 'produits',
     who: 'admin',
     title: 'Valider les produits',
