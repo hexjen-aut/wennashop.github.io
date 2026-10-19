@@ -71,7 +71,7 @@ export default function Content() {
 
       const { data: prods } = await sb
         .from('products')
-        .select('id,name,price,currency,image_url,images,country,compare_price,stock,created_at,categories(name)')
+        .select('id,name,price,currency,image_url,images,country,compare_price,stock,created_at,categories(name),product_variants(count)')
         .eq('seller_id', data.user_id)
         .eq('status', 'active')
         .order('created_at', { ascending: false });
@@ -123,6 +123,8 @@ export default function Content() {
   async function handleAdd(e, p) {
     e.preventDefault();
     e.stopPropagation();
+    // Un produit avec coloris / tailles se choisit sur sa fiche.
+    if (p.product_variants?.[0]?.count > 0) { window.location.href = `/produit?id=${p.id}`; return; }
     const item = { id: p.id, name: p.name, price: p.price, currency: p.currency, image_url: p.image_url, shop_id: shop?.id };
     const res = await add(item);
     if (!res.success && res.error === 'different_shop') {

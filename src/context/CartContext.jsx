@@ -37,6 +37,22 @@ function readLocalCart() {
 function writeLocalCart(items) {
   try { localStorage.setItem(LOCAL_KEY, JSON.stringify(items)); } catch {}
 }
+// Une ligne de panier = un produit + une variante (coloris, taille) : le même
+// produit en M/L et en XL fait deux lignes.
+function guestKey(it) {
+  return `${it.product_id}:${it.variant_id || ''}`;
+}
+function withGuestKeys(list) {
+  return list.map((g) => ({ ...g, cart_item_id: guestKey(g) }));
+}
+// Libellé lisible d'une variante, identique à order_items.variant_label.
+export function variantLabel(v) {
+  return v ? [v.color, v.size].filter(Boolean).join(' · ') : '';
+}
+// Ligne de cart_items (ou de la base) → filtre sur la variante.
+function matchVariant(q, variantId) {
+  return variantId ? q.eq('variant_id', variantId) : q.is('variant_id', null);
+}
 
 export function CartProvider({ children }) {
   const [items, setItems] = useState([]);
@@ -49,7 +65,7 @@ export function CartProvider({ children }) {
 
     if (!user) {
       setUserId(null);
-      setItems(readLocalCart());
+      setItems(withGuestKeys(readLocalCart()));
       setLoading(false);
       return null;
     }
@@ -57,7 +73,7 @@ export function CartProvider({ children }) {
     const { data: row } = await sb.from('users').select('id').eq('auth_id', user.id).maybeSingle();
     if (!row) {
       setUserId(null);
-      setItems(readLocalCart());
+      setItems(withGuestKeys(readLocalCart()));
       setLoading(false);
       return null;
     }
@@ -66,12 +82,12 @@ export function CartProvider({ children }) {
     const guest = readLocalCart();
     if (guest.length) {
       for (const it of guest) {
-        const { data: existing } = await sb.from('cart_items').select('id, quantity')
-          .eq('user_id', row.id).eq('product_id', it.product_id).maybeSingle();
+        const { data: existing } = await matchVariant(sb.from('cart_items').select('id, quantity')
+          .eq('user_id', row.id).eq('product_id', it.product_id), it.variant_id).maybeSingle();
         if (existing) {
           await sb.from('cart_items').update({ quantity: existing.quantity + it.quantity }).eq('id', existing.id);
         } else {
-          await sb.from('cart_items').insert({ user_id: row.id, product_id: it.product_id, quantity: it.quantity });
+          await sb.from('cart_items').insert({ user_id: row.id, product_id: it.product_id, variant_id: it.variant_id || null, quantity: it.quantity });
         }
       }
       writeLocalCart([]);
@@ -79,20 +95,25 @@ export function CartProvider({ children }) {
 
     setUserId(row.id);
     const { data } = await sb.from('cart_items')
-      .select('id, quantity, product_id, products(id, name, price, currency, image_url, images, stock, shop_id)')
+      .select('id, quantity, product_id, variant_id, products(id, name, price, currency, image_url, images, stock, shop_id), product_variants(color, size, price, stock, image_url)')
       .eq('user_id', row.id);
 
-    setItems((data || []).map(i => ({
-      cart_item_id: i.id,
-      product_id: i.product_id,
-      quantity: i.quantity,
-      name: i.products?.name || '—',
-      price: i.products?.price || 0,
-      currency: i.products?.currency || 'MAD',
-      shop_id: i.products?.shop_id || null,
-      image: Array.isArray(i.products?.images) && i.products.images.length ? i.products.images[0] : (i.products?.image_url || null),
-      stock: i.products?.stock ?? null,
-    })));
+    setItems((data || []).map(i => {
+      const v = i.product_variants;
+      return {
+        cart_item_id: i.id,
+        product_id: i.product_id,
+        variant_id: i.variant_id || null,
+        variant_label: variantLabel(v),
+        quantity: i.quantity,
+        name: i.products?.name || '—',
+        price: v?.price ?? i.products?.price ?? 0,
+        currency: i.products?.currency || 'MAD',
+        shop_id: i.products?.shop_id || null,
+        image: v?.image_url || (Array.isArray(i.products?.images) && i.products.images.length ? i.products.images[0] : (i.products?.image_url || null)),
+        stock: v ? (v.stock ?? null) : (i.products?.stock ?? null),
+      };
+    }));
     setLoading(false);
     return row.id;
   }, []);
@@ -119,7 +140,8 @@ export function CartProvider({ children }) {
   // fois : au-delà de mélanger les livraisons, des devises différentes
   // additionnées donneraient un total de commande incohérent (voir
   // createOrder). On bloque l'ajout plutôt que de produire un panier cassé.
-  const add = useCallback(async (product, qty = 1) => {
+  // `variant` : la variante choisie (coloris, taille) quand le produit en a.
+  const add = useCallback(async (product, qty = 1, variant = null) => {
     const currentShopId = items[0]?.shop_id || null;
     if (currentShopId && product.shop_id && product.shop_id !== currentShopId) {
       return { success: false, error: 'different_shop' };
@@ -127,23 +149,25 @@ export function CartProvider({ children }) {
     const sb = getSupabase();
     if (!userId) {
       const guest = readLocalCart();
-      const existing = guest.find(i => i.product_id === product.id);
+      const key = guestKey({ product_id: product.id, variant_id: variant?.id });
+      const existing = guest.find(i => guestKey(i) === key);
       if (existing) existing.quantity += qty;
       else guest.push({
-        product_id: product.id, name: product.name, price: product.price,
-        image: product.image_url || product.image || null,
+        product_id: product.id, variant_id: variant?.id || null, variant_label: variantLabel(variant),
+        name: product.name, price: variant?.price ?? product.price,
+        image: variant?.image_url || product.image_url || product.image || null,
         currency: product.currency || 'MAD', shop_id: product.shop_id || null, quantity: qty,
       });
       writeLocalCart(guest);
-      setItems(guest.map(g => ({ ...g, cart_item_id: g.product_id })));
+      setItems(withGuestKeys(guest));
       return { success: true };
     }
-    const { data: existing } = await sb.from('cart_items').select('id, quantity')
-      .eq('user_id', userId).eq('product_id', product.id).maybeSingle();
+    const { data: existing } = await matchVariant(sb.from('cart_items').select('id, quantity')
+      .eq('user_id', userId).eq('product_id', product.id), variant?.id).maybeSingle();
     if (existing) {
       await sb.from('cart_items').update({ quantity: existing.quantity + qty }).eq('id', existing.id);
     } else {
-      await sb.from('cart_items').insert({ user_id: userId, product_id: product.id, quantity: qty });
+      await sb.from('cart_items').insert({ user_id: userId, product_id: product.id, variant_id: variant?.id || null, quantity: qty });
     }
     await refresh();
     return { success: true };
@@ -152,9 +176,9 @@ export function CartProvider({ children }) {
   const updateQuantity = useCallback(async (cartItemId, quantity) => {
     if (quantity <= 0) return remove(cartItemId);
     if (!userId) {
-      const guest = readLocalCart().map(g => g.product_id === cartItemId ? { ...g, quantity } : g);
+      const guest = readLocalCart().map(g => guestKey(g) === cartItemId ? { ...g, quantity } : g);
       writeLocalCart(guest);
-      setItems(guest.map(g => ({ ...g, cart_item_id: g.product_id })));
+      setItems(withGuestKeys(guest));
       return;
     }
     const sb = getSupabase();
@@ -165,9 +189,9 @@ export function CartProvider({ children }) {
 
   const remove = useCallback(async (cartItemId) => {
     if (!userId) {
-      const guest = readLocalCart().filter(g => g.product_id !== cartItemId);
+      const guest = readLocalCart().filter(g => guestKey(g) !== cartItemId);
       writeLocalCart(guest);
-      setItems(guest.map(g => ({ ...g, cart_item_id: g.product_id })));
+      setItems(withGuestKeys(guest));
       return;
     }
     const sb = getSupabase();
@@ -211,12 +235,16 @@ export function CartProvider({ children }) {
     }
 
     const { data: cartRows, error: cartErr } = await sb.from('cart_items')
-      .select('quantity, product_id, products(price, currency, stock, name, shop_id)')
+      .select('quantity, product_id, variant_id, products(price, currency, stock, name, shop_id), product_variants(price, stock)')
       .eq('user_id', uid);
     if (cartErr) return { success: false, error: cartErr.message };
     if (!cartRows || cartRows.length === 0) return { success: false, error: 'empty_cart' };
 
-    const outOfStock = cartRows.find((r) => r.products?.stock != null && r.products.stock < r.quantity);
+    // Le stock et le prix d'une ligne sont ceux de sa variante quand elle en a
+    // une (le serveur refait ces contrôles et recalcule le prix).
+    const lineStock = (r) => (r.variant_id ? r.product_variants?.stock : r.products?.stock);
+    const linePrice = (r) => (r.variant_id ? (r.product_variants?.price ?? r.products?.price) : r.products?.price) || 0;
+    const outOfStock = cartRows.find((r) => lineStock(r) != null && lineStock(r) < r.quantity);
     if (outOfStock) return { success: false, error: 'out_of_stock', product: outOfStock.products?.name };
 
     // Filet de sécurité : un panier ne devrait plus jamais mélanger deux
@@ -228,7 +256,7 @@ export function CartProvider({ children }) {
     if (distinctShops.size > 1) return { success: false, error: 'mixed_shops' };
 
     const vendorCurrency = cartRows[0]?.products?.currency || 'MAD';
-    const subtotalVendorCurrency = cartRows.reduce((s, r) => s + (r.products?.price || 0) * r.quantity, 0);
+    const subtotalVendorCurrency = cartRows.reduce((s, r) => s + linePrice(r) * r.quantity, 0);
 
     // total_amount/currency restent dans la devise du VENDEUR — c'est ce que
     // lisent le tableau de bord vendeur, les commissions et les retraits.
@@ -260,10 +288,17 @@ export function CartProvider({ children }) {
     if (!order) return { success: false, error: 'order_create_failed' };
 
     const itemsPayload = cartRows.map((r) => ({
-      order_id: order.id, product_id: r.product_id, quantity: r.quantity, unit_price: r.products?.price || 0,
+      order_id: order.id, product_id: r.product_id, variant_id: r.variant_id || null, quantity: r.quantity, unit_price: linePrice(r),
     }));
     const { error: itemsErr } = await sb.from('order_items').insert(itemsPayload);
-    if (itemsErr) return { success: false, error: itemsErr.message };
+    if (itemsErr) {
+      // La commande vide ne doit pas être réutilisée par la tentative suivante.
+      clearIdempotencyKey();
+      await sb.from('orders').delete().eq('id', order.id).eq('status', 'pending');
+      if (/variant_required/.test(itemsErr.message)) return { success: false, error: 'variant_required' };
+      if (/out_of_stock/.test(itemsErr.message)) return { success: false, error: 'out_of_stock' };
+      return { success: false, error: itemsErr.message };
+    }
 
     clearIdempotencyKey();
     return { success: true, orderId: order.id };

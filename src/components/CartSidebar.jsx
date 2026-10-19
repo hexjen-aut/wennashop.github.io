@@ -45,7 +45,8 @@ export default function CartSidebar({ open, onClose }) {
     setCheckingOut(false);
     if (!res.success) {
       if (res.error === 'not_authenticated') { router.push('/connexion?next=/panier'); return; }
-      if (res.error === 'out_of_stock') { alert(`Stock insuffisant pour "${res.product}".`); return; }
+      if (res.error === 'out_of_stock') { alert(res.product ? `Stock insuffisant pour "${res.product}".` : 'Stock insuffisant pour un article du panier.'); return; }
+      if (res.error === 'variant_required') { alert("Choisis le coloris et la taille de chaque vêtement : retire l'article du panier, puis ajoute-le depuis sa fiche produit."); return; }
       if (res.error === 'mixed_shops') { alert("Ton panier contient des produits de plusieurs boutiques différentes, ce qui n'est plus permis. Vide-le et recommence avec une seule boutique à la fois."); return; }
       alert("Impossible de créer la commande. Réessaie.");
       return;
@@ -80,6 +81,7 @@ export default function CartSidebar({ open, onClose }) {
               </div>
               <div className={styles.itemInfo}>
                 <div className={styles.itemName} title={item.name}>{item.name}</div>
+                {item.variant_label && <div className={styles.itemVariant}>{item.variant_label}</div>}
                 <div className={styles.itemPrice}>{displayPrices[item.cart_item_id] || formatPrice(item.price * item.quantity, item.currency)}</div>
                 <div className={styles.itemActions}>
                   <button className={styles.qtyBtn} onClick={() => updateQuantity(item.cart_item_id, item.quantity - 1)} aria-label="Diminuer"><i className="ph ph-minus" /></button>

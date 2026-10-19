@@ -211,7 +211,7 @@ export default function BoutiqueClient() {
       const [col, dir] = sort.split(':');
       const offset = (page - 1) * PAGE_SIZE;
       let q = sb.from('products')
-        .select('id,name,price,currency,country,origin_city,stock,images,image_url,category_id,categories(name),ships_to,shop_id,shops(is_official)', { count: 'exact' })
+        .select('id,name,price,currency,country,origin_city,stock,images,image_url,category_id,categories(name),ships_to,shop_id,shops(is_official),product_variants(count)', { count: 'exact' })
         .eq('status', 'active')
         .range(offset, offset + PAGE_SIZE - 1)
         .order(col, { ascending: dir === 'asc' });
@@ -376,6 +376,8 @@ export default function BoutiqueClient() {
     // On ajoute le produit avec son prix ET sa devise d'origine (celle du
     // vendeur) — pas le prix converti affiché — pour que la commande et le
     // paiement restent exacts.
+    // Un produit avec coloris / tailles se choisit sur sa fiche.
+    if (product.product_variants?.[0]?.count > 0) { window.location.href = `/produit?id=${product.id}`; return; }
     const res = await add(product, 1);
     if (!res.success && res.error === 'different_shop') {
       if (!confirm('Ton panier contient déjà des produits d\'une autre boutique. Le vider pour ajouter celui-ci ?')) return;

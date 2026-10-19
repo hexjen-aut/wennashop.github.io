@@ -28,6 +28,12 @@ export default function ProduitContent() {
   const [notFound, setNotFound] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [activeImg, setActiveImg] = useState(0);
+  // Variantes (coloris, taille) : le prix et le stock suivent la taille choisie.
+  const [variants, setVariants] = useState([]);
+  const [variantPrices, setVariantPrices] = useState({}); // prix vendeur → prix affiché
+  const [pickColor, setPickColor] = useState(null);
+  const [pickSize, setPickSize] = useState(null);
+  const [pickError, setPickError] = useState(false);
 
   const [rating, setRating] = useState(0);
   const [reviewName, setReviewName] = useState('');
@@ -36,6 +42,7 @@ export default function ProduitContent() {
 
   useEffect(() => {
     setActiveImg(0);
+    setVariants([]); setPickColor(null); setPickSize(null); setPickError(false);
     if (!id) { setNotFound(true); setLoading(false); return; }
     (async () => {
       const sb = getSupabase();
@@ -46,6 +53,19 @@ export default function ProduitContent() {
       setProduct(data);
 
       const buyerCurrency = getBuyerCurrency();
+      const { data: vars } = await sb.from('product_variants')
+        .select('id,color,size,price,stock,image_url,sort_order')
+        .eq('product_id', id).eq('is_active', true).order('sort_order');
+      if (vars?.length) {
+        const prices = [...new Set(vars.map((v) => Number(v.price ?? data.price)))];
+        const labels = {};
+        for (const pr of prices) {
+          const c = await convertPrice(pr, data.currency || 'MAD', buyerCurrency, sb);
+          labels[pr] = formatSmartPrice(c.amount, c.currency);
+        }
+        setVariantPrices(labels);
+        setVariants(vars);
+      }
       const conv = await convertPrice(data.price, data.currency || 'MAD', buyerCurrency, sb);
       setDisplayPrice(formatSmartPrice(conv.amount, conv.currency));
       if (data.compare_price > data.price) {
@@ -76,13 +96,36 @@ export default function ProduitContent() {
     return [];
   }
 
+  const colors = [...new Set(variants.map((v) => v.color).filter(Boolean))];
+  const sizes = [...new Set(variants.map((v) => v.size).filter(Boolean))];
+  const variantFor = (color, size) => variants.find((v) => (v.color || null) === (colors.length ? color : null) && (v.size || null) === (sizes.length ? size : null));
+  const selectedVariant = variants.length ? variantFor(pickColor, pickSize) : null;
+  const priceOf = (v) => Number(v?.price ?? product?.price);
+  const priceValues = [...new Set(variants.map(priceOf))].sort((a, b) => a - b);
+
+  function chooseColor(c) {
+    setPickColor(c); setPickError(false);
+    // La photo suit le coloris choisi.
+    const v = variants.find((x) => x.color === c && x.image_url);
+    if (v) {
+      const i = images.findIndex((src) => src.endsWith(v.image_url));
+      if (i >= 0) setActiveImg(i);
+    }
+  }
+
   async function handleAddToCart() {
     if (!product) return;
-    const res = await add(product, 1);
+    if (variants.length && !selectedVariant) {
+      setPickError(true);
+      document.getElementById('variant-picker')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    if (selectedVariant && selectedVariant.stock != null && selectedVariant.stock < 1) return;
+    const res = await add(product, 1, selectedVariant);
     if (!res.success && res.error === 'different_shop') {
       if (!confirm('Ton panier contient déjà des produits d\'une autre boutique. Le vider pour ajouter celui-ci ?')) return;
       await clear();
-      await add(product, 1);
+      await add(product, 1, selectedVariant);
     }
     setCartOpen(true);
   }
@@ -165,15 +208,54 @@ export default function ProduitContent() {
           <div className={styles.eyebrow}>{product.categories?.name || product.category || ''}</div>
           <h1 className={styles.title}>{product.name}</h1>
           <div className={styles.priceRow}>
-            <div className={styles.price}>{displayPrice}</div>
+            <div className={styles.price}>
+              {selectedVariant
+                ? variantPrices[priceOf(selectedVariant)] || displayPrice
+                : priceValues.length > 1 ? `À partir de ${variantPrices[priceValues[0]] || displayPrice}` : displayPrice}
+            </div>
             {product.compare_price > product.price && (
               <div className={styles.comparePrice}>{displayComparePrice}</div>
             )}
           </div>
 
+          {variants.length > 0 && (
+            <div id="variant-picker" className={`${styles.picker} ${pickError ? styles.pickerError : ''}`}>
+              {colors.length > 0 && (
+                <div className={styles.pickGroup}>
+                  <div className={styles.pickLabel}>Coloris{pickColor ? ` : ${pickColor}` : ''}</div>
+                  <div className={styles.pickOptions}>
+                    {colors.map((c) => (
+                      <button type="button" key={c} className={`${styles.pickOpt} ${pickColor === c ? styles.pickOptActive : ''}`} onClick={() => chooseColor(c)} aria-pressed={pickColor === c}>{c}</button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {sizes.length > 0 && (
+                <div className={styles.pickGroup}>
+                  <div className={styles.pickLabel}>Taille{pickSize ? ` : ${pickSize}` : ''}</div>
+                  <div className={styles.pickOptions}>
+                    {sizes.map((z) => {
+                      const v = variantFor(colors.length ? pickColor : null, z) || (!pickColor ? variants.find((x) => x.size === z) : null);
+                      const out = pickColor && (!v || (v.stock != null && v.stock < 1));
+                      return (
+                        <button type="button" key={z} disabled={out} className={`${styles.pickOpt} ${pickSize === z ? styles.pickOptActive : ''}`} onClick={() => { setPickSize(z); setPickError(false); }} aria-pressed={pickSize === z}>
+                          {z}
+                          {priceValues.length > 1 && v && <span className={styles.pickPrice}>{variantPrices[priceOf(v)]}</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+              {pickError && <div className={styles.pickHint}>Choisis {colors.length && !pickColor ? 'un coloris' : ''}{colors.length && !pickColor && sizes.length && !pickSize ? ' et ' : ''}{sizes.length && !pickSize ? 'une taille' : ''} pour ajouter au panier.</div>}
+            </div>
+          )}
+
           <div className={styles.chips}>
             {product.country && <div className={styles.chip}><i className="ph ph-map-pin" /><span>Origine : {product.origin_city ? `${product.origin_city}, ` : ''}{product.country}</span></div>}
-            {product.stock !== undefined && <div className={styles.chip}><i className="ph ph-cube" /><span>{product.stock > 0 ? `${product.stock} en stock` : 'Rupture de stock'}</span></div>}
+            {selectedVariant
+              ? <div className={styles.chip}><i className="ph ph-cube" /><span>{selectedVariant.stock == null || selectedVariant.stock > 0 ? `${selectedVariant.stock ?? ''} en stock`.trim() : 'Rupture de stock'}</span></div>
+              : product.stock !== undefined && <div className={styles.chip}><i className="ph ph-cube" /><span>{product.stock > 0 ? `${product.stock} en stock` : 'Rupture de stock'}</span></div>}
           </div>
 
           <div className={styles.sectionTitle}>À propos de ce produit</div>

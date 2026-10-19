@@ -41,7 +41,7 @@ async function fetchOrder(sb, identifier, userId) {
   let order = null;
   const { data: byTrack } = await sb.from('orders')
     .select(`id, tracking_number, status, created_at, updated_at, total_amount, currency, buyer_total_amount, buyer_currency, shipping_name, shipping_address, shipping_city, shipping_country, delivery_address, user_id,
-      order_items(id, quantity, unit_price, products(id, name, image_url, images, seller_id, origin_city, country)),
+      order_items(id, quantity, unit_price, variant_label, products(id, name, image_url, images, seller_id, origin_city, country)),
       deliveries(id, status, picked_up_at, in_transit_at, out_for_delivery_at, delivered_at, estimated_delivery, notes, users!deliveries_driver_id_fkey(full_name, phone, specialty))`)
     .ilike('tracking_number', identifier).maybeSingle();
   order = byTrack;
@@ -50,7 +50,7 @@ async function fetchOrder(sb, identifier, userId) {
     const clean = identifier.replace(/^#/, '').toLowerCase();
     const { data: all } = await sb.from('orders')
       .select(`id, tracking_number, status, created_at, updated_at, total_amount, currency, buyer_total_amount, buyer_currency, shipping_name, shipping_address, shipping_city, shipping_country, delivery_address, user_id,
-        order_items(id, quantity, unit_price, products(id, name, image_url, images, seller_id, origin_city, country)),
+        order_items(id, quantity, unit_price, variant_label, products(id, name, image_url, images, seller_id, origin_city, country)),
         deliveries(id, status, picked_up_at, in_transit_at, out_for_delivery_at, delivered_at, estimated_delivery, notes, users!deliveries_driver_id_fkey(full_name, phone, specialty))`)
       .order('created_at', { ascending: false }).limit(200);
     if (all) order = all.find((o) => o.id?.toLowerCase().startsWith(clean) || o.tracking_number?.toLowerCase().includes(clean));
@@ -303,6 +303,7 @@ function SuiviContent() {
                         {img ? <img src={img} alt="" style={{ width: 44, height: 44, objectFit: 'cover', borderRadius: 6, flexShrink: 0 }} /> : <div style={{ width: 44, height: 44, background: 'var(--surface-2)', borderRadius: 6, flexShrink: 0 }} />}
                         <div style={{ flex: 1 }}>
                           <div style={{ fontSize: 13, fontWeight: 700 }}>{item.products?.name || '—'}</div>
+                          {item.variant_label && <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>{item.variant_label}</div>}
                           <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>Qté : {item.quantity}</div>
                         </div>
                         <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--accent)' }}>{fmt(item.unit_price * item.quantity, order.currency)}</div>

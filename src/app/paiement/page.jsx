@@ -172,7 +172,7 @@ function PaiementContent() {
         router.replace(`/commande/${orderId}`);
         return;
       }
-      const { data: it } = await sb.from('order_items').select('id,quantity,unit_price,products(name,image_url)').eq('order_id', orderId);
+      const { data: it } = await sb.from('order_items').select('id,quantity,unit_price,variant_label,products(name,image_url)').eq('order_id', orderId);
       setItems(it || []);
 
       // order_items.unit_price reste dans la devise du vendeur — converti
@@ -491,7 +491,7 @@ function PaiementContent() {
               )}
               {items.map((it) => (
                 <div key={it.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
-                  <span>{it.products?.name} × {it.quantity}</span>
+                  <span>{it.products?.name}{it.variant_label ? ` (${it.variant_label})` : ''} × {it.quantity}</span>
                   <span style={{ fontWeight: 700, color: 'var(--accent)' }}>{fmt(itemDisplayAmounts[it.id] ?? (it.unit_price * it.quantity), order?.buyer_currency || order?.currency)}</span>
                 </div>
               ))}
