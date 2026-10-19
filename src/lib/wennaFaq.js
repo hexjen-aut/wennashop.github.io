@@ -25,6 +25,12 @@ export const WENNA_FAQ = [
     keywords: 'payer paiement carte bancaire espèces cash livraison virement mobile money airtel moov orange',
   },
   {
+    id: 'taille',
+    q: 'Comment choisir la taille et le coloris ?',
+    a: "Sur la fiche du produit, choisis le coloris (la photo change) puis la taille : le prix s'adapte à la taille, par exemple un XXL peut coûter un peu plus cher. Le bouton « Ajouter au panier » ne marche qu'une fois les deux choisis, et ta commande indique au vendeur exactement ce qu'il doit t'envoyer.",
+    keywords: 'taille tailles coloris couleur choisir xl xxl m l pointure variante vêtement',
+  },
+  {
     id: 'suivi',
     popular: true,
     q: 'Où suivre ma commande ?',

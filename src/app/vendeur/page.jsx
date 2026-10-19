@@ -66,7 +66,7 @@ const TOUR_STEPS = [
   { navKey: 'overview', title: "Vue d'ensemble", text: "Ton tableau de bord : ventes, commandes récentes, stock faible et tes objectifs, en un coup d'œil." },
   { navKey: 'overview', fieldId: 'tour-founder-card', needsFounderCard: true, since: '2026-10-17', title: 'Vendeur fondateur', text: "Les 20 premières boutiques qui mettent un produit en ligne deviennent vendeurs fondateurs : badge à vie et 3 mois de mise en avant sur la page d'accueil. Cette carte te dit si tu en fais partie, ou combien de places il reste." },
   { navKey: 'products', title: 'Mes produits', text: "Ajoute et gère les produits que tu vends. C'est le cœur de ta boutique." },
-  { navKey: 'orders', title: 'Commandes', text: 'Suis chaque commande et marque-la comme expédiée avec un numéro de suivi.' },
+  { navKey: 'orders', since: '2026-10-19', title: 'Commandes', text: "Suis chaque commande et marque-la comme expédiée avec un numéro de suivi. Pour un vêtement, le détail indique le coloris et la taille choisis par l'acheteur (par exemple « Rose · XL »)." },
   { navKey: 'revenue', title: 'Revenus', text: "Ton chiffre d'affaires et l'historique détaillé de tes paiements." },
   { navKey: 'shop', title: 'Ma boutique', text: "On va configurer ta vitrine publique ensemble, étape par étape — je t'amène directement sur chaque champ à remplir." },
   { navKey: 'shop', fieldId: 'tour-shop-name', title: 'Nom de la boutique', text: 'Choisis le nom affiché sur ta vitrine publique — il sert aussi de base à ton slug (URL).' },
@@ -648,7 +648,7 @@ export default function VendeurPage() {
     setOrderDelivery(null);
     const sb = getSupabase();
     const [{ data }, { data: full }, { data: pay }] = await Promise.all([
-      sb.from('order_items').select('quantity,unit_price,products(name,image_url,seller_id)').eq('order_id', o.id),
+      sb.from('order_items').select('quantity,unit_price,variant_label,products(name,image_url,seller_id)').eq('order_id', o.id),
       sb.from('orders').select('shipping_name,shipping_phone,shipping_address,shipping_city,shipping_country,notes').eq('id', o.id).maybeSingle(),
       sb.from('payments').select('method,status').eq('order_id', o.id).eq('type', 'order_payment').maybeSingle(),
     ]);
@@ -2069,7 +2069,7 @@ export default function VendeurPage() {
               </div>
               {orderItemsDetail.map((it, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, padding: '6px 0', borderBottom: '1px solid var(--border)' }}>
-                  <span>{it.products?.name} × {it.quantity}</span>
+                  <span>{it.products?.name}{it.variant_label ? ` (${it.variant_label})` : ''} × {it.quantity}</span>
                   <span style={{ fontWeight: 700 }}>{fmt(it.unit_price * it.quantity, orderModal.currency)}</span>
                 </div>
               ))}

@@ -10,6 +10,7 @@
 .img { width: 80px; height: 96px; object-fit: cover; border-radius: var(--radius-md); background: var(--surface-2); flex-shrink: 0; }
 .info { flex: 1; }
 .name { font-weight: 800; margin-bottom: 6px; }
+.variant { font-size: 12px; font-weight: 600; color: var(--text-muted); margin: -4px 0 6px; }
 .price { color: var(--accent); font-weight: 900; }
 .qtyRow { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
 .qtyBtn { width: 30px; height: 30px; border: 1px solid var(--border); background: var(--surface-2); border-radius: 6px; color: var(--text); cursor: pointer; }
