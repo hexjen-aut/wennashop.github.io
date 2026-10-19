@@ -1,7 +1,13 @@
 .pageWrap { max-width: 800px; margin: 0 auto; padding-top: var(--nav-height); padding-bottom: 88px; }
-.gallery { display: grid; grid-template-columns: 1fr; height: 320px; }
-.mainImgWrap { position: relative; overflow: hidden; background: var(--surface); }
-.mainImgWrap img { width: 100%; height: 100%; object-fit: cover; }
+/* Photo entière (contain) : les photos de vêtements sont souvent en portrait,
+   un recadrage (cover) coupait la tête et les pieds. */
+.gallery { display: flex; flex-direction: column; gap: 8px; }
+.mainImgWrap { position: relative; overflow: hidden; background: var(--surface); height: min(75vh, 560px); }
+.mainImgWrap img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.thumbs { display: flex; gap: 8px; overflow-x: auto; padding: 0 16px 4px; scrollbar-width: thin; }
+.thumb { flex: 0 0 64px; height: 80px; padding: 0; border: 2px solid transparent; border-radius: 10px; overflow: hidden; background: var(--surface); cursor: pointer; opacity: .7; }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.thumbActive { border-color: var(--accent); opacity: 1; }
 .originBadge { position: absolute; bottom: 14px; left: 14px; background: rgba(10,10,10,.88); backdrop-filter: blur(10px); border: 1px solid var(--border-accent); border-radius: var(--radius-pill); color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 5px 14px; }
 
 .content { padding: 28px 24px 0; }
@@ -52,5 +58,6 @@
 .btnCart { flex: 1; height: 48px; background: var(--accent-btn); color: #fff; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 800; border: none; border-radius: var(--radius-pill); box-shadow: var(--shadow-orange); cursor: pointer; }
 
 @media (min-width: 600px) {
-  .gallery { height: 420px; }
+  .mainImgWrap { height: min(75vh, 640px); }
+  .thumbs { padding: 0 0 4px; }
 }

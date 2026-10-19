@@ -27,6 +27,7 @@ export default function ProduitContent() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [activeImg, setActiveImg] = useState(0);
 
   const [rating, setRating] = useState(0);
   const [reviewName, setReviewName] = useState('');
@@ -34,6 +35,7 @@ export default function ProduitContent() {
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
+    setActiveImg(0);
     if (!id) { setNotFound(true); setLoading(false); return; }
     (async () => {
       const sb = getSupabase();
@@ -138,9 +140,25 @@ export default function ProduitContent() {
       <main className={styles.pageWrap}>
         <div className={styles.gallery}>
           <div className={styles.mainImgWrap}>
-            {images[0] && <img src={images[0]} alt={product.name} />}
+            {images[0] && <img src={images[activeImg] || images[0]} alt={product.name} />}
             {product.country && <div className={styles.originBadge}>Produit du {product.country}</div>}
           </div>
+          {images.length > 1 && (
+            <div className={styles.thumbs}>
+              {images.map((src, i) => (
+                <button
+                  type="button"
+                  key={src + i}
+                  className={`${styles.thumb} ${i === activeImg ? styles.thumbActive : ''}`}
+                  onClick={() => setActiveImg(i)}
+                  aria-label={`Photo ${i + 1} sur ${images.length}`}
+                  aria-current={i === activeImg}
+                >
+                  <img src={src} alt="" loading="lazy" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className={styles.content}>
