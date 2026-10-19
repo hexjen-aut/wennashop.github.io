@@ -49,6 +49,11 @@
 
 /* ── TICKER ── */
 .ticker { background: var(--accent); overflow: hidden; padding: 5px 0; }
+/* Bandeau promo et ticker passent sous la nav fixe : le premier des deux
+   la décale, et le titre n'a plus besoin de réserver la hauteur de la nav. */
+.promoBanner, .ticker { margin-top: var(--nav-height); }
+.promoBanner + .ticker { margin-top: 0; }
+.promoBanner + .pageHero, .ticker + .pageHero { padding-top: 36px; }
 .tickerT { display: flex; width: max-content; animation: tick 36s linear infinite; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #fff; }
 .tickerT span { padding: 0 20px; }
 .tickerSep { opacity: .4; padding: 0 4px; }
@@ -209,6 +214,7 @@
 
 @media (max-width: 768px) {
   .pageHero { padding: calc(var(--nav-height) + 40px) 20px 20px; }
+  .promoBanner + .pageHero, .ticker + .pageHero { padding-top: 28px; }
   .toolbar { padding: 10px 16px; }
   .toolbarRight { flex-wrap: wrap; flex-shrink: 1; justify-content: flex-end; }
   .activeFilters { padding: 0 16px 8px; }
