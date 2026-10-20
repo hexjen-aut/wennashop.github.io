@@ -22,6 +22,10 @@ function shopInitials(name) {
   return name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2);
 }
 
+// La base refuse une description de boutique de plus de 500 caractères
+// (contrainte shops_bio_check) : on limite la saisie au même seuil.
+const BIO_MAX = 500;
+const BIO_LIMIT_MSG = 'Un champ dépasse la limite autorisée (description : 500 caractères maximum).';
 const STATUS_LABEL = { pending: 'En attente', active: 'Actif', inactive: 'Inactif', processing: 'En traitement', shipped: 'Expédiée', delivered: 'Livrée', cancelled: 'Annulée', approved: 'Approuvé', paid: 'Payé', rejected: 'Rejeté' };
 const STATUS_COLOR = { pending: '#f59e0b', active: '#22c55e', inactive: '#555', processing: '#3b82f6', shipped: '#3b82f6', delivered: '#22c55e', cancelled: '#ef4444', approved: '#22c55e', paid: '#22c55e', rejected: '#ef4444' };
 // Taux appliqué à un produit sans catégorie (voir resolve_commission_rate).
@@ -862,7 +866,7 @@ export default function VendeurPage() {
     // toujours dérivé automatiquement du nom (jamais saisi à la main : un champ
     // technique sans guide ne parle à personne).
     let slug = slugify(shopForm.name) || 'boutique';
-    const payload = { ...shopForm, slug, user_id: ownerId, carrier_id: shopForm.carrier_id || null };
+    const payload = { ...shopForm, bio: (shopForm.bio || '').slice(0, BIO_MAX), slug, user_id: ownerId, carrier_id: shopForm.carrier_id || null };
     let error;
     for (let attempt = 0; attempt < 5; attempt++) {
       payload.slug = attempt === 0 ? slug : `${slug}-${attempt + 1}`;
@@ -872,7 +876,7 @@ export default function VendeurPage() {
       error = res.error;
       if (!error || error.code !== '23505') break;
     }
-    if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+    if (error) { showToast(error.code === '23514' ? BIO_LIMIT_MSG : 'Erreur : ' + error.message, 'error'); return; }
     showToast('Boutique enregistrée', 'success');
     const { data: refreshed } = await sb.from('shops').select('*').eq('user_id', ownerId).maybeSingle();
     setShop(refreshed);
@@ -1572,7 +1576,8 @@ export default function VendeurPage() {
                 <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 4 }}>Générée automatiquement à partir du nom — rien à faire.</div>
               </div>
             </div>
-            <div id="tour-shop-bio" className={`${styles.formGroup} ${tourFieldClass('tour-shop-bio')}`}><label className={styles.formLabel}>Description / Bio</label><textarea className={styles.input} rows={3} value={shopForm.bio} onChange={(e) => setShopForm({ ...shopForm, bio: e.target.value })} /></div>
+            <div id="tour-shop-bio" className={`${styles.formGroup} ${tourFieldClass('tour-shop-bio')}`}><label className={styles.formLabel}>Description / Bio</label><textarea className={styles.input} rows={3} maxLength={BIO_MAX} value={shopForm.bio} onChange={(e) => setShopForm({ ...shopForm, bio: e.target.value.slice(0, BIO_MAX) })} />
+              <div style={{ fontSize: 11, textAlign: 'right', marginTop: 4, color: shopForm.bio.length >= BIO_MAX ? 'var(--accent)' : 'var(--text-muted)' }}>{BIO_MAX} caractères maximum · {shopForm.bio.length}/{BIO_MAX}</div></div>
             <div className={styles.formGrid}>
               <div className={styles.formGroup}><label className={styles.formLabel}>Ville</label><input className={styles.input} value={shopForm.city} onChange={(e) => setShopForm({ ...shopForm, city: e.target.value })} /></div>
               <div className={styles.formGroup}><label className={styles.formLabel}>Pays</label>

@@ -27,6 +27,10 @@ function timeAgo(d) {
   return fmtDate(d);
 }
 
+// La base refuse une description de boutique de plus de 500 caractères
+// (contrainte shops_bio_check) : on limite la saisie au même seuil.
+const BIO_MAX = 500;
+const BIO_LIMIT_MSG = 'Un champ dépasse la limite autorisée (description : 500 caractères maximum).';
 const STATUS_LABEL = { pending: 'En attente', processing: 'En préparation', shipped: 'En transit', delivered: 'Livré', cancelled: 'Annulée' };
 
 export default function ComptePage() {
@@ -326,7 +330,7 @@ export default function ComptePage() {
         updated_at: new Date().toISOString(),
       }).eq('auth_id', session.user.id);
       if (userErr) throw userErr;
-      const { error: shopErr } = await sb.from('shops').upsert({ user_id: profile.id, name: upgradeForm.shopName, slug, bio: upgradeForm.bio || upgradeForm.specialty, country: upgradeForm.country, status: 'pending', updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
+      const { error: shopErr } = await sb.from('shops').upsert({ user_id: profile.id, name: upgradeForm.shopName, slug, bio: (upgradeForm.bio || upgradeForm.specialty || '').slice(0, BIO_MAX), country: upgradeForm.country, status: 'pending', updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
       if (shopErr) throw shopErr;
       setProfile({ ...profile, role: 'artisan', status: 'pending', country: upgradeForm.country });
       setMode('vendeur');
@@ -339,10 +343,11 @@ export default function ComptePage() {
       setUpgradeUploadProgress(0);
     }
   }
-  async function saveShop(name, bio, country) {
+  async function saveShop(name, rawBio, country) {
     const sb = getSupabase();
+    const bio = (rawBio || '').slice(0, BIO_MAX);
     const { error } = await sb.from('shops').update({ name, bio, country, updated_at: new Date().toISOString() }).eq('user_id', profile.id);
-    if (error) alert('Erreur : ' + error.message);
+    if (error) alert(error.code === '23514' ? BIO_LIMIT_MSG : 'Erreur : ' + error.message);
     else { alert('Boutique mise à jour ✓'); setShop({ ...shop, name, bio, country }); }
   }
 
@@ -671,7 +676,8 @@ export default function ComptePage() {
               <option value="">Pays d'origine *</option>
               {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
-            <textarea value={upgradeForm.bio} onChange={(e) => setUpgradeForm({ ...upgradeForm, bio: e.target.value })} placeholder="Description courte" rows={3} style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)', padding: '10px 12px', fontSize: 13, marginBottom: 14, resize: 'vertical' }} />
+            <textarea value={upgradeForm.bio} maxLength={BIO_MAX} onChange={(e) => setUpgradeForm({ ...upgradeForm, bio: e.target.value.slice(0, BIO_MAX) })} placeholder="Description courte" rows={3} style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)', padding: '10px 12px', fontSize: 13, marginBottom: 4, resize: 'vertical' }} />
+            <div style={{ fontSize: 11, textAlign: 'right', marginBottom: 14, color: upgradeForm.bio.length >= BIO_MAX ? 'var(--accent)' : 'var(--text-muted)' }}>{BIO_MAX} caractères maximum · {upgradeForm.bio.length}/{BIO_MAX}</div>
 
             <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 8 }}>Vérification d'identité</div>
             <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: -4, marginBottom: 12, lineHeight: 1.6 }}>Obligatoire pour vendre sur WennaShop — ta boutique reste masquée tant que le dossier n'est pas validé (24 à 48h).</p>
@@ -783,7 +789,8 @@ export default function ComptePage() {
               <div className={styles.card}>
                 <div className={styles.cardTitle}>Ma Boutique</div>
                 <input defaultValue={shop.name} id="shop-name-input" placeholder="Nom de la boutique" style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)', padding: '10px 12px', fontSize: 13, marginBottom: 10 }} />
-                <input defaultValue={shop.bio} id="shop-bio-input" placeholder="Description / Spécialité" style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)', padding: '10px 12px', fontSize: 13, marginBottom: 10 }} />
+                <input defaultValue={shop.bio} id="shop-bio-input" maxLength={BIO_MAX} placeholder="Description / Spécialité" style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)', padding: '10px 12px', fontSize: 13, marginBottom: 4 }} />
+                <div style={{ fontSize: 11, textAlign: 'right', marginBottom: 10, color: 'var(--text-muted)' }}>{BIO_MAX} caractères maximum</div>
                 <select defaultValue={shop.country} id="shop-country-input" style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)', padding: '10px 12px', fontSize: 13, marginBottom: 14 }}>
                   {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
                 </select>
