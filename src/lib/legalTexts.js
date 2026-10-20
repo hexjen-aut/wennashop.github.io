@@ -24,7 +24,7 @@ WennaShop prélève une commission sur chaque vente, selon la catégorie du prod
 Offre « Vendeurs fondateurs ». Les 20 premières boutiques validées qui mettent un produit en ligne deviennent vendeurs fondateurs, dans l'ordre de mise en ligne de leur premier produit. Elles reçoivent le badge « Vendeur fondateur », affiché sur la boutique et ses produits sans limite de durée, et sont mises en avant pendant 3 mois sur la page d'accueil de la boutique, à compter de ce premier produit. La commission reste celle de la grille. Les boutiques officielles WennaShop et de démonstration ne sont pas concernées. Le badge peut être retiré en cas de fraude ou de manquement grave aux présentes conditions.
 
 5. Paiement
-5.1 Moyens disponibles. Seuls les moyens actifs pour le pays de livraison s'affichent au moment de payer. À ce jour : au Gabon, paiement à la livraison et Airtel Money (Moov Money sera ajouté prochainement) ; au Maroc, paiement à la livraison et virement bancaire. Les frais facturés par l'opérateur ou la banque sont à la charge de l'acheteur.
+5.1 Moyens disponibles. Seuls les moyens actifs pour le pays de livraison s'affichent au moment de payer. À ce jour : au Gabon, paiement à la livraison et Airtel Money (Moov Money n'est pas disponible pour le moment) ; au Maroc, paiement à la livraison et virement bancaire. Les frais facturés par l'opérateur ou la banque sont à la charge de l'acheteur.
 5.2 Paiement à la livraison. L'acheteur paie en espèces à la réception, au livreur mandaté par WennaShop (livreur local ou société de livraison partenaire), qui encaisse pour le compte de WennaShop. La commande part en préparation dès sa validation. Il n'est pas proposé pour les quêtes.
 5.3 Paiement mobile money et virement. L'acheteur reçoit le montant exact, le numéro ou le RIB de réception WennaShop et une référence (WN-…). Il envoie le montant exact, puis déclare son paiement sur la page de sa commande avec l'identifiant de transaction (une capture peut être jointe). Un agent WennaShop vérifie la transaction sur le relevé de l'opérateur ou de la banque, puis :
 - valide le paiement : la commande passe en préparation et le vendeur est prévenu ;
@@ -154,7 +154,7 @@ Ces produits restent couverts s'ils sont abîmés, défectueux ou non conformes 
 
 5. Le remboursement
 5.1 Montant. Tu es remboursé du montant que tu as payé, dans ta devise, sans nouvelle conversion, selon les cas décrits au point 2.
-5.2 Moyen. Le remboursement se fait par le moyen utilisé pour payer : Airtel Money ou Moov Money au numéro qui a envoyé l'argent, virement sur le compte qui a payé. Une commande payée à la livraison est remboursée par mobile money au Gabon ou par virement au Maroc, au numéro ou au RIB que tu nous indiques.
+5.2 Moyen. Le remboursement se fait par le moyen utilisé pour payer : Airtel Money au numéro qui a envoyé l'argent, virement sur le compte qui a payé. Une commande payée à la livraison est remboursée par mobile money au Gabon ou par virement au Maroc, au numéro ou au RIB que tu nous indiques.
 5.3 Délai. Le remboursement est envoyé dans les 7 jours qui suivent sa validation (réception et contrôle du retour, ou confirmation de la non-livraison). Tu reçois une notification avec la référence de l'envoi.
 5.4 Annulation avant expédition. Une commande payée puis annulée avant son expédition est remboursée intégralement, de la même façon. Un montant payé en trop est remboursé aussi.
 
