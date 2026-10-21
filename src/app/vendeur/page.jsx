@@ -1398,7 +1398,7 @@ export default function VendeurPage() {
             <div className={styles.statGrid}>
               <div className={styles.statCard}><div className={styles.statLabel} style={{ marginBottom: 6 }}>Total encaissé</div><div className={styles.statNum} style={{ fontSize: 20 }}>{fmt(revenue.total)}</div></div>
               <div className={styles.statCard}><div className={styles.statLabel} style={{ marginBottom: 6 }}>Ce mois</div><div className={styles.statNum} style={{ fontSize: 20 }}>{fmt(revenue.month)}</div></div>
-              <div className={styles.statCard}><div className={styles.statLabel} style={{ marginBottom: 6 }}>Commissions</div><div className={styles.statNum} style={{ fontSize: 20, color: 'var(--error)' }}>-{fmt(revenue.commission)}</div></div>
+              <div className={styles.statCard}><div className={styles.statLabel} style={{ marginBottom: 6 }}>Commissions</div><div className={styles.statNum} style={{ fontSize: 20, color: revenue.commission > 0 ? 'var(--error)' : undefined }}>{revenue.commission > 0 ? '-' : ''}{fmt(revenue.commission)}</div></div>
               <div className={styles.statCard}><div className={styles.statLabel} style={{ marginBottom: 6 }}>Panier moyen</div><div className={styles.statNum} style={{ fontSize: 20 }}>{fmt(revenue.avg)}</div></div>
             </div>
             <div className={styles.card}>
@@ -1413,7 +1413,7 @@ export default function VendeurPage() {
                       <tr key={p.id}>
                         <td data-label="Réf." style={{ fontFamily: 'monospace' }}>#{p.order_id.slice(0, 8).toUpperCase()}</td>
                         <td data-label="Brut">{fmt(p.amount, p.currency)}</td>
-                        <td data-label="Comm." style={{ color: 'var(--error)' }}>-{fmt(p.commission, p.currency)}</td>
+                        <td data-label="Comm." style={{ color: p.commission > 0 ? 'var(--error)' : undefined }}>{p.commission > 0 ? '-' : ''}{fmt(p.commission, p.currency)}</td>
                         <td data-label="Net" style={{ color: 'var(--success)', fontWeight: 700 }}>{fmt(p.net, p.currency)}</td>
                         <td data-label="Date" style={{ fontSize: 11, color: 'var(--text-faint)' }}>{fmtDate(p.created_at)}</td>
                         <td data-label="Statut"><span className={styles.badge} style={{ background: `${STATUS_COLOR[p.status] || '#555'}22`, color: STATUS_COLOR[p.status] || 'var(--text-muted)' }}>{STATUS_LABEL[p.status] || p.status}</span></td>

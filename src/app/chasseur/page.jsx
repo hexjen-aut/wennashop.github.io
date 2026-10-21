@@ -374,8 +374,10 @@ export default function ChasseurPage() {
   async function deleteProposal(id) {
     if (!confirm('Retirer cette proposition ?')) return;
     const sb = getSupabase();
-    const { error } = await sb.from('quest_proposals').delete().eq('id', id).eq('hunter_id', internalUser.id);
+    const { data, error } = await sb.from('quest_proposals').delete().eq('id', id).eq('hunter_id', internalUser.id).select('id');
     if (error) return showToast('Erreur : ' + error.message, 'error');
+    // Rien de supprimé : la proposition n'est plus en attente (acceptée entre-temps).
+    if (!data?.length) { await loadMyProposals(sb, internalUser.id); return showToast("Cette proposition ne peut plus être retirée.", 'error'); }
     showToast('Proposition retirée.', 'ok');
     await loadMyProposals(sb, internalUser.id);
   }
