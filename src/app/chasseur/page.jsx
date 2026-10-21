@@ -207,7 +207,7 @@ export default function ChasseurPage() {
   async function loadMyProposals(sb, hunterId) {
     const { data } = await sb
       .from('quest_proposals')
-      .select('id,quest_id,description,proposed_price,weight_kg,shipping_cost,product_url,product_images,status,created_at,selected_at,reward_paid_at,quests(title,reward_amount,currency,country_target)')
+      .select('id,quest_id,description,proposed_price,weight_kg,shipping_cost,product_url,product_images,status,created_at,selected_at,reward_paid_at,quests!quest_proposals_quest_id_fkey(title,reward_amount,currency,country_target)')
       .eq('hunter_id', hunterId)
       .order('created_at', { ascending: false });
     setMyProposals(data || []);
