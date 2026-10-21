@@ -58,7 +58,15 @@
 .sectionTitle { font-size: 17px; font-weight: 800; margin-bottom: 12px; }
 
 .layout2 { display: grid; grid-template-columns: 220px 1fr; gap: 18px; align-items: start; }
-@media (max-width: 900px) { .layout2 { grid-template-columns: 1fr; } }
+@media (max-width: 900px) { .layout2 { grid-template-columns: minmax(0, 1fr); } }
+/* Mobile : les filtres passent au-dessus des quêtes sans les recouvrir, et
+   les catégories tiennent sur une ligne qui défile. */
+@media (max-width: 900px) {
+  .filterPanel { position: static; }
+  .filterPanel .chipGroup { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .filterPanel .chipGroup::-webkit-scrollbar { display: none; }
+  .filterPanel .chip { flex-shrink: 0; white-space: nowrap; }
+}
 .filterPanel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; position: sticky; top: 74px; }
 .filterTitle { font-size: 10px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
 .filterGroup { margin-bottom: 14px; }
