@@ -7,6 +7,13 @@
 .navLinks a:hover, .navLinkActive { color: var(--text) !important; }
 .btnNav { background: var(--accent-btn) !important; color: #fff !important; padding: 8px 16px; border-radius: var(--radius-pill); font-size: 12px !important; font-weight: 700; }
 @media (max-width: 768px) { .navLinks a:not(.btnNav):not(.navLinkActive) { display: none; } }
+/* Mobile : l'en-tête et les onglets tiennent dans l'écran (plus de défilement horizontal). */
+@media (max-width: 768px) {
+  .topnav { padding: 12px 16px; }
+  .navLinks { gap: 12px; }
+  span.navLinkActive { display: none; }
+  .btnNav { white-space: nowrap; padding: 7px 12px; }
+}
 
 .notifWrap { position: relative; }
 .notifBell { position: relative; background: none; border: none; color: var(--text-muted); font-size: 13px; cursor: pointer; padding: 6px; }
@@ -33,6 +40,11 @@
 .htab { display: flex; align-items: center; gap: 6px; padding: 13px 18px; font-size: 13px; font-weight: 700; color: var(--text-faint); cursor: pointer; border-bottom: 2px solid transparent; background: none; border-top: none; border-left: none; border-right: none; font-family: var(--font); }
 .htab:hover { color: var(--text); }
 .htabActive { color: var(--accent); border-bottom-color: var(--accent); }
+@media (max-width: 768px) {
+  .tabsRow { overflow-x: auto; scrollbar-width: none; max-width: 100%; min-width: 0; }
+  .tabsRow::-webkit-scrollbar { display: none; }
+  .htab { padding: 13px 8px; font-size: 12px; white-space: nowrap; flex-shrink: 0; }
+}
 .htabBadge { background: var(--accent-btn); color: #fff; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 6px; min-width: 17px; text-align: center; }
 
 .body { max-width: 1180px; margin: 0 auto; padding: 26px 24px 60px; }
@@ -46,7 +58,15 @@
 .sectionTitle { font-size: 17px; font-weight: 800; margin-bottom: 12px; }
 
 .layout2 { display: grid; grid-template-columns: 220px 1fr; gap: 18px; align-items: start; }
-@media (max-width: 900px) { .layout2 { grid-template-columns: 1fr; } }
+@media (max-width: 900px) { .layout2 { grid-template-columns: minmax(0, 1fr); } }
+/* Mobile : les filtres passent au-dessus des quêtes sans les recouvrir, et
+   les catégories tiennent sur une ligne qui défile. */
+@media (max-width: 900px) {
+  .filterPanel { position: static; }
+  .filterPanel .chipGroup { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .filterPanel .chipGroup::-webkit-scrollbar { display: none; }
+  .filterPanel .chip { flex-shrink: 0; white-space: nowrap; }
+}
 .filterPanel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; position: sticky; top: 74px; }
 .filterTitle { font-size: 10px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
 .filterGroup { margin-bottom: 14px; }
