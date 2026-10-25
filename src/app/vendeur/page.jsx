@@ -76,6 +76,7 @@ const TOUR_STEPS = [
   { navKey: 'overview', title: "Vue d'ensemble", text: "Ton tableau de bord : ventes, commandes récentes, stock faible et tes objectifs, en un coup d'œil." },
   { navKey: 'overview', fieldId: 'tour-founder-card', needsFounderCard: true, since: '2026-10-17', title: 'Vendeur fondateur', text: "Les 20 premières boutiques qui mettent un produit en ligne deviennent vendeurs fondateurs : badge à vie et 3 mois de mise en avant sur la page d'accueil. Cette carte te dit si tu en fais partie, ou combien de places il reste." },
   { navKey: 'products', title: 'Mes produits', text: "Ajoute et gère les produits que tu vends. C'est le cœur de ta boutique." },
+  { navKey: 'overview', fieldId: 'tour-nav-gros', since: '2026-10-25', title: 'Commandes en gros', text: "Dans un produit, coche « Accepter les commandes en gros » et fixe la quantité minimale. Les acheteurs te demandent un prix ici, dans le chat ; tu réponds par un devis, et ils paient sur WennaShop. Les numéros et liens sont masqués : tout se passe sur le chat." },
   { navKey: 'products', since: '2026-10-25', title: 'Variantes', text: "Un même produit en plusieurs versions (parfums, poids, couleurs, tailles) ? Dans « Nouveau produit », onglet Variantes : nomme tes options, tape les valeurs, puis fixe le prix et le stock de chaque version. L'acheteur choisit la sienne sur la fiche." },
   { navKey: 'orders', since: '2026-10-19', title: 'Commandes', text: "Suis chaque commande et marque-la comme expédiée avec un numéro de suivi. Pour un produit à variantes, le détail indique la version choisie par l'acheteur (par exemple « Rose · XL » ou « Argan · 500 g »)." },
   { navKey: 'revenue', title: 'Revenus', text: "Ton chiffre d'affaires et l'historique détaillé de tes paiements." },
@@ -230,7 +231,7 @@ export default function VendeurPage() {
 
   function emptyProduct() {
     const defaultCountry = COUNTRIES.includes(seller?.country) ? seller.country : 'Maroc';
-    return { id: null, name: '', description: '', price: '', stock: '', country: defaultCountry, origin_city: '', category_id: '', status: 'pending', brand: '', sku: '', compare_price: '', delivery_days: '', material: '', color: '', weight: '', dimensions: '', ships_to: [] };
+    return { id: null, name: '', description: '', price: '', stock: '', country: defaultCountry, origin_city: '', category_id: '', status: 'pending', brand: '', sku: '', compare_price: '', delivery_days: '', material: '', color: '', weight: '', dimensions: '', ships_to: [], wholesale_enabled: false, wholesale_min_qty: 10 };
   }
 
   // Orders
@@ -541,6 +542,7 @@ export default function VendeurPage() {
         brand: p.brand || '', sku: p.sku || '', compare_price: p.compare_price ?? '', delivery_days: p.delivery_days ?? '',
         material: p.material || '', color: p.color || '', weight: p.weight || '', dimensions: p.dimensions || '',
         ships_to: Array.isArray(p.ships_to) ? p.ships_to : [],
+        wholesale_enabled: !!p.wholesale_enabled, wholesale_min_qty: p.wholesale_min_qty ?? 10,
       });
       setProductImages(Array.isArray(p.images) && p.images.length ? p.images : (p.image_url ? [p.image_url] : []));
       setCaracs(p.characteristics ? Object.entries(p.characteristics).map(([k, v]) => ({ k, v })) : []);
@@ -656,6 +658,8 @@ export default function VendeurPage() {
       images: productImages, image_url: productImages[0] || null,
       characteristics, shop_id: shop?.id || null, seller_id: ownerId,
       ships_to: productForm.ships_to || [],
+      wholesale_enabled: !!productForm.wholesale_enabled,
+      wholesale_min_qty: Math.min(100000, Math.max(2, parseInt(productForm.wholesale_min_qty, 10) || 10)),
     };
     const isFirstProduct = !productForm.id && products.length === 0;
     let error, saved;
@@ -1195,6 +1199,9 @@ export default function VendeurPage() {
             {key === 'orders' && orders.filter((o) => o.status === 'pending').length > 0 && <span className={styles.navBadge}>{orders.filter((o) => o.status === 'pending').length}</span>}
           </button>
         ))}
+        <Link href="/gros" id="tour-nav-gros" className={styles.navItem} style={{ textDecoration: 'none' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}><i className="ph ph-chats-circle" />Commandes en gros</span>
+        </Link>
         <button className={styles.logoutBtn} onClick={async () => { await getSupabase().auth.signOut(); router.push('/connexion'); }}><i className="ph ph-sign-out" /> Déconnexion</button>
       </aside>
 
@@ -1967,6 +1974,20 @@ export default function VendeurPage() {
                   <div className={styles.formGrid}>
                     <div className={styles.formGroup}><label className={styles.formLabel}>Prix ({currencyLabel(productCurrency(productForm.country))}) *</label><input type="number" className={styles.input} value={productForm.price} onChange={(e) => setProductForm({ ...productForm, price: e.target.value })} /><div className={styles.fieldHint}>Prix payé par l'acheteur, dans la devise du pays d'origine. Les acheteurs d'autres pays le voient converti dans leur devise. La commission WennaShop est déduite de ce montant.{varRows.length > 0 && ' Avec des variantes, chaque variante a son propre prix (onglet Variantes).'}</div></div>
                     <div className={styles.formGroup}><label className={styles.formLabel}>Stock *</label><input type="number" className={styles.input} disabled={varRows.length > 0} value={varRows.length > 0 ? varRows.filter((r) => r.is_active).reduce((n, r) => n + (parseInt(r.stock) || 0), 0) : productForm.stock} onChange={(e) => setProductForm({ ...productForm, stock: e.target.value })} /><div className={styles.fieldHint}>{varRows.length > 0 ? 'Calculé à partir du stock de chaque variante.' : "Nombre d'unités disponibles. À 0, la fiche affiche « Rupture de stock »."}</div></div>
+                  </div>
+                  <div id="tour-wholesale" className={styles.formGroup} style={{ border: '1px solid var(--border)', borderRadius: 10, padding: 12 }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 700 }}>
+                      <input type="checkbox" checked={!!productForm.wholesale_enabled} onChange={(e) => setProductForm({ ...productForm, wholesale_enabled: e.target.checked })} />
+                      Accepter les commandes en gros
+                    </label>
+                    {productForm.wholesale_enabled && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
+                        <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>À partir de</span>
+                        <input type="number" min={2} className={styles.input} style={{ width: 90 }} value={productForm.wholesale_min_qty} onChange={(e) => setProductForm({ ...productForm, wholesale_min_qty: e.target.value })} />
+                        <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>unités</span>
+                      </div>
+                    )}
+                    <div className={styles.fieldHint}>Les acheteurs voient « Commander en gros » sur la fiche et te demandent un prix dans le chat. Tu réponds par un devis ; s'il l'accepte, il paie sur WennaShop et la commission habituelle s'applique.</div>
                   </div>
                   <div className={styles.formGrid}>
                     <div className={styles.formGroup}><label className={styles.formLabel}>Pays *</label>

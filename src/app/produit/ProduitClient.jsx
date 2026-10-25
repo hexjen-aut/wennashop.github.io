@@ -12,6 +12,7 @@ import { convertPrice, formatSmartPrice } from '@/lib/currency';
 import { getBuyerCurrency } from '@/lib/buyerCurrency';
 import styles from './produit.module.css';
 import { mediaUrl } from '@/lib/mediaUrl';
+import WholesaleRequestModal from '@/components/WholesaleRequestModal';
 
 export default function ProduitContent() {
   const searchParams = useSearchParams();
@@ -23,6 +24,7 @@ export default function ProduitContent() {
   const [displayComparePrice, setDisplayComparePrice] = useState('');
   const [seller, setSeller] = useState(null);
   const [shop, setShop] = useState(null);
+  const [wholesaleOpen, setWholesaleOpen] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -262,6 +264,12 @@ export default function ProduitContent() {
               : product.stock !== undefined && <div className={styles.chip}><i className="ph ph-cube" /><span>{product.stock > 0 ? `${product.stock} en stock` : 'Rupture de stock'}</span></div>}
           </div>
 
+          {product.wholesale_enabled && shop?.id && (
+            <button type="button" className={styles.btnWholesale} onClick={() => setWholesaleOpen(true)}>
+              Commander en gros · dès {product.wholesale_min_qty} unités
+            </button>
+          )}
+
           <div className={styles.sectionTitle}>À propos de ce produit</div>
           <p className={styles.description}>{product.description || 'Aucune description disponible.'}</p>
 
@@ -339,6 +347,10 @@ export default function ProduitContent() {
       </main>
 
       <Footer />
+
+      {wholesaleOpen && (
+        <WholesaleRequestModal shopId={shop.id} shopName={shop.name} product={product} onClose={() => setWholesaleOpen(false)} />
+      )}
 
       <div className={styles.bottomBar}>
         <div className={styles.bottomBarInner}>

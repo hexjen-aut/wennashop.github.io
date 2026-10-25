@@ -3,7 +3,7 @@
 // jour avec le code quand une règle change (paiement manuel vérifié, quêtes,
 // parrainage : paramètres hunter_* de site_config).
 
-export const CGU_TEXT = `Dernière mise à jour : 17 octobre 2026
+export const CGU_TEXT = `Dernière mise à jour : 25 octobre 2026
 
 1. Objet
 WennaShop est une marketplace éditée par Hexjen Conceptions qui met en relation des vendeurs (artisans et commerçants) et des acheteurs, principalement entre le Gabon et le Maroc, avec une ouverture progressive à d'autres pays africains. Les présentes conditions générales d'utilisation (CGU) s'appliquent à toute personne qui utilise le site wennashop.com. Créer un compte vaut acceptation des CGU.
@@ -38,6 +38,9 @@ Les paiements par mobile money et virement sont encaissés par WennaShop pour le
 
 6. Commandes et livraison
 Les délais de livraison sont indiqués par chaque vendeur. Le vendeur expédie et met à jour le suivi ; il ne peut pas passer en préparation une commande dont le paiement en ligne n'a pas été validé, ni modifier son montant.
+6.1 Commandes en gros. Un vendeur peut accepter les commandes en gros sur un produit, à partir d'une quantité minimale qu'il fixe. L'acheteur ouvre alors une discussion avec la boutique sur WennaShop, et le vendeur y répond par un devis (produit, version, quantité, prix unitaire), valable 7 jours. Si l'acheteur l'accepte, une commande est créée au prix du devis : elle se paie sur WennaShop comme toute commande, la commission WennaShop habituelle s'applique, et les règles de livraison, de retour et de remboursement sont les mêmes.
+6.2 Tout passe par WennaShop. Il est interdit d'échanger des coordonnées (numéro de téléphone, e-mail, lien de messagerie ou de réseau social) dans la discussion, ou de proposer de payer en dehors de WennaShop : ces éléments sont masqués automatiquement, et un contournement peut entraîner la suspension du compte. Une vente conclue hors du site n'est pas protégée par WennaShop.
+6.3 Confidentialité des discussions. Les discussions sont privées entre l'acheteur et la boutique. L'équipe WennaShop ne les lit que si l'un des deux la signale (bouton « Signaler »), pour traiter un litige ou un abus.
 
 7. Chasseurs et quêtes
 7.1 Devenir chasseur. Le statut de chasseur est ouvert à tout utilisateur majeur après vérification de son identité (document officiel et adresse), en général sous 48 heures. Un dossier refusé l'est avec un motif et peut être renvoyé.
@@ -87,7 +90,7 @@ Mesure d'audience, seulement si tu l'acceptes : pages vues, durée de visite, pr
 Faire fonctionner le compte et les commandes, vérifier les vendeurs, les chasseurs et les paiements, verser les reversements et les gains de parrainage, prévenir la fraude, répondre aux réclamations et respecter nos obligations comptables et légales.
 
 4. Qui y a accès
-L'équipe WennaShop, selon son rôle : les agents de paiement voient uniquement les paiements à vérifier (nom du client, montant, référence, identifiant de transaction, numéro d'envoi, capture) et le résultat du contrôle du pays de la commande (les pays, pas ta position). Le vendeur reçoit ce qui est nécessaire pour expédier ta commande (nom, adresse, téléphone de livraison). Les documents d'identité et les captures de paiement sont stockés dans des espaces privés, lisibles seulement par toi et par l'équipe habilitée.
+L'équipe WennaShop, selon son rôle : les agents de paiement voient uniquement les paiements à vérifier (nom du client, montant, référence, identifiant de transaction, numéro d'envoi, capture) et le résultat du contrôle du pays de la commande (les pays, pas ta position). Le vendeur reçoit ce qui est nécessaire pour expédier ta commande (nom, adresse, téléphone de livraison). Les discussions de commande en gros sont visibles par toi et la boutique ; l'équipe ne les lit que si l'un de vous les signale. Les documents d'identité et les captures de paiement sont stockés dans des espaces privés, lisibles seulement par toi et par l'équipe habilitée.
 Prestataires techniques, chacun pour sa fonction : Supabase (base de données et fichiers, hébergés en Irlande), Vercel (hébergement du site et mesure d'audience), Google (Google Analytics, mesure d'audience si tu l'acceptes, données pouvant être traitées hors de ton pays), Resend (envoi des e-mails), opérateurs de paiement (Airtel Money, Moov Money, SingPay, banques) pour les paiements, Didit pour la vérification d'identité automatique lorsqu'elle est proposée, n8n et Telegram pour alerter l'équipe d'un paiement à vérifier.
 Tes données ne sont jamais vendues.
 

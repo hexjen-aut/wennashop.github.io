@@ -567,7 +567,10 @@ export default function ComptePage() {
 
             {tab === 'commandes' && (
               <div className={styles.card}>
-                <div className={styles.cardTitle}>Mes commandes</div>
+                <div className={styles.cardTitle} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
+                  Mes commandes
+                  <Link href="/gros" style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)' }}>Commandes en gros</Link>
+                </div>
                 {orders.length === 0 ? (
                   <div className={styles.empty}>Aucune commande pour l'instant.<br /><Link href="/boutique" style={{ color: 'var(--accent)' }}>Découvrir la boutique</Link></div>
                 ) : orders.map((o) => (

@@ -31,6 +31,20 @@ export const WENNA_FAQ = [
     keywords: 'taille tailles coloris couleur choisir xl xxl m l pointure variante version parfum poids vêtement',
   },
   {
+    id: 'gros',
+    q: 'Comment commander en gros ?',
+    a: "Sur la fiche d'un produit qui accepte le gros, touche « Commander en gros » (ou le même bouton sur la page de la boutique) : indique la quantité et ta demande. La boutique te répond dans la discussion et t'envoie un devis valable 7 jours. Si tu l'acceptes, tu paies sur WennaShop comme une commande normale, et ton argent est protégé jusqu'à la livraison. Les numéros, e-mails et liens sont masqués : tout se fait sur le chat.",
+    keywords: 'gros grossiste quantité lot devis prix négocier revendeur commande en gros chat discussion',
+    link: { href: '/gros', label: 'Mes commandes en gros' },
+  },
+  {
+    id: 'gros-vendeur',
+    q: 'Vendeur : comment vendre en gros ?',
+    a: "Dans ton espace vendeur, ouvre un produit et coche « Accepter les commandes en gros », puis fixe la quantité minimale. Les demandes arrivent dans « Commandes en gros » : réponds dans la discussion puis touche « Faire un devis » (version, quantité, prix unitaire). Si l'acheteur accepte, la commande est créée à ce prix et il paie sur WennaShop ; la commission habituelle s'applique. Ne partage pas de numéro ni de lien : ils sont masqués, et un contournement peut suspendre ton compte.",
+    keywords: 'gros grossiste vendeur devis quantité minimale vendre en gros prix négocié',
+    link: { href: '/gros', label: 'Commandes en gros' },
+  },
+  {
     id: 'variantes-vendeur',
     q: 'Vendeur : comment proposer un produit en plusieurs versions ?',
     a: "Dans ton espace vendeur, « Nouveau produit » (ou « Modifier »), onglet « Variantes » : donne un nom à chaque option (par exemple « Parfum » et « Poids ») et tape ses valeurs séparées par des virgules. Chaque combinaison apparaît avec son prix, son stock et sa photo ; décoche celles qui ne sont pas disponibles. Une seule fiche suffit, au lieu d'un produit par version, et chaque commande t'indique la version à expédier.",

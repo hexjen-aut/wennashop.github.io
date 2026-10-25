@@ -10,6 +10,7 @@ import { convertPrice, formatSmartPrice } from '@/lib/currency';
 import { getBuyerCurrency } from '@/lib/buyerCurrency';
 import styles from './boutique-vendeur.module.css';
 import { mediaUrl } from '@/lib/mediaUrl';
+import WholesaleRequestModal from '@/components/WholesaleRequestModal';
 
 function fmt(n, c = 'MAD') {
   try { return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: c, maximumFractionDigits: 0 }).format(n); }
@@ -32,6 +33,7 @@ export default function Content() {
   const { add, clear } = useCart();
 
   const [shop, setShop] = useState(null);
+  const [wholesaleOpen, setWholesaleOpen] = useState(false);
   const [products, setProducts] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -71,7 +73,7 @@ export default function Content() {
 
       const { data: prods } = await sb
         .from('products')
-        .select('id,name,price,currency,image_url,images,country,compare_price,stock,created_at,categories(name),product_variants(count)')
+        .select('id,name,price,currency,image_url,images,country,compare_price,stock,created_at,wholesale_enabled,wholesale_min_qty,categories(name),product_variants(count)')
         .eq('seller_id', data.user_id)
         .eq('status', 'active')
         .order('created_at', { ascending: false });
@@ -196,6 +198,9 @@ export default function Content() {
           </div>
         </div>
         <div className={styles.actions}>
+          {products.some((p) => p.wholesale_enabled) && (
+            <button className={styles.btnContact} onClick={() => setWholesaleOpen(true)}>Commander en gros</button>
+          )}
           {shop.whatsapp && (
             <a className={styles.btnContact} href={`https://wa.me/${shop.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noreferrer">Contacter</a>
           )}
@@ -334,6 +339,9 @@ export default function Content() {
         </section>
       </div>
 
+      {wholesaleOpen && (
+        <WholesaleRequestModal shopId={shop.id} shopName={shop.name} products={products.filter((p) => p.wholesale_enabled)} onClose={() => setWholesaleOpen(false)} />
+      )}
       {toast && <div className={styles.toast}>{toast}</div>}
     </>
   );
