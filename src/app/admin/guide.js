@@ -136,6 +136,7 @@ export const GUIDE = [
     steps: [
       "Ouvre Validation. Chaque produit en attente affiche sa photo, son vendeur et son prix.",
       "Contrôle : photo nette (fond blanc si l'option est active), nom et description clairs, prix cohérent, bonne catégorie, produit autorisé.",
+      "Produit à variantes (parfums, poids, tailles…) : ouvre la fiche et vérifie que chaque version a un prix cohérent. Le vendeur les gère lui-même dans l'onglet « Variantes » ; plusieurs fiches identiques qui ne diffèrent que par la version peuvent être regroupées en une seule.",
       "« Approuver » : le produit apparaît dans la boutique et dans la boutique du vendeur.",
       "« Rejeter » : le produit reste masqué. Préviens le vendeur de ce qu'il doit corriger.",
     ],

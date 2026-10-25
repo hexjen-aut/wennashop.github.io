@@ -26,9 +26,16 @@ export const WENNA_FAQ = [
   },
   {
     id: 'taille',
-    q: 'Comment choisir la taille et le coloris ?',
-    a: "Sur la fiche du produit, choisis le coloris (la photo change) puis la taille : le prix s'adapte à la taille, par exemple un XXL peut coûter un peu plus cher. Le bouton « Ajouter au panier » ne marche qu'une fois les deux choisis, et ta commande indique au vendeur exactement ce qu'il doit t'envoyer.",
-    keywords: 'taille tailles coloris couleur choisir xl xxl m l pointure variante vêtement',
+    q: 'Comment choisir la taille, le coloris ou le parfum ?',
+    a: "Sur la fiche du produit, choisis la version qui te plaît (coloris, taille, parfum, poids… selon le produit) : la photo et le prix s'adaptent, par exemple un XXL ou un format 500 g peut coûter un peu plus cher. Le bouton « Ajouter au panier » ne marche qu'une fois chaque option choisie, et ta commande indique au vendeur exactement ce qu'il doit t'envoyer.",
+    keywords: 'taille tailles coloris couleur choisir xl xxl m l pointure variante version parfum poids vêtement',
+  },
+  {
+    id: 'variantes-vendeur',
+    q: 'Vendeur : comment proposer un produit en plusieurs versions ?',
+    a: "Dans ton espace vendeur, « Nouveau produit » (ou « Modifier »), onglet « Variantes » : donne un nom à chaque option (par exemple « Parfum » et « Poids ») et tape ses valeurs séparées par des virgules. Chaque combinaison apparaît avec son prix, son stock et sa photo ; décoche celles qui ne sont pas disponibles. Une seule fiche suffit, au lieu d'un produit par version, et chaque commande t'indique la version à expédier.",
+    keywords: 'variante variantes version versions option parfum poids taille couleur coloris vendeur produit déclinaison',
+    link: { href: '/vendeur', label: 'Mon espace vendeur' },
   },
   {
     id: 'suivi',

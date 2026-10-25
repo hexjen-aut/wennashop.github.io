@@ -101,6 +101,10 @@ export default function ProduitContent() {
   const variantFor = (color, size) => variants.find((v) => (v.color || null) === (colors.length ? color : null) && (v.size || null) === (sizes.length ? size : null));
   const selectedVariant = variants.length ? variantFor(pickColor, pickSize) : null;
   const priceOf = (v) => Number(v?.price ?? product?.price);
+  // Noms des options choisis par le vendeur (« Parfum », « Poids »…) ;
+  // sans nom, coloris et taille comme pour les vêtements.
+  const label1 = product?.option1_name || 'Coloris';
+  const label2 = product?.option2_name || 'Taille';
   const priceValues = [...new Set(variants.map(priceOf))].sort((a, b) => a - b);
 
   function chooseColor(c) {
@@ -222,7 +226,7 @@ export default function ProduitContent() {
             <div id="variant-picker" className={`${styles.picker} ${pickError ? styles.pickerError : ''}`}>
               {colors.length > 0 && (
                 <div className={styles.pickGroup}>
-                  <div className={styles.pickLabel}>Coloris{pickColor ? ` : ${pickColor}` : ''}</div>
+                  <div className={styles.pickLabel}>{label1}{pickColor ? ` : ${pickColor}` : ''}</div>
                   <div className={styles.pickOptions}>
                     {colors.map((c) => (
                       <button type="button" key={c} className={`${styles.pickOpt} ${pickColor === c ? styles.pickOptActive : ''}`} onClick={() => chooseColor(c)} aria-pressed={pickColor === c}>{c}</button>
@@ -232,7 +236,7 @@ export default function ProduitContent() {
               )}
               {sizes.length > 0 && (
                 <div className={styles.pickGroup}>
-                  <div className={styles.pickLabel}>Taille{pickSize ? ` : ${pickSize}` : ''}</div>
+                  <div className={styles.pickLabel}>{label2}{pickSize ? ` : ${pickSize}` : ''}</div>
                   <div className={styles.pickOptions}>
                     {sizes.map((z) => {
                       const v = variantFor(colors.length ? pickColor : null, z) || (!pickColor ? variants.find((x) => x.size === z) : null);
@@ -247,7 +251,7 @@ export default function ProduitContent() {
                   </div>
                 </div>
               )}
-              {pickError && <div className={styles.pickHint}>Choisis {colors.length && !pickColor ? 'un coloris' : ''}{colors.length && !pickColor && sizes.length && !pickSize ? ' et ' : ''}{sizes.length && !pickSize ? 'une taille' : ''} pour ajouter au panier.</div>}
+              {pickError && <div className={styles.pickHint}>Choisis {[colors.length && !pickColor ? label1 : null, sizes.length && !pickSize ? label2 : null].filter(Boolean).join(' et ').toLowerCase()} pour ajouter au panier.</div>}
             </div>
           )}
 

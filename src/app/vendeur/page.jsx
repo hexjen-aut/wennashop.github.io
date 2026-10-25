@@ -64,13 +64,20 @@ function timeAgo(d) {
 }
 const PAGE_SIZE = 10;
 
+// Valeurs d'une option de variante, tapées séparées par des virgules.
+const MAX_OPTION_VALUES = 20;
+function splitValues(text) {
+  return [...new Set(String(text || '').split(',').map((x) => x.trim()).filter(Boolean))].slice(0, MAX_OPTION_VALUES);
+}
+
 // Une étape ajoutée après coup porte `since` (voir src/lib/tourSteps.js) :
 // le vendeur qui a déjà fini le tutoriel ne revoit qu'elle.
 const TOUR_STEPS = [
   { navKey: 'overview', title: "Vue d'ensemble", text: "Ton tableau de bord : ventes, commandes récentes, stock faible et tes objectifs, en un coup d'œil." },
   { navKey: 'overview', fieldId: 'tour-founder-card', needsFounderCard: true, since: '2026-10-17', title: 'Vendeur fondateur', text: "Les 20 premières boutiques qui mettent un produit en ligne deviennent vendeurs fondateurs : badge à vie et 3 mois de mise en avant sur la page d'accueil. Cette carte te dit si tu en fais partie, ou combien de places il reste." },
   { navKey: 'products', title: 'Mes produits', text: "Ajoute et gère les produits que tu vends. C'est le cœur de ta boutique." },
-  { navKey: 'orders', since: '2026-10-19', title: 'Commandes', text: "Suis chaque commande et marque-la comme expédiée avec un numéro de suivi. Pour un vêtement, le détail indique le coloris et la taille choisis par l'acheteur (par exemple « Rose · XL »)." },
+  { navKey: 'products', since: '2026-10-25', title: 'Variantes', text: "Un même produit en plusieurs versions (parfums, poids, couleurs, tailles) ? Dans « Nouveau produit », onglet Variantes : nomme tes options, tape les valeurs, puis fixe le prix et le stock de chaque version. L'acheteur choisit la sienne sur la fiche." },
+  { navKey: 'orders', since: '2026-10-19', title: 'Commandes', text: "Suis chaque commande et marque-la comme expédiée avec un numéro de suivi. Pour un produit à variantes, le détail indique la version choisie par l'acheteur (par exemple « Rose · XL » ou « Argan · 500 g »)." },
   { navKey: 'revenue', title: 'Revenus', text: "Ton chiffre d'affaires et l'historique détaillé de tes paiements." },
   { navKey: 'shop', title: 'Ma boutique', text: "On va configurer ta vitrine publique ensemble, étape par étape — je t'amène directement sur chaque champ à remplir." },
   { navKey: 'shop', fieldId: 'tour-shop-name', title: 'Nom de la boutique', text: 'Choisis le nom affiché sur ta vitrine publique — il sert aussi de base à ton slug (URL).' },
@@ -210,6 +217,11 @@ export default function VendeurPage() {
   const [productForm, setProductForm] = useState(emptyProduct());
   const [productImages, setProductImages] = useState([]);
   const [caracs, setCaracs] = useState([]);
+  // Variantes : deux options aux noms libres (« Parfum », « Poids »…).
+  // L'option 1 est rangée dans product_variants.color, l'option 2 dans .size.
+  const [varOpts, setVarOpts] = useState({ name1: '', values1: '', name2: '', values2: '' });
+  const [varRows, setVarRows] = useState([]);
+  const [varLoaded, setVarLoaded] = useState([]); // variantes déjà en base, pour désactiver celles retirées
   const [uploading, setUploading] = useState(false);
   const [bgRefused, setBgRefused] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -532,11 +544,28 @@ export default function VendeurPage() {
       });
       setProductImages(Array.isArray(p.images) && p.images.length ? p.images : (p.image_url ? [p.image_url] : []));
       setCaracs(p.characteristics ? Object.entries(p.characteristics).map(([k, v]) => ({ k, v })) : []);
+      const { data: vars } = await getSupabase().from('product_variants')
+        .select('id,color,size,price,stock,image_url,is_active,sort_order').eq('product_id', p.id).order('sort_order', { ascending: true });
+      const all = vars || [];
+      const active = all.filter((v) => v.is_active);
+      const uniq = (key) => [...new Set(active.map((v) => v[key]).filter(Boolean))];
+      const v1 = uniq('color'), v2 = uniq('size');
+      setVarOpts({
+        name1: p.option1_name || (v1.length ? 'Coloris' : ''), values1: v1.join(', '),
+        name2: p.option2_name || (v2.length ? 'Taille' : ''), values2: v2.join(', '),
+      });
+      // Une combinaison désactivée à la main reste dans la liste, décochée.
+      setVarRows(all.filter((v) => (!v1.length || v1.includes(v.color)) && (!v2.length || v2.includes(v.size)) && (v1.length || v2.length))
+        .map((v) => ({ color: v.color, size: v.size, price: v.price ?? p.price ?? '', stock: v.stock ?? 0, image_url: v.image_url || '', is_active: v.is_active })));
+      setVarLoaded(all.map((v) => ({ id: v.id, color: v.color, size: v.size })));
     } else {
       // Pré-rempli avec le réglage par défaut de la boutique — modifiable ensuite pour ce produit.
       setProductForm({ ...emptyProduct(), ships_to: shop?.ships_to || [] });
       setProductImages([]);
       setCaracs([]);
+      setVarOpts({ name1: '', values1: '', name2: '', values2: '' });
+      setVarRows([]);
+      setVarLoaded([]);
     }
     setProductTab('info');
     setBgRefused(false);
@@ -585,14 +614,38 @@ export default function VendeurPage() {
   function updateCarac(i, field, val) { setCaracs((prev) => prev.map((c, idx) => (idx === i ? { ...c, [field]: val } : c))); }
   function removeCarac(i) { setCaracs((prev) => prev.filter((_, idx) => idx !== i)); }
 
+  // Recalcule les combinaisons option 1 × option 2, en gardant prix, stock
+  // et photo des combinaisons déjà saisies.
+  function rebuildVariantRows(opts = varOpts) {
+    const v1 = splitValues(opts.values1), v2 = splitValues(opts.values2);
+    if (!v1.length && !v2.length) { setVarRows([]); return; }
+    const a = v1.length ? v1 : [null], b = v2.length ? v2 : [null];
+    setVarRows((prev) => a.flatMap((color) => b.map((size) => prev.find((r) => r.color === color && r.size === size)
+      || { color, size, price: productForm.price, stock: 0, image_url: '', is_active: true })));
+  }
+  function updateVarRow(i, field, val) { setVarRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, [field]: val } : r))); }
+
   async function saveProduct() {
-    if (!productForm.name || !productForm.price || productForm.stock === '') { showToast('Nom, prix et stock sont requis', 'error'); return; }
+    const hasVariants = varRows.length > 0;
+    const activeVars = varRows.filter((r) => r.is_active);
+    if (!productForm.name || (!hasVariants && (!productForm.price || productForm.stock === ''))) { showToast('Nom, prix et stock sont requis', 'error'); return; }
+    if (hasVariants) {
+      const v1 = splitValues(varOpts.values1), v2 = splitValues(varOpts.values2);
+      if ((v1.length && !varOpts.name1.trim()) || (v2.length && !varOpts.name2.trim())) { setProductTab('variants'); showToast('Donne un nom à chaque option (ex. « Parfum », « Poids »)', 'error'); return; }
+      if (!activeVars.length) { setProductTab('variants'); showToast('Active au moins une variante', 'error'); return; }
+      if (activeVars.some((r) => !(parseFloat(r.price) > 0))) { setProductTab('variants'); showToast('Chaque variante active doit avoir un prix', 'error'); return; }
+    }
     const sb = getSupabase();
     const characteristics = {};
     caracs.forEach((c) => { if (c.k.trim()) characteristics[c.k.trim()] = c.v; });
     const payload = {
       name: productForm.name, description: productForm.description || null,
-      price: parseFloat(productForm.price), stock: parseInt(productForm.stock) || 0,
+      // Avec des variantes, le prix affiché en liste est le plus bas et le
+      // stock est la somme des variantes actives.
+      price: hasVariants ? Math.min(...activeVars.map((r) => parseFloat(r.price))) : parseFloat(productForm.price),
+      stock: hasVariants ? activeVars.reduce((n, r) => n + (parseInt(r.stock) || 0), 0) : parseInt(productForm.stock) || 0,
+      option1_name: hasVariants && splitValues(varOpts.values1).length ? varOpts.name1.trim() : null,
+      option2_name: hasVariants && splitValues(varOpts.values2).length ? varOpts.name2.trim() : null,
       country: productForm.country, currency: productCurrency(productForm.country), origin_city: productForm.origin_city || null,
       category_id: productForm.category_id || null, status: productForm.status,
       brand: productForm.brand || null, sku: productForm.sku || null,
@@ -605,13 +658,28 @@ export default function VendeurPage() {
       ships_to: productForm.ships_to || [],
     };
     const isFirstProduct = !productForm.id && products.length === 0;
-    let error;
+    let error, saved;
     if (productForm.id) {
       ({ error } = await sb.from('products').update(payload).eq('id', productForm.id));
     } else {
-      ({ error } = await sb.from('products').insert(payload));
+      ({ data: saved, error } = await sb.from('products').insert(payload).select('id').single());
     }
     if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+    const productId = productForm.id || saved?.id;
+    if (productId && (hasVariants || varLoaded.length)) {
+      const rows = varRows.map((r, i) => ({
+        product_id: productId, color: r.color, size: r.size, price: parseFloat(r.price) || null,
+        stock: parseInt(r.stock) || 0, image_url: r.image_url || null, is_active: !!r.is_active, sort_order: i,
+      }));
+      if (rows.length) {
+        const { error: vErr } = await sb.from('product_variants').upsert(rows, { onConflict: 'product_id,color,size' });
+        if (vErr) { showToast('Produit enregistré, mais les variantes ne le sont pas : ' + vErr.message, 'error'); return; }
+      }
+      // Une variante retirée est désactivée, pas supprimée : les commandes passées la gardent.
+      const kept = new Set(rows.map((r) => `${r.color}|${r.size}`));
+      const gone = varLoaded.filter((v) => !kept.has(`${v.color}|${v.size}`)).map((v) => v.id);
+      if (gone.length) await sb.from('product_variants').update({ is_active: false }).in('id', gone);
+    }
     if (isFirstProduct) setFirstProductDone({ active: payload.status === 'active' });
     else showToast(productForm.id ? 'Produit mis à jour' : 'Produit créé', 'success');
     setProductModalOpen(false);
@@ -1889,6 +1957,7 @@ export default function VendeurPage() {
               <button className={`${styles.tabBtn} ${productTab === 'info' ? styles.tabBtnActive : ''}`} onClick={() => setProductTab('info')}>Infos</button>
               <button className={`${styles.tabBtn} ${productTab === 'photos' ? styles.tabBtnActive : ''}`} onClick={() => setProductTab('photos')}>Photos</button>
               <button className={`${styles.tabBtn} ${productTab === 'carac' ? styles.tabBtnActive : ''}`} onClick={() => setProductTab('carac')}>Caractéristiques</button>
+              <button id="tour-variants-tab" className={`${styles.tabBtn} ${productTab === 'variants' ? styles.tabBtnActive : ''}`} onClick={() => setProductTab('variants')}>Variantes{varRows.length ? ` (${varRows.length})` : ''}</button>
             </div>
             <div className={styles.modalBody}>
               {productTab === 'info' && (
@@ -1896,8 +1965,8 @@ export default function VendeurPage() {
                   <div className={styles.formGroup}><label className={styles.formLabel}>Nom du produit *</label><input className={styles.input} value={productForm.name} onChange={(e) => setProductForm({ ...productForm, name: e.target.value })} /><div className={styles.fieldHint}>Court et précis : le type de produit et le détail qui le distingue. Ex. « Wax hollandais bleu – 6 yards ».</div></div>
                   <div className={styles.formGroup}><label className={styles.formLabel}>Description</label><textarea className={styles.input} rows={3} value={productForm.description} onChange={(e) => setProductForm({ ...productForm, description: e.target.value })} /><div className={styles.fieldHint}>Tout ce que l'acheteur doit savoir : matière, taille, usage, entretien. Plus c'est clair, moins on te pose de questions.</div></div>
                   <div className={styles.formGrid}>
-                    <div className={styles.formGroup}><label className={styles.formLabel}>Prix ({currencyLabel(productCurrency(productForm.country))}) *</label><input type="number" className={styles.input} value={productForm.price} onChange={(e) => setProductForm({ ...productForm, price: e.target.value })} /><div className={styles.fieldHint}>Prix payé par l'acheteur, dans la devise du pays d'origine. Les acheteurs d'autres pays le voient converti dans leur devise. La commission WennaShop est déduite de ce montant.</div></div>
-                    <div className={styles.formGroup}><label className={styles.formLabel}>Stock *</label><input type="number" className={styles.input} value={productForm.stock} onChange={(e) => setProductForm({ ...productForm, stock: e.target.value })} /><div className={styles.fieldHint}>Nombre d'unités disponibles. À 0, la fiche affiche « Rupture de stock ».</div></div>
+                    <div className={styles.formGroup}><label className={styles.formLabel}>Prix ({currencyLabel(productCurrency(productForm.country))}) *</label><input type="number" className={styles.input} value={productForm.price} onChange={(e) => setProductForm({ ...productForm, price: e.target.value })} /><div className={styles.fieldHint}>Prix payé par l'acheteur, dans la devise du pays d'origine. Les acheteurs d'autres pays le voient converti dans leur devise. La commission WennaShop est déduite de ce montant.{varRows.length > 0 && ' Avec des variantes, chaque variante a son propre prix (onglet Variantes).'}</div></div>
+                    <div className={styles.formGroup}><label className={styles.formLabel}>Stock *</label><input type="number" className={styles.input} disabled={varRows.length > 0} value={varRows.length > 0 ? varRows.filter((r) => r.is_active).reduce((n, r) => n + (parseInt(r.stock) || 0), 0) : productForm.stock} onChange={(e) => setProductForm({ ...productForm, stock: e.target.value })} /><div className={styles.fieldHint}>{varRows.length > 0 ? 'Calculé à partir du stock de chaque variante.' : "Nombre d'unités disponibles. À 0, la fiche affiche « Rupture de stock »."}</div></div>
                   </div>
                   <div className={styles.formGrid}>
                     <div className={styles.formGroup}><label className={styles.formLabel}>Pays *</label>
@@ -2022,6 +2091,47 @@ export default function VendeurPage() {
                       <div className={styles.formGroup}><label className={styles.formLabel}>Dimensions</label><input className={styles.input} placeholder="30×20cm" value={productForm.dimensions} onChange={(e) => setProductForm({ ...productForm, dimensions: e.target.value })} /></div>
                     </div>
                   </div>
+                </>
+              )}
+
+              {productTab === 'variants' && (
+                <>
+                  <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 12, lineHeight: 1.6 }}>Pour un même produit vendu en plusieurs versions : parfums, poids, couleurs, tailles… L'acheteur choisit sa version sur la fiche, et la commande t'indique laquelle expédier, à son prix. Tu peux utiliser une seule option ou les deux.</p>
+                  {[1, 2].map((n) => (
+                    <div key={n} className={styles.formGrid} style={{ marginBottom: 6 }}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.formLabel}>Option {n} : nom</label>
+                        <input className={styles.input} maxLength={30} placeholder={n === 1 ? 'Ex. Parfum, Couleur' : 'Ex. Poids, Taille'} value={varOpts[`name${n}`]} onChange={(e) => setVarOpts({ ...varOpts, [`name${n}`]: e.target.value })} />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.formLabel}>Valeurs</label>
+                        <input className={styles.input} placeholder={n === 1 ? 'Ex. Rose, Citron, Argan' : 'Ex. 250 g, 500 g'} value={varOpts[`values${n}`]} onChange={(e) => setVarOpts({ ...varOpts, [`values${n}`]: e.target.value })} onBlur={() => rebuildVariantRows()} />
+                        <div className={styles.fieldHint}>Sépare les valeurs par des virgules ({MAX_OPTION_VALUES} au plus).</div>
+                      </div>
+                    </div>
+                  ))}
+                  {varRows.length > 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 6 }}>
+                      <div className={styles.formLabel}>{varRows.length} variante{varRows.length > 1 ? 's' : ''} : prix ({currencyLabel(productCurrency(productForm.country))}), stock et photo</div>
+                      {varRows.map((r, i) => (
+                        <div key={`${r.color}|${r.size}`} style={{ border: '1px solid var(--border)', borderRadius: 10, padding: 10, opacity: r.is_active ? 1 : 0.55 }}>
+                          <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 700, marginBottom: 8 }}>
+                            <input type="checkbox" checked={!!r.is_active} onChange={(e) => updateVarRow(i, 'is_active', e.target.checked)} />
+                            {[r.color, r.size].filter(Boolean).join(' · ')}
+                          </label>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.4fr', gap: 7 }}>
+                            <input type="number" className={styles.input} placeholder="Prix" value={r.price} onChange={(e) => updateVarRow(i, 'price', e.target.value)} />
+                            <input type="number" className={styles.input} placeholder="Stock" value={r.stock} onChange={(e) => updateVarRow(i, 'stock', e.target.value)} />
+                            <select className={styles.input} value={r.image_url || ''} onChange={(e) => updateVarRow(i, 'image_url', e.target.value)}>
+                              <option value="">Photo principale</option>
+                              {productImages.map((src, k) => <option key={src} value={src}>Photo {k + 1}</option>)}
+                            </select>
+                          </div>
+                        </div>
+                      ))}
+                      <div className={styles.fieldHint}>Décoche une variante indisponible : elle n'apparaît plus sur la fiche.</div>
+                    </div>
+                  )}
                 </>
               )}
             </div>
