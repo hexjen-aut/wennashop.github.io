@@ -72,3 +72,6 @@
   .mainImgWrap { height: min(75vh, 640px); }
   .thumbs { padding: 0 0 4px; }
 }
+
+/* Commandes en gros : ouvre une discussion avec la boutique. */
+.btnWholesale { display: block; width: 100%; margin: 4px 0 20px; background: none; border: 1.5px solid var(--accent); color: var(--accent); border-radius: var(--radius-pill); padding: 12px; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }

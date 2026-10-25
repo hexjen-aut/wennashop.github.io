@@ -49,7 +49,7 @@ export default function PanierPage() {
     if (!res.success) {
       if (res.error === 'not_authenticated') { router.push('/connexion?next=/panier'); return; }
       if (res.error === 'out_of_stock') { alert(res.product ? `Stock insuffisant pour "${res.product}".` : 'Stock insuffisant pour un article du panier.'); return; }
-      if (res.error === 'variant_required') { alert("Choisis le coloris et la taille de chaque vêtement : retire l'article du panier, puis ajoute-le depuis sa fiche produit."); return; }
+      if (res.error === 'variant_required') { alert("Choisis la version de chaque article (coloris, taille, parfum…) : retire l'article du panier, puis ajoute-le depuis sa fiche produit."); return; }
       if (res.error === 'mixed_shops') { alert("Ton panier contient des produits de plusieurs boutiques différentes, ce qui n'est plus permis. Vide-le et recommence avec une seule boutique à la fois."); return; }
       alert("Impossible de créer la commande. Réessaie.");
       return;

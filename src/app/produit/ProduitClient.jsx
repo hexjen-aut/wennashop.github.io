@@ -12,6 +12,7 @@ import { convertPrice, formatSmartPrice } from '@/lib/currency';
 import { getBuyerCurrency } from '@/lib/buyerCurrency';
 import styles from './produit.module.css';
 import { mediaUrl } from '@/lib/mediaUrl';
+import WholesaleRequestModal from '@/components/WholesaleRequestModal';
 
 export default function ProduitContent() {
   const searchParams = useSearchParams();
@@ -23,6 +24,7 @@ export default function ProduitContent() {
   const [displayComparePrice, setDisplayComparePrice] = useState('');
   const [seller, setSeller] = useState(null);
   const [shop, setShop] = useState(null);
+  const [wholesaleOpen, setWholesaleOpen] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -101,6 +103,10 @@ export default function ProduitContent() {
   const variantFor = (color, size) => variants.find((v) => (v.color || null) === (colors.length ? color : null) && (v.size || null) === (sizes.length ? size : null));
   const selectedVariant = variants.length ? variantFor(pickColor, pickSize) : null;
   const priceOf = (v) => Number(v?.price ?? product?.price);
+  // Noms des options choisis par le vendeur (« Parfum », « Poids »…) ;
+  // sans nom, coloris et taille comme pour les vêtements.
+  const label1 = product?.option1_name || 'Coloris';
+  const label2 = product?.option2_name || 'Taille';
   const priceValues = [...new Set(variants.map(priceOf))].sort((a, b) => a - b);
 
   function chooseColor(c) {
@@ -222,7 +228,7 @@ export default function ProduitContent() {
             <div id="variant-picker" className={`${styles.picker} ${pickError ? styles.pickerError : ''}`}>
               {colors.length > 0 && (
                 <div className={styles.pickGroup}>
-                  <div className={styles.pickLabel}>Coloris{pickColor ? ` : ${pickColor}` : ''}</div>
+                  <div className={styles.pickLabel}>{label1}{pickColor ? ` : ${pickColor}` : ''}</div>
                   <div className={styles.pickOptions}>
                     {colors.map((c) => (
                       <button type="button" key={c} className={`${styles.pickOpt} ${pickColor === c ? styles.pickOptActive : ''}`} onClick={() => chooseColor(c)} aria-pressed={pickColor === c}>{c}</button>
@@ -232,7 +238,7 @@ export default function ProduitContent() {
               )}
               {sizes.length > 0 && (
                 <div className={styles.pickGroup}>
-                  <div className={styles.pickLabel}>Taille{pickSize ? ` : ${pickSize}` : ''}</div>
+                  <div className={styles.pickLabel}>{label2}{pickSize ? ` : ${pickSize}` : ''}</div>
                   <div className={styles.pickOptions}>
                     {sizes.map((z) => {
                       const v = variantFor(colors.length ? pickColor : null, z) || (!pickColor ? variants.find((x) => x.size === z) : null);
@@ -247,7 +253,7 @@ export default function ProduitContent() {
                   </div>
                 </div>
               )}
-              {pickError && <div className={styles.pickHint}>Choisis {colors.length && !pickColor ? 'un coloris' : ''}{colors.length && !pickColor && sizes.length && !pickSize ? ' et ' : ''}{sizes.length && !pickSize ? 'une taille' : ''} pour ajouter au panier.</div>}
+              {pickError && <div className={styles.pickHint}>Choisis {[colors.length && !pickColor ? label1 : null, sizes.length && !pickSize ? label2 : null].filter(Boolean).join(' et ').toLowerCase()} pour ajouter au panier.</div>}
             </div>
           )}
 
@@ -257,6 +263,12 @@ export default function ProduitContent() {
               ? <div className={styles.chip}><i className="ph ph-cube" /><span>{selectedVariant.stock == null || selectedVariant.stock > 0 ? `${selectedVariant.stock ?? ''} en stock`.trim() : 'Rupture de stock'}</span></div>
               : product.stock !== undefined && <div className={styles.chip}><i className="ph ph-cube" /><span>{product.stock > 0 ? `${product.stock} en stock` : 'Rupture de stock'}</span></div>}
           </div>
+
+          {product.wholesale_enabled && shop?.id && (
+            <button type="button" className={styles.btnWholesale} onClick={() => setWholesaleOpen(true)}>
+              Commander en gros · dès {product.wholesale_min_qty} unités
+            </button>
+          )}
 
           <div className={styles.sectionTitle}>À propos de ce produit</div>
           <p className={styles.description}>{product.description || 'Aucune description disponible.'}</p>
@@ -335,6 +347,10 @@ export default function ProduitContent() {
       </main>
 
       <Footer />
+
+      {wholesaleOpen && (
+        <WholesaleRequestModal shopId={shop.id} shopName={shop.name} product={product} onClose={() => setWholesaleOpen(false)} />
+      )}
 
       <div className={styles.bottomBar}>
         <div className={styles.bottomBarInner}>
