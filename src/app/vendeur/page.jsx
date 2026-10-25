@@ -85,7 +85,7 @@ const TOUR_STEPS = [
   { navKey: 'shop', fieldId: 'tour-shop-bio', title: 'Description', text: "Présente ta boutique en quelques phrases : c'est ce qu'un acheteur lit avant de te faire confiance." },
   { navKey: 'shop', fieldId: 'tour-shop-logo', title: 'Logo', text: 'Ajoute ton logo — il apparaît sur ta vitrine et dans les résultats de recherche.' },
   { navKey: 'shop', fieldId: 'tour-shop-banner', title: 'Bannière', text: "Une bannière soignée donne confiance dès l'arrivée sur ta boutique." },
-  { navKey: 'shop', fieldId: 'tour-shop-social', title: 'Réseaux sociaux', text: 'WhatsApp, Instagram, Facebook, TikTok — un moyen de te suivre en dehors de WennaShop.' },
+  { navKey: 'shop', fieldId: 'tour-shop-social', since: '2026-10-25', title: 'Réseaux sociaux', text: "Instagram, Facebook, TikTok : un moyen de te suivre en dehors de WennaShop. Ton numéro WhatsApp reste privé, seule l'équipe le voit : les acheteurs te parlent par le chat du site." },
   { navKey: 'shop', fieldId: 'tour-shop-ships', title: 'Pays de livraison', text: "Par défaut tes produits ne sont visibles que dans ton pays. Coche les autres pays où tu peux livrer pour élargir ton marché." },
   { navKey: 'shop', fieldId: 'tour-shop-carrier', title: 'Transporteur', text: 'Indique si tu livres toi-même ou si tu as besoin d\'un transporteur partenaire WennaShop.' },
   { navKey: 'shop', fieldId: 'tour-shop-save', title: 'Enregistrer', text: 'Une fois tes informations complétées, clique ici pour les enregistrer.' },
@@ -1672,7 +1672,7 @@ export default function VendeurPage() {
               <input type="file" accept="image/*" onChange={(e) => { startCrop(e.target.files, 'banner'); e.target.value = ''; }} />
             </div>
             <div id="tour-shop-social" className={`${styles.formGrid} ${tourFieldClass('tour-shop-social')}`}>
-              <div className={styles.formGroup}><label className={styles.formLabel}>WhatsApp</label><input className={styles.input} value={shopForm.whatsapp} onChange={(e) => setShopForm({ ...shopForm, whatsapp: e.target.value })} /></div>
+              <div className={styles.formGroup}><label className={styles.formLabel}>WhatsApp</label><input className={styles.input} value={shopForm.whatsapp} onChange={(e) => setShopForm({ ...shopForm, whatsapp: e.target.value })} /><div className={styles.fieldHint}>Privé : seule l'équipe WennaShop le voit. Les acheteurs te contactent par le chat du site.</div></div>
               <div className={styles.formGroup}><label className={styles.formLabel}>Instagram</label><input className={styles.input} value={shopForm.instagram} onChange={(e) => setShopForm({ ...shopForm, instagram: e.target.value })} /></div>
               <div className={styles.formGroup}><label className={styles.formLabel}>Facebook</label><input className={styles.input} value={shopForm.facebook} onChange={(e) => setShopForm({ ...shopForm, facebook: e.target.value })} /></div>
               <div className={styles.formGroup}><label className={styles.formLabel}>TikTok</label><input className={styles.input} value={shopForm.tiktok} onChange={(e) => setShopForm({ ...shopForm, tiktok: e.target.value })} /></div>
@@ -1756,7 +1756,6 @@ export default function VendeurPage() {
                   </div>
                 </div>
                 <div className={bvStyles.actions}>
-                  {shopForm.whatsapp && <span className={bvStyles.btnContact}>Contacter</span>}
                   <span className={bvStyles.btnFollow}>Suivre</span>
                   <div className={bvStyles.socials}>
                     {shopForm.instagram && <span className={bvStyles.socialBtn}>Instagram</span>}

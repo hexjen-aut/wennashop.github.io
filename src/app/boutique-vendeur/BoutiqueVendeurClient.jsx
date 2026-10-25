@@ -201,9 +201,6 @@ export default function Content() {
           {products.some((p) => p.wholesale_enabled) && (
             <button className={styles.btnContact} onClick={() => setWholesaleOpen(true)}>Commander en gros</button>
           )}
-          {shop.whatsapp && (
-            <a className={styles.btnContact} href={`https://wa.me/${shop.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noreferrer">Contacter</a>
-          )}
           <button className={`${styles.btnFollow} ${following ? styles.btnFollowActive : ''}`} onClick={() => { setFollowing((v) => !v); showToast(following ? 'Retiré des favoris' : 'Ajouté aux favoris'); }}>
             {following ? 'Suivi' : 'Suivre'}
           </button>
