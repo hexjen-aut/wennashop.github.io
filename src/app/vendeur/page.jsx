@@ -225,6 +225,7 @@ export default function VendeurPage() {
   const [varLoaded, setVarLoaded] = useState([]); // variantes déjà en base, pour désactiver celles retirées
   const [uploading, setUploading] = useState(false);
   const [bgRefused, setBgRefused] = useState(false);
+  const [whiteBgRequired, setWhiteBgRequired] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [cropQueue, setCropQueue] = useState([]);
   const [cropSrc, setCropSrc] = useState(null);
@@ -572,6 +573,8 @@ export default function VendeurPage() {
     setProductTab('info');
     setBgRefused(false);
     setProductModalOpen(true);
+    const { data: bgCfg } = await getSupabase().from('site_config').select('value').eq('key', WHITE_BG_KEY).maybeSingle();
+    setWhiteBgRequired(bgCfg?.value !== 'false');
   }
 
   // Photos produits sur fond blanc (réglage admin) : une photo dont le fond
@@ -2056,18 +2059,18 @@ export default function VendeurPage() {
                   <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>La 1ère photo est l'image principale.</p>
                   <div style={{ padding: '10px 12px', background: 'var(--accent-light)', border: '1px solid var(--border-accent)', borderRadius: 8, fontSize: 11, color: 'var(--text-faint)', lineHeight: 1.7, marginBottom: 4 }}>
                     <strong style={{ color: 'var(--text)' }}>Pour de bonnes photos :</strong><br />
-                    Format carré (1:1), produit centré et qui remplit le cadre, <strong>fond blanc obligatoire</strong>.<br />
+                    Format carré (1:1), produit centré et qui remplit le cadre, {whiteBgRequired ? <strong>fond blanc obligatoire</strong> : 'fond clair et uni de préférence'}.<br />
                     Résolution minimum conseillée : 1000 × 1000 px.<br />
                     Lumière naturelle plutôt que flash, plusieurs angles (face, profil, détail, emballage).
                   </div>
-                  <div data-testid="bg-help" style={{ fontSize: 12, lineHeight: 1.6, margin: '0 0 12px', padding: bgRefused ? '10px 12px' : 0, borderRadius: 10, border: bgRefused ? '1.5px solid var(--error)' : 'none', color: bgRefused ? 'var(--text)' : 'var(--text-muted)' }}>
+                  {whiteBgRequired && <div data-testid="bg-help" style={{ fontSize: 12, lineHeight: 1.6, margin: '0 0 12px', padding: bgRefused ? '10px 12px' : 0, borderRadius: 10, border: bgRefused ? '1.5px solid var(--error)' : 'none', color: bgRefused ? 'var(--text)' : 'var(--text-muted)' }}>
                     {bgRefused && <strong style={{ display: 'block', color: 'var(--error)' }}>Photo refusée : le fond n'est pas blanc.</strong>}
                     Pour mettre ta photo sur fond blanc en quelques secondes :{' '}
                     {BG_REMOVAL_LINKS.map((l, i) => (
                       <span key={l.url}>{i > 0 && ' ou '}<a href={l.url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', fontWeight: 700 }}>{l.label}</a></span>
                     ))}
                     , puis ajoute-la ici.
-                  </div>
+                  </div>}
                   <div className={styles.imgGrid}>
                     {productImages.map((url, i) => (
                       <div key={i} className={styles.imgSlot} style={{ borderStyle: 'solid' }}>
