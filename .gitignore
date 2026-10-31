@@ -20,3 +20,6 @@ yarn-error.log*
 
 # Vercel
 .vercel
+
+# Livrables de marque hors projet (hexjen conception, fixi…) — sauvegardés sur Drive
+/brand-*/
