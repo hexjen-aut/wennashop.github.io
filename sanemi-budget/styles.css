@@ -41,12 +41,20 @@ p{margin:0}
 .fill{height:100%;border-radius:99px;background:var(--ok)}
 .fill.warn{background:var(--warn)}.fill.bad{background:var(--bad)}.fill.neutral{background:var(--muted)}
 .over{color:var(--bad);font-weight:600}
-.chart{display:flex;align-items:flex-end;gap:10px;height:170px;padding-top:8px;border-bottom:1px solid var(--line)}
-.mcol{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;height:100%;justify-content:flex-end}
-.bars{display:flex;gap:3px;align-items:flex-end;height:130px;width:100%;justify-content:center}
-.bar{width:40%;max-width:22px;border-radius:4px 4px 0 0;min-height:2px}
-.bar.in{background:var(--in)}.bar.out{background:var(--out)}
-.mcol .m{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.chart{display:flex;flex-direction:column;gap:8px;height:170px;padding-top:8px;border-bottom:1px solid var(--line)}
+.chart .plot{position:relative;flex:1;min-height:0}
+.chart .plot::after{content:"";position:absolute;left:0;right:0;top:94%;border-top:1px dashed var(--line)}
+.chart svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.chart .ln{fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.chart .ln.in{stroke:var(--in)}
+.chart .ln.out{stroke:var(--out)}
+.chart .pt{position:absolute;width:8px;height:8px;border-radius:50%;transform:translate(-50%,-50%);border:2px solid var(--surface)}
+.chart .pt.in{background:var(--in)}
+.chart .pt.out{background:var(--out)}
+.chart .hit{position:absolute;top:0;bottom:0;border-radius:6px}
+.chart .hit:hover{background:var(--accent-soft);opacity:.45}
+.chart .mrow{position:relative;height:16px}
+.chart .mrow .m{position:absolute;transform:translateX(-50%);white-space:nowrap;font-family:var(--mono);font-size:11px;color:var(--muted)}
 .legend{display:flex;gap:14px;font-size:12.5px;color:var(--muted)}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;flex-wrap:wrap}

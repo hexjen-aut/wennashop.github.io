@@ -38,6 +38,26 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const fmt=n=>Math.round(+n||0).toLocaleString("fr-FR")+" DH";
 const ym=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
 const ymd=d=>ym(d)+"-"+String(d.getDate()).padStart(2,"0");
+// Courbe lissee monotone (Fritsch-Carlson) : passe par chaque point sans jamais
+// depasser les valeurs reelles, contrairement a un lissage bezier naif.
+function curvePath(pts){
+  const n=pts.length;
+  if(!n)return"";
+  if(n===1)return"M"+pts[0].x+" "+pts[0].y;
+  const dx=[],m=[],t=[];
+  for(let i=0;i<n-1;i++){dx[i]=pts[i+1].x-pts[i].x;m[i]=(pts[i+1].y-pts[i].y)/dx[i]}
+  t[0]=m[0];t[n-1]=m[n-2];
+  for(let i=1;i<n-1;i++)t[i]=m[i-1]*m[i]<=0?0:(m[i-1]+m[i])/2;
+  for(let i=0;i<n-1;i++){
+    if(m[i]===0){t[i]=0;t[i+1]=0;continue}
+    const a=t[i]/m[i],b=t[i+1]/m[i],s=a*a+b*b;
+    if(s>9){const f=3/Math.sqrt(s);t[i]=f*a*m[i];t[i+1]=f*b*m[i]}
+  }
+  let d="M"+pts[0].x+" "+pts[0].y;
+  for(let i=0;i<n-1;i++){const h=dx[i]/3;
+    d+="C"+(pts[i].x+h)+" "+(pts[i].y+t[i]*h)+","+(pts[i+1].x-h)+" "+(pts[i+1].y-t[i+1]*h)+","+pts[i+1].x+" "+pts[i+1].y}
+  return d;
+}
 const today=()=>ymd(new Date());
 const uid=()=>(crypto.randomUUID?crypto.randomUUID():"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==="x"?r:(r&3|8)).toString(16)}));
 const dlabel=s=>new Date(s+"T12:00:00").toLocaleDateString("fr-FR",{weekday:"short",day:"2-digit",month:"short"});
@@ -177,7 +197,19 @@ function renderBudget(){
   const months=[];for(let i=5;i>=0;i--)months.push(new Date(view.getFullYear(),view.getMonth()-i,1));
   const data=months.map(d=>{const k=ym(d),m=S.ops.filter(t=>(t.date||"").startsWith(k));return{d,i:m.filter(t=>t.type==="in").reduce((s,t)=>s+ +t.montant,0),o:m.filter(isOut).reduce((s,t)=>s+ +t.montant,0)}});
   const max=Math.max(1,...data.map(x=>Math.max(x.i,x.o)));
-  $("chart").innerHTML=data.map(x=>'<div class="mcol" title="'+x.d.toLocaleDateString("fr-FR",{month:"long"})+' : entrées '+fmt(x.i)+', dépenses '+fmt(x.o)+'"><div class="bars"><div class="bar in" style="height:'+(x.i/max*100)+'%"></div><div class="bar out" style="height:'+(x.o/max*100)+'%"></div></div><span class="m">'+x.d.toLocaleDateString("fr-FR",{month:"short"}).replace(".","")+'</span></div>').join("");
+  const px=i=>data.length<2?50:4+i/(data.length-1)*92, py=v=>94-v/max*88;
+  const pIn=data.map((x,i)=>({x:px(i),y:py(x.i)})), pOut=data.map((x,i)=>({x:px(i),y:py(x.o)}));
+  const dot=(p,c)=>'<span class="pt '+c+'" style="left:'+p.x+'%;top:'+p.y+'%"></span>';
+  $("chart").innerHTML='<div class="plot">'
+    +'<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">'
+    +'<path class="ln out" d="'+curvePath(pOut)+'"></path>'
+    +'<path class="ln in" d="'+curvePath(pIn)+'"></path>'
+    +'</svg>'
+    +pOut.map(p=>dot(p,"out")).join("")+pIn.map(p=>dot(p,"in")).join("")
+    +data.map((x,i)=>'<span class="hit" style="left:'+(i/data.length*100)+'%;width:'+(100/data.length)+'%" title="'+esc(x.d.toLocaleDateString("fr-FR",{month:"long"})+" : entrées "+fmt(x.i)+", dépenses "+fmt(x.o))+'"></span>').join("")
+    +'</div><div class="mrow">'
+    +data.map((x,i)=>'<span class="m" style="left:'+px(i)+'%">'+esc(x.d.toLocaleDateString("fr-FR",{month:"short"}).replace(".",""))+'</span>').join("")
+    +'</div>';
 
   // Top produits
   const prod={};mtx.filter(t=>isOut(t)&&!String(t.categorie).startsWith("pret")).forEach(t=>{const k=(t.produit||t.contexte||catName(t.categorie)).trim().toLowerCase();if(!prod[k])prod[k]={n:t.produit||catName(t.categorie),m:0,q:0,c:0};prod[k].m+= +t.montant;prod[k].q+= +t.quantite||1;prod[k].c++});
