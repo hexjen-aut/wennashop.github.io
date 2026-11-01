@@ -60,6 +60,13 @@ export const WENNA_FAQ = [
     link: { href: '/suivi', label: 'Suivre ma commande' },
   },
   {
+    id: 'notifications',
+    q: 'Comment recevoir les notifications sur mon téléphone ?',
+    a: "Ouvre Mon compte (ou ton espace vendeur ou chasseur) et clique « Activer » sur la carte « Notifications sur cet appareil », puis autorise-les. Tu es prévenu même quand WennaShop est fermé : commande confirmée, expédiée ou livrée, réponse dans le chat, nouvelle commande ou paiement reçu pour les vendeurs, nouvelle quête pour les chasseurs. Sur iPhone, ajoute d'abord WennaShop à l'écran d'accueil (bouton Partager, « Sur l'écran d'accueil »), puis ouvre l'app depuis l'icône. Active-les sur chaque appareil ; « Désactiver » les coupe à tout moment.",
+    keywords: 'notification notifications alerte alertes prévenu push téléphone iphone android activer désactiver son',
+    link: { href: '/compte', label: 'Mon compte' },
+  },
+  {
     id: 'delais',
     popular: true,
     q: 'Combien de temps prend la livraison ?',

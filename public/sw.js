@@ -26,3 +26,33 @@ self.addEventListener('fetch', (event) => {
   if (event.request.mode !== 'navigate') return;
   event.respondWith(fetch(event.request).catch(() => caches.match(OFFLINE_URL)));
 });
+
+// Notifications push : envoyées par la fonction Supabase send-push, affichées
+// même quand WennaShop est fermé.
+self.addEventListener('push', (event) => {
+  let data = {};
+  try { data = event.data ? event.data.json() : {}; } catch { data = { title: 'WennaShop', body: event.data?.text() || '' }; }
+  event.waitUntil(
+    self.registration.showNotification(data.title || 'WennaShop', {
+      body: data.body || '',
+      icon: '/icon-192.png',
+      badge: '/icon-192.png',
+      tag: data.tag,
+      data: { link: data.link || '/' },
+    })
+  );
+});
+
+// Un appui ouvre la page liée (commande, chat, quête…), dans un onglet déjà
+// ouvert de WennaShop si possible.
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const url = new URL(event.notification.data?.link || '/', self.location.origin).href;
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((wins) => {
+      const win = wins.find((w) => w.url.startsWith(self.location.origin));
+      if (win) return win.navigate(url).then((w) => (w || win).focus());
+      return self.clients.openWindow(url);
+    })
+  );
+});

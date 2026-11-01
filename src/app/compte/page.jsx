@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getSupabase } from '@/lib/supabase';
+import PushToggle from '@/components/PushToggle';
 import { uploadFileWithProgress } from '@/lib/storageUpload';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
@@ -518,6 +519,8 @@ export default function ComptePage() {
           </div>
           <button className={styles.btnLogout} onClick={handleLogout}>Déconnexion</button>
         </div>
+
+        <PushToggle style={{ marginBottom: 16 }} text="Suivi de tes commandes, réponses dans le chat, quêtes : sois prévenu sur ce téléphone, même quand WennaShop est fermé." />
 
         {teamShops.length > 0 && (
           <div className={styles.card} style={{ background: 'var(--accent-light)', borderColor: 'var(--border-accent)', marginBottom: 16 }}>

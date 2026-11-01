@@ -71,7 +71,7 @@ WennaShop peut modifier les présentes CGU. La date de mise à jour figure en t�
 13. Loi applicable
 Les présentes CGU sont soumises au droit marocain. Tout litige sera soumis aux tribunaux de Casablanca, Maroc, après une tentative de règlement amiable auprès de support@wennashop.com.`;
 
-export const PRIVACY_TEXT = `Dernière mise à jour : 17 octobre 2026
+export const PRIVACY_TEXT = `Dernière mise à jour : 1er novembre 2026
 
 1. Responsable du traitement
 Hexjen Conceptions, société basée à Casablanca, Maroc, éditrice de WennaShop. Contact : privacy@wennashop.com.
@@ -83,6 +83,7 @@ Commandes : articles, montants, adresse et téléphone de livraison, statut et s
 Paiements : moyen utilisé, montant, référence WN-…, identifiant de transaction, numéro d'envoi déclaré, capture de paiement si tu en joins une, et historique des vérifications. Aucun code secret ni donnée de carte bancaire n'est demandé ou conservé.
 Quêtes et parrainage : quêtes publiées, offres, poids et photos des produits proposés, code de parrainage, boutiques recrutées et gains.
 Échanges : réclamations, avis et notifications.
+Notifications sur ton appareil, seulement si tu les actives : l'adresse d'envoi fournie par ton navigateur (Google, Apple, Mozilla ou Microsoft selon l'appareil) et le type de navigateur. Elles servent uniquement à t'envoyer les notifications de ton compte. Tu peux les couper à tout moment avec « Désactiver » ou dans les réglages de ton navigateur ; l'adresse est alors supprimée.
 Contrôle du pays des commandes : pays de ta connexion internet (déduit de ton adresse IP, sans l'enregistrer), pays choisi sur le site et s'il a été changé à la main, et, seulement si tu l'acceptes au moment de payer, la position de ton appareil arrondie à environ 1 km, avec le pays qu'on en déduit et le résultat du contrôle.
 Mesure d'audience, seulement si tu l'acceptes : pages vues, durée de visite, provenance (lien, moteur de recherche), type d'appareil et pays approximatif (Vercel Analytics et Google Analytics, sans cookie publicitaire).
 
@@ -99,6 +100,7 @@ Nécessaires au fonctionnement, sans consentement : ta session de connexion, ton
 Soumis à ton accord : la mesure d'audience, avec Vercel Analytics (sans cookie) et Google Analytics (cookies _ga, gardés 13 mois au plus). Elle ne se charge que si tu cliques « Accepter » dans le bandeau affiché à ta première visite ; si tu retires ton accord, l'envoi s'arrête et les cookies _ga sont effacés. Refuser est aussi simple qu'accepter et ne change rien à l'usage du site.
 Ton choix est gardé 6 mois, puis le bandeau te le redemande. Tu peux le changer à tout moment avec le lien « Gérer les cookies », en bas des pages ou ci-dessous.
 Aucun cookie publicitaire, aucun traceur de réseau social.
+Notifications : ton navigateur ne t'en envoie qu'après ton autorisation, donnée en cliquant « Activer ». Le contenu (titre et court message de la notification) passe par le service de notifications de ton navigateur.
 Position de ton appareil : elle n'est jamais lue à l'ouverture du site ni en arrière-plan, seulement quand tu confirmes une commande, après l'autorisation de ton navigateur. Tu peux refuser, et retirer cette autorisation à tout moment dans les réglages de ton navigateur.
 
 6. Conservation

@@ -11,6 +11,7 @@ import AdminGuide from './AdminGuide';
 import LineChart from './LineChart';
 import { GEO_REASON_LABEL, geoVerdict } from '@/lib/geoCheck';
 import { ADMIN_TOUR_STEPS } from './guide';
+import PushToggle from '@/components/PushToggle';
 import styles from './admin.module.css';
 
 function fmt(n, c = 'MAD') { try { return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: c }).format(n); } catch { return `${n} ${c}`; } }
@@ -1182,6 +1183,7 @@ export default function AdminPage() {
         {section === 'dashboard' && (
           <>
             <h1 style={{ fontSize: 22, fontWeight: 900, marginBottom: 18 }}>Dashboard</h1>
+            <PushToggle id="tour-admin-push" className={tourHl('tour-admin-push')} style={{ marginBottom: 18 }} text="Paiement déclaré à vérifier, nouvel inscrit, alertes de l'équipe : sois prévenu sur cet appareil, même quand WennaShop est fermé." />
             <div className={styles.statGrid}>
               <div className={styles.statCard}><div className={styles.statNum} style={{ color: 'var(--accent)' }}>{fmt(kpis.revenue)}</div><div className={styles.statLabel}>Revenus</div></div>
               <div className={styles.statCard}><div className={styles.statNum}>{kpis.orders}</div><div className={styles.statLabel}>Commandes</div></div>
