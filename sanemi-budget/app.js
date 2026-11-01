@@ -66,12 +66,13 @@ const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}
 
 /* ---------- État ---------- */
 /* Tables Sanemi OS existantes (colonnes d'origine conservées) + correspondance avec les champs de l'app */
-const TABLES={ops:"sanemi_transactions",prets:"sanemi_prets",journal:"sanemi_journal",idees:"sanemi_ideas",personnes:"sanemi_relations"};
+const TABLES={ops:"sanemi_transactions",prets:"sanemi_prets",journal:"sanemi_journal",idees:"sanemi_ideas",personnes:"sanemi_relations",courses:"sanemi_courses"};
 const pick=(o,ks)=>Object.fromEntries(ks.filter(k=>o[k]!==undefined).map(k=>[k,o[k]]));
 const MAP={
   ops:{to:r=>({...pick(r,["id","produit","quantite","unite","devise","montant_orig","lieu","personne","contexte","date","pret_id","source","created_at"]),type:r.type==="in"?"income":"expense",amount:r.montant,category:r.categorie,label:r.produit||catName(r.categorie)}),
        from:d=>({...d,type:["income","in","entree","revenu"].includes(d.type)?"in":"out",montant:+d.amount||0,categorie:d.category,produit:d.produit||d.label,date:d.date||(d.created_at||"").slice(0,10)})},
   prets:{to:r=>r,from:d=>d},
+  courses:{to:r=>r,from:d=>d},
   journal:{to:r=>({...pick(r,["id","date","recit","humeur","energie","etat"]),note_libre:r.note??null}),from:d=>({...d,note:d.note_libre})},
   idees:{to:r=>({...pick(r,["id","tags","resume","potentiel","effort","action","lecture_ennea","lien_os","created_at"]),content:r.texte,title:r.titre??null,project:r.domaine||"general",status:r.statut}),
          from:d=>({...d,texte:d.content||d.title||"",titre:d.title,domaine:d.project&&d.project!=="general"?d.project:null,statut:d.status||"nouvelle"})},
@@ -79,7 +80,7 @@ const MAP={
              from:d=>({...d,nom:d.name||"",relation:d.relation_detail||(d.relation_type&&d.relation_type!=="autre"?d.relation_type:null),type:d.type_ennea,analyse:d.ia_analyse})}
 };
 const DEF_PROFIL={type:null,aile:"",sous_type:"",revenu:4500,taux:60,budgets:Object.fromEntries(OUT_CATS.map(c=>[c.id,c.def]))};
-let S={profil:{...DEF_PROFIL},ops:[],prets:[],journal:[],idees:[],personnes:[]};
+let S={profil:{...DEF_PROFIL},ops:[],prets:[],journal:[],idees:[],personnes:[],courses:[]};
 let queue=LS.get("sb_queue",[]);
 let user=null, view=new Date(), tab="budget", domFilter="", draft=null;
 view=new Date(view.getFullYear(),view.getMonth(),1);
@@ -91,6 +92,88 @@ function syncLabel(){
   const off=!navigator.onLine;
   $("sync").textContent=off?"Hors ligne · "+queue.length+" en attente":queue.length?queue.length+" à synchroniser":"Synchronisé avec Sanemi OS";
 }
+
+/* ---------- Liste de courses / marché du mois, par enveloppe ---------- */
+// Quelles listes sont depliees : garde en memoire entre deux rendus.
+const openLists={};
+const coursesOf=c=>S.courses.filter(x=>x.mois===ym(view)&&x.categorie===c);
+// Ce qui reste a acheter : sert a afficher "prevus" a cote du reste d'enveloppe.
+const prevuOf=c=>coursesOf(c).filter(x=>!x.achete).reduce((t,x)=>t+(+x.montant_prevu||0),0);
+
+function listBlock(c){
+  const items=coursesOf(c),open=!!openLists[c];
+  const reste=items.filter(x=>!x.achete).length;
+  const resume=items.length?items.length+" article"+(items.length>1?"s":"")+(reste?" · "+reste+" à acheter":" · tout est acheté"):"aucun article";
+  let h='<div class="clist'+(open?" open":"")+'">'
+    +'<button type="button" class="ctog" data-act="toggle" data-cat="'+esc(c)+'" aria-expanded="'+open+'">Liste de courses — '+esc(resume)+'</button>';
+  if(open){
+    h+='<div class="cbody">';
+    h+=items.length?items.map(x=>'<label class="citem'+(x.achete?" done":"")+'">'
+      +'<input type="checkbox" data-act="check" data-id="'+esc(x.id)+'"'+(x.achete?" checked":"")+'>'
+      +'<span class="cn">'+esc(x.produit)+'<span class="cq">'+esc(qtyLabel(x))+'</span></span>'
+      +'<span class="cm num">'+fmt(x.montant_prevu)+'</span>'
+      +'<button type="button" class="cdel" data-act="del" data-id="'+esc(x.id)+'" aria-label="Retirer '+esc(x.produit)+'">Retirer</button>'
+      +'</label>').join(""):'<p class="empty">Rien pour l\'instant. Ajoute ce que tu comptes acheter ce mois-ci.</p>';
+    h+='<div class="cadd" data-cat="'+esc(c)+'">'
+      +'<input type="text" class="cp" placeholder="Produit" aria-label="Produit">'
+      +'<input type="number" class="cq2" placeholder="Qté" step="any" min="0" aria-label="Quantité">'
+      +'<input type="text" class="cu" placeholder="Unité" aria-label="Unité">'
+      +'<input type="number" class="cm2" placeholder="Montant prévu" step="any" min="0" aria-label="Montant prévu en DH">'
+      +'<button type="button" class="btn sm" data-act="add" data-cat="'+esc(c)+'">Ajouter</button>'
+      +'</div></div>';
+  }
+  return h+'</div>';
+}
+const qtyLabel=x=>{const q=+x.quantite||1,u=(x.unite||"").trim();return q===1&&!u?"":" · "+q+(u?" "+u:"")};
+
+// Cocher cree la depense ; decocher la supprime. L'article garde le lien (tx_id)
+// pour que les deux sens restent exacts.
+function courseCheck(id,on){
+  const x=S.courses.find(i=>i.id===id);if(!x)return;
+  if(on){
+    const t=uid();
+    put("ops",{id:t,type:"out",montant:Math.round((+x.montant_prevu||0)*100)/100,devise:"MAD",montant_orig:+x.montant_prevu||0,
+      produit:x.produit,quantite:+x.quantite||1,unite:x.unite||null,categorie:x.categorie,
+      contexte:"Liste de courses",date:today(),created_at:new Date().toISOString()});
+    put("courses",{...x,achete:true,tx_id:t});
+    toast("Dépense enregistrée : "+x.produit);
+  }else{
+    if(x.tx_id)del("ops",x.tx_id);
+    put("courses",{...x,achete:false,tx_id:null});
+    toast("Dépense annulée");
+  }
+  renderBudget();
+}
+
+function courseDelete(id){
+  const x=S.courses.find(i=>i.id===id);if(!x)return;
+  if(x.achete&&x.tx_id&&!confirm("« "+x.produit+" » a créé une dépense. La retirer de la liste supprimera aussi cette dépense. Continuer ?"))return;
+  if(x.achete&&x.tx_id)del("ops",x.tx_id);
+  del("courses",id);renderBudget();
+}
+
+function courseAdd(cat,box){
+  const produit=box.querySelector(".cp").value.trim();
+  if(!produit){toast("Donne au moins un nom de produit");return}
+  put("courses",{id:uid(),mois:ym(view),categorie:cat,produit,
+    quantite:+box.querySelector(".cq2").value||1,
+    unite:box.querySelector(".cu").value.trim()||null,
+    montant_prevu:+box.querySelector(".cm2").value||0,
+    achete:false,tx_id:null,created_at:new Date().toISOString()});
+  openLists[cat]=true;renderBudget();
+}
+
+$("env").addEventListener("click",e=>{
+  const b=e.target.closest("[data-act]");if(!b)return;
+  const act=b.dataset.act;
+  if(act==="toggle"){openLists[b.dataset.cat]=!openLists[b.dataset.cat];renderBudget()}
+  else if(act==="del"){e.preventDefault();courseDelete(b.dataset.id)}
+  else if(act==="add"){courseAdd(b.dataset.cat,b.closest(".cadd"))}
+});
+$("env").addEventListener("change",e=>{
+  const c=e.target.closest('[data-act="check"]');
+  if(c)courseCheck(c.dataset.id,c.checked);
+});
 
 /* Écriture locale immédiate + file d'attente vers Supabase */
 function put(key,row){const arr=S[key];const i=arr.findIndex(x=>x.id===row.id);const full=i>=0?{...arr[i],...row}:row;if(i>=0)arr[i]=full;else arr.push(full);queue.push({k:key,op:"upsert",row:full});saveCache();flush()}
@@ -124,16 +207,17 @@ async function loadAll(){
   await flush();
   if(queue.length)return;
   try{
-    const [o,p,j,i,pe,pr]=await Promise.all([
+    const [o,p,j,i,pe,pr,co]=await Promise.all([
       db.from(TABLES.ops).select("*").order("created_at",{ascending:false}).limit(5000),
       db.from(TABLES.prets).select("*").order("date",{ascending:false}),
       db.from(TABLES.journal).select("*").order("date",{ascending:false}).limit(1000),
       db.from(TABLES.idees).select("*").order("created_at",{ascending:false}),
       db.from(TABLES.personnes).select("*").order("name"),
-      db.from("sanemi_profil").select("*").maybeSingle()
+      db.from("sanemi_profil").select("*").maybeSingle(),
+      db.from(TABLES.courses).select("*").order("created_at",{ascending:true}).limit(2000)
     ]);
-    const err=[o,p,j,i,pe,pr].find(r=>r.error);if(err)throw err.error;
-    S.ops=o.data.map(MAP.ops.from);S.prets=p.data;S.journal=j.data.map(MAP.journal.from);S.idees=i.data.map(MAP.idees.from);S.personnes=pe.data.map(MAP.personnes.from);
+    const err=[o,p,j,i,pe,pr,co].find(r=>r.error);if(err)throw err.error;
+    S.ops=o.data.map(MAP.ops.from);S.prets=p.data;S.journal=j.data.map(MAP.journal.from);S.idees=i.data.map(MAP.idees.from);S.personnes=pe.data.map(MAP.personnes.from);S.courses=co.data||[];
     if(pr.data)S.profil={...DEF_PROFIL,...pr.data,budgets:{...DEF_PROFIL.budgets,...(pr.data.budgets||{})}};
     saveCache();renderAll();
   }catch(e){console.warn(e);toast("Chargement impossible, données locales affichées")}
@@ -187,11 +271,16 @@ function renderBudget(){
   // Enveloppes
   const spent={};mtx.filter(isOut).forEach(t=>{const c=t.categorie||"divers";spent[c]=(spent[c]||0)+ +t.montant});
   const cats=[...OUT_CATS.map(c=>c.id),...Object.keys(spent).filter(c=>!OUT_CATS.find(x=>x.id===c)&&!c.startsWith("pret_"))];
-  $("env").innerHTML=cats.filter(c=>(+S.profil.budgets[c]||0)>0||spent[c]).map(c=>{
+  $("env").innerHTML=cats.filter(c=>(+S.profil.budgets[c]||0)>0||spent[c]||coursesOf(c).length).map(c=>{
     const b=+S.profil.budgets[c]||0,s=spent[c]||0;
-    if(!b){return '<div class="erow"><div class="l"><b>'+esc(catName(c))+'</b><span class="num">'+fmt(s)+'</span></div><div class="track"><div class="fill neutral" style="width:100%"></div></div><div class="l"><span>Hors budget</span></div></div>'}
-    const p=s/b*100,cls=p>100?"bad":p>=80?"warn":"",rest=b-s;
-    return '<div class="erow"><div class="l"><b>'+esc(catName(c))+'</b><span class="num">'+fmt(s)+' / '+fmt(b)+'</span></div><div class="track"><div class="fill '+cls+'" style="width:'+Math.min(100,p)+'%"></div></div><div class="l"><span>'+(rest>=0?'Reste '+fmt(rest):'<span class="over">Dépassé de '+fmt(-rest)+'</span>')+'</span></div></div>'}).join("")||'<p class="empty">Définis tes enveloppes dans Réglages.</p>';
+    const head=!b
+      ? '<div class="l"><b>'+esc(catName(c))+'</b><span class="num">'+fmt(s)+'</span></div><div class="track"><div class="fill neutral" style="width:100%"></div></div><div class="l"><span>Hors budget</span></div>'
+      : (()=>{const p=s/b*100,cls=p>100?"bad":p>=80?"warn":"",rest=b-s,prev=prevuOf(c);
+          return '<div class="l"><b>'+esc(catName(c))+'</b><span class="num">'+fmt(s)+' / '+fmt(b)+'</span></div>'
+            +'<div class="track"><div class="fill '+cls+'" style="width:'+Math.min(100,p)+'%"></div></div>'
+            +'<div class="l"><span>'+(rest>=0?'Reste '+fmt(rest):'<span class="over">Dépassé de '+fmt(-rest)+'</span>')
+            +(prev>0?' · '+fmt(prev)+' prévus':'')+'</span></div>'})();
+    return '<div class="erow">'+head+listBlock(c)+'</div>'}).join("")||'<p class="empty">Définis tes enveloppes dans Réglages.</p>';
 
   // 6 mois
   const months=[];for(let i=5;i>=0;i--)months.push(new Date(view.getFullYear(),view.getMonth()-i,1));
