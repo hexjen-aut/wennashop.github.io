@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Budget perso Sanemi</title>
+<meta name="theme-color" content="#0f766e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Budget">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Connexion -->
+<div class="wrap" id="authView" hidden>
+  <div class="card auth">
+    <h1>Budget perso</h1>
+    <p class="muted">Connecte-toi pour retrouver tes données Sanemi OS sur tous tes appareils.</p>
+    <form id="authForm" class="list">
+      <label class="f">E-mail<input id="aEmail" type="email" autocomplete="email" required></label>
+      <label class="f">Mot de passe<input id="aPass" type="password" autocomplete="current-password" minlength="6" required></label>
+      <div class="row"><button class="btn" type="submit">Se connecter</button><button class="btn ghost" type="button" id="aSignup">Créer le compte</button></div>
+      <p class="small muted" id="aMsg"></p>
+    </form>
+  </div>
+</div>
+
+<div id="appView" hidden>
+<div class="wrap">
+  <div class="top">
+    <div><h1 id="title">Budget</h1><p class="sync muted" id="sync"></p></div>
+    <div class="month" id="monthBar"><button type="button" id="prev" aria-label="Mois précédent">‹</button><strong id="mlabel"></strong><button type="button" id="next" aria-label="Mois suivant">›</button></div>
+  </div>
+
+  <!-- ============ BUDGET ============ -->
+  <section id="v-budget" class="list" style="gap:22px">
+    <div class="kpis">
+      <div class="kpi"><span class="k">Entrées</span><span class="v in num" id="kIn"></span><span class="s" id="kInS"></span></div>
+      <div class="kpi"><span class="k">Dépenses</span><span class="v out num" id="kOut"></span><span class="s" id="kOutS"></span></div>
+      <div class="kpi"><span class="k">Solde du mois</span><span class="v num" id="kBal"></span><span class="s" id="kBalS"></span></div>
+      <div class="kpi"><span class="k">Prêts en cours</span><span class="v num" id="kLoan"></span><span class="s" id="kLoanS"></span></div>
+    </div>
+
+    <section class="card">
+      <h2>Raconte ta dépense</h2>
+      <p class="muted small">Écris librement : produits, prix, prêts, où, avec qui, pourquoi. L'IA remplit les champs, tu corriges puis tu enregistres.</p>
+      <textarea id="qText" placeholder="Ex. Ce matin 2 pains 3 dh et 1 litre de lait 7 dh à l'épicerie du coin. J'ai prêté 50 dh à Achille pour son taxi, il me rend vendredi. Grosse fatigue, j'ai pris un café 10 dh."></textarea>
+      <div class="row">
+        <label class="f" style="max-width:170px">Date<input id="qDate" type="date"></label>
+        <button class="btn" type="button" id="qGo">Analyser</button>
+        <button class="link" type="button" id="qManual">Saisie manuelle</button>
+      </div>
+      <div id="qPreview" class="list"></div>
+      <div class="row" id="qSaveRow" hidden><button class="btn" type="button" id="qSave">Tout enregistrer</button><button class="btn ghost" type="button" id="qCancel">Annuler</button></div>
+    </section>
+
+    <div class="grid2">
+      <section class="card"><h2>Enveloppes du mois</h2><div class="env" id="env"></div></section>
+      <section class="card">
+        <h2>6 derniers mois</h2>
+        <div class="chart" id="chart"></div>
+        <div class="legend"><span><i style="background:var(--in)"></i>Entrées</span><span><i style="background:var(--out)"></i>Dépenses</span></div>
+      </section>
+    </div>
+
+    <div class="grid2">
+      <section class="card"><h2>Ce que tu consommes le plus</h2><p class="muted small">Produits du mois, du plus coûteux au moins coûteux.</p><div id="topProd"></div></section>
+      <section class="card"><h2>Prêts</h2><div class="list" id="loans"></div></section>
+    </div>
+
+    <section class="card">
+      <h2>Opérations du mois</h2>
+      <div class="tablewrap"><table><thead><tr><th>Date</th><th>Produit / note</th><th>Catégorie</th><th>Contexte</th><th class="r">Montant</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
+      <p class="empty" id="emptyRows" hidden>Aucune opération ce mois-ci.</p>
+    </section>
+  </section>
+
+  <!-- ============ JOURNAL ============ -->
+  <section id="v-journal" class="list" style="gap:22px" hidden>
+    <section class="card">
+      <div class="row" style="justify-content:space-between"><h2>Ma journée</h2><input id="jDate" type="date" style="max-width:170px"></div>
+      <label class="f">Ce qui s'est passé<textarea id="jRecit" placeholder="Faits, rencontres, déclencheurs, ce que tu as ressenti."></textarea></label>
+      <div class="form">
+        <div class="f">Humeur<div class="scale" id="jHumeur"></div></div>
+        <div class="f">Énergie<div class="scale" id="jEnergie"></div></div>
+        <div class="f wide">État ennéagramme<div class="seg" id="jEtat"></div><span class="small" id="jEtatHint"></span></div>
+        <label class="f wide">Note<input id="jNote" type="text" maxlength="200"></label>
+      </div>
+      <div><button class="btn" type="button" id="jSave">Enregistrer la journée</button></div>
+    </section>
+    <section class="card">
+      <h2>Ce jour-là</h2>
+      <div id="jDay"></div>
+    </section>
+    <section class="card">
+      <h2>Ton état et tes dépenses</h2>
+      <p class="muted small">Dépense moyenne par jour selon ton état, sur les 90 derniers jours.</p>
+      <div class="stat" id="jStat"></div>
+    </section>
+    <section class="card"><h2>30 derniers jours</h2><div class="list" id="jHist"></div></section>
+  </section>
+
+  <!-- ============ IDÉES ============ -->
+  <section id="v-idees" class="list" style="gap:22px" hidden>
+    <section class="card">
+      <h2>Nouvelle idée</h2>
+      <textarea id="iText" placeholder="Note-la telle qu'elle vient. L'IA l'analyse, la classe par domaine et la relie à Sanemi OS."></textarea>
+      <div class="row"><button class="btn" type="button" id="iGo">Analyser et classer</button><span class="small muted" id="iMsg"></span></div>
+    </section>
+    <section class="card">
+      <div class="row" style="justify-content:space-between"><h2>Mes idées</h2>
+        <select id="iStatut" style="max-width:190px"><option value="">Tous les statuts</option><option value="a_analyser">À analyser</option><option value="nouvelle">Nouvelle</option><option value="a_explorer">À explorer</option><option value="en_cours">En cours</option><option value="realisee">Réalisée</option><option value="archivee">Archivée</option></select></div>
+      <div class="chips" id="iDom"></div>
+      <div class="list" id="iList"></div>
+    </section>
+  </section>
+
+  <!-- ============ PERSONNES ============ -->
+  <section id="v-personnes" class="list" style="gap:22px" hidden>
+    <section class="card">
+      <h2>Ajouter une personne</h2>
+      <div class="form">
+        <label class="f">Nom<input id="pNom" type="text" maxlength="80"></label>
+        <label class="f">Relation<input id="pRel" type="text" maxlength="80" placeholder="Équipe WennaShop, client, famille"></label>
+        <label class="f">Type (si connu)<select id="pType"></select></label>
+        <label class="f wide">Comment elle se comporte<textarea id="pObs" placeholder="Réactions, ce qui la motive, ce qui l'énerve, sa façon de décider. L'IA propose un type."></textarea></label>
+      </div>
+      <div class="row"><button class="btn" type="button" id="pAdd">Enregistrer</button><button class="btn ghost" type="button" id="pAI">Enregistrer et profiler avec l'IA</button></div>
+    </section>
+    <section class="card"><h2>Mon entourage</h2><div class="list" id="pList"></div></section>
+  </section>
+
+  <!-- ============ RÉGLAGES ============ -->
+  <section id="v-reglages" class="list" style="gap:22px" hidden>
+    <section class="card">
+      <h2>Mon profil ennéagramme</h2>
+      <div class="form">
+        <label class="f">Mon type<select id="sType"></select></label>
+        <label class="f">Aile<input id="sAile" type="text" maxlength="10" placeholder="Ex. 4w5"></label>
+        <label class="f">Sous-type<select id="sSous"><option value="">Non défini</option><option value="sp">Conservation (sp)</option><option value="so">Social (so)</option><option value="sx">Intime (sx)</option></select></label>
+      </div>
+      <p class="small muted" id="sRoutes"></p>
+    </section>
+    <section class="card">
+      <h2>Répartition du budget mensuel</h2>
+      <div class="form">
+        <label class="f">Revenu mensuel prévu (DH)<input id="aInc" type="number" min="0" step="1"></label>
+        <label class="f">1 DH = … FCFA<input id="aRate" type="number" min="1" step="0.1"></label>
+      </div>
+      <div class="alloc" id="alloc"></div>
+      <div class="sum"><p id="aSum" class="num"></p><button class="btn" type="button" id="aSave">Enregistrer</button></div>
+    </section>
+    <section class="card">
+      <h2>Sauvegarde</h2>
+      <div class="row">
+        <button class="btn ghost" type="button" id="bJson">Exporter (JSON)</button>
+        <button class="btn ghost" type="button" id="bCsv">Exporter le mois (CSV)</button>
+        <button class="btn ghost" type="button" id="bImp">Importer</button>
+        <input type="file" id="bFile" accept="application/json,.json" hidden>
+      </div>
+    </section>
+    <section class="card">
+      <h2>Compte</h2>
+      <p class="muted small" id="uMail"></p>
+      <div class="row"><button class="btn ghost" type="button" id="tTheme">Changer de thème</button><button class="btn ghost" type="button" id="uOut">Se déconnecter</button></div>
+    </section>
+  </section>
+</div>
+
+<nav class="tabs" aria-label="Sections"><div class="in">
+  <button type="button" data-v="budget" aria-current="page">Budget</button>
+  <button type="button" data-v="journal">Journal</button>
+  <button type="button" data-v="idees">Idées</button>
+  <button type="button" data-v="personnes">Personnes</button>
+  <button type="button" data-v="reglages">Réglages</button>
+</div></nav>
+</div>
+
+<datalist id="catList"></datalist>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="sb.js"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
