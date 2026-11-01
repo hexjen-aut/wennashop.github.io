@@ -102,6 +102,13 @@ export default function BoutiqueClient() {
   // la dernière fois (tourSeenAt = fin du tutoriel précédent).
   const [tourScope, setTourScope] = useState('all');
   const [tourSeenAt, setTourSeenAt] = useState(null);
+  // Première visite : une seule fenêtre à la fois (pays, puis proposition de
+  // visite guidée, puis bandeau cookies, qui écoute cet événement).
+  const blockingModal = countryModalOpen || tourProposalOpen || tourStep !== null;
+  useEffect(() => {
+    window.__wennaBlockingModal = blockingModal;
+    window.dispatchEvent(new CustomEvent('wenna:blocking-modal', { detail: { open: blockingModal } }));
+  }, [blockingModal]);
   const [founderShops, setFounderShops] = useState([]);
 
   // ── Config du site ──

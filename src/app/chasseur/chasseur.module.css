@@ -29,7 +29,7 @@
 .notifItemBody { font-size: 11px; color: var(--text-muted); }
 .notifEmpty { padding: 24px; text-align: center; font-size: 13px; color: var(--text-faint); }
 
-.hero { background: var(--surface); border-bottom: 1px solid var(--border); padding: 32px 32px 0; }
+.hero { background: radial-gradient(900px 260px at 0% 0%, rgba(255,104,0,.10), transparent 70%), var(--surface); border-bottom: 1px solid var(--border-soft); padding: 36px 32px 0; }
 .heroInner { max-width: 1180px; margin: 0 auto; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
 .identity { display: flex; align-items: center; gap: 14px; padding-bottom: 24px; }
 .avatar { width: 54px; height: 54px; border-radius: var(--radius-lg); background: var(--accent-btn); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; color: #fff; flex-shrink: 0; }
@@ -51,7 +51,7 @@
 
 .kpiStrip { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 22px; }
 @media (max-width: 900px) { .kpiStrip { grid-template-columns: repeat(2,1fr); } }
-.kpi { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; }
+.kpi { background: var(--surface); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: 16px 18px; }
 .kpiLabel { font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 8px; }
 .kpiVal { font-size: 24px; font-weight: 900; line-height: 1; }
 
@@ -85,7 +85,7 @@
 .sortSelect { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text); padding: 7px 10px; font-size: 12px; font-family: var(--font); cursor: pointer; }
 
 .questsList { display: flex; flex-direction: column; gap: 8px; }
-.questCard { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; }
+.questCard { background: var(--surface); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: 16px 18px; }
 .questCard:hover { border-color: var(--border-accent); }
 .questHead { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
 .questTitle { font-size: 15px; font-weight: 800; line-height: 1.25; flex: 1; }
@@ -130,7 +130,7 @@
 
 .gainsLayout { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
 @media (max-width: 700px) { .gainsLayout { grid-template-columns: 1fr; } }
-.gainsCard { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; }
+.gainsCard { background: var(--surface); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: 20px; }
 .gainsCardTitle { font-size: 10px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
 .gainsTotal { text-align: center; padding: 20px; background: var(--gold-light); border: 1px solid rgba(245,158,11,.3); border-radius: var(--radius-lg); margin-bottom: 18px; }
 .gainsTotalLbl { font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--gold); margin-bottom: 5px; }
@@ -166,7 +166,7 @@
 .formGroup { display: flex; flex-direction: column; gap: 5px; }
 .formLabel { font-size: 10px; font-weight: 700; color: var(--text-muted); }
 .input { width: 100%; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text); padding: 10px 12px; font-size: 13px; font-family: var(--font); outline: none; }
-.input:focus { border-color: var(--accent); }
+.input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
 textarea.input { resize: vertical; min-height: 90px; }
 .uploadZone { border: 1.5px dashed var(--border-accent); background: var(--accent-light); border-radius: var(--radius-md); padding: 18px; text-align: center; cursor: pointer; position: relative; }
 .uploadZoneDragover { border-color: var(--accent); }

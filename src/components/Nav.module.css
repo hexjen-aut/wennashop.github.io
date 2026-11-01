@@ -1,11 +1,11 @@
 .nav {
   position: fixed; top: 0; left: 0; right: 0;
   z-index: 100; height: var(--nav-height);
-  background: rgba(10,10,10,.95); backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border); padding: 0 20px;
+  background: rgba(15,15,16,.78); backdrop-filter: saturate(140%) blur(18px); -webkit-backdrop-filter: saturate(140%) blur(18px);
+  border-bottom: 1px solid var(--border-soft); padding: 0 20px;
 }
 .navInner {
-  max-width: 1200px; margin: 0 auto; height: 100%;
+  max-width: 1360px; margin: 0 auto; height: 100%;
   display: flex; align-items: center; justify-content: space-between;
 }
 .navBtn {
