@@ -501,10 +501,18 @@ $("uOut").onclick=async()=>{if(queue.length&&!confirm(queue.length+" modificatio
 function renderAll(){fillCatList();if(tab==="budget")renderBudget();if(tab==="journal")renderJournal();if(tab==="idees")renderIdees();if(tab==="personnes")renderPersonnes();if(tab==="reglages")renderReglages();syncLabel()}
 
 /* ================= Authentification ================= */
+// Racine de l'app : ou renvoient les liens des e-mails Supabase.
+const APP_URL=new URL("./",location.href).href;
+// Apres un lien de confirmation, Supabase renvoie ici avec les jetons dans le
+// fragment. L'app ne s'en sert pas : on nettoie l'adresse pour ne pas laisser
+// un jeton dans l'historique et dans ce qui peut etre partage.
+if(/access_token=|refresh_token=|type=(signup|recovery|invite|email_change)/.test(location.hash))
+  history.replaceState(null,"",location.pathname+location.search);
+
 async function authSubmit(signup){
   const email=$("aEmail").value.trim(),password=$("aPass").value;$("aMsg").textContent="";
   if(!email||password.length<6){$("aMsg").textContent="E-mail et mot de passe (6 caractères minimum) requis.";return}
-  const r=signup?await db.auth.signUp({email,password}):await db.auth.signInWithPassword({email,password});
+  const r=signup?await db.auth.signUp({email,password,options:{emailRedirectTo:APP_URL}}):await db.auth.signInWithPassword({email,password});
   if(r.error){$("aMsg").textContent=r.error.message.includes("Invalid login")?"E-mail ou mot de passe incorrect.":r.error.message;return}
   if(signup&&!r.data.session){$("aMsg").textContent="Compte créé. Ouvre le lien reçu par e-mail pour le confirmer, puis connecte-toi.";return}
   start(r.data.session.user);

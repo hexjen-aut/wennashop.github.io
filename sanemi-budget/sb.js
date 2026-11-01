@@ -30,7 +30,11 @@
     const auth={
       async getSession(){return{data:{session:await session()}}},
       async signInWithPassword({email,password}){const r=await call("/auth/v1/token?grant_type=password",{method:"POST",body:{email,password},auth:false});if(r.error)return{data:{},error:r.error};const s=norm(r.data);store(s);return{data:{session:s,user:s.user},error:null}},
-      async signUp({email,password}){const r=await call("/auth/v1/signup",{method:"POST",body:{email,password},auth:false});if(r.error)return{data:{},error:r.error};const s=norm(r.data);if(s)store(s);return{data:{session:s,user:s?s.user:r.data},error:null}},
+      // redirect_to : ou l'e-mail de confirmation renvoie. Sans lui, Supabase
+      // utilise la Site URL du projet, qui pointe vers une autre app.
+      // L'URL doit etre autorisee dans Supabase, sinon elle est ignoree.
+      async signUp({email,password,options}){const rt=options&&options.emailRedirectTo;const r=await call("/auth/v1/signup"+(rt?"?redirect_to="+encodeURIComponent(rt):""),{method:"POST",body:{email,password},auth:false});if(r.error)return{data:{},error:r.error};const s=norm(r.data);if(s)store(s);return{data:{session:s,user:s?s.user:r.data},error:null}},
+      async resetPasswordForEmail(email,options){const rt=options&&options.redirectTo;return call("/auth/v1/recover"+(rt?"?redirect_to="+encodeURIComponent(rt):""),{method:"POST",body:{email},auth:false})},
       async signOut(){await call("/auth/v1/logout",{method:"POST"});store(null);return{error:null}},
       onAuthStateChange(cb){listeners.push(cb);const s=load();if(s)cb("INITIAL_SESSION",s);return{data:{subscription:{unsubscribe(){}}}}}
     };
