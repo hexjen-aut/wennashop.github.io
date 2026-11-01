@@ -145,6 +145,17 @@ function courseCheck(id,on){
   renderBudget();
 }
 
+// Supprimer une operation : il faut redessiner, sinon la ligne reste a l'ecran
+// et la suppression semble n'avoir rien fait. Si l'operation venait d'un article
+// de liste, on decoche l'article : sans cela il resterait achete en pointant
+// vers une depense qui n'existe plus.
+function deleteOp(id){
+  const c=S.courses.find(x=>x.tx_id===id);
+  if(c)put("courses",{...c,achete:false,tx_id:null});
+  del("ops",id);
+  renderBudget();
+}
+
 function courseDelete(id){
   const x=S.courses.find(i=>i.id===id);if(!x)return;
   if(x.achete&&x.tx_id&&!confirm("« "+x.produit+" » a créé une dépense. La retirer de la liste supprimera aussi cette dépense. Continuer ?"))return;
@@ -319,7 +330,7 @@ function renderBudget(){
     if(!done){
       const inp=el.querySelector("input");inp.value=reste;
       el.querySelector(".btn").onclick=()=>repay(p,+inp.value);
-      el.querySelector(".del").onclick=()=>{if(confirm("Supprimer ce prêt ?"))del("prets",p.id)};
+      el.querySelector(".del").onclick=()=>{if(confirm("Supprimer ce prêt ?")){del("prets",p.id);renderBudget()}};
     }
     $("loans").appendChild(el)});
 
@@ -335,7 +346,7 @@ function renderBudget(){
     tr.children[3].innerHTML=[t.lieu,t.personne].filter(Boolean).map(esc).join(" · ")+(t.contexte?'<span class="sub">'+esc(t.contexte)+'</span>':"");
     tr.children[4].textContent=(t.type==="in"?"+":"−")+fmt(t.montant);
     tr.children[4].style.color=t.type==="in"?"var(--in)":"var(--out)";
-    tr.querySelector(".del").onclick=()=>del("ops",t.id);
+    tr.querySelector(".del").onclick=()=>deleteOp(t.id);
     $("rows").appendChild(tr)});
   $("emptyRows").hidden=rows.length>0;
 }
