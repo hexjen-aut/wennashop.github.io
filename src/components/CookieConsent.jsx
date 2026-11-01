@@ -51,6 +51,8 @@ function stopGoogleAnalytics() {
 export default function CookieConsent() {
   const [open, setOpen] = useState(false);
   const [analytics, setAnalytics] = useState(false);
+  // Une autre fenêtre (choix du pays à la première visite) passe d'abord.
+  const [blocked, setBlocked] = useState(false);
 
   useEffect(() => {
     const c = readConsent();
@@ -59,11 +61,15 @@ export default function CookieConsent() {
 
     const onChange = (e) => setAnalytics(e.detail?.analytics === true);
     const onOpen = () => setOpen(true);
+    const onBlocking = (e) => setBlocked(e.detail?.open === true);
+    setBlocked(window.__wennaBlockingModal === true);
     window.addEventListener(CONSENT_EVENT, onChange);
     window.addEventListener(CONSENT_OPEN_EVENT, onOpen);
+    window.addEventListener('wenna:blocking-modal', onBlocking);
     return () => {
       window.removeEventListener(CONSENT_EVENT, onChange);
       window.removeEventListener(CONSENT_OPEN_EVENT, onOpen);
+      window.removeEventListener('wenna:blocking-modal', onBlocking);
     };
   }, []);
 
@@ -84,7 +90,7 @@ export default function CookieConsent() {
         // attendre le prochain chargement de page.
         <Analytics beforeSend={(event) => (hasAnalyticsConsent() ? event : null)} />
       )}
-      {open && (
+      {open && !blocked && (
         <div className={styles.banner} role="dialog" aria-live="polite" aria-labelledby="cookie-title">
           <p id="cookie-title" className={styles.title}>Cookies et confidentialité</p>
           <p className={styles.text}>
