@@ -53,7 +53,26 @@ export async function enablePush() {
     p_endpoint: endpoint, p_p256dh: keys.p256dh, p_auth: keys.auth, p_user_agent: navigator.userAgent,
   });
   if (error) return { ok: false, reason: 'save_failed' };
+  await sendTestNotification().catch(() => {});
   return { ok: true };
+}
+
+// « Notifications activées » : passe par le vrai circuit (notifications →
+// send-push) pour que l'utilisateur voie tout de suite que ça marche. Le type
+// push_test n'est pas envoyé par e-mail (trigger_send_notification_email).
+async function sendTestNotification() {
+  const sb = getSupabase();
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) return;
+  const { data: me } = await sb.from('users').select('id').eq('auth_id', user.id).maybeSingle();
+  if (!me) return;
+  await sb.from('notifications').insert({
+    user_id: me.id,
+    type: 'push_test',
+    title: 'Notifications activées',
+    body: 'Tu recevras ici tes commandes, messages et paiements, même quand WennaShop est fermé.',
+    link: '/compte',
+  });
 }
 
 export async function disablePush() {

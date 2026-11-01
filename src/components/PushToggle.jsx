@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { pushSupport, currentSubscription, enablePush, disablePush, syncPushSubscription } from '@/lib/push';
+import { pushSupport, currentSubscription, enablePush, disablePush, syncPushSubscription, isIos } from '@/lib/push';
 
 // Carte « Notifications sur cet appareil » : commandes, messages, paiements,
 // quêtes arrivent sur le téléphone même quand WennaShop est fermé.
@@ -20,7 +20,7 @@ export default function PushToggle({ id, className, style, text }) {
     }
   }, []);
 
-  if (!support || support === 'unsupported') return null;
+  if (!support) return null;
 
   async function turnOn() {
     setBusy(true); setError('');
@@ -53,7 +53,11 @@ export default function PushToggle({ id, className, style, text }) {
 
   let body;
   let action = null;
-  if (support === 'ios-install') {
+  if (support === 'unsupported') {
+    body = isIos()
+      ? "Ton iPhone ne permet pas encore les notifications de sites : mets-le à jour (Réglages, Général, Mise à jour logicielle ; iOS 16.4 ou plus récent), puis rouvre WennaShop depuis l'icône de l'écran d'accueil."
+      : 'Ce navigateur ne gère pas les notifications. Ouvre WennaShop dans Chrome, Edge, Firefox ou Safari pour les activer.';
+  } else if (support === 'ios-install') {
     body = "Sur iPhone, ajoute d'abord WennaShop à ton écran d'accueil : bouton Partager, puis « Sur l'écran d'accueil ». Ouvre ensuite l'app depuis l'icône pour activer les notifications.";
   } else if (support === 'denied') {
     body = "Les notifications sont bloquées pour WennaShop. Autorise-les dans les réglages du navigateur (icône à gauche de l'adresse), puis reviens ici.";
