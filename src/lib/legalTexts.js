@@ -3,13 +3,14 @@
 // jour avec le code quand une règle change (paiement manuel vérifié, quêtes,
 // parrainage : paramètres hunter_* de site_config).
 
-export const CGU_TEXT = `Dernière mise à jour : 25 octobre 2026
+export const CGU_TEXT = `Dernière mise à jour : 1er novembre 2026
 
 1. Objet
 WennaShop est une marketplace éditée par Hexjen Conceptions qui met en relation des vendeurs (artisans et commerçants) et des acheteurs, principalement entre le Gabon et le Maroc, avec une ouverture progressive à d'autres pays africains. Les présentes conditions générales d'utilisation (CGU) s'appliquent à toute personne qui utilise le site wennashop.com. Créer un compte vaut acceptation des CGU.
 
 2. Compte
 L'inscription est gratuite. Tu t'engages à fournir des informations exactes, à les tenir à jour et à garder tes identifiants confidentiels. Un compte est personnel. WennaShop peut suspendre ou fermer un compte en cas de fausse information, de fraude, de paiement déclaré à tort ou de non-respect des CGU.
+2.1 Notifications. WennaShop te prévient dans ton compte, et par e-mail, des événements de tes commandes, paiements, discussions et quêtes. Tu peux aussi recevoir ces notifications sur ton téléphone ou ton ordinateur, même quand WennaShop est fermé : elles ne s'activent que si tu cliques « Activer » et que tu l'autorises dans ton navigateur, appareil par appareil. Elles concernent uniquement ton compte, jamais de publicité, et tu peux les couper à tout moment avec « Désactiver » ou dans les réglages de ton appareil.
 
 3. Rôles
 Acheteur : parcourt les boutiques, passe commande, paie, suit ses livraisons et peut publier des quêtes.
