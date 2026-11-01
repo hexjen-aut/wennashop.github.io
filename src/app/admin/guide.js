@@ -14,6 +14,7 @@ export const ADMIN_TOUR_STEPS = [
   { targetId: 'tour-admin-nav-compta', title: 'Comptabilité', text: "Le résultat du mois, les espèces à récupérer chez les livreurs, les reversements aux vendeurs et chasseurs, les dépenses. Chaque mouvement est écrit au grand livre." },
   { targetId: 'tour-admin-nav-payouts', title: 'Retraits et recharges', text: "Les recharges de portefeuille (référence RCH-…) et les demandes de retrait des vendeurs." },
   { targetId: 'tour-admin-nav-users', title: 'Utilisateurs', text: "La liste des comptes. C'est ici que tu nommes un agent de paiement." },
+  { targetId: 'tour-admin-nav-messages', since: '2026-11-01', title: 'Messages', text: "Écris à tout le monde, à un groupe (acheteurs, vendeurs, chasseurs, équipe, par pays) ou à une seule personne. Le message arrive dans la cloche du site, sur le téléphone de ceux qui ont activé les notifications, et par e-mail si tu le coches." },
   { targetId: 'tour-admin-nav-pays', title: 'Pays', text: "Moyens de paiement par pays et comptes de réception (numéro, titulaire). Un moyen sans compte n'est pas proposé au client." },
   { targetId: 'tour-admin-nav-settings', title: 'Paramètres', text: 'Mode maintenance, fonctionnalités, taux de change et marge, tarifs transport.' },
   { targetId: 'tour-admin-nav-guide', title: 'Guide', text: "Toutes les procédures pas à pas pour l'équipe. Tu peux relancer cette visite depuis le guide." },
@@ -55,6 +56,19 @@ export const GUIDE = [
       "Répète l'opération sur chaque appareil : l'activation vaut pour un appareil à la fois.",
     ],
     note: "Si les notifications sont bloquées, autorise-les dans les réglages du navigateur (icône à gauche de l'adresse). « Désactiver » sur la même carte les coupe pour cet appareil.",
+  },
+  {
+    id: 'messages',
+    who: 'admin',
+    title: 'Envoyer un message aux utilisateurs',
+    steps: [
+      "Ouvre Messages dans le menu de l'admin.",
+      "Choisis les destinataires : un groupe (rôle et pays) ou une personne (cherche son nom ou son e-mail). Le nombre de destinataires s'affiche.",
+      "Écris un titre court (80 caractères au plus) et le message (400 au plus). Ajoute si besoin la page à ouvrir au clic, par exemple /boutique.",
+      "Coche « Envoyer aussi par e-mail » pour toucher ceux qui n'ont pas activé les notifications. Les e-mails partent par lots de 8 par minute.",
+      "Clique « Envoyer » et confirme. L'envoi apparaît dans « Derniers envois ».",
+    ],
+    note: "Un message ne s'annule pas une fois envoyé : relis-le avant. Pas de publicité extérieure ni de numéro de téléphone dans les messages : seulement des informations WennaShop.",
   },
   {
     id: 'verifier-paiement',
