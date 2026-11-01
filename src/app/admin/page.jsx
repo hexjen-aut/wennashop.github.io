@@ -12,6 +12,7 @@ import LineChart from './LineChart';
 import { GEO_REASON_LABEL, geoVerdict } from '@/lib/geoCheck';
 import { ADMIN_TOUR_STEPS } from './guide';
 import PushToggle from '@/components/PushToggle';
+import BroadcastPanel from './BroadcastPanel';
 import styles from './admin.module.css';
 
 function fmt(n, c = 'MAD') { try { return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: c }).format(n); } catch { return `${n} ${c}`; } }
@@ -1149,6 +1150,7 @@ export default function AdminPage() {
           ['carriers', 'ph-truck', 'Transporteurs'],
           ['payouts', 'ph-bank', 'Retraits'],
           ['users', 'ph-users', 'Utilisateurs'],
+          ['messages', 'ph-megaphone', 'Messages'],
           ['reviews', 'ph-star', 'Avis'],
           ['payments', 'ph-credit-card', 'Paiements'],
           ['analytics', 'ph-chart-line', 'Analytiques'],
@@ -1577,6 +1579,8 @@ export default function AdminPage() {
             )}
           </>
         )}
+
+        {section === 'messages' && <BroadcastPanel />}
 
         {section === 'users' && (
           <>
