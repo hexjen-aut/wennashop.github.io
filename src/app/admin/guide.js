@@ -5,6 +5,7 @@
 // (id « tour-admin-nav-<clé> »).
 export const ADMIN_TOUR_STEPS = [
   { targetId: 'tour-admin-nav-dashboard', title: 'Dashboard', text: "Les chiffres du jour : revenus, commandes, inscrits et ce qui attend une validation." },
+  { targetId: 'tour-admin-push', since: '2026-11-01', title: 'Notifications sur ton téléphone', text: "Active les notifications sur chaque appareil que tu utilises : paiement déclaré à vérifier, nouvel inscrit, alertes de l'équipe. Elles arrivent même quand WennaShop est fermé." },
   { targetId: 'tour-admin-nav-validation', title: 'Validation des produits', text: "Chaque produit ajouté par un vendeur arrive ici. Il n'apparaît dans la boutique qu'une fois approuvé." },
   { targetId: 'tour-admin-nav-artisans', title: 'Artisans (vendeurs)', text: "Les nouveaux vendeurs envoient leur pièce d'identité. Tu la vérifies, puis tu valides ou refuses avec un motif." },
   { targetId: 'tour-admin-nav-chasseurs', title: 'Chasseurs', text: 'Même principe pour les chasseurs : pièce d\'identité, puis validation ou refus.' },
@@ -21,6 +22,7 @@ export const ADMIN_TOUR_STEPS = [
 // Visite de /admin/paiements pour les agents (et les admins qui y passent).
 // `since` : voir lib/tourSteps.js.
 export const AGENT_TOUR_STEPS = [
+  { targetId: 'tour-agent-push', since: '2026-11-01', title: 'Notifications sur ton téléphone', text: "Clique « Activer » : chaque paiement déclaré par un client t'arrive en notification, même quand WennaShop est fermé. Sur iPhone, ajoute d'abord WennaShop à ton écran d'accueil." },
   { targetId: 'tour-agent-table', since: '2026-10-17', title: 'Contrôle du pays', text: "Dans la fiche d'un paiement, la section « Contrôle du pays » compare la livraison avec la position de l'appareil du client et sa connexion. « À vérifier » : appelle le client avant de valider (procédure dans le Guide)." },
   { targetId: 'tour-agent-views', since: '2026-10-16', title: 'Paiements et tickets', text: "« Paiements clients » : les paiements Airtel, Moov et virement à vérifier. « Tickets chasseurs » : les tickets de caisse envoyés pour une avance ; compare le montant, la photo et le code WN-Q… écrit à la main, puis valide ou refuse." },
   { targetId: 'tour-agent-tabs', title: 'Les onglets', text: "« À vérifier » : les clients qui disent avoir payé. « En attente client » : pas encore déclaré. « Validés » et « Refusés » : l'historique." },
@@ -41,6 +43,18 @@ export const GUIDE = [
       "Agent de paiement : connecte-toi sur wennashop.com/connexion, puis ouvre wennashop.com/admin/paiements. C'est la seule page de l'équipe à laquelle tu as accès.",
     ],
     note: "Ne partage jamais ton mot de passe ni le code reçu par e-mail. Chaque personne a son propre compte.",
+  },
+  {
+    id: 'notifications-push',
+    who: 'agent',
+    title: 'Recevoir les notifications sur ton téléphone',
+    steps: [
+      "Ouvre wennashop.com/admin/paiements (agent) ou le Dashboard de l'admin, sur le téléphone ou l'ordinateur à prévenir.",
+      "Carte « Notifications sur cet appareil » : clique « Activer », puis « Autoriser » quand le navigateur le demande.",
+      "iPhone : ouvre d'abord wennashop.com dans Safari, bouton Partager, « Sur l'écran d'accueil ». Ouvre ensuite WennaShop depuis l'icône et active les notifications (iOS 16.4 ou plus récent).",
+      "Répète l'opération sur chaque appareil : l'activation vaut pour un appareil à la fois.",
+    ],
+    note: "Si les notifications sont bloquées, autorise-les dans les réglages du navigateur (icône à gauche de l'adresse). « Désactiver » sur la même carte les coupe pour cet appareil.",
   },
   {
     id: 'verifier-paiement',

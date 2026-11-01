@@ -9,6 +9,7 @@ import TourOverlay from '@/components/TourOverlay';
 import tourStyles from '@/components/TourOverlay.module.css';
 import AdminGuide from '../AdminGuide';
 import { AGENT_TOUR_STEPS } from '../guide';
+import PushToggle from '@/components/PushToggle';
 import TicketsPanel from './TicketsPanel';
 import { GEO_DEVICE_LABEL, GEO_REASON_LABEL, geoVerdict } from '@/lib/geoCheck';
 import a from '../admin.module.css';
@@ -292,6 +293,8 @@ function PaiementsAgent() {
           <Link href="/admin" className={s.back}>Retour à l'admin</Link>
         </div>
       </div>
+
+      <PushToggle id="tour-agent-push" className={tourHl('tour-agent-push')} style={{ marginBottom: 16 }} text="Chaque paiement déclaré par un client t'arrive en notification, même quand WennaShop est fermé." />
 
       <div id="tour-agent-views" className={`${s.tabs} ${tourHl('tour-agent-views')}`} role="tablist" aria-label="Type de vérification">
         <button role="tab" aria-selected={view === 'payments'} className={`${s.tab} ${view === 'payments' ? s.tabActive : ''}`} onClick={() => setView('payments')}>

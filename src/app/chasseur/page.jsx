@@ -12,6 +12,7 @@ import Mascot from '@/components/Mascot';
 import AutoKycCard from '@/components/AutoKycCard';
 import AdvanceBox from './AdvanceBox';
 import { tourStepsFor } from '@/lib/tourSteps';
+import PushToggle from '@/components/PushToggle';
 
 const MAX_IMAGES = 5;
 const BUCKET = 'products';
@@ -55,6 +56,7 @@ const HUNTER_TOUR_STEPS = [
   { tab: 'quests', targetId: 'tour-first-quest', since: '2026-10-16', title: 'Envoyer une offre', text: "Clique « Je chasse » et indique le prix du produit et son poids réel ; WennaShop calcule le transport. Si ton prix dépasse le budget, ta récompense passe à 10 % de ton prix." },
   { tab: 'proposals', targetId: 'tour-tab-proposals', since: '2026-10-16', title: 'Mes propositions', text: "Ton offre passe à « Acceptée » quand l'acheteur a payé : WennaShop garde l'argent jusqu'à la livraison. Achète alors le produit et remets le colis au transport." },
   { tab: 'proposals', targetId: null, since: '2026-10-16', title: 'Avance sur ticket de caisse', text: "Après 5 quêtes livrées, tu peux te faire avancer le prix du produit dès l'achat : envoie le ticket de caisse et une photo du produit avec le code WN-Q… écrit à la main. Jusqu'à 150 000 FCFA d'avances en cours. Tu as ensuite 72 h pour remettre le colis au transport." },
+  { tab: null, targetId: 'tour-push', since: '2026-11-01', title: 'Notifications sur ton téléphone', text: "Active les notifications pour être prévenu d'une nouvelle quête dans ton pays, d'une offre acceptée ou d'une récompense payée, même quand WennaShop est fermé. Sur iPhone, ajoute d'abord WennaShop à ton écran d'accueil." },
   { tab: 'vendeurs', targetId: 'tour-referral-card', title: 'Ton code de parrainage', text: "Chaque chasseur vérifié a son propre code. Un vendeur qui s'inscrit avec devient automatiquement ton filleul." },
   { tab: 'vendeurs', targetId: 'tour-copy-link-btn', title: 'Le lien à partager', text: "Envoie ce lien plutôt que le code seul : tout se fait automatiquement à l'inscription, rien à taper de son côté." },
   { tab: 'vendeurs', targetId: 'tour-recruited-card', title: 'Tes vendeurs recrutés', text: 'Suis ici chaque boutique parrainée, et si elle est déjà active (3 commandes livrées).' },
@@ -497,6 +499,8 @@ export default function ChasseurPage() {
       </div>
 
       <div className={styles.body}>
+        <PushToggle id="tour-push" className={tourHl('tour-push')} style={{ marginBottom: 16 }} text="Nouvelle quête dans ton pays, offre acceptée, récompense payée : sois prévenu sur ce téléphone, même quand WennaShop est fermé." />
+
         {/* KPI */}
         <div className={styles.kpiStrip}>
           <div className={styles.kpi}><div className={styles.kpiLabel}>Propositions</div><div className={styles.kpiVal} style={{ color: 'var(--accent)' }}>{kpis.total}</div></div>

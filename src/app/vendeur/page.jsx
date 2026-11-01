@@ -16,6 +16,7 @@ import bvStyles from '../boutique-vendeur/boutique-vendeur.module.css';
 import Mascot from '@/components/Mascot';
 import WennaPointer from '@/components/WennaPointer';
 import { tourStepsFor } from '@/lib/tourSteps';
+import PushToggle from '@/components/PushToggle';
 
 function shopInitials(name) {
   if (!name) return 'W';
@@ -75,6 +76,7 @@ function splitValues(text) {
 const TOUR_STEPS = [
   { navKey: 'overview', title: "Vue d'ensemble", text: "Ton tableau de bord : ventes, commandes récentes, stock faible et tes objectifs, en un coup d'œil." },
   { navKey: 'overview', fieldId: 'tour-founder-card', needsFounderCard: true, since: '2026-10-17', title: 'Vendeur fondateur', text: "Les 20 premières boutiques qui mettent un produit en ligne deviennent vendeurs fondateurs : badge à vie et 3 mois de mise en avant sur la page d'accueil. Cette carte te dit si tu en fais partie, ou combien de places il reste." },
+  { navKey: 'overview', fieldId: 'tour-push', since: '2026-11-01', title: 'Notifications sur ton téléphone', text: "Active les notifications : nouvelle commande, message d'un acheteur, devis en gros, paiement reçu… tu es prévenu même quand WennaShop est fermé. Sur iPhone, ajoute d'abord WennaShop à ton écran d'accueil." },
   { navKey: 'products', title: 'Mes produits', text: "Ajoute et gère les produits que tu vends. C'est le cœur de ta boutique." },
   { navKey: 'overview', fieldId: 'tour-nav-gros', since: '2026-10-25', title: 'Commandes en gros', text: "Dans un produit, coche « Accepter les commandes en gros » et fixe la quantité minimale. Les acheteurs te demandent un prix ici, dans le chat ; tu réponds par un devis, et ils paient sur WennaShop. Les numéros et liens sont masqués : tout se passe sur le chat." },
   { navKey: 'products', since: '2026-10-25', title: 'Variantes', text: "Un même produit en plusieurs versions (parfums, poids, couleurs, tailles) ? Dans « Nouveau produit », onglet Variantes : nomme tes options, tape les valeurs, puis fixe le prix et le stock de chaque version. L'acheteur choisit la sienne sur la fiche." },
@@ -1235,6 +1237,8 @@ export default function VendeurPage() {
               <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', flex: 1 }}>Commission WennaShop : <strong style={{ color: 'var(--text)' }}>{shop?.commission_rate ? `${shop.commission_rate}%` : 'selon catégorie du produit'}</strong> par vente.</span>
               <button className={`${styles.btnGhost} ${styles.btnSm}`} onClick={() => setCommissionGridOpen(true)}>Voir la grille</button>
             </div>
+
+            <PushToggle id="tour-push" className={tourFieldClass('tour-push')} style={{ marginBottom: 14 }} text="Nouvelle commande, message d'un acheteur, devis en gros, paiement reçu : sois prévenu sur ce téléphone, même quand WennaShop est fermé." />
 
             {hasFounderCard && (
               <div id="tour-founder-card" className={`${styles.card} ${tourFieldClass('tour-founder-card')}`} style={{ padding: '14px 18px', marginBottom: 14, border: '1px solid var(--border-accent)' }}>
