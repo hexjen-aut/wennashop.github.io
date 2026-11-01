@@ -107,6 +107,8 @@ td .sub{display:block;color:var(--muted);font-size:12.5px}
 .dot.integration{background:var(--ok)}.dot.neutre{background:var(--muted)}.dot.stress{background:var(--bad)}
 .toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:9px 16px;border-radius:99px;font-weight:600;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:30;max-width:90vw;text-align:center}
 .toast.on{opacity:1}
+.updbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:31;display:flex;align-items:center;gap:12px;max-width:calc(100vw - 32px);background:var(--surface);border:1px solid var(--accent);border-radius:99px;padding:7px 7px 7px 16px;box-shadow:0 8px 24px rgba(0,0,0,.18);font-size:13.5px;color:var(--fg)}
+.updbar span{min-width:0}
 nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom,0px)}
 nav.tabs .in{display:flex;width:100%;max-width:640px}
 nav.tabs button{flex:1;font:inherit;font-size:13px;font-weight:600;border:0;background:none;color:var(--muted);padding:14px 4px;cursor:pointer;border-top:2px solid transparent}

@@ -527,4 +527,62 @@ function start(u){
   db.auth.onAuthStateChange((ev,session)=>{if(session&&session.user)LS.set("sb_last_user",{id:session.user.id,email:session.user.email})});
 })();
 
-if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+// --- Mise a jour de la version installee ---
+// Le service worker sert les fichiers depuis le cache avant le reseau : sans ce
+// mecanisme, l'app installee sur l'ecran d'accueil garde sa version pour toujours.
+// version.json est la seule source de verite ; le worker est enregistre sous
+// sw.js?v=<version>, donc la version installee se lit sur son URL.
+// On ne recharge jamais d'office : une saisie en cours serait perdue.
+const VERSION_CHECK_MS=30*60*1000;
+async function onlineVersion(){
+  try{const r=await fetch("version.json",{cache:"no-store"});if(!r.ok)return null;const j=await r.json();return(j&&j.version)||null}catch(e){return null}
+}
+function installedVersion(reg){
+  const w=reg&&(reg.active||reg.waiting||reg.installing);
+  if(!w)return null;
+  try{return new URL(w.scriptURL).searchParams.get("v")}catch(e){return null}
+}
+async function applyUpdate(btn){
+  const label=btn?btn.textContent:"";
+  if(btn){btn.disabled=true;btn.textContent="Mise à jour…"}
+  // Vider le cache hors ligne alors qu'on n'a pas de reseau rendrait l'app
+  // inutilisable : on verifie d'abord qu'on peut bien joindre le serveur.
+  if(!await onlineVersion()){
+    toast("Pas de réseau — réessaie plus tard");
+    if(btn){btn.disabled=false;btn.textContent=label}
+    return;
+  }
+  try{
+    const regs=await navigator.serviceWorker.getRegistrations();
+    await Promise.all(regs.map(r=>r.unregister()));
+    const keys=await caches.keys();
+    await Promise.all(keys.map(k=>caches.delete(k)));
+  }catch(e){}
+  // Les operations en attente vivent dans localStorage, que rien n'efface ici.
+  location.reload();
+}
+function showUpdateBar(){
+  if($("updateBar"))return;
+  const d=document.createElement("div");
+  d.id="updateBar";d.className="updbar";d.setAttribute("role","status");
+  const s=document.createElement("span");s.textContent="Nouvelle version disponible";
+  const b=document.createElement("button");b.type="button";b.className="btn sm";b.textContent="Mettre à jour";
+  b.addEventListener("click",()=>applyUpdate(b));
+  d.append(s,b);document.body.appendChild(d);
+}
+if("serviceWorker" in navigator)window.addEventListener("load",async()=>{
+  const check=async()=>{
+    const reg=await navigator.serviceWorker.getRegistration().catch(()=>null);
+    const online=await onlineVersion();
+    if(!reg){ // premiere visite, ou juste apres une mise a jour
+      if(online!==null)navigator.serviceWorker.register("sw.js?v="+encodeURIComponent(online)).catch(()=>{});
+      return;
+    }
+    // installedVersion vaut null pour un worker installe avant ce mecanisme :
+    // c'est une ancienne version, donc on propose la mise a jour.
+    if(online!==null&&online!==installedVersion(reg))showUpdateBar();
+  };
+  await check();
+  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")check()});
+  setInterval(check,VERSION_CHECK_MS);
+});
