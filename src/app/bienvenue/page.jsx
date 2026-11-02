@@ -82,7 +82,7 @@ export default function BienvenuePage() {
       if (!session) { router.replace('/connexion'); return; }
 
       const { data: row } = await sb.from('users')
-        .select('id, first_name, role, onboarding_completed_at, onboarding_views_count')
+        .select('id, first_name, role, hunter_status, onboarding_completed_at, onboarding_views_count')
         .eq('auth_id', session.user.id)
         .maybeSingle();
 
@@ -120,7 +120,11 @@ export default function BienvenuePage() {
       }
       try { localStorage.removeItem('wenna_referral_code'); } catch {}
 
-      const dest = takeAfterLogin() || (effectiveRole === 'artisan' ? '/vendeur' : '/boutique');
+      // Chasseur vérifié (non vendeur) : directement son espace, qui a son
+      // propre tutoriel ; pas les diapositives d'accueil des acheteurs.
+      const isHunter = effectiveRole !== 'artisan' && row?.hunter_status === 'verified';
+      const dest = takeAfterLogin() || (effectiveRole === 'artisan' ? '/vendeur' : isHunter ? '/chasseur' : '/boutique');
+      if (isHunter) { router.replace(dest); return; }
       setDestination(dest);
 
       if (row?.onboarding_completed_at) { router.replace(dest); return; }

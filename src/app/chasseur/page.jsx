@@ -39,6 +39,9 @@ const LEVELS = [
 ];
 
 function fmt(n) { return Number(n || 0).toLocaleString('fr-FR'); }
+// XAF (Gabon) et XOF (Sénégal) s'affichent « FCFA », comme partout sur le site.
+function cur(c) { return !c || c === 'XAF' || c === 'XOF' || c === 'FCFA' ? 'FCFA' : c; }
+function money(n, c) { return `${fmt(n)} ${cur(c)}`; }
 function fmtDate(d) { return d ? new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'; }
 function timeAgo(d) {
   const diff = Date.now() - new Date(d).getTime();
@@ -60,8 +63,26 @@ const HUNTER_TOUR_STEPS = [
   { tab: 'vendeurs', targetId: 'tour-referral-card', title: 'Ton code de parrainage', text: "Chaque chasseur vérifié a son propre code. Un vendeur qui s'inscrit avec devient automatiquement ton filleul." },
   { tab: 'vendeurs', targetId: 'tour-copy-link-btn', title: 'Le lien à partager', text: "Envoie ce lien plutôt que le code seul : tout se fait automatiquement à l'inscription, rien à taper de son côté." },
   { tab: 'vendeurs', targetId: 'tour-recruited-card', title: 'Tes vendeurs recrutés', text: 'Suis ici chaque boutique parrainée, et si elle est déjà active (3 commandes livrées).' },
-  { tab: 'gains', targetId: 'tour-gains-total', since: '2026-10-16', title: 'Tes gains', text: "À la livraison, tu reçois le prix du produit (sauf s'il t'a été avancé), le transport et la récompense moins 10 %. Le total et le détail de chaque paiement sont ici." },
+  { tab: 'gains', targetId: 'tour-gains-total', since: '2026-11-02', title: 'Mes soldes', text: "Tous tes soldes au même endroit : récompenses de quêtes reçues et à venir, primes de parrainage (en attente 7 jours, disponibles, déjà versées) et avances en cours. À la livraison, tu reçois le prix du produit (sauf s'il t'a été avancé), le transport et la récompense moins 10 %." },
 ];
+
+function BalanceGroup({ title, children }) {
+  return (
+    <div style={{ paddingTop: 12, marginTop: 12, borderTop: '1px solid var(--border-soft, var(--border))' }}>
+      <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 8 }}>{title}</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>{children}</div>
+    </div>
+  );
+}
+
+function BalanceRow({ label, value, strong, success }) {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, fontSize: 13 }}>
+      <span style={{ color: 'var(--text-muted)' }}>{label}</span>
+      <strong style={{ color: success ? 'var(--success)' : strong ? 'var(--gold)' : 'var(--text)', whiteSpace: 'nowrap' }}>{value}</strong>
+    </div>
+  );
+}
 
 export default function ChasseurPage() {
   const [loading, setLoading] = useState(true);
@@ -275,11 +296,21 @@ export default function ChasseurPage() {
     const accepted = myProposals.filter((p) => ['selected', 'in_delivery', 'delivered', 'reward_paid'].includes(p.status)).length;
     const paid = myProposals.filter((p) => p.status === 'reward_paid');
     const gains = paid.reduce((s, p) => s + Number(p.quests?.reward_amount || 0), 0);
+    // Récompenses par devise : déjà payées, et à venir (offre acceptée, pas encore payée)
+    const byCur = {};
+    myProposals.forEach((p) => {
+      const c = cur(p.quests?.currency);
+      const r = Number(p.quests?.reward_amount || 0);
+      byCur[c] = byCur[c] || { paid: 0, upcoming: 0 };
+      if (p.status === 'reward_paid') byCur[c].paid += r;
+      else if (['selected', 'in_delivery', 'delivered'].includes(p.status)) byCur[c].upcoming += r;
+    });
+    const questRewards = Object.entries(byCur).filter(([, v]) => v.paid || v.upcoming);
     const rate = total > 0 ? Math.round((accepted / total) * 100) : 0;
     const completedCount = paid.length;
     const level = [...LEVELS].reverse().find((l) => completedCount >= l.min) || LEVELS[0];
     const nextLevel = LEVELS.find((l) => l.min > completedCount);
-    return { total, accepted, gains, rate, paid, completedCount, level, nextLevel };
+    return { total, accepted, gains, rate, paid, completedCount, level, nextLevel, questRewards };
   }, [myProposals]);
 
   // ── MODAL PROPOSITION ──
@@ -699,9 +730,33 @@ export default function ChasseurPage() {
         {tab === 'gains' && (
           <div className={styles.gainsLayout}>
             <div>
-              <div id="tour-gains-total" className={`${styles.gainsTotal} ${tourHl('tour-gains-total')}`}>
-                <div className={styles.gainsTotalLbl}>Total encaissé</div>
-                <div className={styles.gainsTotalVal}>{fmt(kpis.gains)} FCFA</div>
+              <div id="tour-gains-total" className={`${styles.gainsCard} ${tourHl('tour-gains-total')}`} data-testid="hunter-balances" style={{ marginBottom: 14 }}>
+                <div className={styles.gainsCardTitle}>Mes soldes</div>
+                <BalanceGroup title="Quêtes">
+                  {kpis.questRewards.length === 0 ? (
+                    <BalanceRow label="Récompenses reçues" value={money(0)} />
+                  ) : kpis.questRewards.map(([c, v]) => (
+                    <div key={c}>
+                      <BalanceRow label="Récompenses reçues" value={money(v.paid, c)} strong />
+                      <BalanceRow label="À venir (offres acceptées)" value={money(v.upcoming, c)} />
+                    </div>
+                  ))}
+                </BalanceGroup>
+                <BalanceGroup title="Parrainage">
+                  {(hunterBalances.length ? hunterBalances : [{ currency: 'XAF', en_attente: 0, disponible: 0, verse: 0 }]).map((b) => (
+                    <div key={b.currency}>
+                      <BalanceRow label="En attente (bloqué 7 jours)" value={money(b.en_attente, b.currency)} />
+                      <BalanceRow label="Disponible" value={money(b.disponible, b.currency)} success />
+                      <BalanceRow label="Déjà versé" value={money(b.verse, b.currency)} />
+                    </div>
+                  ))}
+                </BalanceGroup>
+                {advanceStatus && (
+                  <BalanceGroup title="Avances sur ticket">
+                    <BalanceRow label="Avances en cours" value={money(advanceStatus.outstanding_xaf, 'XAF')} />
+                    <BalanceRow label="Encore possible" value={advanceStatus.eligible ? money(advanceStatus.remaining_xaf, 'XAF') : `Après ${advanceStatus.min_quests} quêtes livrées`} />
+                  </BalanceGroup>
+                )}
               </div>
               <div className={styles.gainsCard}>
                 <div className={styles.gainsCardTitle}>Performance</div>
@@ -788,19 +843,19 @@ export default function ChasseurPage() {
                 <div className={styles.gainsCardTitle}>Solde parrainage</div>
                 {hunterBalances.length === 0 ? (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>En attente (bloqué 7j)</span><strong>{fmt(0)} XAF</strong></div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Disponible</span><strong style={{ color: 'var(--success)' }}>{fmt(0)} XAF</strong></div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Déjà versé</span><strong>{fmt(0)} XAF</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>En attente (bloqué 7j)</span><strong>{money(0)}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Disponible</span><strong style={{ color: 'var(--success)' }}>{money(0)}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Déjà versé</span><strong>{money(0)}</strong></div>
                   </div>
                 ) : hunterBalances.map((b) => (
                   // Une carte par devise — un chasseur qui parraine à la fois
                   // une boutique marocaine (MAD) et gabonaise (XAF) a deux
                   // soldes distincts, jamais un seul total mélangé.
                   <div key={b.currency} style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 14 }}>
-                    {hunterBalances.length > 1 && <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--accent)', textTransform: 'uppercase' }}>{b.currency}</div>}
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>En attente (bloqué 7j)</span><strong>{fmt(b.en_attente)} {b.currency}</strong></div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Disponible</span><strong style={{ color: 'var(--success)' }}>{fmt(b.disponible)} {b.currency}</strong></div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Déjà versé</span><strong>{fmt(b.verse)} {b.currency}</strong></div>
+                    {hunterBalances.length > 1 && <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--accent)', textTransform: 'uppercase' }}>{cur(b.currency)}</div>}
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>En attente (bloqué 7j)</span><strong>{money(b.en_attente, b.currency)}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Disponible</span><strong style={{ color: 'var(--success)' }}>{money(b.disponible, b.currency)}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Déjà versé</span><strong>{money(b.verse, b.currency)}</strong></div>
                   </div>
                 ))}
               </div>
