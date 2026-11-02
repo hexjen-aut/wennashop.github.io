@@ -176,6 +176,13 @@ export const WENNA_FAQ = [
     link: { href: '/chasseur', label: 'Mon espace chasseur' },
   },
   {
+    id: 'soldes-chasseur',
+    q: 'Chasseur : où voir tout ce que je gagne ?',
+    a: "Dans ton espace chasseur, onglet « Gains », la carte « Mes soldes » regroupe tout : récompenses de quêtes reçues et à venir, primes de parrainage (en attente pendant 7 jours, puis disponibles, et déjà versées) et avances sur ticket en cours. Les montants du Gabon et du Sénégal sont en FCFA.",
+    keywords: 'solde soldes gains chasseur prime parrainage recompense argent combien versé disponible',
+    link: { href: '/chasseur', label: 'Mon espace chasseur' },
+  },
+  {
     id: 'motdepasse',
     q: "J'ai oublié mon mot de passe",
     a: "Sur la page de connexion, saisis ton email puis touche « Oublié ? » à côté du mot de passe. Tu reçois un lien pour en choisir un nouveau ; pense à regarder dans tes spams.",

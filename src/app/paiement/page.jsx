@@ -26,6 +26,8 @@ function fmt(n, c = 'MAD') { try { return new Intl.NumberFormat('fr-FR', { style
 
 // Moyens vérifiés à la main par l'équipe (circuit manuel : référence WN-,
 // déclaration du client, validation par un agent) — réglés dans l'admin.
+// Pays de livraison proposés au paiement (moyens de paiement lus par code pays).
+const COUNTRY_CODE = { Maroc: 'MA', Gabon: 'GA', Sénégal: 'SN' };
 const MANUAL_LABEL = { airtel_money: 'Airtel Money', moov_money: 'Moov Money', virement: 'Virement bancaire' };
 const MANUAL_ERRORS = {
   method_not_available: "Ce moyen de paiement n'est pas disponible pour ce pays.",
@@ -50,8 +52,6 @@ function PaiementContent() {
   // Commande de quête : produit + transport + récompense, jamais payée à la livraison
   const [quest, setQuest] = useState(null);
 
-  const COUNTRY_CODE = { Maroc: 'MA', Gabon: 'GA' };
-
   const [form, setForm] = useState({ first: '', last: '', phone: '', address: '', city: '', country: 'Maroc', notes: '' });
 
   // Pays de livraison par défaut : celui choisi par l'acheteur dans la
@@ -59,7 +59,7 @@ function PaiementContent() {
   useEffect(() => {
     try {
       const c = localStorage.getItem(BUYER_COUNTRY_KEY);
-      if (c === 'Gabon' || c === 'Maroc') setForm((f) => ({ ...f, country: c }));
+      if (COUNTRY_CODE[c]) setForm((f) => ({ ...f, country: c }));
     } catch {}
   }, []);
   const [method, setMethod] = useState(params.get('error') === 'payment_failed' ? 'mobile_money' : 'cash_on_delivery');
@@ -404,6 +404,7 @@ function PaiementContent() {
                 <select className={styles.input} value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })}>
                   <option value="Maroc">🇲🇦 Maroc</option>
                   <option value="Gabon">🇬🇦 Gabon</option>
+                  <option value="Sénégal">🇸🇳 Sénégal</option>
                 </select>
               </div>
               <textarea className={styles.input} style={{ marginTop: 12, minHeight: 70 }} placeholder="Notes (optionnel)" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />

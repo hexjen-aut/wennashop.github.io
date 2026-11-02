@@ -114,6 +114,10 @@ export default async function VendrePage() {
                 Plus que <strong>{placesLeft}</strong> place{placesLeft > 1 ? 's' : ''} de vendeur fondateur sur {FOUNDER_TOTAL}.
               </p>
             )}
+            <p className={styles.places} data-testid="local-sellers">
+              Tu vends au Gabon ou au Sénégal ? La boutique est la même : tu vends dans ton pays, aux acheteurs de ta ville.{' '}
+              <Link href={SIGNUP_HREF} className={styles.link}>Ouvrir ma boutique locale</Link>
+            </p>
           </div>
           <div className={styles.heroMedia}>
             <img src={HERO_IMAGE} alt="Allée d'un souk au Maroc, boutiques de céramique, vêtements et objets en laiton" />

@@ -117,6 +117,9 @@ export default function ConnexionPage() {
   const [pays, setPays] = useState('');
   const [role, setRole] = useState(null);
   const [cgu, setCgu] = useState(false);
+  // Code de parrainage reçu par lien : affiché pour que le vendeur sache qu'il
+  // est bien invité (le rattachement reste vérifié côté serveur).
+  const [refCode, setRefCode] = useState(null);
 
   // Lien de parrainage chasseur (?ref=WS-XXXXXX) — mémorisé pour être appliqué
   // automatiquement à la création du compte (voir /bienvenue), sans que le
@@ -129,6 +132,7 @@ export default function ConnexionPage() {
       const ref = new URLSearchParams(window.location.search).get('ref');
       if (ref && /^[A-Za-z0-9-]{4,20}$/.test(ref)) {
         localStorage.setItem('wenna_referral_code', ref.toUpperCase());
+        setRefCode(ref.toUpperCase());
         setMode('inscription');
         setRole('artisan');
       }
@@ -365,6 +369,13 @@ export default function ConnexionPage() {
               <div className={styles.eyebrow}>Nouveau compte</div>
               <h1 className={styles.title}>Rejoignez-nous</h1>
               <p className={styles.sub}>Inscription gratuite — acheteur ou vendeur.</p>
+              {refCode && (
+                <div className={styles.kycBlock} data-testid="referral-banner" style={{ borderStyle: 'solid' }}>
+                  <div className={styles.kycIntro} style={{ marginBottom: 0 }}>
+                    <strong>Tu es invité par un chasseur WennaShop</strong> (code {refCode}). Inscris-toi comme vendeur : ta boutique lui sera rattachée automatiquement, il t'accompagne pour tes premières ventes.
+                  </div>
+                </div>
+              )}
 
               <div className={styles.grid2} style={{ marginBottom: 16 }}>
                 <div><label className={styles.label}>Prénom</label><input className={styles.input} value={prenom} onChange={(e) => setPrenom(e.target.value)} autoComplete="given-name" /></div>
